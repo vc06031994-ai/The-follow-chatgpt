@@ -111,7 +111,7 @@ function tfp_render_customer_billing_shortcode($atts = [])
                         <label><span><?php esc_html_e('CVC', 'tfp-dashboard'); ?></span><div class="tfp-stripe-card-element" data-tfp-stripe-card-cvc></div></label>
                         <label><span><?php esc_html_e('Name on Card', 'tfp-dashboard'); ?></span><input type="text" data-tfp-cardholder-name value="<?php echo esc_attr($saved_name ?: $name); ?>" autocomplete="cc-name" placeholder="<?php esc_attr_e('Name as it appears on card', 'tfp-dashboard'); ?>"></label>
                         <label class="tfp-customer-billing__consent"><input type="checkbox" data-tfp-billing-consent required><span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy.', 'tfp-dashboard'); ?></span></label>
-                        <button type="submit" class="tfp-customer-billing__submit" data-tfp-billing-submit><?php esc_html_e('Save Payment Method', 'tfp-dashboard'); ?></button>
+                        <button type="submit" class="tfp-customer-billing__submit tfp-dash-btn tfp-dash-btn--primary" data-tfp-billing-submit><?php esc_html_e('Save Payment Method', 'tfp-dashboard'); ?></button>
                         <p class="tfp-dash-form__status" data-tfp-billing-status role="status"></p>
                     </form>
                 <?php else : ?>
@@ -134,8 +134,9 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    wp_enqueue_style('tfp-customer-billing', plugins_url('assets/css/customer-billing.css', __FILE__), [], '1.0.2');
-    wp_enqueue_style('tfp-dashboard-forms', plugins_url('assets/css/forms.css', __FILE__), [], '1.2.5');
+    wp_enqueue_style('tfp-dashboard-core', plugins_url('assets/css/dashboard.css', __FILE__), [], '1.2.5');
+    wp_enqueue_style('tfp-customer-billing', plugins_url('assets/css/customer-billing.css', __FILE__), ['tfp-dashboard-core'], '1.0.2');
+    wp_enqueue_style('tfp-dashboard-forms', plugins_url('assets/css/forms.css', __FILE__), ['tfp-dashboard-core'], '1.2.5');
 
     if (function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
         wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
