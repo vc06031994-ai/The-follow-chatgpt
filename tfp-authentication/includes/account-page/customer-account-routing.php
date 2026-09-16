@@ -8,9 +8,32 @@ if (!defined('ABSPATH')) {
  * on the custom My Account page.
  *
  * Enrolled Disciples and staff retain the original account experience. Pure
- * e-commerce customers/readers get the standalone billing page link instead
- * of being sent into the Discipleship payment-details route.
+ * e-commerce customers/readers are sent to the standalone payment-method
+ * page, while program users continue using payment-details.
  */
+function tfp_auth_get_customer_payment_method_url()
+{
+    // Prefer the dedicated WordPress page containing the customer billing
+    // shortcode, so the page can be changed from wp-admin without code edits.
+    if (function_exists('tfp_get_customer_billing_page_url')) {
+        $page_url = (string) tfp_get_customer_billing_page_url();
+        if ($page_url !== '') {
+            return $page_url;
+        }
+    }
+
+    // Reliable fallback for the dedicated My Account endpoint/page.
+    $my_account_url = function_exists('wc_get_page_permalink')
+        ? (string) wc_get_page_permalink('myaccount')
+        : '';
+
+    if ($my_account_url !== '') {
+        return trailingslashit($my_account_url) . 'payment-method/';
+    }
+
+    return '';
+}
+
 function tfp_auth_render_customer_account_with_routing()
 {
     $html = tfp_auth_render_custom_my_account_shortcode();
@@ -24,7 +47,8 @@ function tfp_auth_render_customer_account_with_routing()
         ? tfp_dashboard_user_has_full_access($user_id)
         : false;
 
-    // Enrolled Disciples and staff retain the original Discipleship account UI.
+    // Enrolled Disciples and staff retain the original Discipleship account UI
+    // and the /payment-details/ destination.
     if ($has_program_access) {
         return $html;
     }
@@ -44,19 +68,28 @@ function tfp_auth_render_customer_account_with_routing()
         $html
     );
 
-    // Replace the Discipleship payment-details URL wherever it appears in the
-    // rendered account markup. This is intentionally not limited to one exact
-    // href string because esc_url() may encode query-string characters.
+    $customer_url = tfp_auth_get_customer_payment_method_url();
     $old_url = function_exists('tfp_dashboard_get_url')
-        ? tfp_dashboard_get_url('tfp-dashboard-payment-details')
-        : '';
-    $customer_url = function_exists('tfp_get_customer_billing_page_url')
-        ? tfp_get_customer_billing_page_url()
+        ? (string) tfp_dashboard_get_url('tfp-dashboard-payment-details')
         : '';
 
-    if ($old_url && $customer_url && $old_url !== $customer_url) {
-        $html = str_replace(esc_url($old_url), esc_url($customer_url), $html);
-        $html = str_replace($old_url, $customer_url, $html);
+    if ($customer_url !== '') {
+        // Replace the exact dashboard URL when it is available.
+        if ($old_url !== '' && $old_url !== $customer_url) {
+            $html = str_replace(esc_url($old_url), esc_url($customer_url), $html);
+            $html = str_replace($old_url, $customer_url, $html);
+        }
+
+        // Also replace the endpoint path directly. This handles account
+        // templates that build the payment-details URL independently of the
+        // dashboard URL helper or encode it differently.
+        $html = preg_replace_callback(
+            '~href=((["\']))([^"\']*?/payment-details(?:/|[?#][^"\']*)?)(\1)~i',
+            function ($matches) use ($customer_url) {
+                return 'href=' . $matches[1] . esc_url($customer_url) . $matches[4];
+            },
+            $html
+        );
     }
 
     return $html;
