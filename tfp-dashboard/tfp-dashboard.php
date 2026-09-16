@@ -9,7 +9,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('TFP_DASH_VERSION', '1.2.4');
+define('TFP_DASH_VERSION', '1.2.5');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
@@ -50,6 +50,7 @@ require_once TFP_DASH_PATH . 'includes/communication/ajax.php';
 require_once TFP_DASH_PATH . 'includes/communication/page-communication.php';
 require_once TFP_DASH_PATH . 'includes/billing/helpers.php';
 require_once TFP_DASH_PATH . 'includes/page-payment-details.php';
+require_once TFP_DASH_PATH . 'tfp-customer-billing-shortcode.php';
 require_once TFP_DASH_PATH . 'includes/financial-aid/cpt.php';
 require_once TFP_DASH_PATH . 'includes/financial-aid/ajax.php';
 require_once TFP_DASH_PATH . 'includes/financial-aid/admin.php';
@@ -118,20 +119,14 @@ add_action('wp_enqueue_scripts', function () {
             'checkoutUrl' => function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : home_url('/'),
         ]);
 
-        // Real payment processing inside the custom checkout (Stripe: card +
-        // Apple Pay + Google Pay). Only load when keys are configured; otherwise
-        // checkout.js keeps its non-Stripe fallback UI.
         if (function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
             wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
             wp_enqueue_script('tfp-checkout-stripe', TFP_DASH_URL . 'assets/js/checkout-stripe.js', ['tfp-checkout', 'stripe-js'], TFP_DASH_VERSION, true);
             wp_localize_script('tfp-checkout-stripe', 'tfpStripeSettings', tfp_stripe_get_frontend_settings());
         }
 
-        // PayPal integration
         wp_enqueue_script('paypal-sdk', 'https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons', [], null, true);
         wp_enqueue_script('tfp-checkout-paypal', TFP_DASH_URL . 'assets/js/checkout-paypal.js', ['tfp-checkout', 'paypal-sdk'], TFP_DASH_VERSION, true);
-        
-        // Google Pay native integration
         wp_enqueue_script('google-pay-sdk', 'https://pay.google.com/gp/p/js/pay.js', [], null, true);
         wp_enqueue_script('tfp-checkout-googlepay', TFP_DASH_URL . 'assets/js/checkout-googlepay.js', ['tfp-checkout', 'google-pay-sdk', 'stripe-js'], TFP_DASH_VERSION, true);
 
@@ -157,10 +152,6 @@ add_action('wp_enqueue_scripts', function () {
     $template = tfp_dashboard_current_template_slug();
 
     if ($template === 'tfp-dashboard-home') {
-        // The Home page hosts the program (course) checkout as a modal wizard.
-        // It reuses the book checkout's stylesheet + the shared Stripe payment
-        // layer, but drives the steps with its own self-contained engine
-        // (course-checkout.js) — checkout.js is intentionally NOT loaded here.
         wp_enqueue_style('tfp-checkout', TFP_DASH_URL . 'assets/css/checkout.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-course-checkout', TFP_DASH_URL . 'assets/css/course-checkout.css', ['tfp-checkout'], TFP_DASH_VERSION);
         wp_enqueue_script('tfp-course-checkout', TFP_DASH_URL . 'assets/js/course-checkout.js', [], TFP_DASH_VERSION, true);
@@ -182,10 +173,6 @@ add_action('wp_enqueue_scripts', function () {
             'faDiscount' => isset($state['fa_discount']) ? (int) $state['fa_discount'] : 0,
         ]);
 
-        // Real card / Apple Pay / Google Pay processing via the shared Stripe
-        // layer. checkout-stripe.js exposes window.tfpStripeRenderMethod(), which
-        // course-checkout.js calls on the Payment step. Only load when keys are
-        // configured; otherwise the Payment step shows a "not available yet" note.
         if (function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
             wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
             wp_enqueue_script('tfp-checkout-stripe', TFP_DASH_URL . 'assets/js/checkout-stripe.js', ['tfp-course-checkout', 'stripe-js'], TFP_DASH_VERSION, true);
@@ -194,27 +181,10 @@ add_action('wp_enqueue_scripts', function () {
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce'   => wp_create_nonce('tfp_checkout_nonce'),
             ]);
-
-            // Native Google Pay (same as the book checkout): the Google Pay SDK
-            // renders a real "Pay with G Pay" button that tokenizes through the
-            // Stripe gateway. This is why the book checkout shows a working
-            // button — course-checkout.js routes 'googlepay' to
-            // window.tfpGooglePayRenderMethod (checkout-googlepay.js) instead of
-            // the Stripe Payment Request Button, which needs a device wallet and
-            // often won't render on staging. Depends on Stripe (tokenization) so
-            // it lives inside the configured block.
             wp_enqueue_script('google-pay-sdk', 'https://pay.google.com/gp/p/js/pay.js', [], null, true);
             wp_enqueue_script('tfp-checkout-googlepay', TFP_DASH_URL . 'assets/js/checkout-googlepay.js', ['tfp-course-checkout', 'google-pay-sdk', 'stripe-js'], TFP_DASH_VERSION, true);
         }
 
-        // PayPal (shared checkout-paypal.js), offered alongside Stripe on the
-        // course Payment step. checkout.js is not loaded on Home, so this
-        // depends on tfp-course-checkout (+ jquery for the IIFE) instead of
-        // tfp-checkout. The button amount is refreshed from the live cart via
-        // tfp_course_paypal_total right before it renders; the real order is
-        // built server-side at capture time, so the localized total is only a
-        // starting value. Loads regardless of Stripe config — PayPal is
-        // independent of the Stripe keys.
         wp_enqueue_script('paypal-sdk', 'https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons', [], null, true);
         wp_enqueue_script('tfp-checkout-paypal', TFP_DASH_URL . 'assets/js/checkout-paypal.js', ['jquery', 'tfp-course-checkout', 'paypal-sdk'], TFP_DASH_VERSION, true);
 
@@ -247,8 +217,6 @@ add_action('wp_enqueue_scripts', function () {
 
     if ($template === 'tfp-dashboard-payment-details' && function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
         wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
-        // Use the file modification time when available so a stale page/plugin
-        // cache cannot keep serving an older billing.js after deployment.
         $billing_script_path = TFP_DASH_PATH . 'assets/js/billing.js';
         $billing_script_ver  = file_exists($billing_script_path) ? (string) filemtime($billing_script_path) : TFP_DASH_VERSION;
         wp_enqueue_script('tfp-dashboard-billing', TFP_DASH_URL . 'assets/js/billing.js', ['stripe-js'], $billing_script_ver, true);
@@ -288,7 +256,6 @@ add_action('wp_enqueue_scripts', function () {
         wp_localize_script('tfp-dashboard-week', 'tfpWeekSettings', [
             'ajaxUrl'        => admin_url('admin-ajax.php'),
             'nonce'          => wp_create_nonce('tfp_week_nonce'),
-            // Quiz tab UI strings (kept here so week-quiz.js stays translation-ready).
             'networkError'   => __('A network error occurred.', 'tfp-dashboard'),
             'submittingText' => __('Submitting...', 'tfp-dashboard'),
             'submitError'    => __('Error submitting quiz.', 'tfp-dashboard'),
@@ -296,13 +263,8 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     if ($template === 'tfp-dashboard-program') {
-        // Dedicated "Continue Program" overview page: stat tiles, journey,
-        // current lesson, PAST DUE + Pending Tasks. Only the genuinely new
-        // components need CSS; journey/panel/button styles ship in dashboard.css.
         wp_enqueue_style('tfp-dashboard-program', TFP_DASH_URL . 'assets/css/program.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
     }
-
-
 });
 
 // Include Order Details Shortcode
