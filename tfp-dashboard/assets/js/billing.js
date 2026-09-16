@@ -16,6 +16,63 @@
         var numberMount = document.querySelector('[data-tfp-stripe-card-number]');
         var expiryMount = document.querySelector('[data-tfp-stripe-card-expiry]');
         var cvcMount = document.querySelector('[data-tfp-stripe-card-cvc]');
+        var visualCard = document.querySelector('[data-tfp-visual-card]');
+        var visualBrand = document.querySelector('[data-tfp-visual-card-brand]');
+        var visualType = document.querySelector('[data-tfp-visual-card-type]');
+        var visualName = document.querySelector('[data-tfp-visual-card-name]');
+        var visualNumber = document.querySelector('[data-tfp-visual-card-number]');
+        var visualExpiry = document.querySelector('[data-tfp-visual-card-expiry]');
+
+        function normalizeBrand(brand) {
+            var value = String(brand || '').toLowerCase().replace(/[^a-z]/g, '');
+            if (value === 'mastercard') return 'mastercard';
+            if (value === 'americanexpress' || value === 'amex') return 'amex';
+            if (value === 'discover') return 'discover';
+            if (value === 'visa') return 'visa';
+            return 'generic';
+        }
+
+        function brandLabel(brand) {
+            var normalized = normalizeBrand(brand);
+            if (normalized === 'mastercard') return 'MASTERCARD';
+            if (normalized === 'amex') return 'AMEX';
+            if (normalized === 'discover') return 'DISCOVER';
+            if (normalized === 'visa') return 'VISA';
+            return 'CARD';
+        }
+
+        function renderVisualCard(data) {
+            if (!visualCard) return;
+
+            var brand = data && data.brand ? data.brand : visualCard.getAttribute('data-card-brand');
+            var normalized = normalizeBrand(brand);
+            var name = data && data.name ? data.name : (visualName ? visualName.textContent : 'Card Holder');
+            var last4 = data && data.last4 ? String(data.last4) : '';
+            var expiry = data && data.expiry ? data.expiry : (visualExpiry ? visualExpiry.textContent : '12 / 2030');
+
+            visualCard.classList.remove('is-visa', 'is-mastercard', 'is-amex', 'is-discover', 'is-generic');
+            visualCard.classList.add('is-' + normalized);
+            visualCard.setAttribute('data-card-brand', normalized);
+
+            if (visualBrand) visualBrand.textContent = brandLabel(brand);
+            if (visualType) visualType.textContent = normalized === 'generic' ? 'Payment' : 'Credit';
+            if (visualName && name) visualName.textContent = name;
+            if (visualNumber && last4) visualNumber.textContent = '•••• •••• •••• ' + last4;
+            if (visualExpiry && expiry) visualExpiry.textContent = expiry;
+        }
+
+        renderVisualCard({
+            brand: visualCard ? visualCard.getAttribute('data-card-brand') : 'visa'
+        });
+
+        if (form && visualName) {
+            var initialNameInput = form.querySelector('[data-tfp-cardholder-name]');
+            if (initialNameInput) {
+                initialNameInput.addEventListener('input', function () {
+                    visualName.textContent = initialNameInput.value.trim() || 'Card Holder';
+                });
+            }
+        }
 
         if (!form || !numberMount || !expiryMount || !cvcMount) return;
 
@@ -96,6 +153,10 @@
                 element.on('change', function (event) {
                     if (event && event.error) setStatus(event.error.message, 'error');
                     else setStatus('');
+
+                    if (element === cardNumber && event && event.brand) {
+                        renderVisualCard({ brand: event.brand });
+                    }
                 });
             });
 
@@ -179,6 +240,13 @@
                             if (brand) brand.textContent = response.card.brand + ' ending in ' + response.card.last4;
                             if (expiry) expiry.textContent = response.card.expiry;
                             if (noCard) noCard.textContent = response.card.brand + ' ending in ' + response.card.last4;
+
+                            renderVisualCard({
+                                brand: response.card.brand,
+                                last4: response.card.last4,
+                                expiry: response.card.expiry,
+                                name: cardholderName
+                            });
                         }
 
                         cardNumber.clear();
