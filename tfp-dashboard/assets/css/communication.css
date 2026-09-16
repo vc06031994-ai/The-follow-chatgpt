@@ -1,0 +1,678 @@
+/* =========================================================================
+   TFP Dashboard — Communication
+   Unified inbox / conversation layout used across the Discipleship platform.
+   ========================================================================= */
+
+.tfp-dash-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.tfp-dash-stat {
+    min-height: 84px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+}
+
+.tfp-dash-stat__label {
+    font-size: 12px;
+    color: var(--tfp-dash-muted);
+}
+
+.tfp-dash-stat__value {
+    font-size: 23px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--tfp-dash-teal);
+}
+
+.tfp-dash-stat__value--amber {
+    color: #B8860B;
+}
+
+.tfp-dash-stat__sub {
+    font-size: 12px;
+    color: var(--tfp-dash-muted);
+}
+
+/* -------------------------------------------------------------------------
+   Unified inbox shell
+   ------------------------------------------------------------------------- */
+
+.tfp-dash-chatlayout {
+    display: grid;
+    grid-template-columns: minmax(260px, 29%) minmax(0, 1fr);
+    min-height: 650px;
+    background: #fff;
+    border: 1px solid var(--tfp-dash-border);
+    border-radius: var(--tfp-dash-radius);
+    overflow: hidden;
+    box-shadow: var(--tfp-dash-shadow);
+}
+
+/* Ticket list */
+
+.tfp-dash-ticketlist {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-right: 1px solid var(--tfp-dash-border);
+}
+
+.tfp-dash-ticketlist__toolbar {
+    padding: 18px 14px 12px;
+    border-bottom: 1px solid var(--tfp-dash-border);
+}
+
+.tfp-dash-ticketlist__search {
+    position: relative;
+}
+
+.tfp-dash-ticketlist__search input {
+    width: 100%;
+    min-height: 34px;
+    padding: 8px 12px 8px 34px;
+    border-radius: 7px;
+    border: 1px solid var(--tfp-dash-border);
+    background: #fff;
+    color: var(--tfp-dash-text);
+    font-family: var(--tfp-dash-font);
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.tfp-dash-ticketlist__search input:focus {
+    outline: none;
+    border-color: var(--tfp-dash-teal);
+    box-shadow: 0 0 0 2px rgba(0, 102, 110, .08);
+}
+
+.tfp-dash-ticketlist__search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    display: inline-flex;
+    transform: translateY(-50%);
+    color: var(--tfp-dash-muted);
+    pointer-events: none;
+}
+
+.tfp-dash-ticketlist__tabs {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 9px;
+}
+
+.tfp-dash-ticketlist__tabs button {
+    border: 1px solid var(--tfp-dash-border);
+    background: #eef0f1;
+    color: var(--tfp-dash-muted);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--tfp-dash-font);
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.tfp-dash-ticketlist__tabs button:hover {
+    border-color: var(--tfp-dash-teal);
+}
+
+.tfp-dash-ticketlist__tabs button.is-active {
+    background: var(--tfp-dash-teal);
+    color: #fff;
+    border-color: var(--tfp-dash-teal);
+}
+
+.tfp-dash-ticketlist__items {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.tfp-dash-ticketlist__empty {
+    min-height: 220px;
+    padding: 28px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    color: var(--tfp-dash-muted);
+    font-size: 13px;
+}
+
+.tfp-dash-ticketlist__empty p {
+    margin: 0;
+}
+
+.tfp-dash-ticketlist__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 0;
+    border-bottom: 1px solid var(--tfp-dash-border);
+    border-radius: 0;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--tfp-dash-font);
+    color: var(--tfp-dash-text);
+    transition: background .15s ease;
+}
+
+.tfp-dash-ticketlist__item:hover {
+    background: var(--tfp-dash-bg-soft);
+}
+
+.tfp-dash-ticketlist__item.is-active {
+    background: rgba(0, 102, 110, .055);
+    box-shadow: inset 3px 0 0 var(--tfp-dash-teal);
+}
+
+.tfp-dash-ticketlist__avatar,
+.tfp-dash-ticketlist__avatar img {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 50%;
+}
+
+.tfp-dash-ticketlist__avatar {
+    overflow: hidden;
+    background: var(--tfp-dash-bg-soft);
+}
+
+.tfp-dash-ticketlist__avatar img {
+    display: block;
+    object-fit: cover;
+}
+
+.tfp-dash-ticketlist__meta {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tfp-dash-ticketlist__topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.tfp-dash-ticketlist__name {
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tfp-dash-ticketlist__time {
+    flex: 0 0 auto;
+    font-size: 10px;
+    color: var(--tfp-dash-muted);
+    white-space: nowrap;
+}
+
+.tfp-dash-ticketlist__category {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--tfp-dash-muted);
+}
+
+.tfp-dash-ticketlist__dot {
+    width: 5px;
+    height: 5px;
+    flex: 0 0 5px;
+    border-radius: 50%;
+    background: var(--tfp-dash-teal);
+}
+
+.tfp-dash-ticketlist__dot--open {
+    background: #B8860B;
+}
+
+.tfp-dash-ticketlist__dot--pending {
+    background: var(--tfp-dash-maroon);
+}
+
+.tfp-dash-ticketlist__dot--resolved {
+    background: var(--tfp-dash-teal);
+}
+
+.tfp-dash-ticketlist__preview {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--tfp-dash-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tfp-dash-ticketlist__footer {
+    padding: 12px 14px;
+    border-top: 1px solid var(--tfp-dash-border);
+}
+
+.tfp-dash-ticketlist__new {
+    width: 100%;
+}
+
+/* Conversation panel */
+
+.tfp-dash-chatpanel {
+    min-width: 0;
+    min-height: 650px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.tfp-dash-chatpanel__empty {
+    flex: 1;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    color: var(--tfp-dash-muted);
+    text-align: center;
+}
+
+.tfp-dash-chatpanel__empty > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.tfp-dash-chatpanel__empty p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.tfp-dash-chatpanel__thread {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.tfp-dash-chatpanel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 86px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--tfp-dash-border);
+}
+
+.tfp-dash-chatpanel__person {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 12px;
+}
+
+.tfp-dash-chatpanel__avatar,
+.tfp-dash-chatpanel__avatar img {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 50%;
+}
+
+.tfp-dash-chatpanel__avatar {
+    overflow: hidden;
+    background: var(--tfp-dash-bg-soft);
+}
+
+.tfp-dash-chatpanel__avatar img {
+    display: block;
+    object-fit: cover;
+}
+
+.tfp-dash-chatpanel__title {
+    margin: 0 0 4px;
+    font-size: 16px;
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+.tfp-dash-chatpanel__subtitle {
+    margin: 0;
+    font-size: 11px;
+    color: var(--tfp-dash-muted);
+}
+
+.tfp-dash-chatpanel__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tfp-dash-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: var(--tfp-dash-bg-soft);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--tfp-dash-text);
+}
+
+.tfp-dash-badge[data-status="resolved"] {
+    color: var(--tfp-dash-teal);
+}
+
+.tfp-dash-badge[data-status="pending"] {
+    color: #B8860B;
+}
+
+.tfp-dash-chatpanel__messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 22px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #fff;
+}
+
+.tfp-dash-msg {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    max-width: 86%;
+}
+
+.tfp-dash-msg--mine {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.tfp-dash-msg--theirs {
+    align-self: flex-start;
+}
+
+.tfp-dash-msg__avatar,
+.tfp-dash-msg__avatar img {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border-radius: 50%;
+}
+
+.tfp-dash-msg__avatar {
+    overflow: hidden;
+    background: var(--tfp-dash-bg-soft);
+}
+
+.tfp-dash-msg__avatar img {
+    display: block;
+    object-fit: cover;
+}
+
+.tfp-dash-msg__content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tfp-dash-msg--mine .tfp-dash-msg__content {
+    align-items: flex-end;
+}
+
+.tfp-dash-msg__bubble {
+    padding: 11px 14px;
+    border-radius: 13px;
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.tfp-dash-msg--mine .tfp-dash-msg__bubble {
+    background: var(--tfp-dash-teal);
+    color: #fff;
+    border-bottom-right-radius: 5px;
+}
+
+.tfp-dash-msg--theirs .tfp-dash-msg__bubble {
+    background: var(--tfp-dash-bg-soft);
+    color: var(--tfp-dash-text);
+    border-bottom-left-radius: 5px;
+}
+
+.tfp-dash-msg__time {
+    font-size: 10px;
+    color: var(--tfp-dash-muted);
+    padding: 0 3px;
+}
+
+.tfp-dash-chatpanel__reply {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--tfp-dash-border);
+    background: #fff;
+}
+
+.tfp-dash-chatpanel__reply input {
+    flex: 1;
+    min-width: 0;
+    min-height: 42px;
+    padding: 10px 13px;
+    border-radius: 10px;
+    border: 1px solid var(--tfp-dash-border);
+    background: #fff;
+    color: var(--tfp-dash-text);
+    font-family: var(--tfp-dash-font);
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.tfp-dash-chatpanel__reply input:focus {
+    outline: none;
+    border-color: var(--tfp-dash-teal);
+    box-shadow: 0 0 0 2px rgba(0, 102, 110, .08);
+}
+
+.tfp-dash-chatpanel__reply .tfp-dash-btn {
+    min-width: 72px;
+}
+
+/* New conversation modal */
+
+.tfp-dash-modal__box label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tfp-dash-modal__box input,
+.tfp-dash-modal__box select,
+.tfp-dash-modal__box textarea {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--tfp-dash-border);
+    font-family: var(--tfp-dash-font);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.tfp-dash-modal__buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+    .tfp-dash-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .tfp-dash-chatlayout {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .tfp-dash-ticketlist {
+        max-height: 360px;
+        border-right: 0;
+        border-bottom: 1px solid var(--tfp-dash-border);
+    }
+
+    .tfp-dash-chatpanel {
+        min-height: 560px;
+    }
+}
+
+@media (max-width: 640px) {
+    .tfp-dash-chatpanel__header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tfp-dash-chatpanel__actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .tfp-dash-chatpanel__messages {
+        padding: 18px 14px;
+    }
+
+    .tfp-dash-msg {
+        max-width: 96%;
+    }
+
+    .tfp-dash-chatpanel__reply {
+        padding: 12px;
+    }
+}
+
+
+/* -------------------------------------------------------------------------
+   Communication theme overrides
+   Prevent the active WordPress theme accent color from overriding the
+   Discipleship communication controls.
+   ------------------------------------------------------------------------- */
+
+.tfp-dash-chatlayout button.tfp-dash-btn,
+.tfp-dash-chatlayout .tfp-dash-ticketlist__item,
+.tfp-dash-modal button.tfp-dash-btn {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    text-decoration: none !important;
+}
+
+.tfp-dash-chatlayout button.tfp-dash-btn--primary,
+.tfp-dash-modal button.tfp-dash-btn--primary {
+    background-color: var(--tfp-dash-teal) !important;
+    color: #ffffff !important;
+    border-color: var(--tfp-dash-teal) !important;
+}
+
+.tfp-dash-chatlayout button.tfp-dash-btn--primary:hover,
+.tfp-dash-chatlayout button.tfp-dash-btn--primary:focus,
+.tfp-dash-modal button.tfp-dash-btn--primary:hover,
+.tfp-dash-modal button.tfp-dash-btn--primary:focus {
+    background-color: var(--tfp-dash-teal) !important;
+    color: #ffffff !important;
+    border-color: var(--tfp-dash-teal) !important;
+    box-shadow: none !important;
+}
+
+.tfp-dash-chatlayout button.tfp-dash-btn--outline,
+.tfp-dash-modal button.tfp-dash-btn--outline {
+    background-color: #ffffff !important;
+    color: var(--tfp-dash-text) !important;
+    border-color: var(--tfp-dash-border) !important;
+}
+
+.tfp-dash-chatlayout button.tfp-dash-btn--outline:hover,
+.tfp-dash-chatlayout button.tfp-dash-btn--outline:focus,
+.tfp-dash-modal button.tfp-dash-btn--outline:hover,
+.tfp-dash-modal button.tfp-dash-btn--outline:focus {
+    background-color: var(--tfp-dash-bg-soft) !important;
+    color: var(--tfp-dash-text) !important;
+    border-color: var(--tfp-dash-teal) !important;
+    box-shadow: none !important;
+}
+
+.tfp-dash-ticketlist__item,
+.tfp-dash-ticketlist__item:hover,
+.tfp-dash-ticketlist__item:focus,
+.tfp-dash-ticketlist__item:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+}
+
+.tfp-dash-ticketlist__item.is-active,
+.tfp-dash-ticketlist__item.is-active:hover,
+.tfp-dash-ticketlist__item.is-active:focus {
+    background: rgba(0, 102, 110, .055) !important;
+    box-shadow: inset 3px 0 0 var(--tfp-dash-teal) !important;
+    border-top-color: var(--tfp-dash-border) !important;
+    border-bottom-color: var(--tfp-dash-border) !important;
+}
+
+.tfp-dash-ticketlist__tabs button,
+.tfp-dash-ticketlist__tabs button:hover,
+.tfp-dash-ticketlist__tabs button:focus {
+    color: var(--tfp-dash-muted) !important;
+    background-color: #eef0f1 !important;
+    border-color: var(--tfp-dash-border) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.tfp-dash-ticketlist__tabs button.is-active,
+.tfp-dash-ticketlist__tabs button.is-active:hover,
+.tfp-dash-ticketlist__tabs button.is-active:focus {
+    background-color: var(--tfp-dash-teal) !important;
+    color: #ffffff !important;
+    border-color: var(--tfp-dash-teal) !important;
+}
+
+.tfp-dash-modal__box input:focus,
+.tfp-dash-modal__box select:focus,
+.tfp-dash-modal__box textarea:focus,
+.tfp-dash-chatpanel__reply input:focus {
+    outline: none !important;
+    border-color: var(--tfp-dash-teal) !important;
+    box-shadow: 0 0 0 2px rgba(0, 102, 110, .08) !important;
+}
