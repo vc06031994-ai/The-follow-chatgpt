@@ -9,6 +9,23 @@ body.tfp-logged-out .tfp-logged-in-only {
     display: none !important;
 }
 
+/* E-commerce-only customers must not see program dashboard UI on My Account. */
+body.tfp-ecommerce-user .tfp-account-disciple-banner {
+    display: none !important;
+}
+
+/* The account template historically derived this badge from payment status.
+   Keep the visual role correct for e-commerce-only users without changing the
+   underlying WooCommerce customer role. */
+body.tfp-ecommerce-user .tfp-myaccount-badge--disciple {
+    font-size: 0 !important;
+}
+
+body.tfp-ecommerce-user .tfp-myaccount-badge--disciple::after {
+    content: "Reader" !important;
+    font-size: 14px !important;
+}
+
 /* TFP Account Menu — BEM: .tfp-account */
 
 .tfp-account {
