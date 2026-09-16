@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TFP Customer Billing Shortcode
  * Description: Adds the [tfp-dash-billing-detail] shortcode for a standalone customer payment-method page.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: The Follow Project
  * Text Domain: tfp-dashboard
  */
@@ -54,7 +54,8 @@ function tfp_render_customer_billing_shortcode($atts = [])
     }
 
     $user_id = get_current_user_id();
-    $name = function_exists('tfp_dashboard_user_name') ? tfp_dashboard_user_name() : wp_get_current_user()->display_name;
+    $user = wp_get_current_user();
+    $name = function_exists('tfp_dashboard_user_name') ? tfp_dashboard_user_name() : $user->display_name;
     $card = function_exists('tfp_billing_get_default_card_summary') ? tfp_billing_get_default_card_summary($user_id) : null;
     $stripe_ready = function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured();
 
@@ -133,12 +134,12 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    wp_enqueue_style('tfp-customer-billing', plugins_url('assets/css/customer-billing.css', __FILE__), [], '1.0.1');
-    wp_enqueue_style('tfp-dashboard-forms', plugins_url('assets/css/forms.css', __FILE__), [], '1.2.4');
+    wp_enqueue_style('tfp-customer-billing', plugins_url('assets/css/customer-billing.css', __FILE__), [], '1.0.2');
+    wp_enqueue_style('tfp-dashboard-forms', plugins_url('assets/css/forms.css', __FILE__), [], '1.2.5');
 
     if (function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
         wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
-        wp_enqueue_script('tfp-dashboard-billing', plugins_url('assets/js/billing.js', __FILE__), ['stripe-js'], '1.0.0', true);
+        wp_enqueue_script('tfp-dashboard-billing', plugins_url('assets/js/billing.js', __FILE__), ['stripe-js'], '1.0.2', true);
         wp_localize_script('tfp-dashboard-billing', 'tfpDashboardBilling', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('tfp_billing_nonce'),
