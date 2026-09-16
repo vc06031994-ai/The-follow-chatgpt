@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.2.5
+Version: 1.2.6
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.2.5');
+define('TFP_AUTH_VERSION','1.2.6');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -21,6 +21,7 @@ require_once TFP_AUTH_PATH.'includes/dashboard-shortcodes.php';
 require_once TFP_AUTH_PATH.'includes/account-page/template.php';
 require_once TFP_AUTH_PATH.'includes/account-page/ajax.php';
 require_once TFP_AUTH_PATH.'includes/account-page/password-reset.php';
+require_once TFP_AUTH_PATH.'includes/account-page/customer-account-routing.php';
 /**
  * Register frontend plugin component styles.
  */
