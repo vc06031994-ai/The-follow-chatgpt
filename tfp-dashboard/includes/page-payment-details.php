@@ -10,7 +10,8 @@ function tfp_dashboard_render_payment_details_content()
     $card         = function_exists('tfp_billing_get_default_card_summary') ? tfp_billing_get_default_card_summary($user_id) : null;
     $stripe_ready = function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured();
     $card_brand   = $card && !empty($card['brand']) ? strtolower((string) $card['brand']) : 'visa';
-    $card_name    = $name ?: __('Card Holder', 'tfp-dashboard');
+    $saved_cardholder_name = (string) get_user_meta($user_id, '_tfp_cardholder_name', true);
+    $card_name    = $saved_cardholder_name ?: ($name ?: __('Card Holder', 'tfp-dashboard'));
     $card_last4   = $card && !empty($card['last4']) ? (string) $card['last4'] : '4242';
     $card_expiry  = $card && !empty($card['expiry']) ? (string) $card['expiry'] : '12 / 2030';
 
@@ -22,15 +23,16 @@ function tfp_dashboard_render_payment_details_content()
     ?>
     <style id="tfp-billing-visual-card-styles">
         .tfp-billing-visual-card-wrap{perspective:1200px;width:100%;max-width:270px;margin:0 auto;}
-        .tfp-billing-visual-card{position:relative;aspect-ratio:1.586/1;width:100%;border-radius:22px;overflow:hidden;padding:24px;color:#fff;background:linear-gradient(135deg,#303030 0%,#111 52%,#454545 100%);box-shadow:0 18px 35px rgba(0,0,0,.22);transform:rotateY(0deg) rotateX(0deg);transition:transform .45s ease,background .35s ease,box-shadow .35s ease;transform-style:preserve-3d;}
+        .tfp-billing-visual-card{position:relative;aspect-ratio:1.586/1;width:100%;border-radius:22px;overflow:hidden;padding:22px;color:#fff;background:linear-gradient(135deg,#303030 0%,#111 52%,#454545 100%);box-shadow:0 18px 35px rgba(0,0,0,.22);transform:rotateY(0deg) rotateX(0deg);transition:transform .45s ease,background .35s ease,box-shadow .35s ease;transform-style:preserve-3d;box-sizing:border-box;}
         .tfp-billing-visual-card-wrap:hover .tfp-billing-visual-card{transform:rotateY(-8deg) rotateX(4deg) translateY(-3px);box-shadow:0 24px 42px rgba(0,0,0,.28);}
         .tfp-billing-visual-card:before{content:"";position:absolute;inset:-45% -20% auto auto;width:95%;height:150%;border-radius:50%;background:rgba(255,255,255,.09);transform:rotate(28deg);pointer-events:none;}
-        .tfp-billing-visual-card__top,.tfp-billing-visual-card__bottom{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+        .tfp-billing-visual-card__top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;}
         .tfp-billing-visual-card__type{font-size:11px;letter-spacing:.04em;text-transform:uppercase;opacity:.82;}
         .tfp-billing-visual-card__brand{font-size:20px;font-weight:800;font-style:italic;letter-spacing:-.04em;text-transform:uppercase;}
-        .tfp-billing-visual-card__chip{position:relative;z-index:1;width:42px;height:31px;margin:27px 0 20px;border-radius:7px;background:linear-gradient(135deg,#f6e4a5,#a98c45);box-shadow:inset 0 0 0 1px rgba(0,0,0,.16);}
+        .tfp-billing-visual-card__chip{position:relative;z-index:1;width:42px;height:31px;margin:22px 0 16px;border-radius:7px;background:linear-gradient(135deg,#f6e4a5,#a98c45);box-shadow:inset 0 0 0 1px rgba(0,0,0,.16);}
         .tfp-billing-visual-card__chip:after{content:"";position:absolute;inset:7px 0;border-top:1px solid rgba(0,0,0,.2);border-bottom:1px solid rgba(0,0,0,.2);}
-        .tfp-billing-visual-card__number{position:relative;z-index:1;font-size:16px;letter-spacing:.12em;font-variant-numeric:tabular-nums;white-space:nowrap;margin-bottom:18px;}
+        .tfp-billing-visual-card__number{position:relative;z-index:1;font-size:16px;letter-spacing:.12em;font-variant-numeric:tabular-nums;white-space:nowrap;margin:0 0 15px;}
+        .tfp-billing-visual-card__bottom{position:absolute;left:22px;right:22px;bottom:18px;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
         .tfp-billing-visual-card__name{font-size:11px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68%;}
         .tfp-billing-visual-card__expiry{font-size:10px;opacity:.82;white-space:nowrap;}
         .tfp-billing-visual-card.is-visa{background:linear-gradient(135deg,#1d4ed8 0%,#172554 55%,#0f172a 100%);}
@@ -38,7 +40,7 @@ function tfp_dashboard_render_payment_details_content()
         .tfp-billing-visual-card.is-amex{background:linear-gradient(135deg,#0f766e 0%,#164e63 58%,#082f49 100%);}
         .tfp-billing-visual-card.is-discover{background:linear-gradient(135deg,#292524 0%,#431407 58%,#ea580c 100%);}
         .tfp-billing-visual-card.is-generic{background:linear-gradient(135deg,#3f3f46 0%,#18181b 100%);}
-        @media (max-width:767px){.tfp-billing-visual-card-wrap{max-width:320px}.tfp-billing-visual-card{padding:22px}.tfp-billing-visual-card__number{font-size:14px}}
+        @media (max-width:767px){.tfp-billing-visual-card-wrap{max-width:320px}.tfp-billing-visual-card{padding:20px}.tfp-billing-visual-card__bottom{left:20px;right:20px;bottom:16px}.tfp-billing-visual-card__number{font-size:14px}}
     </style>
     <div class="tfp-billing-page">
         <div class="tfp-dash-billing-detail">
@@ -95,12 +97,7 @@ function tfp_dashboard_render_payment_details_content()
 
                             <label>
                                 <span><?php esc_html_e('Name on Card', 'tfp-dashboard'); ?></span>
-                                <input type="text"
-                                       class="tfp-billing-name-input"
-                                       data-tfp-cardholder-name
-                                       value="<?php echo esc_attr($name); ?>"
-                                       autocomplete="cc-name"
-                                       placeholder="<?php esc_attr_e('Name as it appears on card', 'tfp-dashboard'); ?>">
+                                <input type="text" class="tfp-billing-name-input" data-tfp-cardholder-name value="<?php echo esc_attr($saved_cardholder_name ?: $name); ?>" autocomplete="cc-name" placeholder="<?php esc_attr_e('Name as it appears on card', 'tfp-dashboard'); ?>">
                             </label>
 
                             <label class="tfp-dash-billing-consent">
@@ -108,10 +105,7 @@ function tfp_dashboard_render_payment_details_content()
                                 <span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy.', 'tfp-dashboard'); ?></span>
                             </label>
 
-                            <button type="submit" class="tfp-dash-btn tfp-dash-btn--primary" data-tfp-billing-submit>
-                                <?php esc_html_e('Save Payment Method', 'tfp-dashboard'); ?>
-                            </button>
-
+                            <button type="submit" class="tfp-dash-btn tfp-dash-btn--primary" data-tfp-billing-submit><?php esc_html_e('Save Payment Method', 'tfp-dashboard'); ?></button>
                             <p class="tfp-dash-form__status" data-tfp-billing-status role="status"></p>
                         </form>
                     <?php else : ?>
@@ -122,13 +116,9 @@ function tfp_dashboard_render_payment_details_content()
         </div>
 
         <div class="tfp-dash-billing-detail__next-step">
-            <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-profile')); ?>" class="tfp-dash-btn tfp-dash-btn--outline">
-                <?php esc_html_e('Back to Profile', 'tfp-dashboard'); ?>
-            </a>
+            <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-profile')); ?>" class="tfp-dash-btn tfp-dash-btn--outline"><?php esc_html_e('Back to Profile', 'tfp-dashboard'); ?></a>
             <?php if (!$has_paid) : ?>
-                <a href="<?php echo esc_url(tfp_billing_pay_now_url($user_id)); ?>" class="tfp-dash-btn tfp-dash-btn--primary">
-                    <?php esc_html_e('Pay Now', 'tfp-dashboard'); ?>
-                </a>
+                <a href="<?php echo esc_url(tfp_billing_pay_now_url($user_id)); ?>" class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Pay Now', 'tfp-dashboard'); ?></a>
             <?php endif; ?>
         </div>
     </div>
