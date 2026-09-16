@@ -468,7 +468,7 @@ p {
     cursor: pointer;
     border: 1px solid transparent;
     font-family: var(--tfp-dash-font) !important;
-    line-height: 130%;
+    line-height: 130% !important;
 }
 
 .tfp-dash-btn-small{
