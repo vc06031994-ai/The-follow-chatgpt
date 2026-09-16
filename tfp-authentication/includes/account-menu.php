@@ -14,18 +14,58 @@
 if (!defined('ABSPATH')) exit;
 
 /**
- * Adds a login-state class to <body> so any Elementor widget (buttons,
- * flexboxes, shortcode widgets, etc.) can be shown/hidden with a plain
- * CSS class — no need to nest widgets inside a shortcode's content.
+ * A program registrant is a user created through the TFP program registration
+ * flow. E-commerce-only customers do not have a valid TFP program choice.
  *
- * Usage in Elementor:
- *   - Add CSS class "tfp-guest-only"     to elements that should hide once logged in
- *   - Add CSS class "tfp-logged-in-only" to elements that should hide for guests
+ * This is intentionally separate from payment/enrollment status: registering
+ * for a program makes the user a Disciple and gives them the program dashboard
+ * entry point, while tfp_dashboard_user_has_full_access() continues to control
+ * full course/class access after payment + cohort enrollment.
+ */
+function tfp_auth_user_is_program_registrant($user_id = null)
+{
+    $user_id = $user_id ?: get_current_user_id();
+    if (!$user_id) {
+        return false;
+    }
+
+    $program_id = (int) get_user_meta($user_id, 'tfp_program_choice', true);
+    if ($program_id <= 0) {
+        return false;
+    }
+
+    $program = get_post($program_id);
+    if (!$program || $program->post_type !== 'sfwd-courses' || $program->post_status !== 'publish') {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Adds login/program-state classes to <body>.
  */
 add_filter('body_class', function ($classes) {
-    $classes[] = is_user_logged_in() ? 'tfp-logged-in' : 'tfp-logged-out';
+    if (!is_user_logged_in()) {
+        $classes[] = 'tfp-logged-out';
+        return $classes;
+    }
+
+    $classes[] = 'tfp-logged-in';
+
+    $user_id = get_current_user_id();
+    $is_program_user = tfp_auth_user_is_program_registrant($user_id);
+    $is_staff = function_exists('tfp_dashboard_user_is_staff') && tfp_dashboard_user_is_staff($user_id);
+
+    if ($is_program_user || $is_staff) {
+        $classes[] = 'tfp-program-user';
+    } else {
+        $classes[] = 'tfp-ecommerce-user';
+    }
+
     return $classes;
 });
+
 add_shortcode('tfp_guest_only', function ($atts, $content = null) {
     if (is_user_logged_in()) {
         return '';
@@ -36,12 +76,8 @@ add_shortcode('tfp_guest_only', function ($atts, $content = null) {
 /**
  * Build the list of account dropdown items.
  *
- * Filterable with `tfp_account_menu_items` so future items (Programs,
- * Books, Certificates, Dashboard, Notifications, etc.) can be appended
- * without touching this file or rewriting the component.
- *
  * @param int $user_id
- * @return array[] Each item: [ 'id' => string, 'label' => string, 'url' => string, 'icon' => string (optional inline SVG) ]
+ * @return array[]
  */
 function tfp_get_account_menu_items($user_id)
 {
@@ -55,10 +91,13 @@ function tfp_get_account_menu_items($user_id)
         'url'   => $has_wc ? wc_get_account_endpoint_url('dashboard') : admin_url('profile.php'),
     ];
 
-    // Program dashboard entry point — shown whenever the dashboard plugin is
-    // active and its Home page resolves. Registered users are students, so this
-    // is their way back into the dashboard from anywhere in the header.
-    if (function_exists('tfp_dashboard_get_url')) {
+    // The program dashboard belongs only to program registrants (and staff).
+    // A normal WooCommerce customer who only bought a book/merchandise must
+    // never see or receive this link.
+    $can_enter_program_dashboard = tfp_auth_user_is_program_registrant($user_id)
+        || (function_exists('tfp_dashboard_user_is_staff') && tfp_dashboard_user_is_staff($user_id));
+
+    if ($can_enter_program_dashboard && function_exists('tfp_dashboard_get_url')) {
         $dashboard_url = tfp_dashboard_get_url('tfp-dashboard-home');
         if (!empty($dashboard_url) && $dashboard_url !== '#') {
             $items[] = [
@@ -69,36 +108,17 @@ function tfp_get_account_menu_items($user_id)
         }
     }
 
-
-
-    // Drop any item whose URL could not be resolved (e.g. WooCommerce inactive).
     $items = array_values(array_filter($items, function ($item) {
         return !empty($item['url']);
     }));
 
-    /**
-     * Filter the account dropdown items before the Logout row is appended.
-     * Use this to add future items such as Programs, Books, Certificates,
-     * Dashboard, Facilitator Dashboard, Admin Dashboard, Notifications, etc.
-     *
-     * Example:
-     * add_filter('tfp_account_menu_items', function ($items, $user_id) {
-     *     $items[] = [
-     *         'id'    => 'programs',
-     *         'label' => __('Programs', 'tfp-authentication'),
-     *         'url'   => home_url('/programs/'),
-     *     ];
-     *     return $items;
-     * }, 10, 2);
-     */
     $items = apply_filters('tfp_account_menu_items', $items, $user_id);
 
-    // Logout is always last and always present.
     $items[] = [
-        'id'          => 'logout',
-        'label'       => __('Logout', 'tfp-authentication'),
-        'url'         => wp_logout_url(home_url()),
-        'is_logout'   => true,
+        'id'        => 'logout',
+        'label'     => __('Logout', 'tfp-authentication'),
+        'url'       => wp_logout_url(home_url()),
+        'is_logout' => true,
     ];
 
     return $items;
@@ -106,7 +126,6 @@ function tfp_get_account_menu_items($user_id)
 
 /**
  * Resolve the display name for the account menu.
- * Priority: Display Name -> First Name -> Username. Email is never shown.
  */
 function tfp_get_account_display_name($user)
 {
@@ -121,7 +140,6 @@ function tfp_get_account_display_name($user)
 
 /**
  * [tfp_account_menu]
- * Renders the logged-in account dropdown. Returns nothing for guests.
  */
 add_shortcode('tfp_account_menu', function ($atts) {
     if (!is_user_logged_in()) {
@@ -149,8 +167,9 @@ add_shortcode('tfp_account_menu', function ($atts) {
             'class' => 'tfp-account__avatar-img',
         ]);
     }
-    $items        = tfp_get_account_menu_items($user->ID);
-    $instance_id  = 'tfp-account-' . $user->ID . '-' . wp_unique_id();
+
+    $items       = tfp_get_account_menu_items($user->ID);
+    $instance_id = 'tfp-account-' . $user->ID . '-' . wp_unique_id();
 
     ob_start();
     ?>
@@ -197,8 +216,7 @@ add_shortcode('tfp_account_menu', function ($atts) {
 });
 
 /**
- * Register + enqueue the account menu's own CSS/JS. Kept separate from
- * login/register assets on purpose (see forms.css / auth.js).
+ * Register + enqueue the account menu's own CSS/JS.
  */
 add_action('wp_enqueue_scripts', function () {
     if (!function_exists('wp_register_style')) return;
@@ -224,10 +242,6 @@ add_action('wp_enqueue_scripts', function () {
 add_action('wp_enqueue_scripts', function () {
     if (!function_exists('wp_enqueue_style')) return;
 
-    // Loaded on every front-end page since the account menu / guest-only
-    // shortcodes are typically placed in the Elementor header template,
-    // which is not part of post_content and can't be reliably detected
-    // with has_shortcode().
     wp_enqueue_style('tfp-account-menu');
 
     if (function_exists('wp_enqueue_script')) {
