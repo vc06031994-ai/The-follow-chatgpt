@@ -7,9 +7,9 @@ if (!defined('ABSPATH')) {
  * Keep e-commerce-only customers/readers separate from the Discipleship UI
  * on the custom My Account page.
  *
- * The account template was originally generating the Discipleship payment
- * URL for every user. This wrapper redirects non-enrolled users to the
- * standalone [tfp-dash-billing-detail] page instead.
+ * Enrolled Disciples and staff retain the original account experience. Pure
+ * e-commerce customers/readers get the standalone billing page link instead
+ * of being sent into the Discipleship payment-details route.
  */
 function tfp_auth_render_customer_account_with_routing()
 {
@@ -36,8 +36,7 @@ function tfp_auth_render_customer_account_with_routing()
         $html
     );
 
-    // Show the correct Reader label instead of the paid-order-based Disciple
-    // label that the legacy account template may have generated.
+    // Ensure the account badge reflects the e-commerce-only experience.
     $html = str_replace('tfp-account-badge--disciple', 'tfp-account-badge--reader', $html);
     $html = preg_replace(
         '~(<div class="tfp-myaccount-badge tfp-account-badge--reader">)\s*Disciple\s*(</div>)~i',
@@ -45,7 +44,9 @@ function tfp_auth_render_customer_account_with_routing()
         $html
     );
 
-    // Route only the old payment-details link to the standalone customer page.
+    // Replace the Discipleship payment-details URL wherever it appears in the
+    // rendered account markup. This is intentionally not limited to one exact
+    // href string because esc_url() may encode query-string characters.
     $old_url = function_exists('tfp_dashboard_get_url')
         ? tfp_dashboard_get_url('tfp-dashboard-payment-details')
         : '';
@@ -54,11 +55,8 @@ function tfp_auth_render_customer_account_with_routing()
         : '';
 
     if ($old_url && $customer_url && $old_url !== $customer_url) {
-        $html = str_replace(
-            'href="' . esc_url($old_url) . '"',
-            'href="' . esc_url($customer_url) . '"',
-            $html
-        );
+        $html = str_replace(esc_url($old_url), esc_url($customer_url), $html);
+        $html = str_replace($old_url, $customer_url, $html);
     }
 
     return $html;
