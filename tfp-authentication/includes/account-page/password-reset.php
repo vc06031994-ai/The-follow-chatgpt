@@ -149,9 +149,6 @@ function tfp_auth_password_reset_enqueue_styles()
         .tfp-password-reset-field input { width: 100%; box-sizing: border-box; min-height: 50px; padding: 12px 14px; border: 1px solid #C4C4C4; border-radius: 8px; background: #fff; color: #151411; font-family: "Eudoxus Sans", sans-serif; font-size: 14px; }
         .tfp-password-reset-field input:focus { outline: none; border-color: #00666E; box-shadow: 0 0 0 2px rgba(0,102,110,.12); }
         .tfp-password-reset-help { margin: -4px 0 22px; color: #666; font-family: "Lora", sans-serif; font-size: 12px; }
-        .tfp-password-reset-submit { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 24px; border: 1px solid #00666E; border-radius: 8px; background: #00666E; color: #fff; font-family: "Eudoxus Sans", sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
-        .tfp-password-reset-submit:hover { background: #151411; border-color: #151411; }
-        @media (max-width: 767px) { .tfp-password-reset-card { padding: 24px; } .tfp-password-reset-title { font-size: 26px; } }
     ');
 }
 
@@ -196,7 +193,7 @@ function tfp_auth_render_password_reset_screen()
             <?php endif; ?>
 
             <?php if (!is_wp_error($user)) : ?>
-                <h1 class="tfp-password-reset-title"><?php esc_html_e('Set Your Password', 'tfp-authentication'); ?></h1>
+                <h2 class="tfp-password-reset-title"><?php esc_html_e('Set Your Password', 'tfp-authentication'); ?></h2>
                 <p class="tfp-password-reset-description">
                     <?php esc_html_e('Create a new password for your The Follow Project account.', 'tfp-authentication'); ?>
                 </p>
@@ -221,12 +218,12 @@ function tfp_auth_render_password_reset_screen()
                         <?php esc_html_e('Password must contain at least 8 characters.', 'tfp-authentication'); ?>
                     </p>
 
-                    <button type="submit" name="tfp_password_reset_submit" value="1" class="tfp-password-reset-submit">
+                    <button type="submit" name="tfp_password_reset_submit" value="1" class="tfp-password-reset-submit tfp-btn tfp-btn-primary">
                         <?php esc_html_e('Set Password', 'tfp-authentication'); ?>
                     </button>
                 </form>
             <?php else : ?>
-                <h1 class="tfp-password-reset-title"><?php esc_html_e('Password Reset Link Invalid', 'tfp-authentication'); ?></h1>
+                <h2 class="tfp-password-reset-title"><?php esc_html_e('Password Reset Link Invalid', 'tfp-authentication'); ?></h2>
                 <p class="tfp-password-reset-description">
                     <?php esc_html_e('This password reset link is invalid or has expired. Please request a new password reset link.', 'tfp-authentication'); ?>
                 </p>
@@ -256,9 +253,9 @@ add_action('init', function () {
         if ($is_reset_success) {
             tfp_auth_password_reset_enqueue_styles();
 
-            return '<div class="tfp-password-reset-wrapper"><div class="tfp-password-reset-card"><h1 class="tfp-password-reset-title">' .
+            return '<div class="tfp-password-reset-wrapper"><div class="tfp-password-reset-card"><h2 class="tfp-password-reset-title">' .
                 esc_html__('Password Updated', 'tfp-authentication') .
-                '</h1><p class="tfp-password-reset-description">' .
+                '</h2><p class="tfp-password-reset-description">' .
                 esc_html__('Your password has been set successfully. You can now log in with your new password.', 'tfp-authentication') .
                 '</p></div></div>';
         }
