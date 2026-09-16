@@ -2,6 +2,7 @@
     'use strict';
 
     var S = window.tfpDashboardBilling || {};
+    var CARDHOLDER_STORAGE_KEY = 'tfp_billing_cardholder_name';
 
     function onReady(fn) {
         if (document.readyState === 'loading') {
@@ -22,6 +23,13 @@
         var visualName = document.querySelector('[data-tfp-visual-card-name]');
         var visualNumber = document.querySelector('[data-tfp-visual-card-number]');
         var visualExpiry = document.querySelector('[data-tfp-visual-card-expiry]');
+        var savedCardholderName = '';
+
+        try {
+            savedCardholderName = window.localStorage.getItem(CARDHOLDER_STORAGE_KEY) || '';
+        } catch (e) {
+            savedCardholderName = '';
+        }
 
         function normalizeBrand(brand) {
             var value = String(brand || '').toLowerCase().replace(/[^a-z]/g, '');
@@ -62,12 +70,18 @@
         }
 
         renderVisualCard({
-            brand: visualCard ? visualCard.getAttribute('data-card-brand') : 'visa'
+            brand: visualCard ? visualCard.getAttribute('data-card-brand') : 'visa',
+            name: savedCardholderName || undefined
         });
 
         if (form && visualName) {
             var initialNameInput = form.querySelector('[data-tfp-cardholder-name]');
             if (initialNameInput) {
+                if (savedCardholderName) {
+                    initialNameInput.value = savedCardholderName;
+                    visualName.textContent = savedCardholderName;
+                }
+
                 initialNameInput.addEventListener('input', function () {
                     visualName.textContent = initialNameInput.value.trim() || 'Card Holder';
                 });
@@ -88,6 +102,18 @@
             status.textContent = message || '';
             if (state) status.setAttribute('data-state', state);
             else status.removeAttribute('data-state');
+        }
+
+        function persistCardholderName(name) {
+            try {
+                if (name) {
+                    window.localStorage.setItem(CARDHOLDER_STORAGE_KEY, name);
+                } else {
+                    window.localStorage.removeItem(CARDHOLDER_STORAGE_KEY);
+                }
+            } catch (e) {
+                // Storage can be unavailable in privacy-restricted browsers.
+            }
         }
 
         function init() {
@@ -224,7 +250,8 @@
                         setStatus('Saving payment method...');
 
                         return post('tfp_stripe_save_setup_intent', {
-                            setup_intent_id: result.setupIntent.id
+                            setup_intent_id: result.setupIntent.id,
+                            cardholder_name: cardholderName
                         });
                     })
                     .then(function (response) {
@@ -235,6 +262,8 @@
                         var brand = document.querySelector('[data-tfp-card-brand]');
                         var expiry = document.querySelector('[data-tfp-card-expiry]');
                         var noCard = document.querySelector('[data-tfp-no-card]');
+
+                        persistCardholderName(cardholderName);
 
                         if (response.card) {
                             if (brand) brand.textContent = response.card.brand + ' ending in ' + response.card.last4;
@@ -247,6 +276,8 @@
                                 expiry: response.card.expiry,
                                 name: cardholderName
                             });
+                        } else {
+                            renderVisualCard({ name: cardholderName });
                         }
 
                         cardNumber.clear();
