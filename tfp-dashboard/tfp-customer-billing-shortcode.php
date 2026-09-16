@@ -2,13 +2,41 @@
 /**
  * Plugin Name: TFP Customer Billing Shortcode
  * Description: Adds the [tfp-dash-billing-detail] shortcode for a standalone customer payment-method page.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: The Follow Project
  * Text Domain: tfp-dashboard
  */
 
 if (!defined('ABSPATH')) {
     exit;
+}
+
+/**
+ * Find the published WordPress Page that contains the standalone billing
+ * shortcode. The page can be created/renamed from wp-admin without a
+ * hardcoded slug in the plugin.
+ */
+function tfp_get_customer_billing_page_url()
+{
+    static $url = null;
+
+    if ($url !== null) {
+        return $url;
+    }
+
+    $url = '';
+    $pages = get_pages([
+        'post_status' => 'publish',
+    ]);
+
+    foreach ($pages as $page) {
+        if (has_shortcode((string) $page->post_content, 'tfp-dash-billing-detail')) {
+            $url = (string) get_permalink($page->ID);
+            break;
+        }
+    }
+
+    return $url;
 }
 
 /**
@@ -105,7 +133,7 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    wp_enqueue_style('tfp-customer-billing', plugins_url('assets/css/customer-billing.css', __FILE__), [], '1.0.0');
+    wp_enqueue_style('tfp-customer-billing', plugins_url('assets/css/customer-billing.css', __FILE__), [], '1.0.1');
     wp_enqueue_style('tfp-dashboard-forms', plugins_url('assets/css/forms.css', __FILE__), [], '1.2.4');
 
     if (function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
