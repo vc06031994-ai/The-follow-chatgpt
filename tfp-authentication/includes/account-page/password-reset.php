@@ -85,6 +85,11 @@ add_action('init', function () {
         return;
     }
 
+    if (is_user_logged_in() && get_current_user_id() !== (int) $user->ID) {
+        $GLOBALS['tfp_auth_password_reset_error'] = __('This password reset link belongs to a different account. Please log out and open the link again.', 'tfp-authentication');
+        return;
+    }
+
     if ($password_1 === '' || strlen($password_1) < 8) {
         $GLOBALS['tfp_auth_password_reset_error'] = __('Password must contain at least 8 characters.', 'tfp-authentication');
         return;
@@ -175,6 +180,11 @@ function tfp_auth_render_password_reset_screen()
         $error = $user->get_error_message();
     }
 
+    if (!$error && !is_wp_error($user) && is_user_logged_in() && get_current_user_id() !== (int) $user->ID) {
+        $error = __('This password reset link belongs to a different account. Please log out and open the link again.', 'tfp-authentication');
+        $user = new WP_Error('different_logged_in_user', $error);
+    }
+
     ob_start();
     ?>
     <div class="tfp-password-reset-wrapper">
@@ -251,10 +261,6 @@ add_action('init', function () {
                 '</h1><p class="tfp-password-reset-description">' .
                 esc_html__('Your password has been set successfully. You can now log in with your new password.', 'tfp-authentication') .
                 '</p></div></div>';
-        }
-
-        if (is_user_logged_in()) {
-            return tfp_auth_render_custom_my_account_shortcode();
         }
 
         return tfp_auth_render_password_reset_screen();
