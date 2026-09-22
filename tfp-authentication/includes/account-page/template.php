@@ -12,13 +12,29 @@ add_shortcode('tfp_my_account', 'tfp_auth_render_custom_my_account_shortcode');
  * Determine if the user is a Disciple (has a paid/active program) or just a Reader.
  */
 function tfp_auth_is_disciple($user_id) {
-    if (function_exists('tfp_billing_user_has_paid')) {
-        return tfp_billing_user_has_paid($user_id);
-    }
-    
-    // Fallback: If they have a program choice, assume Disciple for now
+    // A program registration identifies a user as a Disciple even before
+    // tuition is paid. WooCommerce's "customer" role is used for commerce
+    // and must not determine the label shown in the Follow Project account.
     $program_id = (int) get_user_meta($user_id, 'tfp_program_choice', true);
-    return $program_id > 0;
+    if ($program_id > 0) {
+        return true;
+    }
+
+    // Keep paid-program users recognized as Disciples for backwards
+    // compatibility with accounts created before program_choice was saved.
+    return function_exists('tfp_billing_user_has_paid')
+        && tfp_billing_user_has_paid($user_id);
+}
+
+function tfp_auth_is_program_user($user_id) {
+    $program_id = (int) get_user_meta($user_id, 'tfp_program_choice', true);
+
+    if ($program_id > 0) {
+        return true;
+    }
+
+    return function_exists('tfp_billing_user_has_paid')
+        && tfp_billing_user_has_paid($user_id);
 }
 
 /**
@@ -115,7 +131,8 @@ function tfp_auth_render_custom_my_account_shortcode() {
         // dashboard — not just paid Disciples. Only rendered when the dashboard
         // plugin/page actually resolves.
         $dashboard_home_url = function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-home') : '';
-        if (!empty($dashboard_home_url) && $dashboard_home_url !== '#') :
+        $is_program_user = tfp_auth_is_program_user($user_id);
+        if ($is_program_user && !empty($dashboard_home_url) && $dashboard_home_url !== '#') :
             $has_program  = (!empty($program_title) && $program_title !== 'No Program Selected');
             $banner_title = $has_program ? $program_title : __('Your Program Dashboard', 'tfp-authentication');
             $banner_sub   = $is_disciple
