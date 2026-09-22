@@ -117,6 +117,180 @@ add_action('init', function () {
 }, 1);
 
 /**
+ * Process the "Forgot Password" request form.
+ */
+add_action('init', function () {
+    if (empty($_POST['tfp_password_reset_request_submit'])) {
+        return;
+    }
+
+    if (
+        !isset($_POST['tfp_password_reset_request_nonce']) ||
+        !wp_verify_nonce(
+            sanitize_text_field(
+                wp_unslash($_POST['tfp_password_reset_request_nonce'])
+            ),
+            'tfp-password-reset-request'
+        )
+    ) {
+        wp_die(
+            esc_html__(
+                'Security verification failed. Please try again.',
+                'tfp-authentication'
+            )
+        );
+    }
+
+    $email = isset($_POST['user_login'])
+        ? sanitize_email(wp_unslash($_POST['user_login']))
+        : '';
+
+    if ($email === '' || !is_email($email)) {
+        $GLOBALS['tfp_auth_password_reset_request_error'] = __(
+            'Please enter a valid email address.',
+            'tfp-authentication'
+        );
+
+        return;
+    }
+
+    /*
+     * Use WordPress core password reset generation.
+     * This creates a valid reset key compatible with
+     * check_password_reset_key().
+     */
+    $result = retrieve_password($email);
+
+    /*
+     * Do not reveal whether the email exists.
+     */
+    if (is_wp_error($result)) {
+        $GLOBALS['tfp_auth_password_reset_request_error'] = __(
+            'If an account exists for this email, a password reset link has been sent. Please check your inbox and spam folder.',
+            'tfp-authentication'
+        );
+
+        return;
+    }
+
+    $GLOBALS['tfp_auth_password_reset_request_success'] = true;
+}, 1);
+
+
+/**
+ * Render the custom "Forgot Password" request screen.
+ */
+function tfp_auth_render_password_reset_request_screen()
+{
+    tfp_auth_password_reset_enqueue_styles();
+
+    $error = isset($GLOBALS['tfp_auth_password_reset_request_error'])
+        ? $GLOBALS['tfp_auth_password_reset_request_error']
+        : '';
+
+    $success = !empty(
+        $GLOBALS['tfp_auth_password_reset_request_success']
+    );
+
+    ob_start();
+    ?>
+
+    <div class="tfp-password-reset-wrapper">
+        <div class="tfp-password-reset-card">
+
+            <?php if ($success) : ?>
+
+                <h2 class="tfp-password-reset-title">
+                    <?php esc_html_e(
+                        'Check Your Email',
+                        'tfp-authentication'
+                    ); ?>
+                </h2>
+
+                <p class="tfp-password-reset-description">
+                    <?php esc_html_e(
+                        'If an account exists for that email address, we have sent a password reset link. Please check your inbox and spam folder.',
+                        'tfp-authentication'
+                    ); ?>
+                </p>
+
+            <?php else : ?>
+
+                <?php if ($error) : ?>
+
+                    <div class="tfp-password-reset-notice tfp-password-reset-notice--error">
+                        <?php echo esc_html($error); ?>
+                    </div>
+
+                <?php endif; ?>
+
+                <h2 class="tfp-password-reset-title">
+                    <?php esc_html_e(
+                        'Forgot Your Password?',
+                        'tfp-authentication'
+                    ); ?>
+                </h2>
+
+                <p class="tfp-password-reset-description">
+                    <?php esc_html_e(
+                        'Enter your email address and we’ll send you a secure link to create a new password.',
+                        'tfp-authentication'
+                    ); ?>
+                </p>
+
+                <form method="post" class="tfp-password-reset-form">
+
+                    <?php
+                    wp_nonce_field(
+                        'tfp-password-reset-request',
+                        'tfp_password_reset_request_nonce'
+                    );
+                    ?>
+
+                    <p class="tfp-password-reset-field">
+
+                        <label for="tfp_password_reset_email">
+                            <?php esc_html_e(
+                                'Email',
+                                'tfp-authentication'
+                            ); ?>
+                        </label>
+
+                        <input
+                            type="email"
+                            id="tfp_password_reset_email"
+                            name="user_login"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </p>
+
+                    <button
+                        type="submit"
+                        name="tfp_password_reset_request_submit"
+                        value="1"
+                        class="tfp-password-reset-submit tfp-btn tfp-btn-primary"
+                    >
+                        <?php esc_html_e(
+                            'Send Reset Link',
+                            'tfp-authentication'
+                        ); ?>
+                    </button>
+
+                </form>
+
+            <?php endif; ?>
+
+        </div>
+    </div>
+
+    <?php
+
+    return ob_get_clean();
+}
+
+/**
  * WooCommerce normally intercepts reset links on template_redirect and sends
  * them through its own cookie-based reset screen. The TFP account page has
  * replaced that screen, so let the custom shortcode handle the original key

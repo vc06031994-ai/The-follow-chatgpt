@@ -97,6 +97,7 @@ function tfp_auth_render_customer_account_with_routing()
 }
 
 add_action('init', function () {
+
     if (shortcode_exists('tfp_my_account')) {
         remove_shortcode('tfp_my_account');
     }
@@ -104,46 +105,110 @@ add_action('init', function () {
     add_shortcode('tfp_my_account', function () {
 
         /*
-         * Password reset requests must always use the custom
-         * TFP password reset screen instead of the normal
-         * My Account routing.
+         * Forgot Password request page.
+         *
+         * This handles:
+         * /my-account/lost-password/
+         */
+        $is_lost_password_request = false;
+
+        if (
+            function_exists('is_wc_endpoint_url')
+            && is_wc_endpoint_url('lost-password')
+        ) {
+            $is_lost_password_request = true;
+        }
+
+        /*
+         * Fallback check for custom/staging URLs where WooCommerce
+         * endpoint detection may not work.
+         */
+        if (!$is_lost_password_request) {
+
+            $request_uri = isset($_SERVER['REQUEST_URI'])
+                ? wp_unslash($_SERVER['REQUEST_URI'])
+                : '';
+
+            if (strpos($request_uri, '/lost-password/') !== false) {
+                $is_lost_password_request = true;
+            }
+        }
+
+        /*
+         * Only treat it as the reset request page when there is
+         * NO actual reset key yet.
          */
         $has_reset_key = !empty($_GET['key'])
-            && (!empty($_GET['id']) || !empty($_GET['login']));
+            && (
+                !empty($_GET['id'])
+                || !empty($_GET['login'])
+            );
 
+        if (
+            $is_lost_password_request
+            && !$has_reset_key
+            && function_exists(
+                'tfp_auth_render_password_reset_request_screen'
+            )
+        ) {
+            return tfp_auth_render_password_reset_request_screen();
+        }
+
+        /*
+         * Existing password reset link.
+         */
+        if (
+            $has_reset_key
+            && function_exists(
+                'tfp_auth_render_password_reset_screen'
+            )
+        ) {
+            return tfp_auth_render_password_reset_screen();
+        }
+
+        /*
+         * Password reset success screen.
+         */
         $is_reset_success = isset($_GET['tfp_password_reset'])
             && 'success' === sanitize_key(
                 wp_unslash($_GET['tfp_password_reset'])
             );
 
         if (
-            $has_reset_key
-            && function_exists('tfp_auth_render_password_reset_screen')
-        ) {
-            return tfp_auth_render_password_reset_screen();
-        }
-
-        if (
             $is_reset_success
-            && function_exists('tfp_auth_password_reset_enqueue_styles')
+            && function_exists(
+                'tfp_auth_password_reset_enqueue_styles'
+            )
         ) {
+
             tfp_auth_password_reset_enqueue_styles();
 
             return '<div class="tfp-password-reset-wrapper">
                 <div class="tfp-password-reset-card">
+
                     <h2 class="tfp-password-reset-title">' .
-                    esc_html__('Password Updated', 'tfp-authentication') .
+                    esc_html__(
+                        'Password Updated',
+                        'tfp-authentication'
+                    ) .
                     '</h2>
+
                     <p class="tfp-password-reset-description">' .
                     esc_html__(
                         'Your password has been set successfully. You can now log in with your new password.',
                         'tfp-authentication'
                     ) .
                     '</p>
+
                 </div>
             </div>';
         }
 
+        /*
+         * Normal Customer / Student account rendering.
+         */
         return tfp_auth_render_customer_account_with_routing();
+
     });
+
 }, 30);
