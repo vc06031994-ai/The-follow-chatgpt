@@ -17,20 +17,9 @@ function tfp_student_magic_link_is_program_user($user_id) {
         return false;
     }
 
-    if (function_exists('tfp_auth_user_is_program_registrant')) {
-        return tfp_auth_user_is_program_registrant($user_id);
-    }
-
-    $program_id = (int) get_user_meta($user_id, 'tfp_program_choice', true);
-    if ($program_id <= 0) {
-        return false;
-    }
-
-    $program = get_post($program_id);
-
-    return $program
-        && 'sfwd-courses' === $program->post_type
-        && 'publish' === $program->post_status;
+    // A Student is identified by TFP program registration.
+    // Do not require the selected course to be published for authentication.
+    return (int) get_user_meta($user_id, 'tfp_program_choice', true) > 0;
 }
 
 function tfp_student_magic_link_create($user_id) {
@@ -172,6 +161,7 @@ function tfp_student_magic_link_consume() {
     $expires = (int) get_user_meta($user_id, '_tfp_student_magic_token_expires', true);
 
     $token_hash = hash_hmac('sha256', $token, wp_salt('auth'));
+
     $valid = $stored_hash
         && $expires > time()
         && hash_equals($stored_hash, $token_hash);
