@@ -130,97 +130,155 @@ add_action('init', function(){
 });
 
 add_shortcode('tfp_login_form', function(){
-	if(is_user_logged_in()) {
-		return '<p>' . esc_html__('You are already logged in.', 'tfp-authentication') . '</p>';
-	}
+    if(is_user_logged_in()) {
+        return '<p>' . esc_html__('You are already logged in.', 'tfp-authentication') . '</p>';
+    }
 
-	tfp_auth_enqueue_styles();
+    tfp_auth_enqueue_styles();
 
-	ob_start();
+    ob_start();
 
-	// Output WooCommerce notices if there are any still in the notice store
-	$has_notices_printed = false;
-	if ( function_exists( 'wc_notice_count' ) && wc_notice_count( 'error' ) > 0 ) {
-		if ( function_exists( 'woocommerce_output_all_notices' ) ) {
-			woocommerce_output_all_notices();
-			$has_notices_printed = true;
-		}
-	}
+    // Output WooCommerce notices if there are any still in the notice store.
+    $has_notices_printed = false;
+    if ( function_exists( 'wc_notice_count' ) && wc_notice_count( 'error' ) > 0 ) {
+        if ( function_exists( 'woocommerce_output_all_notices' ) ) {
+            woocommerce_output_all_notices();
+            $has_notices_printed = true;
+        }
+    }
 
-	// Fallback/direct notice display specifically for TFP login form errors
-	global $tfp_login_errors;
-	if ( ! $has_notices_printed && ! empty( $tfp_login_errors ) ) {
-		echo '<ul class="woocommerce-error" role="alert">';
-		foreach ( $tfp_login_errors as $error ) {
-			echo '<li>' . esc_html( $error ) . '</li>';
-		}
-		echo '</ul>';
-	}
+    // Fallback/direct notice display specifically for TFP login form errors.
+    global $tfp_login_errors;
+    if ( ! $has_notices_printed && ! empty( $tfp_login_errors ) ) {
+        echo '<ul class="woocommerce-error" role="alert">';
+        foreach ( $tfp_login_errors as $error ) {
+            echo '<li>' . esc_html( $error ) . '</li>';
+        }
+        echo '</ul>';
+    }
 
-	$username_val = isset( $_POST['username'] ) ? sanitize_email( wp_unslash( $_POST['username'] ) ) : '';
-	?>
-	<div class="tfp-login-form-container">
-		<form method="post" class="woocommerce-form woocommerce-form-login login tfp-login-form">
-			
-			<p class="tfp-form-group">
-				<label class="tfp-label" for="username"><?php echo esc_html__('Email', 'tfp-authentication'); ?></label>
-				<input class="tfp-input" type="email" name="username" id="username" autocomplete="username" value="<?php echo esc_attr( $username_val ); ?>" required>
-			</p>
-			
-			<p class="tfp-form-group tfp-password-wrapper">
-				<label class="tfp-label" for="password"><?php echo esc_html__('Password', 'tfp-authentication'); ?></label>
-				<span class="tfp-password-field-container">
-					<input class="tfp-input" type="password" name="password" id="password" autocomplete="current-password" required>
-					<span class="tfp-password-toggle" role="button" aria-label="<?php echo esc_attr__('Toggle password visibility', 'tfp-authentication'); ?>">
-						<!-- Eye closed (visible state toggle) -->
-						<svg class="eye-icon-closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-							<circle cx="12" cy="12" r="3"></circle>
-						</svg>
-						<!-- Eye open (hidden state toggle) -->
-						<svg class="eye-icon-open tfp-hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-							<line x1="1" y1="1" x2="23" y2="23"></line>
-						</svg>
-					</span>
-				</span>
-			</p>
-			
-			<p class="tfp-forgot-password">
-				<a href="<?php echo esc_url( wc_lostpassword_url() ); ?>"><?php echo esc_html__('Forgot your Password?', 'tfp-authentication'); ?></a>
-			</p>
+    $username_val = isset( $_POST['username'] ) ? sanitize_email( wp_unslash( $_POST['username'] ) ) : '';
+    $student_magic_status = isset($_GET['tfp_student_magic'])
+        ? sanitize_key(wp_unslash($_GET['tfp_student_magic']))
+        : '';
+    ?>
+    <div class="tfp-login-form-container">
+        <div class="tfp-login-mode-switch" role="tablist" aria-label="<?php echo esc_attr__('Choose login type', 'tfp-authentication'); ?>">
+            <button
+                type="button"
+                class="tfp-login-mode-btn is-active"
+                data-tfp-login-mode="customer"
+                role="tab"
+                aria-selected="true"
+            ><?php esc_html_e('Customer Login', 'tfp-authentication'); ?></button>
+            <button
+                type="button"
+                class="tfp-login-mode-btn"
+                data-tfp-login-mode="student"
+                role="tab"
+                aria-selected="false"
+            ><?php esc_html_e('Student Login', 'tfp-authentication'); ?></button>
+        </div>
 
-			<p class="tfp-rememberme-group">
-				<label class="tfp-checkbox">
-					<input type="checkbox" name="rememberme" id="rememberme" value="forever">
-					<span class="tfp-checkbox-label"><?php echo esc_html__('Remember me', 'tfp-authentication'); ?></span>
-				</label>
-			</p>
-			
-			<?php wp_nonce_field('tfp-login-action', 'tfp-login-nonce'); ?>
-			<input type="hidden" name="redirect" value="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" />
-			
-			<p class="tfp-login-btn-wrap">
-				<button type="submit" name="tfp_login_submit" value="1" class="tfp-btn tfp-btn-primary tfp-btn-lg tfp-w-100"><?php echo esc_html__('Log In', 'tfp-authentication'); ?></button>
-			</p>
-			
-			<p class="tfp-register-btn-wrap">
-				<button type="button" class="tfp-btn tfp-btn-outline tfp-btn-lg tfp-w-100 js-tfp-switch-to-register"><?php echo esc_html__('Register', 'tfp-authentication'); ?></button>
-			</p>
-			
-			<p class="tfp-footer-note">
-				<?php
-				printf(
-					/* translators: 1: Terms & Conditions link, 2: Privacy Policy link */
-					esc_html__( 'By proceeding ahead you agree to %1$s and %2$s', 'tfp-authentication' ),
-					'<a href="#" class="tfp-footer-link">' . esc_html__( 'Terms & Conditions', 'tfp-authentication' ) . '</a>',
-					'<a href="#" class="tfp-footer-link">' . esc_html__( 'Privacy Policy', 'tfp-authentication' ) . '</a>'
-				);
-				?>
-			</p>
-			
-		</form>
-	</div>
-	<?php
-	return ob_get_clean();
+        <?php if ('invalid' === $student_magic_status) : ?>
+            <div class="tfp-magic-login-message tfp-magic-login-message--error" role="alert">
+                <?php esc_html_e('This student login link is invalid or has expired. Please request a new link.', 'tfp-authentication'); ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="post" class="woocommerce-form woocommerce-form-login login tfp-login-form" data-tfp-login-panel="customer">
+            <p class="tfp-login-mode-title"><?php esc_html_e('Customer Login', 'tfp-authentication'); ?></p>
+
+            <p class="tfp-form-group">
+                <label class="tfp-label" for="username"><?php echo esc_html__('Email', 'tfp-authentication'); ?></label>
+                <input class="tfp-input" type="email" name="username" id="username" autocomplete="username" value="<?php echo esc_attr( $username_val ); ?>" required>
+            </p>
+
+            <p class="tfp-form-group tfp-password-wrapper">
+                <label class="tfp-label" for="password"><?php echo esc_html__('Password', 'tfp-authentication'); ?></label>
+                <span class="tfp-password-field-container">
+                    <input class="tfp-input" type="password" name="password" id="password" autocomplete="current-password" required>
+                    <span class="tfp-password-toggle" role="button" aria-label="<?php echo esc_attr__('Toggle password visibility', 'tfp-authentication'); ?>">
+                        <svg class="eye-icon-closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg class="eye-icon-open tfp-hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </span>
+                </span>
+            </p>
+
+            <p class="tfp-forgot-password">
+                <a href="<?php echo esc_url( wc_lostpassword_url() ); ?>"><?php echo esc_html__('Forgot your Password?', 'tfp-authentication'); ?></a>
+            </p>
+
+            <p class="tfp-rememberme-group">
+                <label class="tfp-checkbox">
+                    <input type="checkbox" name="rememberme" id="rememberme" value="forever">
+                    <span class="tfp-checkbox-label"><?php echo esc_html__('Remember me', 'tfp-authentication'); ?></span>
+                </label>
+            </p>
+
+            <?php wp_nonce_field('tfp-login-action', 'tfp-login-nonce'); ?>
+            <input type="hidden" name="redirect" value="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" />
+
+            <p class="tfp-login-btn-wrap">
+                <button type="submit" name="tfp_login_submit" value="1" class="tfp-btn tfp-btn-primary tfp-btn-lg tfp-w-100"><?php echo esc_html__('Log In', 'tfp-authentication'); ?></button>
+            </p>
+
+            <p class="tfp-register-btn-wrap">
+                <button type="button" class="tfp-btn tfp-btn-outline tfp-btn-lg tfp-w-100 js-tfp-switch-to-register"><?php echo esc_html__('Register', 'tfp-authentication'); ?></button>
+            </p>
+
+            <p class="tfp-footer-note">
+                <?php
+                printf(
+                    esc_html__( 'By proceeding ahead you agree to %1$s and %2$s', 'tfp-authentication' ),
+                    '<a href="#" class="tfp-footer-link">' . esc_html__( 'Terms & Conditions', 'tfp-authentication' ) . '</a>',
+                    '<a href="#" class="tfp-footer-link">' . esc_html__( 'Privacy Policy', 'tfp-authentication' ) . '</a>'
+                );
+                ?>
+            </p>
+        </form>
+
+        <form method="post" class="tfp-student-login-form" data-tfp-login-panel="student" hidden>
+            <p class="tfp-login-mode-title"><?php esc_html_e('Student Login', 'tfp-authentication'); ?></p>
+
+            <p class="tfp-login-description">
+                <?php esc_html_e('Enter your student email and we’ll send you a secure magic link. No password required.', 'tfp-authentication'); ?>
+            </p>
+
+            <p class="tfp-form-group">
+                <label class="tfp-label" for="tfp_student_email"><?php echo esc_html__('Email', 'tfp-authentication'); ?></label>
+                <input class="tfp-input" type="email" name="email" id="tfp_student_email" autocomplete="email" required>
+            </p>
+
+            <div class="tfp-form-notices" aria-live="polite"></div>
+
+            <p class="tfp-login-btn-wrap">
+                <button type="submit" class="tfp-btn tfp-btn-primary tfp-btn-lg tfp-w-100">
+                    <?php esc_html_e('Send Magic Link', 'tfp-authentication'); ?>
+                </button>
+            </p>
+
+            <p class="tfp-login-description tfp-login-description--small">
+                <?php esc_html_e('The link expires in 15 minutes and can only be used once.', 'tfp-authentication'); ?>
+            </p>
+
+            <p class="tfp-footer-note">
+                <?php
+                printf(
+                    esc_html__( 'By proceeding ahead you agree to %1$s and %2$s', 'tfp-authentication' ),
+                    '<a href="#" class="tfp-footer-link">' . esc_html__( 'Terms & Conditions', 'tfp-authentication' ) . '</a>',
+                    '<a href="#" class="tfp-footer-link">' . esc_html__( 'Privacy Policy', 'tfp-authentication' ) . '</a>'
+                );
+                ?>
+            </p>
+        </form>
+    </div>
+    <?php
+    return ob_get_clean();
 });
