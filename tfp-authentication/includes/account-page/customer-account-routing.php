@@ -101,5 +101,49 @@ add_action('init', function () {
         remove_shortcode('tfp_my_account');
     }
 
-    add_shortcode('tfp_my_account', 'tfp_auth_render_customer_account_with_routing');
+    add_shortcode('tfp_my_account', function () {
+
+        /*
+         * Password reset requests must always use the custom
+         * TFP password reset screen instead of the normal
+         * My Account routing.
+         */
+        $has_reset_key = !empty($_GET['key'])
+            && (!empty($_GET['id']) || !empty($_GET['login']));
+
+        $is_reset_success = isset($_GET['tfp_password_reset'])
+            && 'success' === sanitize_key(
+                wp_unslash($_GET['tfp_password_reset'])
+            );
+
+        if (
+            $has_reset_key
+            && function_exists('tfp_auth_render_password_reset_screen')
+        ) {
+            return tfp_auth_render_password_reset_screen();
+        }
+
+        if (
+            $is_reset_success
+            && function_exists('tfp_auth_password_reset_enqueue_styles')
+        ) {
+            tfp_auth_password_reset_enqueue_styles();
+
+            return '<div class="tfp-password-reset-wrapper">
+                <div class="tfp-password-reset-card">
+                    <h2 class="tfp-password-reset-title">' .
+                    esc_html__('Password Updated', 'tfp-authentication') .
+                    '</h2>
+                    <p class="tfp-password-reset-description">' .
+                    esc_html__(
+                        'Your password has been set successfully. You can now log in with your new password.',
+                        'tfp-authentication'
+                    ) .
+                    '</p>
+                </div>
+            </div>';
+        }
+
+        return tfp_auth_render_customer_account_with_routing();
+    });
 }, 30);
