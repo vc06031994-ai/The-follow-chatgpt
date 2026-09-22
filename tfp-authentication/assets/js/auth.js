@@ -108,6 +108,93 @@
             }
         });
 
+
+        // Switch between Customer password login and Student magic-link login.
+        $(document).on('click', '.tfp-login-mode-btn', function () {
+            var $button = $(this);
+            var mode = $button.data('tfp-login-mode');
+            var $container = $button.closest('.tfp-login-form-container');
+
+            $container.find('.tfp-login-mode-btn')
+                .removeClass('is-active')
+                .attr('aria-selected', 'false');
+
+            $button
+                .addClass('is-active')
+                .attr('aria-selected', 'true');
+
+            $container.find('[data-tfp-login-panel]').each(function () {
+                var $panel = $(this);
+                var panelMode = $panel.data('tfp-login-panel');
+                var isActive = panelMode === mode;
+
+                $panel.prop('hidden', !isActive);
+                $panel.toggleClass('is-active', isActive);
+            });
+        });
+
+        // Student magic-link request.
+        $(document).on('submit', '.tfp-student-login-form', function (e) {
+            e.preventDefault();
+
+            var $form = $(this);
+            var $button = $form.find('button[type="submit"]');
+            var $noticeWrap = $form.find('.tfp-form-notices').first();
+
+            if (!$noticeWrap.length) {
+                $noticeWrap = $('<div class="tfp-form-notices" aria-live="polite"></div>');
+                $noticeWrap.insertBefore($form.find('.tfp-login-btn-wrap').first());
+            }
+
+            var originalHtml = $button.data('original-html') || $button.html();
+            $button.data('original-html', originalHtml);
+            $button.prop('disabled', true).addClass('is-loading');
+            $button.html('<span class="tfp-btn-spinner" aria-hidden="true"></span><span class="tfp-btn-label">Sending...</span>');
+            $noticeWrap.empty();
+
+            $.ajax({
+                type: 'POST',
+                url: typeof tfpAuthSettings !== 'undefined' && tfpAuthSettings.ajaxUrl ? tfpAuthSettings.ajaxUrl : window.ajaxurl,
+                data: {
+                    action: 'tfp_student_magic_link',
+                    email: $form.find('input[name="email"]').val()
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response && response.success) {
+                        $noticeWrap.html(
+                            '<div class="tfp-magic-login-message" role="status">' +
+                                $('<div>').text(response.data && response.data.message ? response.data.message : 'Please check your email for your secure login link.').html() +
+                            '</div>'
+                        );
+                        $form.find('input[name="email"]').val('');
+                        return;
+                    }
+
+                    var message = response && response.data && response.data.message
+                        ? response.data.message
+                        : 'We could not send the login link right now. Please try again.';
+
+                    $noticeWrap.html(
+                        '<div class="tfp-magic-login-message tfp-magic-login-message--error" role="alert">' +
+                            $('<div>').text(message).html() +
+                        '</div>'
+                    );
+                },
+                error: function () {
+                    $noticeWrap.html(
+                        '<div class="tfp-magic-login-message tfp-magic-login-message--error" role="alert">' +
+                            'We could not send the login link right now. Please try again.' +
+                        '</div>'
+                    );
+                },
+                complete: function () {
+                    $button.removeClass('is-loading').prop('disabled', false);
+                    $button.html(originalHtml);
+                }
+            });
+        });
+
         // Register form submission with loading state and popup transitions
         $(document).on('submit', '.tfp-register-form', function (e) {
             e.preventDefault();
