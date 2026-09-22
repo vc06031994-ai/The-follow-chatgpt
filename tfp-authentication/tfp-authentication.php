@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.2.6
+Version: 1.2.7
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.2.6');
+define('TFP_AUTH_VERSION','1.2.7');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -15,6 +15,7 @@ if(!defined('TFP_REGISTER_POPUP_ID')){
 	define('TFP_REGISTER_POPUP_ID', 2104);
 }
 require_once TFP_AUTH_PATH.'includes/login.php';
+require_once TFP_AUTH_PATH.'includes/student-magic-link.php';
 require_once TFP_AUTH_PATH.'includes/register.php';
 require_once TFP_AUTH_PATH.'includes/account-menu.php';
 require_once TFP_AUTH_PATH.'includes/dashboard-shortcodes.php';
