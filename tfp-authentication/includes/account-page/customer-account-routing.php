@@ -43,13 +43,14 @@ function tfp_auth_render_customer_account_with_routing()
     }
 
     $user_id = get_current_user_id();
-    $has_program_access = function_exists('tfp_dashboard_user_has_full_access')
-        ? tfp_dashboard_user_has_full_access($user_id)
+    $is_program_user = function_exists('tfp_auth_is_program_user')
+        ? tfp_auth_is_program_user($user_id)
         : false;
 
-    // Enrolled Disciples and staff retain the original Discipleship account UI
-    // and the /payment-details/ destination.
-    if ($has_program_access) {
+    // Registered program users, including students who have not paid yet,
+    // retain the Discipleship account UI and /payment-details/ destination.
+    // Pure e-commerce customers/readers use the standalone /payment-method/ page.
+    if ($is_program_user) {
         return $html;
     }
 
