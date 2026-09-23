@@ -93,3 +93,5 @@ add_action('init', function () {
     }
 
 });
+
+/* Push connection test — no functional change. */
