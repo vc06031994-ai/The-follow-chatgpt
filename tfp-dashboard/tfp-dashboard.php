@@ -2,14 +2,14 @@
 /**
  * Plugin Name: TFP Dashboard
  * Description: Custom-coded student dashboard (Home, Grades, Communication, Documents, Calendar, Profile) for The Follow Project. Reuses helper functions from the TFP Authentication plugin. Not built with Elementor — fully custom templates for app-like behaviour and pixel-perfect design control.
- * Version: 1.2.2
+ * Version: 1.2.6
  * Author: The Follow Project
  * Text Domain: tfp-dashboard
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('TFP_DASH_VERSION', '1.2.5');
+define('TFP_DASH_VERSION', '1.2.6');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
@@ -213,6 +213,10 @@ add_action('wp_enqueue_scripts', function () {
 
     if (in_array($template, ['tfp-dashboard-payment-details', 'tfp-dashboard-financial-aid', 'tfp-dashboard-profile', 'tfp-dashboard-update-profile'], true)) {
         wp_enqueue_style('tfp-dashboard-forms', TFP_DASH_URL . 'assets/css/forms.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
+    }
+
+    if ($template === 'tfp-dashboard-payment-details') {
+        wp_enqueue_style('tfp-dashboard-payment-details', TFP_DASH_URL . 'assets/css/payment-details.css', ['tfp-dashboard-core', 'tfp-dashboard-forms'], TFP_DASH_VERSION);
     }
 
     if ($template === 'tfp-dashboard-payment-details' && function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
