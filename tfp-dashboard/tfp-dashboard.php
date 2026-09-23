@@ -219,6 +219,15 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_style('tfp-dashboard-payment-details', TFP_DASH_URL . 'assets/css/payment-details.css', ['tfp-dashboard-core', 'tfp-dashboard-forms'], TFP_DASH_VERSION);
     }
 
+    if ($template === 'tfp-dashboard-payment-details') {
+        wp_enqueue_style(
+            'tfp-dashboard-payment-details',
+            TFP_DASH_URL . 'assets/css/payment-details.css',
+            ['tfp-dashboard-core', 'tfp-dashboard-forms'],
+            TFP_DASH_VERSION
+        );
+    }
+
     if ($template === 'tfp-dashboard-payment-details' && function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
         wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
         $billing_script_path = TFP_DASH_PATH . 'assets/js/billing.js';
