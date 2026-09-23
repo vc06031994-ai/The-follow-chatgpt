@@ -184,7 +184,7 @@ function tfp_auth_render_custom_my_account_shortcode() {
                             <h5><?php esc_html_e('Billing Information', 'tfp-authentication'); ?></h5>
                             <p class="tfp-ac-sub"><?php esc_html_e('Your saved payment method from enrollment', 'tfp-authentication'); ?></p>
                         </div>
-                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('payment-details')); ?>" class="tfp-ac-edit-btn">
+                        <a href="<?php echo esc_url(function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-payment-details') : wc_get_account_endpoint_url('payment-details')); ?>" class="tfp-ac-edit-btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                                 <path d="M9 4.58605L1 12.5861V16.5861H17M1 16.5861L5 16.586L13 8.58604M9 4.58605L11.8686 1.7174L11.8704 1.7157C12.2652 1.32082 12.463 1.12303 12.691 1.04894C12.8919 0.983686 13.1082 0.983686 13.3091 1.04894C13.5369 1.12297 13.7345 1.32054 14.1288 1.71486L15.8686 3.45466C16.2646 3.85067 16.4627 4.04878 16.5369 4.2771C16.6022 4.47795 16.6021 4.69429 16.5369 4.89513C16.4628 5.1233 16.265 5.3211 15.8695 5.71655L15.8686 5.7174L13 8.58604M9 4.58605L13 8.58604" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg> Edit
