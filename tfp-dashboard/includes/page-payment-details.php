@@ -55,6 +55,7 @@ function tfp_dashboard_render_payment_method_icon($kind)
 
 function tfp_dashboard_render_payment_method_row($method)
 {
+    $is_legacy = !empty($method['legacy']);
     $title = $method['label'] . (!empty($method['last4']) ? ' •••• ' . $method['last4'] : '');
     $detail = !empty($method['expiry']) ? $method['expiry'] : '';
     if ($method['kind'] === 'paypal') $detail = tfp_billing_get_billing_email();
@@ -71,9 +72,15 @@ function tfp_dashboard_render_payment_method_row($method)
             </div>
         </div>
         <div class="tfp-payment-method-row__actions">
-            <button type="button" class="tfp-payment-link" data-tfp-payment-default="<?php echo esc_attr($method['id']); ?>" <?php disabled($method['default']); ?>><?php esc_html_e('Default', 'tfp-dashboard'); ?></button>
+            <?php if (!$is_legacy) : ?>
+                <button type="button" class="tfp-payment-link" data-tfp-payment-default="<?php echo esc_attr($method['id']); ?>" <?php disabled($method['default']); ?>><?php esc_html_e('Default', 'tfp-dashboard'); ?></button>
+            <?php endif; ?>
             <button type="button" class="tfp-payment-link" data-tfp-payment-edit="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></button>
-            <button type="button" class="tfp-payment-link tfp-payment-link--danger" data-tfp-payment-remove="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button>
+            <?php if ($is_legacy) : ?>
+                <button type="button" class="tfp-payment-link tfp-payment-link--danger" data-tfp-payment-remove-legacy="1"><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button>
+            <?php else : ?>
+                <button type="button" class="tfp-payment-link tfp-payment-link--danger" data-tfp-payment-remove="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button>
+            <?php endif; ?>
         </div>
     </div>
     <?php
@@ -96,6 +103,55 @@ add_action('wp_ajax_tfp_payment_token_remove', function () {
         wp_send_json_error(['message' => __('Payment method not found.', 'tfp-dashboard')], 404);
     }
     wp_send_json_success(['message' => $token->delete() ? __('Payment method removed.', 'tfp-dashboard') : __('Could not remove this payment method.', 'tfp-dashboard')]);
+});
+
+add_action('wp_ajax_tfp_payment_legacy_remove', function () {
+    tfp_dashboard_payment_ajax_verify();
+
+    $user_id = get_current_user_id();
+    $payment_method_id = (string) get_user_meta($user_id, '_tfp_saved_payment_method', true);
+
+    if ($payment_method_id === '' && function_exists('tfp_billing_get_program_order')) {
+        $order = tfp_billing_get_program_order($user_id);
+        if ($order && method_exists($order, 'get_meta')) {
+            $intent_id = (string) $order->get_meta('_tfp_stripe_intent_id', true);
+            if ($intent_id !== '' && function_exists('tfp_stripe_api')) {
+                $intent = tfp_stripe_api('GET', 'payment_intents/' . rawurlencode($intent_id));
+                if (!is_wp_error($intent) && !empty($intent['payment_method'])) {
+                    $payment_method_id = is_array($intent['payment_method'])
+                        ? (string) ($intent['payment_method']['id'] ?? '')
+                        : (string) $intent['payment_method'];
+                }
+            }
+        }
+    }
+
+    if ($payment_method_id !== '' && function_exists('tfp_stripe_api')) {
+        $detached = tfp_stripe_api('POST', 'payment_methods/' . rawurlencode($payment_method_id) . '/detach');
+        if (is_wp_error($detached)) {
+            $message = strtolower($detached->get_error_message());
+            $already_gone = strpos($message, 'no such paymentmethod') !== false
+                || strpos($message, 'no such payment method') !== false
+                || strpos($message, 'already been detached') !== false;
+            if (!$already_gone) {
+                wp_send_json_error(['message' => $detached->get_error_message()], 400);
+            }
+        }
+    }
+
+    if (class_exists('WC_Payment_Tokens')) {
+        foreach (WC_Payment_Tokens::get_customer_tokens($user_id) as $token) {
+            if (method_exists($token, 'get_gateway_id') && $token->get_gateway_id() === 'tfp_stripe') {
+                $token->delete();
+            }
+        }
+    }
+
+    delete_user_meta($user_id, '_tfp_saved_payment_method');
+    delete_user_meta($user_id, '_tfp_saved_card_summary');
+    delete_user_meta($user_id, '_tfp_cardholder_name');
+
+    wp_send_json_success(['message' => __('Payment method removed.', 'tfp-dashboard')]);
 });
 
 add_action('wp_ajax_tfp_payment_token_default', function () {
@@ -149,7 +205,7 @@ function tfp_dashboard_render_payment_details_content()
                         } elseif ($card) {
                             tfp_dashboard_render_payment_method_row([
                                 'id' => 0, 'kind' => 'card', 'label' => $card['brand'] ?: __('Card', 'tfp-dashboard'),
-                                'last4' => $card['last4'], 'expiry' => $card['expiry'], 'default' => true,
+                                'last4' => $card['last4'], 'expiry' => $card['expiry'], 'default' => true, 'legacy' => true,
                             ]);
                         }
                         ?>
