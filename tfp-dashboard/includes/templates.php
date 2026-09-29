@@ -5,7 +5,8 @@
  * Page Attributes — no hardcoded URLs anywhere in this plugin.
  */
 
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 /**
  * Map of template slug => [ label shown in Page Attributes, template file ].
@@ -15,39 +16,42 @@ if (!defined('ABSPATH')) exit;
 function tfp_dashboard_template_map()
 {
     return [
-        'tfp-dashboard-home'          => [
+        'tfp-dashboard-home' => [
             'label' => __('TFP Dashboard — Home', 'tfp-dashboard'),
-            'file'  => 'templates/template-home.php',
+            'file' => 'templates/template-home.php',
         ],
-        'tfp-dashboard-communication'  => [
+        'tfp-dashboard-communication' => [
             'label' => __('TFP Dashboard — Communication', 'tfp-dashboard'),
-            'file'  => 'templates/template-communication.php',
+            'file' => 'templates/template-communication.php',
         ],
         'tfp-dashboard-payment-details' => [
             'label' => __('TFP Dashboard — Payment Details', 'tfp-dashboard'),
-            'file'  => 'templates/template-payment-details.php',
+            'file' => 'templates/template-payment-details.php',
         ],
-        'tfp-dashboard-financial-aid'  => [
+        'tfp-dashboard-financial-aid' => [
             'label' => __('TFP Dashboard — Financial Aid', 'tfp-dashboard'),
-            'file'  => 'templates/template-financial-aid.php',
+            'file' => 'templates/template-financial-aid.php',
         ],
-        'tfp-dashboard-profile'        => [
+        'tfp-dashboard-profile' => [
             'label' => __('TFP Dashboard — Profile', 'tfp-dashboard'),
-            'file'  => 'templates/template-profile.php',
+            'file' => 'templates/template-profile.php',
         ],
         'tfp-dashboard-update-profile' => [
             'label' => __('TFP Dashboard — Update Profile', 'tfp-dashboard'),
-            'file'  => 'templates/template-update-profile.php',
+            'file' => 'templates/template-update-profile.php',
         ],
-        'tfp-dashboard-week'           => [
+        'tfp-dashboard-week' => [
             'label' => __('TFP Dashboard — Week', 'tfp-dashboard'),
-            'file'  => 'templates/template-week.php',
+            'file' => 'templates/template-week.php',
         ],
-        'tfp-dashboard-program'        => [
+        'tfp-dashboard-program' => [
             'label' => __('TFP Dashboard — Program', 'tfp-dashboard'),
-            'file'  => 'templates/template-program.php',
+            'file' => 'templates/template-program.php',
         ],
-
+        'tfp-dashboard-grades' => [
+            'label' => __('TFP Dashboard — Grades', 'tfp-dashboard'),
+            'file' => 'templates/template-grades.php',
+        ],
     ];
 }
 
@@ -58,18 +62,133 @@ add_filter('theme_page_templates', function ($templates) {
     return $templates;
 });
 
+/**
+ * Ensure Grades page exists in WordPress database on activation/init
+ */
+add_action('init', function () {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $checked = true;
+
+    $pages = get_posts([
+        'post_type' => 'page',
+        'post_status' => ['publish', 'draft', 'pending'],
+        'meta_key' => '_wp_page_template',
+        'meta_value' => 'tfp-dashboard-grades',
+        'numberposts' => 1,
+        'fields' => 'ids',
+    ]);
+
+    if (!empty($pages)) {
+        return;
+    }
+
+    $page_by_slug = get_page_by_path('grades');
+    if ($page_by_slug) {
+        update_post_meta($page_by_slug->ID, '_wp_page_template', 'tfp-dashboard-grades');
+        return;
+    }
+
+    if (function_exists('wp_insert_post')) {
+        $new_id = wp_insert_post([
+            'post_title' => 'Grades',
+            'post_name' => 'grades',
+            'post_status' => 'publish',
+            'post_type' => 'page',
+            'comment_status' => 'closed',
+            'ping_status' => 'closed',
+        ]);
+        if ($new_id && !is_wp_error($new_id)) {
+            update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-grades');
+            if (function_exists('flush_rewrite_rules')) {
+                flush_rewrite_rules(false);
+            }
+        }
+    }
+});
+
+/**
+ * Intercept 404s before WordPress displays the 404 page
+ */
+add_filter('pre_handle_404', function ($preempt, $wp_query) {
+    $req_path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    $parts = explode('/', $req_path);
+    $last = end($parts);
+
+    if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
+        if ($wp_query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_page = true;
+        }
+        status_header(200);
+        return true;
+    }
+
+    return $preempt;
+}, 10, 2);
+
+/**
+ * Fallback template redirection for /grades/
+ */
+add_action('template_redirect', function () {
+    global $wp_query;
+
+    $req_path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    $parts = explode('/', $req_path);
+    $last = end($parts);
+
+    if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
+        status_header(200);
+        if ($wp_query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_page = true;
+        }
+
+        $file = TFP_DASH_PATH . 'templates/template-grades.php';
+        if (file_exists($file)) {
+            include $file;
+            exit;
+        }
+    }
+}, 2);
+
 add_filter('template_include', function ($template) {
+    $req_path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    $parts = explode('/', $req_path);
+    $last = end($parts);
+
+    if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
+        $file = TFP_DASH_PATH . 'templates/template-grades.php';
+        if (file_exists($file)) {
+            return $file;
+        }
+    }
+
     if (!is_page()) {
         return $template;
     }
 
     $slug = get_page_template_slug(get_the_ID());
-    $map  = tfp_dashboard_template_map();
+    $map = tfp_dashboard_template_map();
 
     if (isset($map[$slug])) {
         $file = TFP_DASH_PATH . $map[$slug]['file'];
         if (file_exists($file)) {
             return $file;
+        }
+    }
+
+    // Fallback: match by page slug if template meta isn't explicitly assigned yet
+    $page_slug = get_post_field('post_name', get_the_ID());
+    foreach ($map as $tmpl_slug => $data) {
+        $clean = str_replace('tfp-dashboard-', '', $tmpl_slug);
+        if ($page_slug === $clean) {
+            $file = TFP_DASH_PATH . $data['file'];
+            if (file_exists($file)) {
+                return $file;
+            }
         }
     }
 
@@ -81,19 +200,58 @@ add_filter('template_include', function ($template) {
  */
 function tfp_dashboard_is_dashboard_page()
 {
+    $req_path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    $parts = explode('/', $req_path);
+    $last = end($parts);
+
+    if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
+        return true;
+    }
+
     if (!is_page()) {
         return false;
     }
     $slug = get_page_template_slug(get_the_ID());
-    return array_key_exists($slug, tfp_dashboard_template_map());
+    $map = tfp_dashboard_template_map();
+    if (array_key_exists($slug, $map)) {
+        return true;
+    }
+    $page_slug = get_post_field('post_name', get_the_ID());
+    foreach ($map as $tmpl_slug => $data) {
+        $clean = str_replace('tfp-dashboard-', '', $tmpl_slug);
+        if ($page_slug === $clean) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function tfp_dashboard_current_template_slug()
 {
+    $req_path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    $parts = explode('/', $req_path);
+    $last = end($parts);
+
+    if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
+        return 'tfp-dashboard-grades';
+    }
+
     if (!is_page()) {
         return '';
     }
-    return get_page_template_slug(get_the_ID());
+    $slug = get_page_template_slug(get_the_ID());
+    if ($slug) {
+        return $slug;
+    }
+    $page_slug = get_post_field('post_name', get_the_ID());
+    $map = tfp_dashboard_template_map();
+    foreach ($map as $tmpl_slug => $data) {
+        $clean = str_replace('tfp-dashboard-', '', $tmpl_slug);
+        if ($page_slug === $clean) {
+            return $tmpl_slug;
+        }
+    }
+    return '';
 }
 
 /**
@@ -110,17 +268,45 @@ function tfp_dashboard_get_url($template_slug)
     }
 
     $pages = get_posts([
-        'post_type'      => 'page',
-        'post_status'    => 'publish',
-        'posts_per_page' => 1,
-        'meta_key'       => '_wp_page_template',
-        'meta_value'     => $template_slug,
-        'fields'         => 'ids',
+        'post_type' => 'page',
+        'post_status' => 'publish',
+        'numberposts' => 1,
+        'meta_key' => '_wp_page_template',
+        'meta_value' => $template_slug,
+        'fields' => 'ids',
     ]);
 
-    $url = !empty($pages) ? get_permalink($pages[0]) : '#';
-    $cache[$template_slug] = $url;
+    if (!empty($pages)) {
+        $url = get_permalink($pages[0]);
+    } else {
+        // Fallback by slug
+        $clean_slug = str_replace('tfp-dashboard-', '', $template_slug);
+        $page = get_page_by_path($clean_slug);
+        if ($page) {
+            $url = get_permalink($page->ID);
+        } else {
+            if ($template_slug === 'tfp-dashboard-grades' && function_exists('wp_insert_post')) {
+                $new_id = wp_insert_post([
+                    'post_title' => 'Grades',
+                    'post_name' => 'grades',
+                    'post_status' => 'publish',
+                    'post_type' => 'page',
+                    'comment_status' => 'closed',
+                    'ping_status' => 'closed',
+                ]);
+                if ($new_id && !is_wp_error($new_id)) {
+                    update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-grades');
+                    $url = get_permalink($new_id);
+                } else {
+                    $url = home_url('/' . $clean_slug . '/');
+                }
+            } else {
+                $url = home_url('/' . $clean_slug . '/');
+            }
+        }
+    }
 
+    $cache[$template_slug] = $url;
     return $url;
 }
 
@@ -148,7 +334,11 @@ function tfp_dashboard_require_login()
     ];
 
     $current_template = tfp_dashboard_current_template_slug();
+    $user_id = get_current_user_id();
+    $is_staff = current_user_can('manage_options') || (function_exists('tfp_dashboard_user_is_staff') && tfp_dashboard_user_is_staff($user_id));
+
     if (
+        !$is_staff &&
         in_array($current_template, $restricted_templates, true) &&
         function_exists('tfp_dashboard_user_has_full_access') &&
         !tfp_dashboard_user_has_full_access()

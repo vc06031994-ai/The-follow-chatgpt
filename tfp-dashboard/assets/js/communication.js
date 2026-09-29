@@ -2,25 +2,34 @@
     'use strict';
 
     document.addEventListener('DOMContentLoaded', function () {
-        if (typeof tfpChatSettings === 'undefined') return;
-
-        var items          = Array.prototype.slice.call(document.querySelectorAll('[data-tfp-ticket-item]'));
-        var searchInput    = document.querySelector('[data-tfp-ticket-search]');
-        var tabsWrap       = document.querySelector('[data-tfp-ticket-tabs]');
-        var emptyPanel     = document.querySelector('[data-tfp-chat-empty]');
-        var threadPanel    = document.querySelector('[data-tfp-chat-thread]');
-        var titleEl        = document.querySelector('[data-tfp-chat-title]');
-        var subtitleEl     = document.querySelector('[data-tfp-chat-subtitle]');
-        var avatarEl       = document.querySelector('[data-tfp-chat-avatar]');
-        var statusEl       = document.querySelector('[data-tfp-chat-status]');
-        var messagesEl     = document.querySelector('[data-tfp-chat-messages]');
-        var replyForm      = document.querySelector('[data-tfp-chat-reply]');
-        var replyInput     = document.querySelector('[data-tfp-chat-input]');
-        var resolveBtn     = document.querySelector('[data-tfp-mark-resolved]');
-        var newTicketBtns  = Array.prototype.slice.call(document.querySelectorAll('[data-tfp-new-ticket]'));
+        var items = Array.prototype.slice.call(document.querySelectorAll('[data-tfp-ticket-item]'));
+        var searchInput = document.querySelector('[data-tfp-ticket-search]');
+        var tabsWrap = document.querySelector('[data-tfp-ticket-tabs]');
+        var emptyPanel = document.querySelector('[data-tfp-chat-empty]');
+        var threadPanel = document.querySelector('[data-tfp-chat-thread]');
+        var titleEl = document.querySelector('[data-tfp-chat-title]');
+        var subtitleEl = document.querySelector('[data-tfp-chat-subtitle]');
+        var tagTextEl = document.querySelector('[data-tfp-chat-tag]');
+        var tagDotEl = document.querySelector('[data-tfp-chat-dot]');
+        var statusEl = document.querySelector('[data-tfp-chat-status]');
+        var messagesEl = document.querySelector('[data-tfp-chat-messages]');
+        var replyForm = document.querySelector('[data-tfp-chat-reply]');
+        var replyInput = document.querySelector('[data-tfp-chat-input]');
+        var resolveBtn = document.querySelector('[data-tfp-mark-resolved]');
+        var newTicketBtns = Array.prototype.slice.call(document.querySelectorAll('[data-tfp-new-ticket]'));
         var newTicketModal = document.querySelector('[data-tfp-new-ticket-modal]');
-        var newTicketForm  = document.querySelector('[data-tfp-new-ticket-form]');
+        var newTicketForm = document.querySelector('[data-tfp-new-ticket-form]');
         var modalCloseBtns = document.querySelectorAll('[data-tfp-modal-close]');
+
+        var demoDataEl = document.getElementById('tfpDemoTicketsJSON');
+        var demoTickets = {};
+        if (demoDataEl) {
+            try {
+                demoTickets = JSON.parse(demoDataEl.textContent);
+            } catch (e) {
+                console.error('Error parsing demo tickets JSON', e);
+            }
+        }
 
         var state = {
             activeTicketId: null,
@@ -31,6 +40,10 @@
         };
 
         function ajax(action, data) {
+            if (typeof tfpChatSettings === 'undefined') {
+                return Promise.reject(new Error('Settings missing'));
+            }
+
             var body = new URLSearchParams(Object.assign({
                 action: action,
                 tfp_chat_nonce: tfpChatSettings.nonce,
@@ -45,10 +58,15 @@
             });
         }
 
+        /**
+         * Render chat message bubble matching Figma media_1790601569672.png
+         * - Student message (theirs): Avatar on Left, Teal Bubble, Left Timestamp
+         * - Support message (mine): Avatar on Right, Light Gray Bubble, Right Timestamp
+         */
         function renderMessage(msg) {
             var wrap = document.createElement('div');
             wrap.className = 'tfp-dash-msg ' + (msg.is_mine ? 'tfp-dash-msg--mine' : 'tfp-dash-msg--theirs');
-            wrap.dataset.id = msg.id;
+            if (msg.id) wrap.dataset.id = msg.id;
 
             var avatar = document.createElement('span');
             avatar.className = 'tfp-dash-msg__avatar';
@@ -56,13 +74,13 @@
             if (msg.avatar_url) {
                 var image = document.createElement('img');
                 image.src = msg.avatar_url;
-                image.alt = '';
+                image.alt = msg.sender_name || '';
                 image.loading = 'lazy';
                 avatar.appendChild(image);
             }
 
-            var content = document.createElement('div');
-            content.className = 'tfp-dash-msg__content';
+            var body = document.createElement('div');
+            body.className = 'tfp-dash-msg__body';
 
             var bubble = document.createElement('div');
             bubble.className = 'tfp-dash-msg__bubble';
@@ -70,12 +88,18 @@
 
             var time = document.createElement('div');
             time.className = 'tfp-dash-msg__time';
-            time.textContent = (msg.is_mine ? '' : msg.sender_name + ' · ') + msg.created_at;
+            time.textContent = msg.created_at || '';
 
-            content.appendChild(bubble);
-            content.appendChild(time);
-            wrap.appendChild(avatar);
-            wrap.appendChild(content);
+            body.appendChild(bubble);
+            body.appendChild(time);
+
+            if (msg.is_mine) {
+                wrap.appendChild(body);
+                wrap.appendChild(avatar);
+            } else {
+                wrap.appendChild(avatar);
+                wrap.appendChild(body);
+            }
 
             return wrap;
         }
@@ -95,7 +119,7 @@
                 resolved: 'Resolved'
             };
 
-            statusEl.textContent = labels[status] || status;
+            statusEl.textContent = labels[status] || (status.charAt(0).toUpperCase() + status.slice(1));
             statusEl.dataset.status = status || '';
 
             if (resolveBtn) {
@@ -122,7 +146,7 @@
                     status === state.activeFilter ||
                     category === state.activeFilter;
 
-                item.hidden = !(matchesSearch && matchesFilter);
+                item.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
             });
         }
 
@@ -144,7 +168,7 @@
         }
 
         function poll() {
-            if (!state.activeTicketId) return;
+            if (!state.activeTicketId || String(state.activeTicketId).indexOf('demo-') === 0) return;
 
             ajax('tfp_chat_get_messages', {
                 ticket_id: state.activeTicketId,
@@ -168,7 +192,7 @@
                 setStatusBadge(res.status);
                 updateTicketStatusInList(state.activeTicketId, res.status);
             }).catch(function () {
-                // Keep the current conversation usable if a temporary poll fails.
+                // Keep current conversation usable on temporary network poll fail
             });
         }
 
@@ -177,8 +201,6 @@
 
             var ticketId = item.getAttribute('data-ticket-id');
             var name = item.querySelector('.tfp-dash-ticketlist__name');
-            var category = item.querySelector('.tfp-dash-ticketlist__category');
-            var avatar = item.querySelector('.tfp-dash-ticketlist__avatar img');
 
             stopPolling();
 
@@ -189,21 +211,41 @@
                 el.classList.toggle('is-active', el === item);
             });
 
-            if (emptyPanel) emptyPanel.hidden = true;
-            if (threadPanel) threadPanel.hidden = false;
-            if (titleEl) titleEl.textContent = name ? name.textContent.trim() : '';
-            if (subtitleEl) subtitleEl.textContent = category ? category.textContent.trim() : '';
+            if (emptyPanel) emptyPanel.style.display = 'none';
+            if (threadPanel) threadPanel.style.display = '';
 
-            if (avatarEl) {
-                avatarEl.innerHTML = '';
-                if (avatar) {
-                    var avatarClone = avatar.cloneNode(true);
-                    avatarClone.removeAttribute('loading');
-                    avatarEl.appendChild(avatarClone);
+            // Handle Demo Ticket (Figma Mode)
+            if (String(ticketId).indexOf('demo-') === 0 && demoTickets[ticketId]) {
+                var dData = demoTickets[ticketId];
+
+                if (titleEl) titleEl.textContent = dData.title || (name ? name.textContent.trim() : '');
+                if (subtitleEl) subtitleEl.textContent = dData.meta || '';
+                if (tagTextEl) tagTextEl.textContent = dData.tag_label || dData.category_label || '';
+
+                if (tagDotEl) {
+                    tagDotEl.className = 'tfp-dash-chatpanel__tag-dot tfp-dash-chatpanel__tag-dot--' + (dData.dot_class || 'teal');
                 }
+
+                setStatusBadge(dData.status || 'open');
+
+                if (messagesEl) {
+                    messagesEl.innerHTML = '';
+                    (dData.messages || []).forEach(function (msg) {
+                        messagesEl.appendChild(renderMessage(msg));
+                    });
+                    scrollMessagesToBottom();
+                }
+                return;
             }
 
-            messagesEl.innerHTML = '';
+            // Real WordPress Ticket Mode
+            if (titleEl) titleEl.textContent = name ? name.textContent.trim() : '';
+
+            var catEl = item.querySelector('.tfp-dash-ticketlist__category');
+            if (subtitleEl) subtitleEl.textContent = catEl ? catEl.textContent.trim() : '';
+            if (tagTextEl) tagTextEl.textContent = catEl ? catEl.textContent.trim() : '';
+
+            if (messagesEl) messagesEl.innerHTML = '';
 
             ajax('tfp_chat_get_messages', {
                 ticket_id: ticketId,
@@ -220,19 +262,20 @@
                 setStatusBadge(res.status);
                 updateTicketStatusInList(ticketId, res.status);
 
-                state.pollTimer = setInterval(poll, tfpChatSettings.pollInterval || 4000);
+                state.pollTimer = setInterval(poll, (typeof tfpChatSettings !== 'undefined' && tfpChatSettings.pollInterval) || 4000);
             }).catch(function () {
-                if (emptyPanel) emptyPanel.hidden = false;
-                if (threadPanel) threadPanel.hidden = true;
+                // Keep thread open
             });
         }
 
+        // Attach ticket click listeners
         items.forEach(function (item) {
             item.addEventListener('click', function () {
                 openTicket(item);
             });
         });
 
+        // Search input
         if (searchInput) {
             searchInput.addEventListener('input', function () {
                 state.searchTerm = searchInput.value.trim().toLowerCase();
@@ -240,6 +283,7 @@
             });
         }
 
+        // Filter tabs
         if (tabsWrap) {
             tabsWrap.addEventListener('click', function (event) {
                 var btn = event.target.closest('button[data-filter]');
@@ -255,14 +299,42 @@
             });
         }
 
+        // Reply form submit
         if (replyForm) {
             replyForm.addEventListener('submit', function (event) {
                 event.preventDefault();
 
                 var message = replyInput.value.trim();
-
                 if (!message || !state.activeTicketId || replyInput.disabled) return;
 
+                // If currently on demo ticket, append message directly
+                if (String(state.activeTicketId).indexOf('demo-') === 0) {
+                    var now = new Date();
+                    var hours = now.getHours();
+                    var minutes = now.getMinutes();
+                    var ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12;
+                    hours = hours ? hours : 12;
+                    minutes = minutes < 10 ? '0' + minutes : minutes;
+                    var timeStr = hours + ':' + minutes + ' ' + ampm;
+
+                    var newMsg = {
+                        id: Date.now(),
+                        is_mine: true,
+                        sender_name: 'Support',
+                        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+                        message: message,
+                        created_at: timeStr,
+                    };
+
+                    replyInput.value = '';
+                    messagesEl.appendChild(renderMessage(newMsg));
+                    scrollMessagesToBottom();
+                    replyInput.focus();
+                    return;
+                }
+
+                // Real WordPress AJAX reply
                 replyInput.disabled = true;
 
                 ajax('tfp_chat_send_message', {
@@ -278,7 +350,6 @@
                     messagesEl.appendChild(renderMessage(res.message));
                     state.lastMessageId = Math.max(state.lastMessageId, res.message.id);
                     scrollMessagesToBottom();
-
                     setStatusBadge(res.status);
                     updateTicketStatusInList(state.activeTicketId, res.status);
                 }).catch(function () {
@@ -290,9 +361,16 @@
             });
         }
 
+        // Mark Resolved button
         if (resolveBtn) {
             resolveBtn.addEventListener('click', function () {
                 if (!state.activeTicketId || resolveBtn.disabled) return;
+
+                if (String(state.activeTicketId).indexOf('demo-') === 0) {
+                    setStatusBadge('resolved');
+                    updateTicketStatusInList(state.activeTicketId, 'resolved');
+                    return;
+                }
 
                 resolveBtn.disabled = true;
 
@@ -314,6 +392,7 @@
             });
         }
 
+        // New Ticket Modal controls
         newTicketBtns.forEach(function (button) {
             button.addEventListener('click', function () {
                 if (newTicketModal) newTicketModal.hidden = false;
@@ -354,10 +433,13 @@
             });
         }
 
-        // Match the dashboard inbox experience: when conversations exist,
-        // open the newest one immediately instead of leaving the right panel empty.
-        if (items.length) {
-            openTicket(items[0]);
+        // Initial selection: open the active or first ticket
+        var initialItem = items.filter(function (it) {
+            return it.classList.contains('is-active');
+        })[0] || items[0];
+
+        if (initialItem) {
+            openTicket(initialItem);
         }
     });
 })();

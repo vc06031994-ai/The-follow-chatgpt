@@ -1,5 +1,6 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 /**
  * The dedicated "Continue Program" overview page (template tfp-dashboard-program).
@@ -13,7 +14,7 @@ if (!defined('ABSPATH')) exit;
 function tfp_dashboard_render_program_content()
 {
     $user_id = get_current_user_id();
-    $state   = function_exists('tfp_dashboard_get_program_state') ? tfp_dashboard_get_program_state() : null;
+    $state = function_exists('tfp_dashboard_get_program_state') ? tfp_dashboard_get_program_state() : null;
 
     $course_id = ($state && !empty($state['course_id']))
         ? (int) $state['course_id']
@@ -26,7 +27,7 @@ function tfp_dashboard_render_program_content()
     tfp_dashboard_render_page_header(
         __('Program', 'tfp-dashboard'),
         sprintf(esc_html__('Welcome back, %s', 'tfp-dashboard'), esc_html(tfp_dashboard_user_name())),
-        __('Track your progress, catch up on what\'s due, and jump back into your lessons.', 'tfp-dashboard')
+        __("Here's where you are today — your progress, what's due, and what's coming up.", 'tfp-dashboard')
     );
 
     $has_weeks = $course_id && function_exists('tfp_ld_get_weeks') && !empty(tfp_ld_get_weeks($course_id));
@@ -38,30 +39,33 @@ function tfp_dashboard_render_program_content()
         ?>
         <div class="tfp-dash-panel tfp-program-empty">
             <h3><?php esc_html_e('Your program isn\'t ready yet', 'tfp-dashboard'); ?></h3>
-            <p><?php esc_html_e('Once you\'re enrolled and your class content is available, your weekly journey and progress will appear here.', 'tfp-dashboard'); ?></p>
-            <a href="<?php echo esc_url($home_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Back to Home', 'tfp-dashboard'); ?></a>
+            <p><?php esc_html_e('Once you\'re enrolled and your class content is available, your weekly journey and progress will appear here.', 'tfp-dashboard'); ?>
+            </p>
+            <a href="<?php echo esc_url($home_url); ?>"
+                class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Back to Home', 'tfp-dashboard'); ?></a>
         </div>
         <?php
         return;
     }
 
-    $overdue  = function_exists('tfp_program_overdue_weeks') ? tfp_program_overdue_weeks($user_id, $course_id, $state) : [];
+    $overdue = function_exists('tfp_program_overdue_weeks') ? tfp_program_overdue_weeks($user_id, $course_id, $state) : [];
+    $tasks = function_exists('tfp_program_get_pending_tasks') ? tfp_program_get_pending_tasks($user_id, $course_id, $state) : [];
     $week_url = function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-week') : '#';
 
     // Stat tiles span the full width above the two-column body.
     tfp_dashboard_render_program_stats($user_id, $course_id, $state);
     ?>
     <div>
-    <?php    
-    tfp_dashboard_render_program_journey($course_id, $state);
-     ?>
+        <?php
+        tfp_dashboard_render_program_journey($course_id, $state);
+        ?>
     </div>
 
 
     <div class="tfp-program-grid">
         <div class="tfp-program-grid__main">
             <?php
-            
+
             tfp_dashboard_render_program_current_lesson($user_id, $course_id, $week_url);
 
             // PAST DUE — the single most-overdue week (earliest due date).
@@ -71,7 +75,7 @@ function tfp_dashboard_render_program_content()
             ?>
         </div>
         <aside class="tfp-program-grid__aside">
-            <?php tfp_dashboard_render_program_tasks($overdue, $week_url); ?>
+            <?php tfp_dashboard_render_program_tasks($tasks, $week_url); ?>
         </aside>
     </div>
     <?php
@@ -84,7 +88,7 @@ function tfp_dashboard_render_program_content()
 function tfp_dashboard_render_program_stats($user_id, $course_id, $state)
 {
     $progress = tfp_ld_get_journey_progress($user_id, $course_id);
-    $total    = (int) $progress['total'];
+    $total = (int) $progress['total'];
 
     $start_ts = function_exists('tfp_program_start_ts') ? tfp_program_start_ts($state) : 0;
 
@@ -137,40 +141,52 @@ function tfp_dashboard_render_program_stats($user_id, $course_id, $state)
 
     $tiles = [
         [
-            'icon'  => 'check-circle',
+            'icon' => 'check-circle',
             'label' => __('Lessons Completed', 'tfp-dashboard'),
             'value' => number_format_i18n((int) $progress['completed']),
-            'sub'   => sprintf(__('of %d total lessons', 'tfp-dashboard'), $total),
+            'sub' => sprintf(__('of %d total lessons', 'tfp-dashboard'), $total),
         ],
         [
-            'icon'  => 'calendar',
+            'icon' => 'calendar',
             'label' => __('Current Week', 'tfp-dashboard'),
             'value' => sprintf(__('Week %d', 'tfp-dashboard'), $current_week_num),
-            'sub'   => $current_week_sub,
+            'sub' => $current_week_sub,
         ],
         [
-            'icon'  => 'grades',
+            'icon' => 'grades',
             'label' => __('Overall Grade', 'tfp-dashboard'),
             'value' => $overall !== '' ? $overall : '—',
-            'sub'   => $overall !== '' ? '' : __('Not graded yet', 'tfp-dashboard'),
+            'sub' => $overall !== '' ? __('Current Course Average', 'tfp-dashboard') : __('Not graded yet', 'tfp-dashboard'),
+            'url' => function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-grades') : '#',
         ],
         [
-            'icon'  => 'clock',
+            'icon' => 'clock',
             'label' => __('Next Meeting', 'tfp-dashboard'),
             'value' => $meeting['value'],
-            'sub'   => $meeting['sub'],
+            'sub' => $meeting['sub'],
         ],
     ];
     ?>
     <div class="tfp-stat-tiles">
-        <?php foreach ($tiles as $t) : ?>
-            <div class="tfp-stat-tile">
-                <span class="tfp-stat-tile__label"><?php echo esc_html($t['label']); ?></span>
-                <span class="tfp-stat-tile__value"><?php echo esc_html($t['value']); ?></span>
-                <?php if (!empty($t['sub'])) : ?>
-                    <span class="tfp-stat-tile__sub"><?php echo esc_html($t['sub']); ?></span>
-                <?php endif; ?>
-            </div>
+        <?php foreach ($tiles as $t): ?>
+            <?php if (!empty($t['url']) && $t['url'] !== '#'): ?>
+                <a href="<?php echo esc_url($t['url']); ?>" class="tfp-stat-tile tfp-stat-tile--link"
+                    style="text-decoration: none; color: inherit;">
+                    <span class="tfp-stat-tile__label"><?php echo esc_html($t['label']); ?></span>
+                    <span class="tfp-stat-tile__value"><?php echo esc_html($t['value']); ?></span>
+                    <?php if (!empty($t['sub'])): ?>
+                        <span class="tfp-stat-tile__sub"><?php echo esc_html($t['sub']); ?></span>
+                    <?php endif; ?>
+                </a>
+            <?php else: ?>
+                <div class="tfp-stat-tile">
+                    <span class="tfp-stat-tile__label"><?php echo esc_html($t['label']); ?></span>
+                    <span class="tfp-stat-tile__value"><?php echo esc_html($t['value']); ?></span>
+                    <?php if (!empty($t['sub'])): ?>
+                        <span class="tfp-stat-tile__sub"><?php echo esc_html($t['sub']); ?></span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
         <?php endforeach; ?>
     </div>
     <?php
@@ -183,7 +199,7 @@ function tfp_dashboard_render_program_stats($user_id, $course_id, $state)
 function tfp_dashboard_program_next_meeting($user_id, $course_id, $state)
 {
     $value = '';
-    $sub   = '';
+    $sub = '';
 
     $cw = tfp_ld_get_current_week($user_id, $course_id);
 
@@ -203,15 +219,22 @@ function tfp_dashboard_program_next_meeting($user_id, $course_id, $state)
             }
         }
 
-        // Show only the meeting time in the sub text
-        if ($time) {
+        $cohort_name = !empty($state['cohort']['name']) ? $state['cohort']['name'] : '';
+        if ($time && $cohort_name) {
+            $sub = $time . ' · ' . $cohort_name;
+        } elseif ($time) {
             $sub = $time;
+        } elseif ($cohort_name) {
+            $sub = $cohort_name;
         }
     }
 
     // If there is no specific meeting date/time
     if ($value === '' && !empty($state['cohort']['schedule'])) {
         $value = $state['cohort']['schedule'];
+        if (empty($sub) && !empty($state['cohort']['name'])) {
+            $sub = $state['cohort']['name'];
+        }
     }
 
     if ($value === '') {
@@ -220,7 +243,7 @@ function tfp_dashboard_program_next_meeting($user_id, $course_id, $state)
 
     return [
         'value' => $value,
-        'sub'   => $sub,
+        'sub' => $sub,
     ];
 }
 
@@ -232,10 +255,10 @@ function tfp_dashboard_program_next_meeting($user_id, $course_id, $state)
  */
 function tfp_dashboard_render_program_journey($course_id, $state)
 {
-    $user_id      = get_current_user_id();
-    $weeks        = tfp_ld_get_weeks($course_id);
+    $user_id = get_current_user_id();
+    $weeks = tfp_ld_get_weeks($course_id);
     $current_week = tfp_ld_get_current_week($user_id, $course_id);
-    $progress     = tfp_ld_get_journey_progress($user_id, $course_id);
+    $progress = tfp_ld_get_journey_progress($user_id, $course_id);
 
     // Group lessons into sections (unchanged from the former Home journey).
     $course_sections = [];
@@ -243,14 +266,14 @@ function tfp_dashboard_render_program_journey($course_id, $state)
         $course_sections = learndash_30_get_course_sections($course_id);
     }
 
-    $sections_data       = [];
+    $sections_data = [];
     $current_section_idx = -1;
 
     foreach ($weeks as $week) {
         if (isset($course_sections[$week->ID]) || $current_section_idx === -1) {
             $current_section_idx++;
             $sections_data[$current_section_idx] = [
-                'title'   => isset($course_sections[$week->ID]->post_title) ? $course_sections[$week->ID]->post_title : 'Section ' . ($current_section_idx + 1),
+                'title' => isset($course_sections[$week->ID]->post_title) ? $course_sections[$week->ID]->post_title : 'Section ' . ($current_section_idx + 1),
                 'lessons' => [],
             ];
         }
@@ -259,7 +282,7 @@ function tfp_dashboard_render_program_journey($course_id, $state)
 
     foreach ($sections_data as $index => &$section) {
         $all_complete = true;
-        $is_current   = false;
+        $is_current = false;
 
         foreach ($section['lessons'] as $week) {
             if (!tfp_ld_is_week_complete($user_id, $week->ID)) {
@@ -310,19 +333,26 @@ function tfp_dashboard_render_program_journey($course_id, $state)
         <div class="tfp-journey__header">
             <h3><?php printf(esc_html__('%d Week Discipleship Journey', 'tfp-dashboard'), $progress['total']); ?></h3>
             <div class="tfp-journey__legend">
-                <span class="tfp-journey__legend-item"><span class="tfp-journey__circle tfp-journey__circle--complete tfp-journey__circle--small"></span> <?php esc_html_e('Complete', 'tfp-dashboard'); ?></span>
-                <span class="tfp-journey__legend-item"><span class="tfp-journey__circle tfp-journey__circle--current tfp-journey__circle--small"></span> <?php esc_html_e('Current', 'tfp-dashboard'); ?></span>
-                <span class="tfp-journey__legend-item"><span class="tfp-journey__circle tfp-journey__circle--upcoming tfp-journey__circle--small"></span> <?php esc_html_e('Upcoming', 'tfp-dashboard'); ?></span>
+                <span class="tfp-journey__legend-item"><span
+                        class="tfp-journey__circle tfp-journey__circle--complete tfp-journey__circle--small"></span>
+                    <?php esc_html_e('Complete', 'tfp-dashboard'); ?></span>
+                <span class="tfp-journey__legend-item"><span
+                        class="tfp-journey__circle tfp-journey__circle--current tfp-journey__circle--small"></span>
+                    <?php esc_html_e('Current', 'tfp-dashboard'); ?></span>
+                <span class="tfp-journey__legend-item"><span
+                        class="tfp-journey__circle tfp-journey__circle--upcoming tfp-journey__circle--small"></span>
+                    <?php esc_html_e('Upcoming', 'tfp-dashboard'); ?></span>
             </div>
         </div>
 
-        <?php if ($meta_line !== '') : ?>
-        <div class="tfp-journey__desc"><?php echo esc_html($meta_line); ?></div>
+        <?php if ($meta_line !== ''): ?>
+            <div class="tfp-journey__desc"><?php echo esc_html($meta_line); ?></div>
         <?php endif; ?>
 
         <div class="tfp-journey__circles">
-            <?php foreach ($sections_data as $index => $section) : ?>
-                <span class="tfp-journey__circle tfp-journey__circle--<?php echo esc_attr($section['status']); ?>" title="<?php echo esc_attr($section['title']); ?>">
+            <?php foreach ($sections_data as $index => $section): ?>
+                <span class="tfp-journey__circle tfp-journey__circle--<?php echo esc_attr($section['status']); ?>"
+                    title="<?php echo esc_attr($section['title']); ?>">
                     <?php echo esc_html($index + 1); ?>
                 </span>
             <?php endforeach; ?>
@@ -332,8 +362,10 @@ function tfp_dashboard_render_program_journey($course_id, $state)
             <div class="tfp-journey__progressbar-fill" style="width: <?php echo esc_attr($percent); ?>%;"></div>
         </div>
         <div class="tfp-journey__progress-label-wrap">
-            <span class="tfp-journey__progress-label"><?php printf(esc_html__('%1$d of %2$d lessons completed', 'tfp-dashboard'), $progress['completed'], $progress['total']); ?></span>
-            <span class="tfp-journey__progress-label-right"><?php printf(esc_html__('Week %1$d of %2$d', 'tfp-dashboard'), $current_week_number, $progress['total']); ?></span>
+            <span
+                class="tfp-journey__progress-label"><?php printf(esc_html__('%1$d of %2$d lessons completed', 'tfp-dashboard'), $progress['completed'], $progress['total']); ?></span>
+            <span
+                class="tfp-journey__progress-label-right"><?php printf(esc_html__('Week %1$d of %2$d', 'tfp-dashboard'), $current_week_number, $progress['total']); ?></span>
         </div>
     </div>
     <?php
@@ -349,15 +381,25 @@ function tfp_dashboard_render_program_current_lesson($user_id, $course_id, $week
 
     if ($current_week) {
         $continue_url = add_query_arg(['lesson_id' => $current_week->ID], $week_url);
+        $weeks = function_exists('tfp_ld_get_weeks') ? tfp_ld_get_weeks($course_id) : [];
+        $week_num = 1;
+        foreach ($weeks as $idx => $w) {
+            if ($w->ID === $current_week->ID) {
+                $week_num = $idx + 1;
+                break;
+            }
+        }
+        $sub_title = sprintf(__('In Progress · Week %1$d %2$s', 'tfp-dashboard'), $week_num, $current_week->post_title);
         ?>
         <div class="tfp-dash-panel tfp-journey__current">
             <h3><?php esc_html_e('Current Lesson', 'tfp-dashboard'); ?></h3>
-            <p class="tfp-journey__current-title"><?php echo esc_html($current_week->post_title); ?></p>
+            <p class="tfp-journey__current-title"><?php echo esc_html($sub_title); ?></p>
             <div class="tfp-journey__current-actions">
-                <a href="<?php echo esc_url($continue_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary">
+                <a href="<?php echo esc_url($continue_url); ?>" class="tfp-current-lesson-btn">
                     <?php esc_html_e('Continue Lesson', 'tfp-dashboard'); ?>
                 </a>
-                <a href="<?php echo esc_url(apply_filters('tfp_dashboard_discord_url', '#')); ?>" target="_blank" rel="noopener" class="tfp-dash-btn tfp-dash-btn--primary">
+                <a href="<?php echo esc_url(apply_filters('tfp_dashboard_discord_url', '#')); ?>" target="_blank" rel="noopener"
+                    class="tfp-current-lesson-btn">
                     <?php esc_html_e('Go to Discord', 'tfp-dashboard'); ?>
                 </a>
             </div>
@@ -381,18 +423,20 @@ function tfp_dashboard_render_program_current_lesson($user_id, $course_id, $week
  */
 function tfp_dashboard_render_program_pastdue($item, $week_url)
 {
-    $week         = $item['week'];
-    $index        = (int) $item['index'];
+    $week = $item['week'];
+    $index = (int) $item['index'];
     $complete_url = add_query_arg(['lesson_id' => $week->ID, 'tab' => 'homework'], $week_url);
-    $due_label    = date_i18n(get_option('date_format'), $item['due_ts']);
+    $due_label = date_i18n('M j', $item['due_ts']); // e.g. Jun 5
     ?>
     <div class="tfp-dash-panel tfp-pastdue-card">
-        <div class="tfp-pastdue-card__head">
-            <span class="tfp-pastdue-card__pill"><?php esc_html_e('PAST DUE', 'tfp-dashboard'); ?></span>
-            <span class="tfp-pastdue-card__due"><?php printf(esc_html__('Due %s', 'tfp-dashboard'), esc_html($due_label)); ?></span>
-        </div>
-        <h3 class="tfp-pastdue-card__title"><?php printf(esc_html__('Week %1$d Homework — %2$s', 'tfp-dashboard'), $index + 1, esc_html($week->post_title)); ?></h3>
-        <a href="<?php echo esc_url($complete_url); ?>" class="tfp-dash-btn tfp-reded-btn">
+        <h3 class="tfp-pastdue-card__tag"><?php esc_html_e('PAST DUE', 'tfp-dashboard'); ?></h3>
+        <h4 class="tfp-pastdue-card__title"><?php printf(esc_html__('Week %d Homework', 'tfp-dashboard'), $index + 1); ?>
+        </h4>
+        <p class="tfp-pastdue-card__meta">
+            <?php echo esc_html($week->post_title); ?> &middot;
+            <?php printf(esc_html__('Due %s', 'tfp-dashboard'), esc_html($due_label)); ?>
+        </p>
+        <a href="<?php echo esc_url($complete_url); ?>" class="tfp-pastdue-card__btn">
             <?php esc_html_e('Complete Now', 'tfp-dashboard'); ?>
         </a>
     </div>
@@ -400,32 +444,38 @@ function tfp_dashboard_render_program_pastdue($item, $week_url)
 }
 
 /**
- * The Pending Tasks aside — every overdue week as a task row, or an all-caught-up
+ * The Pending Tasks aside — full list of tasks with custom actions, or an all-caught-up
  * empty state.
  */
-function tfp_dashboard_render_program_tasks($overdue, $week_url)
+function tfp_dashboard_render_program_tasks($tasks, $week_url)
 {
     ?>
     <div class="tfp-dash-panel tfp-tasks-panel">
-        <h3 class="tfp-tasks-panel__title"><?php esc_html_e('Pending Tasks', 'tfp-dashboard'); ?></h3>
-        <?php if (empty($overdue)) : ?>
+        <div class="tfp-tasks-panel__header">
+            <h3 class="tfp-tasks-panel__title"><?php esc_html_e('Pending Tasks', 'tfp-dashboard'); ?></h3>
+            <a href="#tfp-tasks-list" class="tfp-tasks-panel__view-all"
+                id="tfp-tasks-view-all"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
+        </div>
+        <p class="tfp-tasks-panel__subtitle"><?php esc_html_e('Tasks that need your Attention', 'tfp-dashboard'); ?></p>
+
+        <?php if (empty($tasks)): ?>
             <div class="tfp-tasks-empty">
                 <p><?php esc_html_e("You're all caught up", 'tfp-dashboard'); ?></p>
             </div>
-        <?php else : ?>
-            <ul class="tfp-tasks-list">
-                <?php foreach ($overdue as $item) :
-                    $week         = $item['week'];
-                    $complete_url = add_query_arg(['lesson_id' => $week->ID, 'tab' => 'homework'], $week_url);
-                    $due_label    = date_i18n(get_option('date_format'), $item['due_ts']);
+        <?php else: ?>
+            <ul class="tfp-tasks-list" id="tfp-tasks-list">
+                <?php foreach ($tasks as $task):
+                    $btn_cls = (!empty($task['btn_type']) && $task['btn_type'] === 'gray') ? 'tfp-task-btn--gray' : 'tfp-task-btn--teal';
                     ?>
                     <li class="tfp-task-row">
                         <div class="tfp-task-row__info">
-                            <span class="tfp-task-row__title"><?php printf(esc_html__('Week %d Homework', 'tfp-dashboard'), (int) $item['index'] + 1); ?></span>
-                            <span class="tfp-task-row__meta"><?php printf(esc_html__('Due %s', 'tfp-dashboard'), esc_html($due_label)); ?></span>
+                            <span class="tfp-task-row__title"><?php echo esc_html($task['title']); ?></span>
+                            <?php if (!empty($task['meta'])): ?>
+                                <span class="tfp-task-row__meta"><?php echo esc_html($task['meta']); ?></span>
+                            <?php endif; ?>
                         </div>
-                        <a href="<?php echo esc_url($complete_url); ?>" class="tfp-dash-btn tfp-dash-btn--sm tfp-dash-btn--primary">
-                            <?php esc_html_e('Complete', 'tfp-dashboard'); ?>
+                        <a href="<?php echo esc_url($task['url']); ?>" class="tfp-task-btn <?php echo esc_attr($btn_cls); ?>">
+                            <?php echo esc_html($task['btn_text']); ?>
                         </a>
                     </li>
                 <?php endforeach; ?>

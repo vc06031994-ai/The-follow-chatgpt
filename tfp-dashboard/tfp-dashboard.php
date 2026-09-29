@@ -7,7 +7,8 @@
  * Text Domain: tfp-dashboard
  */
 
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 define('TFP_DASH_VERSION', '1.2.6');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
@@ -18,7 +19,7 @@ define('TFP_DASH_URL', plugin_dir_url(__FILE__));
  */
 register_activation_hook(__FILE__, function () {
     global $wpdb;
-    $table           = $wpdb->prefix . 'tfp_ticket_messages';
+    $table = $wpdb->prefix . 'tfp_ticket_messages';
     $charset_collate = $wpdb->get_charset_collate();
 
     $sql = "CREATE TABLE IF NOT EXISTS {$table} (
@@ -87,6 +88,7 @@ require_once TFP_DASH_PATH . 'includes/grades/helpers.php';
 require_once TFP_DASH_PATH . 'includes/grades/admin.php';
 require_once TFP_DASH_PATH . 'includes/admin/submissions.php';
 require_once TFP_DASH_PATH . 'includes/page-program.php';
+require_once TFP_DASH_PATH . 'includes/page-grades.php';
 
 /**
  * Dashboard pages are logged-in, per-user, dynamic content — they must
@@ -113,8 +115,8 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_style('tfp-checkout', TFP_DASH_URL . 'assets/css/checkout.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
         wp_enqueue_script('tfp-checkout', TFP_DASH_URL . 'assets/js/checkout.js', [], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-checkout', 'tfpCheckoutSettings', [
-            'ajaxUrl'     => admin_url('admin-ajax.php'),
-            'nonce'       => wp_create_nonce('tfp_checkout_nonce'),
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('tfp_checkout_nonce'),
             'defaultStep' => 'cart',
             'checkoutUrl' => function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : home_url('/'),
         ]);
@@ -137,8 +139,8 @@ add_action('wp_enqueue_scripts', function () {
 
         wp_localize_script('tfp-checkout-paypal', 'tfpPayPalSettings', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('tfp_checkout_nonce'),
-            'total'   => $paypal_total
+            'nonce' => wp_create_nonce('tfp_checkout_nonce'),
+            'total' => $paypal_total
         ]);
     }
 
@@ -158,17 +160,17 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_style('tfp-order-details', TFP_DASH_URL . 'assets/css/order-details.css', [], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-order-confirmation', TFP_DASH_URL . 'assets/css/order-confirmation.css', ['tfp-order-details'], TFP_DASH_VERSION);
 
-        $course_id  = function_exists('tfp_ld_get_program_course_id') ? (int) tfp_ld_get_program_course_id() : 0;
+        $course_id = function_exists('tfp_ld_get_program_course_id') ? (int) tfp_ld_get_program_course_id() : 0;
         $product_id = ($course_id && function_exists('tfp_billing_get_product_id_for_course'))
             ? (int) tfp_billing_get_product_id_for_course($course_id)
             : 0;
         $state = function_exists('tfp_dashboard_get_program_state') ? tfp_dashboard_get_program_state() : [];
 
         wp_localize_script('tfp-course-checkout', 'tfpCourseCheckout', [
-            'ajaxUrl'    => admin_url('admin-ajax.php'),
-            'nonce'      => wp_create_nonce('tfp_checkout_nonce'),
-            'courseId'   => $course_id,
-            'productId'  => $product_id,
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('tfp_checkout_nonce'),
+            'courseId' => $course_id,
+            'productId' => $product_id,
             'faApproved' => !empty($state['fa_status']) && $state['fa_status'] === 'approved',
             'faDiscount' => isset($state['fa_discount']) ? (int) $state['fa_discount'] : 0,
         ]);
@@ -179,7 +181,7 @@ add_action('wp_enqueue_scripts', function () {
             wp_localize_script('tfp-checkout-stripe', 'tfpStripeSettings', tfp_stripe_get_frontend_settings());
             wp_localize_script('tfp-checkout-stripe', 'tfpCheckoutSettings', [
                 'ajaxUrl' => admin_url('admin-ajax.php'),
-                'nonce'   => wp_create_nonce('tfp_checkout_nonce'),
+                'nonce' => wp_create_nonce('tfp_checkout_nonce'),
             ]);
             wp_enqueue_script('google-pay-sdk', 'https://pay.google.com/gp/p/js/pay.js', [], null, true);
             wp_enqueue_script('tfp-checkout-googlepay', TFP_DASH_URL . 'assets/js/checkout-googlepay.js', ['tfp-course-checkout', 'google-pay-sdk', 'stripe-js'], TFP_DASH_VERSION, true);
@@ -194,8 +196,8 @@ add_action('wp_enqueue_scripts', function () {
         }
         wp_localize_script('tfp-checkout-paypal', 'tfpPayPalSettings', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('tfp_checkout_nonce'),
-            'total'   => $course_paypal_total,
+            'nonce' => wp_create_nonce('tfp_checkout_nonce'),
+            'total' => $course_paypal_total,
         ]);
     }
 
@@ -204,10 +206,10 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_script('tfp-dashboard-communication', TFP_DASH_URL . 'assets/js/communication.js', [], TFP_DASH_VERSION, true);
 
         wp_localize_script('tfp-dashboard-communication', 'tfpChatSettings', [
-            'ajaxUrl'     => admin_url('admin-ajax.php'),
-            'nonce'       => wp_create_nonce('tfp_chat_nonce'),
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('tfp_chat_nonce'),
             'currentUser' => get_current_user_id(),
-            'pollInterval'=> 4000,
+            'pollInterval' => 4000,
         ]);
     }
 
@@ -216,27 +218,23 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     if ($template === 'tfp-dashboard-payment-details') {
-        wp_enqueue_style('tfp-dashboard-payment-details', TFP_DASH_URL . 'assets/css/payment-details.css', ['tfp-dashboard-core', 'tfp-dashboard-forms'], TFP_DASH_VERSION);
-    }
+        $payment_css_path = TFP_DASH_PATH . 'assets/css/payment-details.css';
+        $payment_css_ver = file_exists($payment_css_path) ? (string) filemtime($payment_css_path) : TFP_DASH_VERSION;
+        wp_enqueue_style('tfp-dashboard-payment-details', TFP_DASH_URL . 'assets/css/payment-details.css', ['tfp-dashboard-core', 'tfp-dashboard-forms'], $payment_css_ver);
 
-    if ($template === 'tfp-dashboard-payment-details') {
-        wp_enqueue_style(
-            'tfp-dashboard-payment-details',
-            TFP_DASH_URL . 'assets/css/payment-details.css',
-            ['tfp-dashboard-core', 'tfp-dashboard-forms'],
-            TFP_DASH_VERSION
-        );
-    }
-
-    if ($template === 'tfp-dashboard-payment-details' && function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
-        wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
+        $deps = [];
+        $has_stripe = function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured();
+        if ($has_stripe) {
+            wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
+            $deps[] = 'stripe-js';
+        }
         $billing_script_path = TFP_DASH_PATH . 'assets/js/billing.js';
-        $billing_script_ver  = file_exists($billing_script_path) ? (string) filemtime($billing_script_path) : TFP_DASH_VERSION;
-        wp_enqueue_script('tfp-dashboard-billing', TFP_DASH_URL . 'assets/js/billing.js', ['stripe-js'], $billing_script_ver, true);
+        $billing_script_ver = file_exists($billing_script_path) ? (string) filemtime($billing_script_path) : TFP_DASH_VERSION;
+        wp_enqueue_script('tfp-dashboard-billing', TFP_DASH_URL . 'assets/js/billing.js', $deps, $billing_script_ver, true);
         wp_localize_script('tfp-dashboard-billing', 'tfpDashboardBilling', [
-            'ajaxUrl'        => admin_url('admin-ajax.php'),
-            'nonce'          => wp_create_nonce('tfp_billing_nonce'),
-            'publishableKey' => tfp_stripe_get_publishable_key(),
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('tfp_billing_nonce'),
+            'publishableKey' => $has_stripe ? tfp_stripe_get_publishable_key() : '',
         ]);
     }
 
@@ -244,7 +242,7 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_script('tfp-dashboard-financial-aid', TFP_DASH_URL . 'assets/js/financial-aid.js', [], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-dashboard-financial-aid', 'tfpFinancialAidSettings', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('tfp_financial_aid_nonce'),
+            'nonce' => wp_create_nonce('tfp_financial_aid_nonce'),
         ]);
     }
 
@@ -252,7 +250,7 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_script('tfp-dashboard-profile', TFP_DASH_URL . 'assets/js/profile.js', [], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-dashboard-profile', 'tfpProfileSettings', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('tfp_profile_nonce'),
+            'nonce' => wp_create_nonce('tfp_profile_nonce'),
         ]);
     }
 
@@ -267,16 +265,21 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_script('tfp-dashboard-week-test', TFP_DASH_URL . 'assets/js/week-test.js', ['tfp-dashboard-week'], TFP_DASH_VERSION, true);
         wp_enqueue_script('tfp-dashboard-week-notes', TFP_DASH_URL . 'assets/js/week-notes.js', ['tfp-dashboard-week'], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-dashboard-week', 'tfpWeekSettings', [
-            'ajaxUrl'        => admin_url('admin-ajax.php'),
-            'nonce'          => wp_create_nonce('tfp_week_nonce'),
-            'networkError'   => __('A network error occurred.', 'tfp-dashboard'),
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('tfp_week_nonce'),
+            'networkError' => __('A network error occurred.', 'tfp-dashboard'),
             'submittingText' => __('Submitting...', 'tfp-dashboard'),
-            'submitError'    => __('Error submitting quiz.', 'tfp-dashboard'),
+            'submitError' => __('Error submitting quiz.', 'tfp-dashboard'),
         ]);
     }
 
     if ($template === 'tfp-dashboard-program') {
         wp_enqueue_style('tfp-dashboard-program', TFP_DASH_URL . 'assets/css/program.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
+    }
+
+    if ($template === 'tfp-dashboard-grades') {
+        wp_enqueue_style('tfp-dashboard-grades', TFP_DASH_URL . 'assets/css/grades.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
+        wp_enqueue_script('tfp-dashboard-grades', TFP_DASH_URL . 'assets/js/grades.js', [], TFP_DASH_VERSION, true);
     }
 });
 

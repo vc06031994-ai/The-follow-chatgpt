@@ -1,9 +1,11 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 function tfp_dashboard_payment_token_summary($token)
 {
-    if (!$token || !is_object($token)) return null;
+    if (!$token || !is_object($token))
+        return null;
 
     $type = method_exists($token, 'get_type') ? (string) $token->get_type() : '';
     $gateway = method_exists($token, 'get_gateway_id') ? (string) $token->get_gateway_id() : '';
@@ -15,7 +17,8 @@ function tfp_dashboard_payment_token_summary($token)
     if ($is_card && method_exists($token, 'get_expiry_month') && method_exists($token, 'get_expiry_year')) {
         $month = (int) $token->get_expiry_month();
         $year = (string) $token->get_expiry_year();
-        if ($month && $year !== '') $expiry = sprintf('%02d / %s', $month, $year);
+        if ($month && $year !== '')
+            $expiry = sprintf('%02d / %s', $month, $year);
     }
 
     $kind = $is_card ? 'card' : (stripos($gateway, 'paypal') !== false ? 'paypal' : 'bank');
@@ -33,11 +36,13 @@ function tfp_dashboard_payment_token_summary($token)
 
 function tfp_dashboard_get_payment_tokens($user_id)
 {
-    if (!$user_id || !class_exists('WC_Payment_Tokens')) return [];
+    if (!$user_id || !class_exists('WC_Payment_Tokens'))
+        return [];
     $rows = [];
     foreach (WC_Payment_Tokens::get_customer_tokens($user_id) as $token) {
         $summary = tfp_dashboard_payment_token_summary($token);
-        if ($summary && !empty($summary['id'])) $rows[] = $summary;
+        if ($summary && !empty($summary['id']))
+            $rows[] = $summary;
     }
     return $rows;
 }
@@ -58,7 +63,8 @@ function tfp_dashboard_render_payment_method_row($method)
     $is_legacy = !empty($method['legacy']);
     $title = $method['label'] . (!empty($method['last4']) ? ' •••• ' . $method['last4'] : '');
     $detail = !empty($method['expiry']) ? $method['expiry'] : '';
-    if ($method['kind'] === 'paypal') $detail = tfp_billing_get_billing_email();
+    if ($method['kind'] === 'paypal')
+        $detail = tfp_billing_get_billing_email();
     ?>
     <div class="tfp-payment-method-row" data-tfp-payment-token="<?php echo esc_attr($method['id']); ?>">
         <div class="tfp-payment-method-row__main">
@@ -66,20 +72,25 @@ function tfp_dashboard_render_payment_method_row($method)
             <div class="tfp-payment-method-row__copy">
                 <div class="tfp-payment-method-row__title">
                     <strong><?php echo esc_html($title); ?></strong>
-                    <?php if ($method['default']) : ?><span class="tfp-payment-default">DEFAULT</span><?php endif; ?>
+                    <?php if ($method['default']): ?><span class="tfp-payment-default">DEFAULT</span><?php endif; ?>
                 </div>
-                <?php if ($detail) : ?><span class="tfp-payment-method-row__detail"><?php echo esc_html($detail); ?></span><?php endif; ?>
+                <?php if ($detail): ?><span
+                        class="tfp-payment-method-row__detail"><?php echo esc_html($detail); ?></span><?php endif; ?>
             </div>
         </div>
         <div class="tfp-payment-method-row__actions">
-            <?php if (!$is_legacy) : ?>
-                <button type="button" class="tfp-payment-link" data-tfp-payment-default="<?php echo esc_attr($method['id']); ?>" <?php disabled($method['default']); ?>><?php esc_html_e('Default', 'tfp-dashboard'); ?></button>
+            <?php if (!$is_legacy && empty($method['default'])): ?>
+                <button type="button" class="tfp-payment-link"
+                    data-tfp-payment-default="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Default', 'tfp-dashboard'); ?></button>
             <?php endif; ?>
-            <button type="button" class="tfp-payment-link" data-tfp-payment-edit="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></button>
-            <?php if ($is_legacy) : ?>
-                <button type="button" class="tfp-payment-link tfp-payment-link--danger" data-tfp-payment-remove-legacy="1"><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button>
-            <?php else : ?>
-                <button type="button" class="tfp-payment-link tfp-payment-link--danger" data-tfp-payment-remove="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button>
+            <button type="button" class="tfp-payment-link"
+                data-tfp-payment-edit="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></button>
+            <?php if ($is_legacy): ?>
+                <button type="button" class="tfp-payment-link tfp-payment-link--danger"
+                    data-tfp-payment-remove-legacy="1"><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button>
+            <?php else: ?>
+                <button type="button" class="tfp-payment-link tfp-payment-link--danger"
+                    data-tfp-payment-remove="<?php echo esc_attr($method['id']); ?>"><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button>
             <?php endif; ?>
         </div>
     </div>
@@ -88,7 +99,8 @@ function tfp_dashboard_render_payment_method_row($method)
 
 function tfp_dashboard_payment_ajax_verify()
 {
-    if (!is_user_logged_in()) wp_send_json_error(['message' => __('Please sign in again.', 'tfp-dashboard')], 403);
+    if (!is_user_logged_in())
+        wp_send_json_error(['message' => __('Please sign in again.', 'tfp-dashboard')], 403);
     $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
     if (!$nonce || !wp_verify_nonce($nonce, 'tfp_billing_nonce')) {
         wp_send_json_error(['message' => __('Your session expired. Please refresh and try again.', 'tfp-dashboard')], 403);
@@ -185,90 +197,188 @@ function tfp_dashboard_render_payment_details_content()
         __('Save or update your payment method securely without leaving the Discipleship platform.', 'tfp-dashboard')
     );
     ?>
-    <div class="tfp-payment-page" data-tfp-payment-page data-tfp-billing-nonce="<?php echo esc_attr(wp_create_nonce('tfp_billing_nonce')); ?>">
-        <section class="tfp-payment-section">
-            <div class="tfp-payment-section__intro">
-                <h2><?php printf(esc_html__('%s, Setup Payment Methods', 'tfp-dashboard'), esc_html($first_name)); ?></h2>
-                <p><?php esc_html_e('Securely manage the cards, bank accounts, and PayPal used for your unlock all your class dashboard.', 'tfp-dashboard'); ?></p>
-            </div>
+    <div class="tfp-payment-page" data-tfp-payment-page
+        data-tfp-billing-nonce="<?php echo esc_attr(wp_create_nonce('tfp_billing_nonce')); ?>">
+        <div class="tfp-payment-section__intro">
+            <h3><?php printf(esc_html__('%s, Setup Payment Methods', 'tfp-dashboard'), esc_html($first_name)); ?></h3>
+            <p><?php esc_html_e('Securely manage the cards, bank accounts, and PayPal used for your unlock all your classes.', 'tfp-dashboard'); ?>
+            </p>
+        </div>
 
-            <?php if ($has_method) : ?>
+        <section class="tfp-payment-section" data-tfp-payment-section>
+            <?php if ($has_method): ?>
                 <div class="tfp-payment-saved">
                     <div class="tfp-payment-saved__header">
                         <strong><?php esc_html_e('Saved Payment Method', 'tfp-dashboard'); ?></strong>
-                        <button type="button" class="tfp-payment-add" data-tfp-payment-open><span aria-hidden="true">+</span><?php esc_html_e('Add Payment Method', 'tfp-dashboard'); ?></button>
+                        <button type="button" class="tfp-payment-add" data-tfp-payment-open><span
+                                aria-hidden="true">+</span><?php esc_html_e('Add Payment Method', 'tfp-dashboard'); ?></button>
                     </div>
                     <div class="tfp-payment-method-list">
                         <?php
                         if ($tokens) {
-                            foreach ($tokens as $method) tfp_dashboard_render_payment_method_row($method);
+                            foreach ($tokens as $method)
+                                tfp_dashboard_render_payment_method_row($method);
                         } elseif ($card) {
                             tfp_dashboard_render_payment_method_row([
-                                'id' => 0, 'kind' => 'card', 'label' => $card['brand'] ?: __('Card', 'tfp-dashboard'),
-                                'last4' => $card['last4'], 'expiry' => $card['expiry'], 'default' => true, 'legacy' => true,
+                                'id' => 0,
+                                'kind' => 'card',
+                                'label' => $card['brand'] ?: __('Card', 'tfp-dashboard'),
+                                'last4' => $card['last4'],
+                                'expiry' => $card['expiry'],
+                                'default' => true,
+                                'legacy' => true,
                             ]);
                         }
                         ?>
                     </div>
-                    <div class="tfp-payment-settings">
-                        <div>
-                            <strong><?php esc_html_e('Payment Settings', 'tfp-dashboard'); ?></strong>
-                            <p><?php esc_html_e('Use default payment methods for future purchases', 'tfp-dashboard'); ?></p>
-                            <small><?php esc_html_e('Applies to all new programs enrolled.', 'tfp-dashboard'); ?></small>
+                    <div class="tfp-payment-settings-wrap">
+                        <strong
+                            class="tfp-payment-settings__title"><?php esc_html_e('Payment Settings', 'tfp-dashboard'); ?></strong>
+                        <div class="tfp-payment-settings">
+                            <div>
+                                <strong><?php esc_html_e('Use default payment methods for future purchases', 'tfp-dashboard'); ?></strong>
+                                <p><?php esc_html_e('Applies to all new programs enrolled.', 'tfp-dashboard'); ?></p>
+                            </div>
+                            <label class="tfp-payment-toggle">
+                                <input type="checkbox" checked
+                                    aria-label="<?php esc_attr_e('Use default payment methods for future purchases', 'tfp-dashboard'); ?>"><span></span>
+                            </label>
                         </div>
-                        <label class="tfp-payment-toggle">
-                            <input type="checkbox" checked aria-label="<?php esc_attr_e('Use default payment methods for future purchases', 'tfp-dashboard'); ?>"><span></span>
-                        </label>
                     </div>
                 </div>
-            <?php else : ?>
+            <?php else: ?>
                 <div class="tfp-payment-empty">
-                    <span class="tfp-payment-empty__icon" aria-hidden="true">▣</span>
-                    <h3><?php esc_html_e('No payment method on file — one more step', 'tfp-dashboard'); ?></h3>
-                    <p><?php esc_html_e('Add a card, bank account, or PayPal to confirm your place in the program and unlock your class dashboard.', 'tfp-dashboard'); ?></p>
-                    <button type="button" class="tfp-payment-add tfp-payment-add--empty" data-tfp-payment-open><span aria-hidden="true">+</span><?php esc_html_e('Add Payment', 'tfp-dashboard'); ?></button>
+                    <span class="tfp-payment-empty__icon" aria-hidden="true">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                    </span>
+                    <h3><?php esc_html_e('No payment method on file— one more step', 'tfp-dashboard'); ?></h3>
+                    <p><?php esc_html_e('Add a card, bank account, or PayPal to confirm your place in the program and unlock your class dashboard.', 'tfp-dashboard'); ?>
+                    </p>
+                    <button type="button" class="tfp-payment-add tfp-payment-add--empty" data-tfp-payment-open><span
+                            aria-hidden="true">+</span><?php esc_html_e(' Add Payment', 'tfp-dashboard'); ?></button>
                 </div>
             <?php endif; ?>
         </section>
 
-        <section class="tfp-payment-editor<?php echo $has_method ? '' : ' is-open'; ?>" data-tfp-payment-editor>
+        <section class="tfp-payment-editor" data-tfp-payment-editor style="display: none;">
             <div class="tfp-payment-editor__head">
                 <strong><?php esc_html_e('Add Payment Method', 'tfp-dashboard'); ?></strong>
-                <?php if ($has_method) : ?><button type="button" class="tfp-payment-close" data-tfp-payment-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button><?php endif; ?>
             </div>
 
-            <div class="tfp-payment-tabs" role="tablist">
-                <button type="button" class="is-active" data-tfp-payment-tab="card" role="tab" aria-selected="true"><span class="tfp-payment-radio"></span><?php esc_html_e('Card', 'tfp-dashboard'); ?></button>
-                <button type="button" data-tfp-payment-tab="bank" role="tab" aria-selected="false"><span class="tfp-payment-radio"></span><?php esc_html_e('Bank Account', 'tfp-dashboard'); ?></button>
-                <button type="button" data-tfp-payment-tab="paypal" role="tab" aria-selected="false"><span class="tfp-payment-radio"></span><?php esc_html_e('PayPal', 'tfp-dashboard'); ?></button>
+            <div class="tfp-payment-tabs-bar">
+                <div class="tfp-payment-tabs" role="tablist">
+                    <button type="button" class="is-active" data-tfp-payment-tab="card" role="tab"
+                        aria-selected="true"><span
+                            class="tfp-payment-radio"></span><?php esc_html_e('Card', 'tfp-dashboard'); ?></button>
+                    <button type="button" data-tfp-payment-tab="bank" role="tab" aria-selected="false"><span
+                            class="tfp-payment-radio"></span><?php esc_html_e('Bank Account', 'tfp-dashboard'); ?></button>
+                    <button type="button" data-tfp-payment-tab="paypal" role="tab" aria-selected="false"><span
+                            class="tfp-payment-radio"></span><?php esc_html_e('PayPal', 'tfp-dashboard'); ?></button>
+                </div>
+                <div class="tfp-payment-card-badge" data-tfp-card-brand-badge style="display:none;"></div>
             </div>
 
             <div class="tfp-payment-panel is-active" data-tfp-payment-panel="card">
                 <form class="tfp-payment-card-form" data-tfp-billing-form novalidate>
-                    <div class="tfp-payment-field"><label><?php esc_html_e('Card Number', 'tfp-dashboard'); ?></label><div class="tfp-payment-input tfp-stripe-card-element" data-tfp-stripe-card-number></div></div>
-                    <div class="tfp-payment-fields-row">
-                        <div class="tfp-payment-field"><label><?php esc_html_e('Expiration', 'tfp-dashboard'); ?></label><div class="tfp-payment-input tfp-stripe-card-element" data-tfp-stripe-card-expiry></div></div>
-                        <div class="tfp-payment-field"><label><?php esc_html_e('CVC', 'tfp-dashboard'); ?></label><div class="tfp-payment-input tfp-stripe-card-element" data-tfp-stripe-card-cvc></div></div>
+                    <div class="tfp-payment-field"><label><?php esc_html_e('Card Number', 'tfp-dashboard'); ?></label>
+                        <div class="tfp-payment-input tfp-stripe-card-element" data-tfp-stripe-card-number></div>
                     </div>
-                    <div class="tfp-payment-field"><label><?php esc_html_e('Name on Card', 'tfp-dashboard'); ?></label><input type="text" class="tfp-payment-input" data-tfp-cardholder-name value="<?php echo esc_attr($saved_name ?: $name); ?>" autocomplete="cc-name"></div>
-                    <label class="tfp-payment-consent"><input type="checkbox" data-tfp-billing-consent required><span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy. Your payment information is encrypted. We never store full card or account numbers.', 'tfp-dashboard'); ?></span></label>
-                    <div class="tfp-payment-actions"><button type="submit" class="tfp-payment-save" data-tfp-billing-submit><?php esc_html_e('Save Payment', 'tfp-dashboard'); ?></button><button type="button" class="tfp-payment-remove-editor" data-tfp-payment-close><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button></div>
+                    <div class="tfp-payment-fields-row">
+                        <div class="tfp-payment-field"><label><?php esc_html_e('Expiration', 'tfp-dashboard'); ?></label>
+                            <div class="tfp-payment-input tfp-stripe-card-element" data-tfp-stripe-card-expiry></div>
+                        </div>
+                        <div class="tfp-payment-field"><label><?php esc_html_e('CVC', 'tfp-dashboard'); ?></label>
+                            <div class="tfp-payment-input tfp-stripe-card-element" data-tfp-stripe-card-cvc></div>
+                        </div>
+                    </div>
+                    <div class="tfp-payment-field">
+                        <label><?php esc_html_e('Name on Card', 'tfp-dashboard'); ?></label><input type="text"
+                            class="tfp-payment-input" data-tfp-cardholder-name
+                            value="<?php echo esc_attr($saved_name ?: $name); ?>" autocomplete="cc-name">
+                    </div>
+                    <label class="tfp-payment-consent"><input type="checkbox" data-tfp-billing-consent
+                            required><span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy. Your payment information is encrypted. We never store full card or account numbers.', 'tfp-dashboard'); ?></span></label>
+                    <div class="tfp-payment-actions">
+                        <button type="submit" class="tfp-payment-save" data-tfp-billing-submit>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            <span><?php esc_html_e('Save Payment', 'tfp-dashboard'); ?></span>
+                        </button>
+                        <button type="button" class="tfp-payment-remove-editor" data-tfp-payment-close>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                            </svg>
+                            <span><?php esc_html_e('Remove', 'tfp-dashboard'); ?></span>
+                        </button>
+                    </div>
                     <p class="tfp-payment-status" data-tfp-billing-status role="status"></p>
                 </form>
-                <?php if (!$stripe_ready) : ?><p class="tfp-payment-status" data-state="error"><?php esc_html_e('Secure card setup is not configured yet. Please contact support.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                <?php if (!$stripe_ready): ?>
+                    <p class="tfp-payment-status" data-state="error">
+                        <?php esc_html_e('Secure card setup is not configured yet. Please contact support.', 'tfp-dashboard'); ?>
+                    </p><?php endif; ?>
             </div>
 
             <div class="tfp-payment-panel" data-tfp-payment-panel="bank">
                 <div class="tfp-payment-bank-form">
-                    <div class="tfp-payment-field"><label><?php esc_html_e('Account Holder Name', 'tfp-dashboard'); ?></label><input type="text" class="tfp-payment-input" placeholder="<?php esc_attr_e('Jon Doe', 'tfp-dashboard'); ?>"></div>
-                    <div class="tfp-payment-segment"><button type="button" class="is-active"><?php esc_html_e('Checking', 'tfp-dashboard'); ?></button><button type="button"><?php esc_html_e('Savings', 'tfp-dashboard'); ?></button></div>
-                    <div class="tfp-payment-fields-row">
-                        <div class="tfp-payment-field"><label><?php esc_html_e('Routing Number', 'tfp-dashboard'); ?></label><input type="text" class="tfp-payment-input" placeholder="021000021"></div>
-                        <div class="tfp-payment-field"><label><?php esc_html_e('Account Number', 'tfp-dashboard'); ?></label><input type="text" class="tfp-payment-input" placeholder="000123456789"></div>
+                    <div class="tfp-payment-field">
+                        <label><?php esc_html_e('Account Holder Name', 'tfp-dashboard'); ?></label><input type="text"
+                            class="tfp-payment-input" placeholder="<?php esc_attr_e('Jon Doe', 'tfp-dashboard'); ?>">
                     </div>
-                    <label class="tfp-payment-verification"><input type="checkbox"><span><?php esc_html_e('Two small verification deposits (under $1.00) may be sent to this account within 1–2 business days to confirm ownership.', 'tfp-dashboard'); ?></span></label>
-                    <label class="tfp-payment-consent"><input type="checkbox" checked><span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy. Your payment information is encrypted. We never store full card or account numbers.', 'tfp-dashboard'); ?></span></label>
-                    <div class="tfp-payment-actions"><button type="button" class="tfp-payment-save" data-tfp-unavailable-method="bank"><?php esc_html_e('Save Payment', 'tfp-dashboard'); ?></button><button type="button" class="tfp-payment-remove-editor" data-tfp-payment-close><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button></div>
+                    <div class="tfp-payment-field">
+                        <label><?php esc_html_e('Account Type', 'tfp-dashboard'); ?></label>
+                        <div class="tfp-payment-segment" data-tfp-payment-segment role="radiogroup"
+                            aria-label="<?php esc_attr_e('Account Type', 'tfp-dashboard'); ?>">
+                            <input type="hidden" name="bank_account_type" value="checking" data-tfp-account-type-input>
+                            <button type="button" class="is-active" data-account-type="checking" role="radio"
+                                aria-checked="true"><?php esc_html_e('Checking', 'tfp-dashboard'); ?></button>
+                            <button type="button" data-account-type="savings" role="radio"
+                                aria-checked="false"><?php esc_html_e('Savings', 'tfp-dashboard'); ?></button>
+                        </div>
+                    </div>
+                    <div class="tfp-payment-fields-row">
+                        <div class="tfp-payment-field">
+                            <label><?php esc_html_e('Routing Number', 'tfp-dashboard'); ?></label><input type="text"
+                                class="tfp-payment-input" placeholder="021000021">
+                        </div>
+                        <div class="tfp-payment-field">
+                            <label><?php esc_html_e('Account Number', 'tfp-dashboard'); ?></label><input type="text"
+                                class="tfp-payment-input" placeholder="000123456789">
+                        </div>
+                    </div>
+                    <label class="tfp-payment-verification"><input
+                            type="checkbox"><span><?php esc_html_e('Two small verification deposits (under $1.00) may be sent to this account within 1–2 business days to confirm ownership.', 'tfp-dashboard'); ?></span></label>
+                    <label class="tfp-payment-consent"><input type="checkbox"
+                            checked><span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy. Your payment information is encrypted. We never store full card or account numbers.', 'tfp-dashboard'); ?></span></label>
+                    <div class="tfp-payment-actions">
+                        <button type="button" class="tfp-payment-save" data-tfp-unavailable-method="bank">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            <span><?php esc_html_e('Save Payment', 'tfp-dashboard'); ?></span>
+                        </button>
+                        <button type="button" class="tfp-payment-remove-editor" data-tfp-payment-close>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                            </svg>
+                            <span><?php esc_html_e('Remove', 'tfp-dashboard'); ?></span>
+                        </button>
+                    </div>
                     <p class="tfp-payment-status" data-tfp-bank-status role="status"></p>
                 </div>
             </div>
@@ -276,10 +386,34 @@ function tfp_dashboard_render_payment_details_content()
             <div class="tfp-payment-panel" data-tfp-payment-panel="paypal">
                 <div class="tfp-payment-paypal-form">
                     <div class="tfp-payment-paypal-icon" aria-hidden="true">P</div>
-                    <p><?php esc_html_e("You'll be redirected to PayPal to securely log in and authorize The Follow Project to charge your linked account.", 'tfp-dashboard'); ?></p>
-                    <div class="tfp-payment-field tfp-payment-paypal-email"><label><?php esc_html_e('PayPal Email (For Reference)', 'tfp-dashboard'); ?></label><input type="email" class="tfp-payment-input" value="<?php echo esc_attr(tfp_billing_get_billing_email()); ?>"></div>
-                    <label class="tfp-payment-consent"><input type="checkbox" checked><span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy. Your payment information is encrypted. We never store full card or account numbers.', 'tfp-dashboard'); ?></span></label>
-                    <div class="tfp-payment-actions"><button type="button" class="tfp-payment-save" data-tfp-unavailable-method="paypal"><?php esc_html_e('Save Payment', 'tfp-dashboard'); ?></button><button type="button" class="tfp-payment-remove-editor" data-tfp-payment-close><?php esc_html_e('Remove', 'tfp-dashboard'); ?></button></div>
+                    <p><?php esc_html_e("You'll be redirected to PayPal to securely log in and authorize The Follow Project to charge your linked account.", 'tfp-dashboard'); ?>
+                    </p>
+                    <div class="tfp-payment-field tfp-payment-paypal-email">
+                        <label><?php esc_html_e('PayPal Email (For Reference)', 'tfp-dashboard'); ?></label><input
+                            type="email" class="tfp-payment-input" placeholder="JonDoe@example.com"
+                            value="<?php echo esc_attr(tfp_billing_get_billing_email()); ?>">
+                    </div>
+                    <label class="tfp-payment-consent"><input type="checkbox"
+                            checked><span><?php esc_html_e('I authorize The Follow Project to process my payment securely and agree to the Terms & Refund Policy. Your payment information is encrypted. We never store full card or account numbers.', 'tfp-dashboard'); ?></span></label>
+                    <div class="tfp-payment-actions">
+                        <button type="button" class="tfp-payment-save" data-tfp-unavailable-method="paypal">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            <span><?php esc_html_e('Save Payment', 'tfp-dashboard'); ?></span>
+                        </button>
+                        <button type="button" class="tfp-payment-remove-editor" data-tfp-payment-close>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                            </svg>
+                            <span><?php esc_html_e('Remove', 'tfp-dashboard'); ?></span>
+                        </button>
+                    </div>
                     <p class="tfp-payment-status" data-tfp-paypal-status role="status"></p>
                 </div>
             </div>

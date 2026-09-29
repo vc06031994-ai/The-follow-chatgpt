@@ -1,0 +1,1312 @@
+/* =========================================================================
+   Grades Page Styles
+   Matching Figma design for "58 Week Discipleship Grades" & "Section Mastery"
+   ========================================================================= */
+
+.tfp-grades-page {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- Top Filter Bar ------------------------------------------------------ */
+.tfp-grades-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tfp-grades-filter-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 38px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tfp-grades-filter-dropdown:focus-within {
+    border-color: #00666e;
+    box-shadow: 0 0 0 2px rgba(0, 102, 110, 0.12);
+}
+
+.tfp-grades-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #1f2937;
+    padding: 0 22px 0 0;
+    margin: 0;
+    cursor: pointer;
+    height: 100%;
+    line-height: 38px;
+}
+
+.tfp-grades-select-icon {
+    position: absolute;
+    right: 12px;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tfp-grades-cohort-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 16px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #1f2937;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+/* --- Section 1: Grades Table Card ---------------------------------------- */
+.tfp-grades-card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 14px !important;
+    padding: 22px 26px 20px 26px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    margin-bottom: 24px !important;
+    box-sizing: border-box !important;
+}
+
+.tfp-grades-card__title {
+    margin: 0 0 26px 0 !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    letter-spacing: -0.2px !important;
+    line-height: 1.3 !important;
+}
+
+/* Fixed-height Scroll Container with Vertical Scrollbar */
+.tfp-grades-table-scroll,
+.tfp-grades-table-wrap {
+    width: 100%;
+    max-height: 255px;
+    /* Shows ~4 to 5 rows cleanly, matching Figma screenshot */
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    border: none !important;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sleek subtle custom vertical scrollbar matching Figma */
+.tfp-grades-table-scroll::-webkit-scrollbar,
+.tfp-grades-table-wrap::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.tfp-grades-table-scroll::-webkit-scrollbar-track,
+.tfp-grades-table-wrap::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+.tfp-grades-table-scroll::-webkit-scrollbar-thumb,
+.tfp-grades-table-wrap::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 6px;
+}
+
+.tfp-grades-table-scroll::-webkit-scrollbar-thumb:hover,
+.tfp-grades-table-wrap::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.tfp-grades-table-scroll,
+.tfp-grades-table-wrap {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+/* Borderless Table with Fixed Proportional Columns */
+.tfp-grades-table {
+    width: 100% !important;
+    min-width: 780px !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: none !important;
+    text-align: left;
+    margin: 0 !important;
+}
+
+/* Remove all table/cell borders completely */
+.tfp-grades-card table,
+.tfp-grades-card thead,
+.tfp-grades-card tbody,
+.tfp-grades-card tr,
+.tfp-grades-card th,
+.tfp-grades-card td,
+.tfp-grades-table,
+.tfp-grades-table thead,
+.tfp-grades-table tbody,
+.tfp-grades-table tr,
+.tfp-grades-table th,
+.tfp-grades-table td {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Sticky Header pinned at top during scroll */
+.tfp-grades-table thead th {
+    position: sticky !important;
+    top: 0 !important;
+    background: #ffffff !important;
+    z-index: 5 !important;
+    padding: 6px 8px 14px 8px !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+}
+
+/* Table Body Rows */
+.tfp-grades-table tbody td {
+    padding: 10px 8px !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 13.5px !important;
+    color: #111827 !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+    background-color: #ffffff;
+}
+
+.tfp-grades-table tbody tr:hover td {
+    background-color: #f9fafb !important;
+}
+
+/* Column Widths & Alignments matching Figma screenshot */
+.tfp-col-week {
+    width: 60px !important;
+    max-width: 60px !important;
+    color: #6b7280 !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    text-align: left !important;
+    padding-left: 2px !important;
+}
+
+.tfp-col-name {
+    width: 210px !important;
+    max-width: 220px !important;
+    font-weight: 500 !important;
+    color: #111827 !important;
+    font-size: 13.5px !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.tfp-col-attendance {
+    width: 100px !important;
+    text-align: center !important;
+}
+
+.tfp-col-hw,
+.tfp-col-quiz,
+.tfp-col-test {
+    width: 82px !important;
+    text-align: center !important;
+}
+
+.tfp-col-overall {
+    width: 110px !important;
+    text-align: center !important;
+}
+
+.tfp-col-action {
+    width: 95px !important;
+    text-align: center !important;
+    padding-right: 4px !important;
+}
+
+/* Attendance Badge */
+.tfp-badge-attendance {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    padding: 0 14px;
+    border-radius: 9999px;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    box-sizing: border-box;
+}
+
+.tfp-badge-attendance--pre {
+    background: #e6f4f5 !important;
+    border: 1px solid #95d5d8 !important;
+    color: #00666e !important;
+}
+
+.tfp-badge-empty {
+    color: #9ca3af;
+    font-weight: 600;
+}
+
+/* Circular Letter Grade Badge */
+.tfp-grade-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+.tfp-grade-circle--a {
+    border: 1.2px solid #00666e !important;
+    color: #00666e !important;
+}
+
+.tfp-grade-circle--b {
+    border: 1.2px solid #2563eb !important;
+    color: #2563eb !important;
+}
+
+.tfp-grade-circle--c {
+    border: 1.2px solid #b8860b !important;
+    color: #b8860b !important;
+}
+
+.tfp-grade-circle--d {
+    border: 1.2px solid #c9705a !important;
+    color: #b94a32 !important;
+}
+
+.tfp-grade-circle--f {
+    border: 1.2px solid #e11d48 !important;
+    color: #e11d48 !important;
+}
+
+.tfp-grade-circle--empty {
+    color: #9ca3af !important;
+    border: 1px dashed #d1d5db !important;
+    font-weight: 500;
+}
+
+/* Action Buttons */
+.tfp-grade-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 76px !important;
+    height: 30px !important;
+    border-radius: 6px !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.tfp-grade-btn--view {
+    background: #00666e !important;
+    color: #ffffff !important;
+    border: 1px solid #00666e !important;
+}
+
+.tfp-grade-btn--view:hover {
+    background: #004d53 !important;
+    border-color: #004d53 !important;
+    color: #ffffff !important;
+}
+
+.tfp-grade-btn--add {
+    background: #fde8e8 !important;
+    color: #151411 !important;
+    border: 1px solid #fca5a5 !important;
+}
+
+.tfp-grade-btn--add:hover {
+    background: #fcdada !important;
+    border-color: #f87171 !important;
+    color: #9e1c26 !important;
+}
+
+/* --- Section 2: Section Mastery Card ------------------------------------- */
+.tfp-mastery-card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 14px !important;
+    padding: 26px 28px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    box-sizing: border-box !important;
+    margin-bottom: 24px !important;
+}
+
+.tfp-mastery-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.tfp-mastery-card__title {
+    margin: 0 0 4px 0 !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    letter-spacing: -0.2px !important;
+}
+
+.tfp-mastery-card__subtitle {
+    margin: 0 !important;
+    font-family: var(--tfp-dash-font-alt, 'Lora', serif) !important;
+    font-size: 13.5px !important;
+    color: #4b5563 !important;
+}
+
+.tfp-mastery-pagination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tfp-mastery-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    border: 1.5px solid #00666e;
+    background: #ffffff;
+    color: #00666e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.tfp-mastery-nav-btn:hover:not(:disabled) {
+    background: #f0fdfa;
+    border-color: #004d53;
+    color: #004d53;
+}
+
+.tfp-mastery-nav-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: #d1d5db;
+    color: #9ca3af;
+}
+
+.tfp-mastery-counter {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #4b5563;
+    min-width: 65px;
+    text-align: center;
+}
+
+/* --- Section Mastery Grid & Cards ---------------------------------------- */
+.tfp-mastery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.tfp-section-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px 20px 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-sizing: border-box;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    color: inherit !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tfp-section-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.08), 0 3px 6px -1px rgba(0, 0, 0, 0.04);
+}
+
+.tfp-section-card--good {
+    border-left: 10px solid #00666e !important;
+}
+
+.tfp-section-card--in_progress {
+    border-left: 10px solid #c59b27 !important;
+}
+
+.tfp-section-card--not_started {
+    border-left: 10px solid #9ca3af !important;
+}
+
+.tfp-section-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.tfp-section-card__weeks {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.tfp-section-card__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tfp-section-card__badge--good {
+    background: #f0fdfa;
+    border: 1px solid #00666e;
+    color: #00666e;
+}
+
+.tfp-section-card__badge--in_progress {
+    background: #fefce8;
+    border: 1px solid #b8860b;
+    color: #854d0e;
+}
+
+.tfp-section-card__badge--not_started {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    font-weight: 500;
+}
+
+.tfp-section-card__title {
+    margin: 0 0 12px 0;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.tfp-section-card__status-wrap {
+    margin-bottom: 16px;
+}
+
+.tfp-section-card__pct {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: #00666e;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+.tfp-section-card__in-progress {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: #c59b27;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+.tfp-section-card__not-started {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: #d1d5db;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+.tfp-section-card__progress {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.tfp-section-card__progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.tfp-section-card__progress-fill--teal {
+    background: #00666e;
+}
+
+.tfp-section-card__progress-fill--mustard {
+    background: #c59b27;
+}
+
+/* Card 3-Metric Footer */
+.tfp-section-card__footer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid #f1f3f5;
+    padding-top: 10px;
+    margin-top: auto;
+}
+
+.tfp-section-card__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2px 4px;
+}
+
+.tfp-section-card__stat:not(:last-child) {
+    border-right: 1px solid #f1f3f5;
+}
+
+.tfp-section-card__stat-val {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.tfp-section-card__stat-val.is-alert {
+    color: #dc2626 !important;
+}
+
+.tfp-section-card__stat-lbl {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* =========================================================================
+   Section Mastery Detail View (Figma media_1790595212605.png)
+   ========================================================================= */
+
+.tfp-grades-view {
+    width: 100%;
+    box-sizing: border-box;
+    transition: opacity 0.2s ease;
+}
+
+/* --- Mastery Detail Page Header --- */
+.tfp-mastery-pageheader {
+    margin-bottom: 24px;
+}
+
+.tfp-mastery-crumb {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13.5px;
+    color: #00666e;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tfp-mastery-crumb a {
+    color: #00666e;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.tfp-mastery-crumb a:hover {
+    color: #004d53;
+    text-decoration: underline;
+}
+
+.tfp-mastery-crumb span {
+    color: #9ca3af;
+}
+
+.tfp-mastery-crumb__current {
+    color: #111827 !important;
+    font-weight: 600;
+}
+
+.tfp-mastery-pageheader__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.tfp-mastery-pageheader__title {
+    margin: 0 0 6px 0 !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    letter-spacing: -0.3px !important;
+    line-height: 1.2 !important;
+}
+
+.tfp-mastery-pageheader__subtitle {
+    margin: 0 !important;
+    font-family: var(--tfp-dash-font-alt, 'Lora', serif) !important;
+    font-size: 15px !important;
+    color: #374151 !important;
+}
+
+.tfp-btn-back-sections {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: #00666e !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 0 18px !important;
+    height: 38px !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    transition: background 0.2s ease, transform 0.15s ease !important;
+    white-space: nowrap !important;
+}
+
+.tfp-btn-back-sections:hover {
+    background: #004d53 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.tfp-mastery-header-rule {
+    height: 1.5px;
+    background: #8b1e22;
+    margin-top: 18px;
+    width: 100%;
+}
+
+/* --- Top Concept Benchmarks Bar --- */
+.tfp-mastery-benchmarks-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 24px;
+    padding-bottom: 6px;
+}
+
+.tfp-mastery-benchmarks-wrap::-webkit-scrollbar {
+    height: 5px;
+}
+
+.tfp-mastery-benchmarks-wrap::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 4px;
+}
+
+.tfp-mastery-benchmarks-wrap::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.tfp-mastery-benchmarks {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+@media (max-width: 991px) {
+    .tfp-mastery-benchmarks {
+        display: flex !important;
+        gap: 12px !important;
+        min-width: min-content !important;
+    }
+}
+
+.tfp-benchmark-pill {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+@media (max-width: 991px) {
+    .tfp-benchmark-pill {
+        flex: 0 0 120px;
+    }
+}
+
+.tfp-benchmark-pill.is-active {
+    background: #eef8f8 !important;
+    border: 1.5px solid #00666e !important;
+}
+
+.tfp-benchmark-pill:hover:not(.is-active) {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.tfp-benchmark-pill__code {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+
+.tfp-benchmark-pill__title {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.25;
+    margin-bottom: 6px;
+    min-height: 28px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tfp-benchmark-pill__score {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* --- 4 Key Metrics Bar --- */
+.tfp-mastery-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tfp-mastery-metric-card {
+    background: #f1f3f5;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.tfp-mastery-metric-card__lbl {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.tfp-mastery-metric-card__val {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.15;
+    margin-bottom: 4px;
+}
+
+.tfp-mastery-metric-card__val--teal {
+    color: #00666e !important;
+}
+
+.tfp-mastery-metric-card__sub {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+/* --- 2-Column Layout --- */
+.tfp-mastery-two-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+.tfp-mastery-box-card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 14px !important;
+    padding: 24px 26px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    box-sizing: border-box !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.tfp-mastery-box-card__title {
+    margin: 0 0 20px 0 !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    letter-spacing: -0.2px !important;
+}
+
+/* --- Concept Bar Rows (Know Well & Review) --- */
+.tfp-concept-bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tfp-concept-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.tfp-concept-bar-row__label {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    flex: 1;
+}
+
+.tfp-concept-bar-row__meter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 170px;
+    flex-shrink: 0;
+}
+
+.tfp-concept-bar-track {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.tfp-concept-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.tfp-concept-bar-fill--teal {
+    background: #00666e !important;
+}
+
+.tfp-concept-bar-fill--red {
+    background: #c2410c !important;
+}
+
+.tfp-concept-bar-fill--mustard {
+    background: #c59b27 !important;
+}
+
+.tfp-concept-bar-row__pct {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13.5px;
+    font-weight: 700;
+    width: 36px;
+    text-align: right;
+}
+
+.tfp-concept-bar-row__pct--teal {
+    color: #00666e !important;
+}
+
+.tfp-concept-bar-row__pct--red {
+    color: #c2410c !important;
+}
+
+.tfp-concept-bar-row__pct--mustard {
+    color: #c59b27 !important;
+}
+
+/* --- Suggested Review List --- */
+.tfp-suggested-review {
+    margin-top: 24px;
+    border-top: 1px solid #f1f3f5;
+    padding-top: 18px;
+}
+
+.tfp-suggested-review__heading {
+    margin: 0 0 12px 0 !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #6b7280 !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+}
+
+.tfp-suggested-review__items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tfp-suggested-review__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1f2937;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+}
+
+.tfp-suggested-review__item:hover {
+    background: #f0fdfa;
+    border-color: #00666e;
+    color: #00666e;
+}
+
+.tfp-suggested-review__icon {
+    font-size: 15px;
+}
+
+/* --- Weekly Grades Table inside Mastery --- */
+.tfp-weekly-grades-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tfp-weekly-grades-table {
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    text-align: left;
+    border: none !important;
+    margin: 0 !important;
+}
+
+.tfp-weekly-grades-table th {
+    padding: 8px 10px 14px 10px !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #6b7280 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.4px !important;
+    border: none !important;
+    background: #ffffff !important;
+}
+
+.tfp-weekly-grades-table td {
+    padding: 12px 10px !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 13.5px !important;
+    color: #111827 !important;
+    vertical-align: middle !important;
+    border: none !important;
+    border-bottom: 1px solid #f9fafb !important;
+    background: #ffffff !important;
+}
+
+.tfp-weekly-grades-table .tfp-col-wk {
+    width: 45px;
+    color: #6b7280 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+}
+
+.tfp-weekly-grades-table .tfp-col-lesson {
+    font-weight: 500 !important;
+    color: #111827 !important;
+}
+
+.tfp-weekly-grades-table .tfp-col-badge {
+    width: 55px;
+    text-align: center !important;
+}
+
+/* --- Performance Trends --- */
+.tfp-trends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.tfp-trend-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tfp-trend-row__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tfp-trend-row__label {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.tfp-trend-row__stats {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.tfp-trend-row__pct {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.tfp-trend-row__pct--teal {
+    color: #00666e !important;
+}
+
+.tfp-trend-row__pct--mustard {
+    color: #c59b27 !important;
+}
+
+.tfp-trend-row__status {
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tfp-trend-row__status--teal {
+    color: #00666e !important;
+}
+
+.tfp-trend-row__status--mustard {
+    color: #c59b27 !important;
+}
+
+.tfp-trend-track {
+    width: 100%;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.tfp-trend-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.tfp-trend-fill--teal {
+    background: #00666e !important;
+}
+
+.tfp-trend-fill--mustard {
+    background: #c59b27 !important;
+}
+
+/* =========================================================================
+   Responsive Breakpoints
+   ========================================================================= */
+
+@media (max-width: 1024px) {
+    .tfp-mastery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .tfp-grades-card,
+    .tfp-mastery-card,
+    .tfp-mastery-box-card {
+        padding: 18px 16px !important;
+        border-radius: 12px !important;
+    }
+
+    .tfp-mastery-card__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .tfp-grades-filters {
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .tfp-grades-filter-dropdown,
+    .tfp-grades-cohort-pill {
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .tfp-grades-table-scroll {
+        max-height: 240px;
+    }
+
+    .tfp-grades-table {
+        min-width: 750px !important;
+    }
+
+    /* Mastery Detail Responsive */
+    .tfp-mastery-pageheader__title {
+        font-size: 22px !important;
+    }
+
+    .tfp-mastery-two-col {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .tfp-mastery-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .tfp-mastery-metric-card {
+        padding: 14px 16px;
+    }
+
+    .tfp-mastery-metric-card__val {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .tfp-mastery-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .tfp-grades-filters {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tfp-grades-filter-dropdown,
+    .tfp-grades-cohort-pill {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 140px;
+        justify-content: space-between;
+    }
+
+    .tfp-grades-select {
+        width: 100%;
+    }
+
+    .tfp-grades-card,
+    .tfp-mastery-card,
+    .tfp-mastery-box-card {
+        padding: 16px 14px !important;
+    }
+
+    .tfp-grades-card__title,
+    .tfp-mastery-card__title,
+    .tfp-mastery-box-card__title {
+        font-size: 17px !important;
+    }
+
+    .tfp-grades-table-scroll {
+        max-height: 230px;
+    }
+
+    /* Mastery Detail Mobile */
+    .tfp-mastery-pageheader__row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .tfp-btn-back-sections {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .tfp-mastery-metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .tfp-concept-bar-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .tfp-concept-bar-row__meter {
+        width: 100%;
+    }
+}

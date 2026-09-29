@@ -1,16 +1,785 @@
 /* TFP Payment Methods — Figma-aligned */
-.tfp-payment-page{max-width:1180px;color:#151411}
-.tfp-payment-section__intro{margin-bottom:22px}.tfp-payment-section__intro h2{margin:0 0 10px;font-size:24px;line-height:1.2;font-weight:700}.tfp-payment-section__intro p{margin:0;font-size:16px;line-height:1.55}
-.tfp-payment-saved,.tfp-payment-editor{border:1px solid #cfd2d2;border-radius:12px;background:#fff;padding:18px 16px}.tfp-payment-saved__header,.tfp-payment-editor__head{display:flex;align-items:center;justify-content:space-between;gap:16px}.tfp-payment-saved__header>strong,.tfp-payment-editor__head>strong{font-size:15px}
-.tfp-payment-add,.tfp-payment-save{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid #00666e;background:#00666e;color:#fff;border-radius:8px;padding:12px 18px;font-size:15px;line-height:1.2;cursor:pointer;font-family:inherit}.tfp-payment-add span{font-size:24px;font-weight:300;line-height:14px}
-.tfp-payment-method-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}.tfp-payment-method-row{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#dee2e2;border-radius:10px;padding:13px 14px}.tfp-payment-method-row__main{display:flex;align-items:center;gap:12px;min-width:0}
-.tfp-payment-method-icon{width:42px;height:42px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 42px;background:#00666e;color:#fff;font-size:21px;font-weight:700}.tfp-payment-method-icon--paypal{font-style:italic;font-family:Arial,sans-serif}.tfp-payment-method-row__copy{min-width:0}.tfp-payment-method-row__title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tfp-payment-method-row__title strong{font-size:14px}.tfp-payment-method-row__detail{display:block;margin-top:4px;font-size:11px}
-.tfp-payment-default{display:inline-flex;padding:2px 6px;background:#d5aa25;color:#fff;font-size:8px;font-weight:700;line-height:1.2}.tfp-payment-method-row__actions{display:flex;align-items:center;gap:14px;flex:0 0 auto}.tfp-payment-link{padding:0;border:0;background:none;color:#00666e;font:600 12px/1.2 inherit;cursor:pointer}.tfp-payment-link--danger{color:#b3261e}.tfp-payment-link:disabled{opacity:.55;cursor:default}
-.tfp-payment-settings{margin-top:10px;padding:12px 14px;background:#dee2e2;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:20px}.tfp-payment-settings strong{font-size:14px}.tfp-payment-settings p{margin:5px 0 1px;font-size:11px}.tfp-payment-settings small{font-size:9px}
-.tfp-payment-toggle{position:relative;width:43px;height:24px;flex:0 0 43px}.tfp-payment-toggle input{position:absolute;opacity:0}.tfp-payment-toggle span{position:absolute;inset:0;background:#00666e;border-radius:999px;cursor:pointer}.tfp-payment-toggle span:before{content:"";position:absolute;width:17px;height:17px;left:4px;top:3.5px;border-radius:50%;background:#fff;transition:transform .2s}.tfp-payment-toggle input:not(:checked)+span{background:#aaa}.tfp-payment-toggle input:checked+span:before{transform:translateX(18px)}
-.tfp-payment-empty{border:1px solid #cfd2d2;border-radius:12px;min-height:290px;padding:38px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.tfp-payment-empty__icon{width:54px;height:54px;border-radius:50%;background:#00666e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:25px;margin-bottom:15px}.tfp-payment-empty h3{margin:0 0 12px;font-size:21px}.tfp-payment-empty p{max-width:410px;margin:0 0 20px;font-size:14px;line-height:1.6}.tfp-payment-add--empty{padding-inline:18px}
-.tfp-payment-editor{margin-top:18px;display:none}.tfp-payment-editor.is-open{display:block}.tfp-payment-close{border:0;background:none;font-size:28px;line-height:1;color:#151411;cursor:pointer}.tfp-payment-tabs{display:flex;align-items:center;gap:22px;margin:20px 0 16px}.tfp-payment-tabs button{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;background:none;color:#555;font:14px/1.3 inherit;cursor:pointer}.tfp-payment-tabs button.is-active{color:#151411}.tfp-payment-radio{width:21px;height:21px;border:1px solid #bfc3c4;border-radius:50%;display:inline-block;position:relative}.tfp-payment-tabs button.is-active .tfp-payment-radio:after{content:"";position:absolute;width:9px;height:9px;left:5px;top:5px;background:#00666e;border-radius:50%}
-.tfp-payment-panel{display:none}.tfp-payment-panel.is-active{display:block}.tfp-payment-card-form,.tfp-payment-bank-form,.tfp-payment-paypal-form{display:flex;flex-direction:column;gap:14px}.tfp-payment-field{display:flex;flex-direction:column;gap:7px}.tfp-payment-field label{font-size:13px;font-weight:600}.tfp-payment-input{width:100%;min-height:48px;padding:12px;border:1px solid #c6cbcc;border-radius:8px;background:#fff;color:#151411;font:14px/1.4 inherit;box-sizing:border-box}.tfp-payment-input.tfp-stripe-card-element{display:flex;align-items:center}.tfp-payment-fields-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.tfp-payment-consent,.tfp-payment-verification{display:flex;align-items:flex-start;gap:8px;font-size:10px;line-height:1.45}.tfp-payment-consent input,.tfp-payment-verification input{margin-top:2px;flex:0 0 auto}.tfp-payment-verification{border:1px solid #cfd2d2;border-radius:8px;padding:16px}.tfp-payment-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px}.tfp-payment-remove-editor{min-height:45px;padding:10px 18px;border:1px solid #c6cbcc;border-radius:8px;background:#fff;color:#151411;font:14px/1.2 inherit;cursor:pointer}.tfp-payment-status{margin:0;font-size:12px}.tfp-payment-status[data-state="error"]{color:#b3261e}.tfp-payment-status[data-state="success"]{color:#00666e}
-.tfp-payment-segment{display:flex;max-width:305px;border-radius:6px;overflow:hidden}.tfp-payment-segment button{flex:1;min-height:34px;border:0;background:#fff;color:#151411;font:13px/1 inherit;cursor:pointer}.tfp-payment-segment button.is-active{background:#00666e;color:#fff}.tfp-payment-paypal-form{align-items:center;text-align:center;padding:12px 0 8px}.tfp-payment-paypal-icon{width:40px;height:40px;border-radius:50%;background:#00666e;color:#fff;display:flex;align-items:center;justify-content:center;font:700 22px/1 Arial;font-style:italic}.tfp-payment-paypal-form>p{max-width:320px;font-size:13px;line-height:1.55;margin:0}.tfp-payment-paypal-email{width:min(300px,100%);text-align:left}
-@media(max-width:700px){.tfp-payment-method-row{align-items:flex-start;flex-direction:column}.tfp-payment-method-row__actions{width:100%;justify-content:flex-end}.tfp-payment-settings{align-items:flex-start}.tfp-payment-tabs{gap:14px;overflow:auto}.tfp-payment-fields-row{grid-template-columns:1fr}}
+.tfp-payment-page {
+    max-width: 1180px;
+    color: #949796
+}
+
+.tfp-payment-section__intro {
+    margin-bottom: 22px
+}
+
+.tfp-payment-section__intro h3 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #151411;
+}
+
+.tfp-payment-section__intro p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.55;
+    color: #2E2E2E;
+}
+
+.tfp-payment-saved,
+.tfp-payment-editor {
+    border: 1px solid #C4C4C4;
+    border-radius: 12px;
+    background: #fff;
+    padding: 26px 24px;
+}
+
+.tfp-payment-saved__header,
+.tfp-payment-editor__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.tfp-payment-saved__header>strong,
+.tfp-payment-editor__head>strong {
+    font-size: 17px;
+    font-weight: 700;
+    color: #151411;
+}
+
+.tfp-payment-add {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0 !important;
+    border: none !important;
+    background: #00666e !important;
+    background-color: #00666e !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 11px 18px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    line-height: 1.2;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease;
+}
+
+.tfp-payment-add:hover {
+    background: #004d53 !important;
+    background-color: #004d53 !important;
+    border: 0 !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.tfp-payment-add span {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+    display: inline-block;
+}
+
+.tfp-payment-save {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 0 !important;
+    border: none !important;
+    background: #00666e !important;
+    background-color: #00666e !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 12px 18px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    line-height: 1.2;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease;
+}
+
+.tfp-payment-save:hover {
+    background: #004d53 !important;
+    background-color: #004d53 !important;
+    border: 0 !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.tfp-payment-method-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tfp-payment-method-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    background: #dee2e2;
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-height: 68px;
+    box-sizing: border-box;
+}
+
+.tfp-payment-method-row__main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.tfp-payment-method-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    background: #00666e;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.tfp-payment-method-icon--paypal {
+    font-style: italic;
+    font-family: Arial, sans-serif;
+}
+
+.tfp-payment-method-row__copy {
+    min-width: 0;
+}
+
+.tfp-payment-method-row__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tfp-payment-method-row__title strong {
+    font-size: 15px;
+    font-weight: 600;
+    color: #151411;
+}
+
+.tfp-payment-method-row__detail {
+    display: block;
+    margin-top: 3px;
+    font-size: 12.5px;
+    color: #2E2E2E;
+}
+
+.tfp-payment-default {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+    background: #BD9817;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.tfp-payment-method-row__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 0 0 auto;
+}
+
+.tfp-payment-link {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    background-color: transparent !important;
+    color: #00666e !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    font-family: inherit !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
+}
+
+.tfp-payment-link:hover {
+    color: #004d53 !important;
+    text-decoration: underline !important;
+}
+
+.tfp-payment-link--danger {
+    color: #EB001B !important;
+}
+
+.tfp-payment-link--danger:hover {
+    color: #c70017 !important;
+    text-decoration: underline !important;
+}
+
+.tfp-payment-link:disabled {
+    opacity: .55;
+    cursor: default;
+    text-decoration: none !important;
+}
+
+.tfp-payment-settings-wrap {
+    margin-top: 26px;
+}
+
+.tfp-payment-settings__title {
+    display: block;
+    font-size: 17px;
+    font-weight: 700;
+    color: #151411;
+    margin-bottom: 14px;
+}
+
+.tfp-payment-settings {
+    margin-top: 0;
+    padding: 16px 18px;
+    background: #dee2e2;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.tfp-payment-settings strong {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #151411;
+}
+
+.tfp-payment-settings p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #2E2E2E;
+}
+
+.tfp-payment-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex: 0 0 44px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tfp-payment-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+}
+
+.tfp-payment-toggle span {
+    position: absolute;
+    inset: 0;
+    background: #00666e;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.tfp-payment-toggle span:before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+}
+
+.tfp-payment-toggle input:not(:checked)+span {
+    background: #9ca3af;
+}
+
+.tfp-payment-toggle input:checked+span:before {
+    transform: translateX(20px);
+}
+
+.tfp-payment-empty {
+    border: 2px solid #C4C4C4;
+    border-radius: 12px;
+    min-height: 340px;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #fbfbfb;
+}
+
+.tfp-payment-empty__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #00666e;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+.tfp-payment-empty__icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: #fff;
+}
+
+.tfp-payment-empty h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #151411;
+}
+
+.tfp-payment-empty p {
+    max-width: 440px;
+    margin: 0 0 24px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #4a5568;
+}
+
+.tfp-payment-add--empty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #00666e !important;
+    background: #00666e !important;
+    background-color: #00666e !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 12px 28px !important;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    box-shadow: none !important;
+    transition: background-color 0.2s ease;
+}
+
+.tfp-payment-add--empty:hover {
+    background: #004d53 !important;
+    background-color: #004d53 !important;
+    border-color: #004d53 !important;
+}
+
+.tfp-payment-add--empty span {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.tfp-payment-editor {
+    margin-top: 0;
+    display: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fbfbfb;
+    padding: 28px 24px;
+}
+
+.tfp-payment-editor.is-open {
+    display: block
+}
+
+.tfp-payment-close {
+    border: 0 !important;
+    background: none !important;
+    background-color: transparent !important;
+    font-size: 28px;
+    line-height: 1;
+    color: #151411 !important;
+    cursor: pointer;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 0 !important
+}
+
+.tfp-payment-close:hover {
+    background: none !important;
+    background-color: transparent !important;
+    color: #000 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important
+}
+
+.tfp-payment-tabs-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 20px 0 16px;
+}
+
+.tfp-payment-card-badge {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #000 !important;
+    background-color: #000 !important;
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 7px 18px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    user-select: none;
+    margin-left: auto;
+}
+
+.tfp-payment-tabs {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin: 0;
+}
+
+.tfp-payment-tabs button,
+.tfp-payment-tabs button:hover,
+.tfp-payment-tabs button:focus,
+.tfp-payment-tabs button:active {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    background-color: transparent !important;
+    font: 14px/1.3 inherit;
+    cursor: pointer;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
+    text-decoration: none !important
+}
+
+.tfp-payment-tabs button {
+    color: #555 !important
+}
+
+.tfp-payment-tabs button:hover,
+.tfp-payment-tabs button:focus,
+.tfp-payment-tabs button.is-active {
+    color: #151411 !important;
+    background: none !important;
+    background-color: transparent !important
+}
+
+.tfp-payment-tabs button:hover .tfp-payment-radio {
+    border-color: #00666e
+}
+
+.tfp-payment-radio {
+    width: 21px;
+    height: 21px;
+    border: 1px solid #bfc3c4;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative
+}
+
+.tfp-payment-tabs button.is-active .tfp-payment-radio:after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    left: 5px;
+    top: 5px;
+    background: #00666e;
+    border-radius: 50%
+}
+
+.tfp-payment-panel {
+    display: none
+}
+
+.tfp-payment-panel.is-active {
+    display: block
+}
+
+.tfp-payment-card-form,
+.tfp-payment-bank-form,
+.tfp-payment-paypal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px
+}
+
+.tfp-payment-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px
+}
+
+.tfp-payment-field label {
+    font-size: 13px;
+    font-weight: 600
+}
+
+.tfp-payment-input {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px;
+    border: 1px solid #c6cbcc !important;
+    border-radius: 8px !important;
+    background: #fff;
+    color: #151411;
+    font: 14px/1.4 inherit;
+    box-sizing: border-box
+}
+
+.tfp-payment-input.tfp-stripe-card-element {
+    display: flex;
+    align-items: center
+}
+
+.tfp-payment-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px
+}
+
+.tfp-payment-consent,
+.tfp-payment-verification {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 10px;
+    line-height: 1.45
+}
+
+.tfp-payment-consent input,
+.tfp-payment-verification input {
+    margin-top: 2px;
+    flex: 0 0 auto
+}
+
+.tfp-payment-verification {
+    border: 1px solid #cfd2d2;
+    border-radius: 8px;
+    padding: 16px
+}
+
+.tfp-payment-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 3px
+}
+
+.tfp-payment-save svg,
+.tfp-payment-remove-editor svg {
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.tfp-payment-remove-editor {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 45px;
+    padding: 10px 18px !important;
+    border: 1px solid #c6cbcc !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    background-color: #fff !important;
+    color: #151411 !important;
+    font: 14px/1.2 inherit;
+    cursor: pointer;
+    box-shadow: none !important
+}
+
+.tfp-payment-remove-editor:hover {
+    background: #f5f5f5 !important;
+    background-color: #f5f5f5 !important;
+    border-color: #a8aeb0 !important;
+    color: #151411 !important
+}
+
+.tfp-payment-status {
+    margin: 0;
+    font-size: 12px
+}
+
+.tfp-payment-status[data-state="error"] {
+    color: #b3261e
+}
+
+.tfp-payment-status[data-state="success"] {
+    color: #00666e
+}
+
+.tfp-payment-segment {
+    display: inline-flex;
+    align-items: center;
+    max-width: 305px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #c6cbcc;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 4px;
+    box-sizing: border-box;
+}
+
+.tfp-payment-segment button,
+.tfp-payment-page .tfp-payment-segment button {
+    flex: 1;
+    min-height: 38px;
+    padding: 8px 16px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #475569 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    font-family: inherit !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    text-decoration: none !important;
+}
+
+.tfp-payment-segment button:hover,
+.tfp-payment-page .tfp-payment-segment button:hover {
+    background: #f1f5f9 !important;
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.tfp-payment-segment button:focus,
+.tfp-payment-segment button:active,
+.tfp-payment-page .tfp-payment-segment button:focus,
+.tfp-payment-page .tfp-payment-segment button:active {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.tfp-payment-segment button.is-active,
+.tfp-payment-segment button.is-active:hover,
+.tfp-payment-segment button.is-active:focus,
+.tfp-payment-segment button.is-active:active,
+.tfp-payment-page .tfp-payment-segment button.is-active,
+.tfp-payment-page .tfp-payment-segment button.is-active:hover,
+.tfp-payment-page .tfp-payment-segment button.is-active:focus,
+.tfp-payment-page .tfp-payment-segment button.is-active:active {
+    background: #00666e !important;
+    background-color: #00666e !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.tfp-payment-paypal-form {
+    align-items: center;
+    text-align: center;
+    padding: 12px 0 8px
+}
+
+.tfp-payment-paypal-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #00666e;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 22px/1 Arial;
+    font-style: italic
+}
+
+.tfp-payment-paypal-form>p {
+    max-width: 320px;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0;
+    color: #151411;
+    ;
+}
+
+.tfp-payment-paypal-email {
+    width: min(300px, 100%);
+    text-align: left
+}
+
+@media(max-width:700px) {
+    .tfp-payment-method-row {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .tfp-payment-method-row__actions {
+        width: 100%;
+        justify-content: flex-end
+    }
+
+    .tfp-payment-settings {
+        align-items: flex-start
+    }
+
+    .tfp-payment-tabs {
+        gap: 14px;
+        overflow: auto
+    }
+
+    .tfp-payment-fields-row {
+        grid-template-columns: 1fr
+    }
+}
