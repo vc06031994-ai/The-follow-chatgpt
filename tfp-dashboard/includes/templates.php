@@ -166,6 +166,14 @@ add_filter('template_include', function ($template) {
         }
     }
 
+    // The site's real front page must always remain the normal public
+    // WordPress/Elementor homepage. Never replace it with a dashboard
+    // template, even if an old page-template assignment or page slug
+    // happens to match one of the dashboard templates.
+    if (is_front_page() || is_home()) {
+        return $template;
+    }
+
     if (!is_page()) {
         return $template;
     }
@@ -208,6 +216,13 @@ function tfp_dashboard_is_dashboard_page()
         return true;
     }
 
+    // The public site homepage is never a dashboard page. This also prevents
+    // the guest -> homepage redirect from becoming a redirect loop when an
+    // old dashboard template is still assigned to the front-page record.
+    if (is_front_page() || is_home()) {
+        return false;
+    }
+
     if (!is_page()) {
         return false;
     }
@@ -234,6 +249,11 @@ function tfp_dashboard_current_template_slug()
 
     if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
         return 'tfp-dashboard-grades';
+    }
+
+    // Keep the real public homepage outside dashboard template resolution.
+    if (is_front_page() || is_home()) {
+        return '';
     }
 
     if (!is_page()) {
