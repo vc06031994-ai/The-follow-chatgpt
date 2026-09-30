@@ -1,210 +1,112 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
+if (!defined('ABSPATH')) exit;
 
-function tfp_dashboard_render_calendar_content()
-{
-    // Define tabs
-    $tabs = [
-        'schedule' => __('My Schedule', 'tfp-dashboard'),
-        'requests' => __('My Requests', 'tfp-dashboard'),
-    ];
-
-    $active_tab = isset($_GET['tab']) && array_key_exists($_GET['tab'], $tabs) ? sanitize_text_field($_GET['tab']) : 'schedule';
-
-    // Calendar logic
-    $ym = isset($_GET['ym']) ? sanitize_text_field($_GET['ym']) : date('Y-m');
-    $timestamp = strtotime($ym . '-01');
-    if ($timestamp === false) {
-        $ym = date('Y-m');
-        $timestamp = strtotime($ym . '-01');
-    }
-
-    // Previous and Next month URLs
-    $prev_ym = date('Y-m', strtotime('-1 month', $timestamp));
-    $next_ym = date('Y-m', strtotime('+1 month', $timestamp));
-
-    $prev_url = add_query_arg('ym', $prev_ym);
-    $next_url = add_query_arg('ym', $next_ym);
-
-    // Month details
-    $month_title = date('F Y', $timestamp);
-    $days_in_month = date('t', $timestamp);
-    $str = date('w', mktime(0, 0, 0, date('m', $timestamp), 1, date('Y', $timestamp))); // Day of the week for 1st day (0=Sun, 6=Sat)
-
-    // For previous month trailing days
-    $prev_timestamp = strtotime('-1 month', $timestamp);
-    $prev_days_in_month = date('t', $prev_timestamp);
-
-    // We can keep the same mock events for demonstration, mapped to the 2nd, 9th, 16th, 23rd, 30th etc.
-    $meetings = [2, 9, 16, 23, 30];
-    $holidays = [19];
+function tfp_dashboard_render_calendar_content() {
+    $user_id = get_current_user_id();
+    $tabs = ['schedule'=>__('My Schedule','tfp-dashboard'),'requests'=>__('My Requests','tfp-dashboard')];
+    $active_tab = isset($_GET['tab']) && isset($tabs[$_GET['tab']]) ? sanitize_key($_GET['tab']) : 'schedule';
+    $ym = isset($_GET['ym']) ? sanitize_text_field($_GET['ym']) : current_time('Y-m');
+    if (!preg_match('/^\d{4}-\d{2}$/',$ym)) $ym=current_time('Y-m');
+    $timestamp = strtotime($ym.'-01');
+    $prev_ym=date('Y-m',strtotime('-1 month',$timestamp)); $next_ym=date('Y-m',strtotime('+1 month',$timestamp));
+    $first=date('Y-m-01',$timestamp); $last=date('Y-m-t',$timestamp);
+    $month_title=date_i18n('F Y',$timestamp);
+    $days_in_month=(int)date('t',$timestamp); $start=(int)date('w',$timestamp);
+    $meetings=tfp_calendar_meetings_for_month($user_id,$ym);
+    $off_days=tfp_calendar_off_days($first,$last);
+    $next_meetings=tfp_calendar_next_meetings($user_id,3);
+    $cohort=tfp_calendar_student_cohort($user_id);
+    $requests=tfp_dashboard_user_skip_requests($user_id);
     ?>
-    <div class="tfp-cal-header-actions">
-        <div class="tfp-cal-header-left">
-            <div class="tfp-dash-pageheader__crumb" style="margin-bottom: 8px;">
-                <a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Discipleship', 'tfp-dashboard'); ?></a>
-                <span aria-hidden="true">/</span>
-                <span class="tfp-dash-pageheader__current"><?php esc_html_e('Calendar', 'tfp-dashboard'); ?></span>
-            </div>
-            <h1 class="tfp-dash-pageheader__title" style="font-size: 28px; font-weight: 700; color: #111827; margin-bottom: 8px;">
-                <?php esc_html_e('My Calendar', 'tfp-dashboard'); ?>
-            </h1>
-            <p class="tfp-dash-pageheader__subtitle" style="font-size: 14px; color: #4B5563; margin: 0;">
-                <?php esc_html_e('View your upcoming meetings, off days, and skip requests.', 'tfp-dashboard'); ?>
-            </p>
-        </div>
-        <div>
-            <a href="#" class="tfp-cal-btn-skip">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 3.33334V12.6667M3.33334 8H12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <?php esc_html_e('Request a Skip', 'tfp-dashboard'); ?>
-            </a>
-        </div>
-    </div>
+    <div class="tfp-cal-header-actions" data-tfp-calendar>
+      <div class="tfp-cal-header-left">
+        <div class="tfp-dash-pageheader__crumb" style="margin-bottom:8px"><a href="<?php echo esc_url(home_url('/')); ?>">Discipleship</a><span aria-hidden="true">/</span><span class="tfp-dash-pageheader__current">Calendar</span></div>
+        <h1 class="tfp-dash-pageheader__title" style="font-size:28px;font-weight:700;color:#111827;margin-bottom:8px">My Calendar</h1>
+        <p class="tfp-dash-pageheader__subtitle" style="font-size:14px;color:#4B5563;margin:0">View your upcoming meetings, off days, and skip requests.</p>
+      </div>
+      <div><a href="#" class="tfp-cal-btn-skip" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Request a Skip</a></div>
 
-    <!-- Tabs -->
-    <div class="tfp-cal-tabs">
-        <?php foreach ($tabs as $key => $label): ?>
-            <a href="?tab=<?php echo esc_attr($key); ?>" class="tfp-cal-tabs__link <?php echo $active_tab === $key ? 'is-active' : ''; ?>">
-                <?php echo esc_html($label); ?>
-            </a>
+      <div class="tfp-cal-tabs">
+        <?php foreach($tabs as $key=>$label): ?>
+          <a href="<?php echo esc_url(add_query_arg(['tab'=>$key,'ym'=>$ym])); ?>" class="tfp-cal-tabs__link <?php echo $active_tab===$key?'is-active':''; ?>"><?php echo esc_html($label); ?></a>
         <?php endforeach; ?>
-    </div>
+      </div>
 
-    <?php if ($active_tab === 'schedule'): ?>
-        <div class="tfp-cal-layout">
-            <!-- Left: Calendar Grid -->
-            <div class="tfp-cal-grid-area">
-                <div class="tfp-cal-controls">
-                    <a href="<?php echo esc_url($prev_url); ?>" class="tfp-cal-btn-nav">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 12.6667L5.33333 8.00001L10 3.33334" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
-                    </a>
-                    <h2 class="tfp-cal-month-title"><?php echo esc_html($month_title); ?></h2>
-                    <a href="<?php echo esc_url($next_url); ?>" class="tfp-cal-btn-nav">
-                        <?php esc_html_e('Next', 'tfp-dashboard'); ?>
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6 12.6667L10.6667 8.00001L6 3.33334" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </div>
-
-                <div class="tfp-cal-weekdays">
-                    <div class="tfp-cal-weekday">Sun</div>
-                    <div class="tfp-cal-weekday">Mon</div>
-                    <div class="tfp-cal-weekday">Tue</div>
-                    <div class="tfp-cal-weekday">Wed</div>
-                    <div class="tfp-cal-weekday">Thu</div>
-                    <div class="tfp-cal-weekday">Fri</div>
-                    <div class="tfp-cal-weekday">Sat</div>
-                </div>
-
-                <div class="tfp-cal-grid">
-                    <?php
-                    // Display previous month trailing days
-                    if ($str > 0) {
-                        $start_prev_day = $prev_days_in_month - $str + 1;
-                        for ($i = 0; $i < $str; $i++) {
-                            echo '<div class="tfp-cal-day is-inactive"><span class="tfp-cal-day-num">' . ($start_prev_day + $i) . '</span></div>';
-                        }
-                    }
-
-                    // Display current month days
-                    for ($day = 1; $day <= $days_in_month; $day++) {
-                        $classes = 'tfp-cal-day';
-                        // Highlight today if it's the current real month
-                        if ($ym === date('Y-m') && $day == date('j')) {
-                            // Example: highlight today, or rely on mock data
-                        }
-
-                        if ($day === 16 || $day === 19) {
-                            $classes .= ' is-selected';
-                        }
-
-                        echo '<div class="' . esc_attr($classes) . '">';
-                        echo '<span class="tfp-cal-day-num">' . $day . '</span>';
-                        if (in_array($day, $meetings)) {
-                            echo '<span class="tfp-cal-event-pill tfp-cal-event-pill--meeting">Spring 2026 - Disci</span>';
-                        }
-                        if (in_array($day, $holidays)) {
-                            echo '<span class="tfp-cal-event-pill tfp-cal-event-pill--holiday">Juneteenth</span>';
-                        }
-                        echo '</div>';
-                    }
-
-                    // Calculate remaining cells to complete the last row
-                    $total_cells = $str + $days_in_month;
-                    $remaining = 7 - ($total_cells % 7);
-                    if ($remaining > 0 && $remaining < 7) {
-                        for ($i = 1; $i <= $remaining; $i++) {
-                            echo '<div class="tfp-cal-day is-inactive"><span class="tfp-cal-day-num">' . $i . '</span></div>';
-                        }
-                    }
-                    ?>
-                </div>
-            </div>
-
-            <!-- Right: Sidebar -->
-            <div class="tfp-cal-sidebar">
-
-                <div>
-                    <h3 class="tfp-cal-sidebar-section__title"><?php esc_html_e('Select a day', 'tfp-dashboard'); ?></h3>
-                    <p class="tfp-cal-sidebar-section__desc"><?php esc_html_e('Click any date to see details', 'tfp-dashboard'); ?></p>
-                    <div class="tfp-cal-sidebar-empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        <p><?php esc_html_e('Click a date on the calendar to see meetings and details.', 'tfp-dashboard'); ?></p>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="tfp-cal-sidebar-section__title" style="margin-bottom: 16px;"><?php esc_html_e('Upcoming Off Days', 'tfp-dashboard'); ?></h3>
-                    <div class="tfp-cal-sidebar-list">
-                        <div class="tfp-cal-sidebar-item">
-                            <span class="tfp-cal-sidebar-item-name">Juneteenth</span>
-                            <span class="tfp-cal-sidebar-item-date">Jun 19, 2026</span>
-                        </div>
-                        <div class="tfp-cal-sidebar-item">
-                            <span class="tfp-cal-sidebar-item-name">Independence Day</span>
-                            <span class="tfp-cal-sidebar-item-date">July 14, 2026</span>
-                        </div>
-                        <div class="tfp-cal-sidebar-item">
-                            <span class="tfp-cal-sidebar-item-name">Thanksgiving</span>
-                            <span class="tfp-cal-sidebar-item-date">Nov 26, 20226</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="tfp-cal-sidebar-section__title" style="margin-bottom: 16px;"><?php esc_html_e('Next Meetings', 'tfp-dashboard'); ?></h3>
-                    <div class="tfp-cal-sidebar-list">
-                        <div class="tfp-cal-sidebar-item">
-                            <span class="tfp-cal-sidebar-item-name">Cohort Name</span>
-                            <span class="tfp-cal-sidebar-item-date">2026-06-03 - 6:00 PM</span>
-                        </div>
-                        <div class="tfp-cal-sidebar-item">
-                            <span class="tfp-cal-sidebar-item-name">Cohort Name</span>
-                            <span class="tfp-cal-sidebar-item-date">2026-06-03 - 6:00 PM</span>
-                        </div>
-                        <div class="tfp-cal-sidebar-item">
-                            <span class="tfp-cal-sidebar-item-name">Cohort Name</span>
-                            <span class="tfp-cal-sidebar-item-date">2026-06-03 - 6:00 PM</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+      <?php if($active_tab==='schedule'): ?>
+      <div class="tfp-cal-layout">
+        <div class="tfp-cal-grid-area">
+          <div class="tfp-cal-controls">
+            <a href="<?php echo esc_url(add_query_arg(['tab'=>'schedule','ym'=>$prev_ym])); ?>" class="tfp-cal-btn-nav">← Previous</a>
+            <h2 class="tfp-cal-month-title"><?php echo esc_html($month_title); ?></h2>
+            <a href="<?php echo esc_url(add_query_arg(['tab'=>'schedule','ym'=>$next_ym])); ?>" class="tfp-cal-btn-nav">Next →</a>
+          </div>
+          <div class="tfp-cal-weekdays"><?php foreach(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] as $d) echo '<div class="tfp-cal-weekday">'.esc_html($d).'</div>'; ?></div>
+          <div class="tfp-cal-grid">
+            <?php for($i=0;$i<$start;$i++): ?><div class="tfp-cal-day is-inactive"></div><?php endfor; ?>
+            <?php for($day=1;$day<=$days_in_month;$day++):
+              $date=sprintf('%s-%02d',$ym,$day); $day_meetings=$meetings[$date]??[]; $off=$off_days[$date]??null;
+              $classes='tfp-cal-day'.($off?' is-selected':'');
+              if($date===current_time('Y-m-d'))$classes.=' is-today';
+            ?>
+              <div class="<?php echo esc_attr($classes); ?>" data-calendar-date="<?php echo esc_attr($date); ?>" tabindex="0" role="button" aria-label="<?php echo esc_attr($date); ?>">
+                <span class="tfp-cal-day-num"><?php echo esc_html($day); ?></span>
+                <?php if($off): ?><span class="tfp-cal-event-pill tfp-cal-event-pill--holiday"><?php echo esc_html($off['name']); ?></span><?php endif; ?>
+                <?php foreach(array_slice($day_meetings,0,2) as $meeting): ?><span class="tfp-cal-event-pill tfp-cal-event-pill--meeting"><?php echo esc_html($meeting['cohort']); ?></span><?php endforeach; ?>
+                <?php if(count($day_meetings)>2): ?><span class="tfp-cal-event-pill tfp-cal-event-pill--meeting">+<?php echo count($day_meetings)-2; ?> more</span><?php endif; ?>
+              </div>
+            <?php endfor; ?>
+            <?php $total=$start+$days_in_month; $remaining=(7-($total%7))%7; for($i=0;$i<$remaining;$i++): ?><div class="tfp-cal-day is-inactive"></div><?php endfor; ?>
+          </div>
         </div>
-    <?php else: ?>
-        <p><?php esc_html_e('No requests available.', 'tfp-dashboard'); ?></p>
-    <?php endif; ?>
+        <aside class="tfp-cal-sidebar">
+          <div>
+            <h3 class="tfp-cal-sidebar-section__title">Select a day</h3>
+            <p class="tfp-cal-sidebar-section__desc">Click any date to see meetings and details.</p>
+            <div class="tfp-cal-sidebar-empty-state" data-calendar-detail>
+              <p>Click a date on the calendar to see meetings and details.</p>
+            </div>
+          </div>
+          <div>
+            <h3 class="tfp-cal-sidebar-section__title" style="margin-bottom:16px">Upcoming Off Days</h3>
+            <div class="tfp-cal-sidebar-list">
+              <?php $future_off=get_posts(['post_type'=>'tfp_off_day','post_status'=>'publish','posts_per_page'=>3,'meta_key'=>'_date','orderby'=>'meta_value','order'=>'ASC','meta_query'=>[['key'=>'_date','value'=>current_time('Y-m-d'),'compare'=>'>=','type'=>'DATE']]]); ?>
+              <?php if($future_off): foreach($future_off as $p): $od=get_post_meta($p->ID,'_date',true); ?>
+                <div class="tfp-cal-sidebar-item"><span class="tfp-cal-sidebar-item-name"><?php echo esc_html(get_the_title($p->ID)); ?></span><span class="tfp-cal-sidebar-item-date"><?php echo esc_html(date_i18n('M j, Y',strtotime($od))); ?></span></div>
+              <?php endforeach; else: ?><div class="tfp-cal-sidebar-empty-state"><p>No upcoming off days.</p></div><?php endif; ?>
+            </div>
+          </div>
+          <div>
+            <h3 class="tfp-cal-sidebar-section__title" style="margin-bottom:16px">Next Meetings</h3>
+            <div class="tfp-cal-sidebar-list">
+              <?php if($next_meetings): foreach($next_meetings as $m): ?>
+                <button type="button" class="tfp-cal-sidebar-item" data-calendar-date="<?php echo esc_attr($m['date']); ?>" style="width:100%;border:0;text-align:left;cursor:pointer"><span class="tfp-cal-sidebar-item-name"><?php echo esc_html($m['cohort']); ?></span><span class="tfp-cal-sidebar-item-date"><?php echo esc_html(date_i18n('M j',strtotime($m['date']))); ?> · <?php echo esc_html($m['start_label']); ?></span></button>
+              <?php endforeach; else: ?><div class="tfp-cal-sidebar-empty-state"><p>No upcoming meetings.</p></div><?php endif; ?>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <?php else: ?>
+        <div class="tfp-docs-panel">
+          <h2 class="tfp-docs-panel__title">My Skip Requests</h2>
+          <?php if($requests): ?><div class="tfp-exp-table-wrap"><table class="tfp-exp-table"><thead><tr><th>Date</th><th>Reason</th><th>Status</th></tr></thead><tbody>
+          <?php foreach($requests as $request): ?><tr><td><?php echo esc_html(date_i18n('M j, Y',strtotime($request['date']))); ?></td><td><?php echo esc_html($request['reason']); ?></td><td><span class="tfp-exp-badge"><?php echo esc_html(ucfirst($request['status'])); ?></span></td></tr><?php endforeach; ?>
+          </tbody></table></div><?php else: ?><div class="tfp-exp-empty">You have not submitted any skip requests.</div><?php endif; ?>
+        </div>
+      <?php endif; ?>
+
+      <div class="tfp-exp-modal" data-skip-modal>
+        <div class="tfp-exp-modal__box">
+          <div class="tfp-exp-modal__head"><h3>Request a Skip</h3><button type="button" class="tfp-exp-modal__close" data-close-modal aria-label="Close">×</button></div>
+          <form>
+            <label>Date<input type="date" name="skip_date" required></label>
+            <input type="hidden" name="skip_cohort" value="<?php echo esc_attr($cohort['id']??0); ?>">
+            <label>Reason<select name="reason" required><option value="">Select a reason</option><option value="Travel">Travel</option><option value="Personal">Personal</option><option value="Work">Work</option><option value="Illness">Illness</option><option value="Other">Other</option></select></label>
+            <label>Additional notes<textarea name="notes" rows="4"></textarea></label>
+            <div class="tfp-exp-modal__actions"><button type="button" class="tfp-exp-btn" data-close-modal>Cancel</button><button type="submit" class="tfp-exp-btn tfp-exp-btn--primary">Submit Request</button></div>
+            <div data-form-status aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </div>
     <?php
 }
