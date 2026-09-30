@@ -1,0 +1,191 @@
+/* =========================================================================
+   TFP Dashboard — Documents Page
+   ========================================================================= */
+
+/* ----- Tabs ----- */
+.tfp-docs-tabs {
+    display: flex;
+    gap: 32px;
+    border-bottom: 2px solid #E5E7EB;
+    margin-bottom: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+}
+
+.tfp-docs-tabs__link {
+    flex: 0 0 auto;
+    padding-bottom: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 130%;
+    color: #C4C4C4;
+    margin-bottom: -2px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tfp-docs-tabs__link:hover {
+    color: var(--tfp-dash-teal);
+}
+
+.tfp-docs-tabs__link.is-active {
+    color: #151411;
+    border-bottom: 2px solid var(--tfp-dash-teal);
+    font-weight: 700;
+}
+
+/* ----- Panel: card with rounded border, NO horizontal padding so table is edge-to-edge ----- */
+.tfp-docs-panel {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    overflow: hidden;
+    /* clips table corners to card radius */
+    margin-top: 24px;
+}
+
+/* Title sits inside the card with padding */
+.tfp-docs-panel__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    padding: 20px 24px 16px;
+}
+
+/* ----- Table: full-width, no outer border, no vertical borders ----- */
+.tfp-docs-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tfp-docs-table-wrap table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    /* removes all cell gaps */
+    text-align: left;
+    border: none;
+    /* no outer table border */
+}
+
+/* Header row: light gray bg, bottom border only */
+.tfp-docs-table-wrap thead tr {
+    background-color: #F3F4F6;
+}
+
+.tfp-docs-table-wrap th {
+    padding: 12px 24px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+    border: none;
+    /* remove ALL borders */
+    border-bottom: 1px solid #E5E7EB;
+    /* only bottom */
+}
+
+/* Body rows: white bg, only bottom border (no vertical lines) */
+.tfp-docs-table-wrap tbody tr {
+    background: #fff !important;
+    border: none;
+}
+
+/* Override theme reset.css zebra striping (odd row gray bg) */
+.tfp-docs-table-wrap tbody>tr:nth-child(odd)>td,
+.tfp-docs-table-wrap tbody>tr:nth-child(even)>td,
+.tfp-docs-table-wrap tbody>tr:nth-child(odd)>th,
+.tfp-docs-table-wrap tbody>tr:nth-child(even)>th {
+    background-color: #fff !important;
+}
+
+.tfp-docs-table-wrap tbody tr:last-child td {
+    border-bottom: none;
+    /* last row has no bottom border */
+}
+
+.tfp-docs-table-wrap td {
+    padding: 18px 24px;
+    font-size: 13px;
+    color: #111827;
+    background: #fff !important;
+    border: none;
+    /* remove ALL borders */
+    border-bottom: 1px solid #E5E7EB;
+    /* only bottom */
+    vertical-align: middle;
+}
+
+/* ----- "Active" badge — teal outline, transparent bg ----- */
+.tfp-docs-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 9999px;
+    background-color: transparent;
+    color: var(--tfp-dash-teal, #00666E);
+    border: 1.5px solid var(--tfp-dash-teal, #00666E);
+    white-space: nowrap;
+}
+
+/* ----- Actions cell ----- */
+.tfp-docs-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* "View/ Download" — white bg, gray border */
+.tfp-docs-btn-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    background: #fff;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.tfp-docs-btn-view:hover {
+    background: #F9FAFB;
+    border-color: #9CA3AF;
+    color: #111827;
+}
+
+/* "Sign" — solid teal */
+.tfp-docs-btn-sign {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--tfp-dash-teal, #00666E);
+    border: 1.5px solid var(--tfp-dash-teal, #00666E);
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.tfp-docs-btn-sign:hover {
+    background: var(--tfp-dash-teal-dark, #00505A);
+    border-color: var(--tfp-dash-teal-dark, #00505A);
+    color: #fff;
+}

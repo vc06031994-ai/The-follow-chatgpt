@@ -203,13 +203,9 @@ function tfp_dashboard_render_communication_content()
             <div class="tfp-dash-ticketlist__toolbar">
                 <div class="tfp-dash-ticketlist__search">
                     <span class="tfp-dash-ticketlist__search-icon" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-                            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-                            <circle cx="11" cy="11" r="5" />
-                            <line x1="21" y1="21" x2="14.65" y2="14.65" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+<path d="M16 16L13 13M7.0002 17H4.19692C3.07901 17 2.5192 17 2.0918 16.7822C1.71547 16.5905 1.40973 16.2842 1.21799 15.9079C1 15.4801 1 14.9203 1 13.8002V4.2002C1 3.08009 1 2.51962 1.21799 2.0918C1.40973 1.71547 1.71547 1.40973 2.0918 1.21799C2.51962 1 3.08009 1 4.2002 1H13.8002C14.9203 1 15.4796 1 15.9074 1.21799C16.2837 1.40973 16.5905 1.71547 16.7822 2.0918C17 2.5192 17 3.07899 17 4.19691V7.0002M10.5 14C8.567 14 7 12.433 7 10.5C7 8.567 8.567 7 10.5 7C12.433 7 14 8.567 14 10.5C14 12.433 12.433 14 10.5 14Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
                     </span>
                     <input type="search" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>"
                         data-tfp-ticket-search>
@@ -318,7 +314,7 @@ function tfp_dashboard_render_communication_content()
             </div>
 
             <div class="tfp-dash-ticketlist__footer">
-                <button type="button" class="tfp-dash-btn tfp-dash-btn--outline tfp-dash-ticketlist__new"
+                <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-dash-ticketlist__new"
                     data-tfp-new-ticket>
                     <?php echo tfp_dashboard_icon('plus'); ?>
                     <?php esc_html_e('New Conversation', 'tfp-dashboard'); ?>

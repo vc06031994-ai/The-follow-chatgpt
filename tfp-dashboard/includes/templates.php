@@ -52,6 +52,14 @@ function tfp_dashboard_template_map()
             'label' => __('TFP Dashboard — Grades', 'tfp-dashboard'),
             'file' => 'templates/template-grades.php',
         ],
+        'tfp-dashboard-documents' => [
+            'label' => __('TFP Dashboard — Documents', 'tfp-dashboard'),
+            'file' => 'templates/template-documents.php',
+        ],
+        'tfp-dashboard-calendar' => [
+            'label' => __('TFP Dashboard — Calendar', 'tfp-dashboard'),
+            'file' => 'templates/template-calendar.php',
+        ],
     ];
 }
 
@@ -125,6 +133,22 @@ add_filter('pre_handle_404', function ($preempt, $wp_query) {
         status_header(200);
         return true;
     }
+    if ($last === 'documents' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'documents')) {
+        if ($wp_query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_page = true;
+        }
+        status_header(200);
+        return true;
+    }
+    if ($last === 'calendar' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'calendar')) {
+        if ($wp_query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_page = true;
+        }
+        status_header(200);
+        return true;
+    }
 
     return $preempt;
 }, 10, 2);
@@ -152,6 +176,34 @@ add_action('template_redirect', function () {
             exit;
         }
     }
+
+    if ($last === 'documents' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'documents')) {
+        status_header(200);
+        if ($wp_query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_page = true;
+        }
+
+        $file = TFP_DASH_PATH . 'templates/template-documents.php';
+        if (file_exists($file)) {
+            include $file;
+            exit;
+        }
+    }
+
+    if ($last === 'calendar' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'calendar')) {
+        status_header(200);
+        if ($wp_query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_page = true;
+        }
+
+        $file = TFP_DASH_PATH . 'templates/template-calendar.php';
+        if (file_exists($file)) {
+            include $file;
+            exit;
+        }
+    }
 }, 2);
 
 add_filter('template_include', function ($template) {
@@ -161,6 +213,20 @@ add_filter('template_include', function ($template) {
 
     if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
         $file = TFP_DASH_PATH . 'templates/template-grades.php';
+        if (file_exists($file)) {
+            return $file;
+        }
+    }
+
+    if ($last === 'documents' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'documents')) {
+        $file = TFP_DASH_PATH . 'templates/template-documents.php';
+        if (file_exists($file)) {
+            return $file;
+        }
+    }
+
+    if ($last === 'calendar' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'calendar')) {
+        $file = TFP_DASH_PATH . 'templates/template-calendar.php';
         if (file_exists($file)) {
             return $file;
         }
@@ -215,6 +281,12 @@ function tfp_dashboard_is_dashboard_page()
     if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
         return true;
     }
+    if ($last === 'documents' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'documents')) {
+        return true;
+    }
+    if ($last === 'calendar' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'calendar')) {
+        return true;
+    }
 
     // The public site homepage is never a dashboard page. This also prevents
     // the guest -> homepage redirect from becoming a redirect loop when an
@@ -249,6 +321,12 @@ function tfp_dashboard_current_template_slug()
 
     if ($last === 'grades' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'grades')) {
         return 'tfp-dashboard-grades';
+    }
+    if ($last === 'documents' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'documents')) {
+        return 'tfp-dashboard-documents';
+    }
+    if ($last === 'calendar' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'calendar')) {
+        return 'tfp-dashboard-calendar';
     }
 
     // Keep the real public homepage outside dashboard template resolution.

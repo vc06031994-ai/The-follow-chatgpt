@@ -89,6 +89,8 @@ require_once TFP_DASH_PATH . 'includes/grades/admin.php';
 require_once TFP_DASH_PATH . 'includes/admin/submissions.php';
 require_once TFP_DASH_PATH . 'includes/page-program.php';
 require_once TFP_DASH_PATH . 'includes/page-grades.php';
+require_once TFP_DASH_PATH . 'includes/page-documents.php';
+require_once TFP_DASH_PATH . 'includes/page-calendar.php';
 
 /**
  * Dashboard pages are logged-in, per-user, dynamic content — they must
@@ -280,6 +282,14 @@ add_action('wp_enqueue_scripts', function () {
     if ($template === 'tfp-dashboard-grades') {
         wp_enqueue_style('tfp-dashboard-grades', TFP_DASH_URL . 'assets/css/grades.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
         wp_enqueue_script('tfp-dashboard-grades', TFP_DASH_URL . 'assets/js/grades.js', [], TFP_DASH_VERSION, true);
+    }
+
+    if ($template === 'tfp-dashboard-documents') {
+        wp_enqueue_style('tfp-dashboard-documents', TFP_DASH_URL . 'assets/css/documents.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
+    }
+
+    if ($template === 'tfp-dashboard-calendar') {
+        wp_enqueue_style('tfp-dashboard-calendar', TFP_DASH_URL . 'assets/css/calendar.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
     }
 });
 
