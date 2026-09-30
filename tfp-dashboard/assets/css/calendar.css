@@ -285,3 +285,75 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* -------------------------------------------------------------------------
+   Figma layout corrections
+   Keep the calendar grid inside its column and prevent long event/meeting
+   labels from creating horizontal page overflow.
+   ------------------------------------------------------------------------- */
+.tfp-cal-layout {
+    grid-template-columns: minmax(0, 1fr) 276px;
+    min-width: 0;
+}
+
+.tfp-cal-grid-area,
+.tfp-cal-sidebar,
+.tfp-cal-grid,
+.tfp-cal-weekdays {
+    min-width: 0;
+}
+
+.tfp-cal-day {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.tfp-cal-event-pill {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.tfp-cal-sidebar {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.tfp-cal-sidebar-list {
+    min-width: 0;
+}
+
+.tfp-cal-sidebar-item {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.tfp-cal-sidebar-item-name {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tfp-cal-sidebar-item-date {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+@media (max-width: 1200px) {
+    .tfp-cal-layout {
+        grid-template-columns: minmax(0, 1fr) 276px;
+    }
+}
+
+@media (max-width: 992px) {
+    .tfp-cal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .tfp-cal-sidebar {
+        width: 100%;
+    }
+}
