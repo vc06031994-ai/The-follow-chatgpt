@@ -52,6 +52,33 @@ function tfp_student_document_statuses() {
     ];
 }
 
+function tfp_dashboard_user_skip_requests($user_id) {
+    $posts = get_posts([
+        'post_type' => 'tfp_skip_request',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'meta_query' => [[
+            'key' => '_user_id',
+            'value' => (int) $user_id,
+            'type' => 'NUMERIC',
+        ]],
+        'meta_key' => '_date',
+        'orderby' => 'meta_value',
+        'order' => 'DESC',
+    ]);
+    $rows = [];
+    foreach ($posts as $post) {
+        $rows[] = [
+            'id' => $post->ID,
+            'date' => get_post_meta($post->ID, '_date', true),
+            'reason' => get_post_meta($post->ID, '_reason', true),
+            'status' => get_post_meta($post->ID, '_status', true) ?: 'pending',
+            'cohort_id' => (int) get_post_meta($post->ID, '_cohort_id', true),
+        ];
+    }
+    return $rows;
+}
+
 function tfp_skip_request_statuses() {
     return [
         'pending' => __('Pending', 'tfp-dashboard'),
