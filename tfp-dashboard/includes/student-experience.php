@@ -318,6 +318,7 @@ function tfp_dashboard_user_documents($user_id, $type = '') {
             'date' => get_post_meta($p->ID, '_date_issued', true),
             'status' => get_post_meta($p->ID, '_status', true) ?: 'pending',
             'url' => get_post_meta($p->ID, '_document_url', true),
+            'signed_at' => get_post_meta($p->ID, '_signed_at', true),
         ];
     }, $posts);
 }
@@ -393,6 +394,8 @@ add_action('wp_ajax_tfp_skip_request', function () {
     $reason = sanitize_text_field($_POST['reason'] ?? '');
     $notes = sanitize_textarea_field($_POST['notes'] ?? '');
     if (!preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $date) || !$cohort_id || !$reason) wp_send_json_error(['message' => __('Date, cohort and reason are required.', 'tfp-dashboard')], 400);
+    $cohort = tfp_calendar_student_cohort($user_id);
+    if (!$cohort || (int) $cohort['id'] !== $cohort_id) wp_send_json_error(['message' => __('That cohort is not available for your account.', 'tfp-dashboard')], 403);
     $existing = get_posts(['post_type' => 'tfp_skip_request', 'post_status' => 'publish', 'posts_per_page' => 1, 'meta_query' => [['key'=>'_user_id','value'=>$user_id,'type'=>'NUMERIC'],['key'=>'_date','value'=>$date],['key'=>'_status','value'=>['pending','approved'],'compare'=>'IN']]]);
     if ($existing) wp_send_json_error(['message' => __('A skip request already exists for this date.', 'tfp-dashboard')], 409);
     $id = wp_insert_post(['post_type'=>'tfp_skip_request','post_status'=>'publish','post_title'=>sprintf(__('Skip Request — %s — %s','tfp-dashboard'), wp_get_current_user()->display_name, $date)]);
@@ -410,12 +413,15 @@ add_action('wp_ajax_tfp_sign_document', function () {
     check_ajax_referer('tfp_documents_nonce', 'nonce');
     if (!is_user_logged_in()) wp_send_json_error(['message'=>__('Please log in.','tfp-dashboard')],401);
     $id = absint($_POST['document_id'] ?? 0);
+    $signature = sanitize_text_field($_POST['signature'] ?? '');
     $post = get_post($id);
     $user_id = get_current_user_id();
     if (!$post || $post->post_type !== 'tfp_student_document' || (int)get_post_meta($id,'_user_id',true) !== $user_id) wp_send_json_error(['message'=>__('Document not found.','tfp-dashboard')],404);
     $status = get_post_meta($id,'_status',true);
     if (!in_array($status,['pending','active'],true)) wp_send_json_error(['message'=>__('This document cannot be signed.','tfp-dashboard')],400);
+    if (strlen($signature) < 2) wp_send_json_error(['message'=>__('Please enter your full name as your signature.','tfp-dashboard')],400);
     update_post_meta($id,'_status','signed');
+    update_post_meta($id,'_signature',$signature);
     update_post_meta($id,'_signed_at',current_time('mysql'));
     update_post_meta($id,'_signed_ip',sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? ''));
     wp_send_json_success(['message'=>__('Document signed successfully.','tfp-dashboard'),'status'=>'signed']);
