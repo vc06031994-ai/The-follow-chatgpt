@@ -16,7 +16,9 @@ function tfp_dashboard_render_documents_content() {
       <div class="tfp-dash-pageheader__crumb"><a href="<?php echo esc_url(home_url('/')); ?>">Discipleship</a><span>/</span><span class="tfp-dash-pageheader__current">Documents</span></div>
       <h1 class="tfp-dash-pageheader__title"><?php echo esc_html($first_name); ?>, My Documents</h1>
       <p class="tfp-dash-pageheader__subtitle">Access your agreements, contracts, class materials, and certificates in one place.</p>
-      <div class="tfp-docs-tabs" style="margin-top:24px">
+
+    </div>
+    <div class="tfp-docs-tabs" style="margin-top:24px">
         <?php foreach($tabs as $key=>$label): ?><a href="<?php echo esc_url(add_query_arg('tab',$key)); ?>" class="tfp-docs-tabs__link <?php echo $active_tab===$key?'is-active':''; ?>"><?php echo esc_html($label); ?></a><?php endforeach; ?>
       </div>
 
@@ -55,6 +57,5 @@ function tfp_dashboard_render_documents_content() {
           </form>
         </div>
       </div>
-    </div>
     <?php
 }
