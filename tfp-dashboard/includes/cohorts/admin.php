@@ -27,6 +27,7 @@ function tfp_cohort_meta_box_html($post)
     $schedule    = get_post_meta($post->ID, '_schedule_text', true);
     $facilitator = get_post_meta($post->ID, '_facilitator', true);
     $seats_total = get_post_meta($post->ID, '_seats_total', true);
+    $meeting_url = get_post_meta($post->ID, '_meeting_url', true);
     $price       = get_post_meta($post->ID, '_price', true);
 
     $courses = get_posts([
@@ -68,6 +69,12 @@ function tfp_cohort_meta_box_html($post)
     echo '<tr>';
     echo '<th scope="row"><label for="tfp_cohort_schedule">' . esc_html__('Meeting schedule', 'tfp-dashboard') . '</label></th>';
     echo '<td><input type="text" name="tfp_cohort_schedule" id="tfp_cohort_schedule" class="regular-text" value="' . esc_attr($schedule) . '" placeholder="' . esc_attr__('Thursdays 6:00 PM PT', 'tfp-dashboard') . '"></td>';
+    echo '</tr>';
+
+    // Meeting URL.
+    echo '<tr>';
+    echo '<th scope="row"><label for="tfp_cohort_meeting_url">' . esc_html__('Meeting URL', 'tfp-dashboard') . '</label></th>';
+    echo '<td><input type="url" name="tfp_cohort_meeting_url" id="tfp_cohort_meeting_url" class="regular-text" value="' . esc_attr($meeting_url) . '" placeholder="https://zoom.us/..."></td>';
     echo '</tr>';
 
     // Facilitator.
@@ -122,6 +129,7 @@ add_action('save_post_tfp_cohort', function ($post_id) {
 
     update_post_meta($post_id, '_start_date', sanitize_text_field($_POST['tfp_cohort_start_date'] ?? ''));
     update_post_meta($post_id, '_schedule_text', sanitize_text_field($_POST['tfp_cohort_schedule'] ?? ''));
+    update_post_meta($post_id, '_meeting_url', esc_url_raw($_POST['tfp_cohort_meeting_url'] ?? ''));
     update_post_meta($post_id, '_facilitator', sanitize_text_field($_POST['tfp_cohort_facilitator'] ?? ''));
     update_post_meta($post_id, '_seats_total', absint($_POST['tfp_cohort_seats_total'] ?? 0));
 
