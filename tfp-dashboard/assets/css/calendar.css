@@ -3,13 +3,21 @@
    ========================================================================= */
 
 .tfp-cal-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    display: block;
+    width: 100%;
+    position: relative;
 }
 
 .tfp-cal-header-left {
-    flex: 1;
+    display: block;
+    width: 100%;
+}
+
+.tfp-cal-header-actions > div:not(.tfp-cal-header-left):not(.tfp-cal-tabs):not(.tfp-cal-layout):not(.tfp-exp-modal) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
 }
 
 .tfp-cal-btn-skip {
@@ -36,6 +44,7 @@
 /* ----- Tabs ----- */
 .tfp-cal-tabs {
     display: flex;
+    width: 100%;
     gap: 32px;
     border-bottom: 2px solid #E5E7EB;
     margin-bottom: 24px;
@@ -67,7 +76,8 @@
 /* ----- Main Layout ----- */
 .tfp-cal-layout {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) 340px;
     gap: 24px;
     align-items: start;
 }
