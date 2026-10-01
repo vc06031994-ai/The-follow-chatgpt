@@ -53,3 +53,38 @@
     }
   });
 })();
+
+/* Calendar > My Requests: client-side status filter */
+document.addEventListener('change', function (event) {
+    const filter = event.target.closest('[data-request-filter]');
+    if (!filter) return;
+
+    const card = filter.closest('.tfp-cal-requests-card');
+    if (!card) return;
+
+    const rows = card.querySelectorAll('.tfp-cal-requests-table tbody tr[data-request-status]');
+    const selected = String(filter.value || 'all').toLowerCase();
+    let visible = 0;
+
+    rows.forEach(function (row) {
+        const status = String(row.getAttribute('data-request-status') || '').toLowerCase();
+        const show = selected === 'all' || status === selected;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+
+    let empty = card.querySelector('[data-request-filter-empty]');
+    if (visible === 0 && rows.length) {
+        if (!empty) {
+            empty = document.createElement('div');
+            empty.setAttribute('data-request-filter-empty', '');
+            empty.className = 'tfp-cal-requests-filter-empty';
+            empty.textContent = 'No requests found for this status.';
+            const wrap = card.querySelector('.tfp-cal-requests-table-wrap');
+            if (wrap) wrap.appendChild(empty);
+        }
+        empty.hidden = false;
+    } else if (empty) {
+        empty.hidden = true;
+    }
+});
