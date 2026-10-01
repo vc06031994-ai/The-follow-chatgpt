@@ -417,3 +417,198 @@
     color: #151411 !important;
     flex: 0 0 auto;
 }
+/* =========================================================================
+   Figma: Calendar > My Requests
+   ========================================================================= */
+.tfp-cal-requests-card {
+    background: #fff;
+    border: 1px solid #D1D5D5;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 16px;
+}
+
+.tfp-cal-requests-toolbar {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    background: #fff;
+}
+
+.tfp-cal-request-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 10px;
+    border: 1px solid #D1D5D5;
+    border-radius: 7px;
+    color: #151411;
+    font-size: 13px;
+    line-height: 1;
+    background: #fff;
+}
+
+.tfp-cal-request-filter select {
+    border: 0 !important;
+    background: #fff !important;
+    color: #151411 !important;
+    font: inherit;
+    padding: 0 20px 0 0;
+    outline: none;
+    box-shadow: none !important;
+}
+
+.tfp-cal-create-request {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 38px;
+    padding: 0 16px;
+    border-radius: 7px;
+    background: #00666E !important;
+    border: 1px solid #00666E !important;
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+
+.tfp-cal-create-request:hover,
+.tfp-cal-create-request:focus {
+    background: #00666E !important;
+    color: #fff !important;
+}
+
+.tfp-cal-requests-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tfp-cal-requests-table {
+    width: 100%;
+    border-collapse: collapse !important;
+    table-layout: fixed;
+    margin: 0 !important;
+}
+
+.tfp-cal-requests-table th {
+    padding: 12px 16px;
+    background: #F8F9FA !important;
+    border-top: 1px solid #E5E7EB !important;
+    border-bottom: 1px solid #E5E7EB !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    color: #151411 !important;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.tfp-cal-requests-table td {
+    padding: 10px 16px;
+    background: #fff !important;
+    border: 0 !important;
+    border-bottom: 1px solid #E5E7EB !important;
+    color: #151411 !important;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.tfp-cal-requests-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+.tfp-cal-requests-table th:nth-child(1),
+.tfp-cal-requests-table td:nth-child(1) { width: 15%; }
+
+.tfp-cal-requests-table th:nth-child(2),
+.tfp-cal-requests-table td:nth-child(2) { width: 18%; }
+
+.tfp-cal-requests-table th:nth-child(3),
+.tfp-cal-requests-table td:nth-child(3) { width: 45%; }
+
+.tfp-cal-requests-table th:nth-child(4),
+.tfp-cal-requests-table td:nth-child(4) { width: 12%; }
+
+.tfp-cal-requests-table th:nth-child(5),
+.tfp-cal-requests-table td:nth-child(5) { width: 10%; }
+
+.tfp-cal-request-category {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 9px;
+    border-radius: 7px;
+    background: #8A762B;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tfp-cal-request-date {
+    display: block;
+    line-height: 1.25;
+}
+
+.tfp-cal-request-date small {
+    display: block;
+    font-size: 9px;
+    margin-top: 2px;
+}
+
+.tfp-cal-request-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 25px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.tfp-cal-request-status--approved {
+    background: #E2F2EF;
+    border: 1px solid #6AAEB0;
+    color: #151411;
+}
+
+.tfp-cal-request-status--pending {
+    background: #FFF4D8;
+    border: 1px solid #D9B86C;
+    color: #151411;
+}
+
+.tfp-cal-request-status--rejected,
+.tfp-cal-request-status--cancelled {
+    background: #FCE7E7;
+    border: 1px solid #E79A9A;
+    color: #151411;
+}
+
+.tfp-cal-revoke {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 12px;
+    border: 1px solid #E99A9A !important;
+    border-radius: 6px;
+    background: #FFF7F7 !important;
+    color: #A11A1A !important;
+    font-size: 11px;
+    cursor: pointer;
+    box-shadow: none !important;
+}
+
+.tfp-cal-revoke:hover,
+.tfp-cal-revoke:focus {
+    background: #FFF7F7 !important;
+    color: #A11A1A !important;
+}
