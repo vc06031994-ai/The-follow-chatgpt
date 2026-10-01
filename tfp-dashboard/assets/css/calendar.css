@@ -357,8 +357,3 @@
         width: 100%;
     }
 }
-
-.tfp-exp-table>tbody>tr:nth-child(odd)>th,
-.tfp-exp-table>tbody>tr:nth-child(odd)>td {
-    background-color: #ffffff !important;
-}
