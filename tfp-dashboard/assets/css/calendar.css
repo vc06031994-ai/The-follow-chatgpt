@@ -292,7 +292,7 @@
    labels from creating horizontal page overflow.
    ------------------------------------------------------------------------- */
 .tfp-cal-layout {
-    grid-template-columns: minmax(0, 1fr) 276px;
+    grid-template-columns: minmax(0, 1fr) 400px;
     min-width: 0;
 }
 
