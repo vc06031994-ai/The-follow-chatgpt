@@ -87,11 +87,41 @@ function tfp_dashboard_render_calendar_content() {
         </aside>
       </div>
       <?php else: ?>
-        <div class="tfp-docs-panel">
-          <h2 class="tfp-docs-panel__title">My Skip Requests</h2>
-          <?php if($requests): ?><div class="tfp-exp-table-wrap"><table class="tfp-exp-table"><thead><tr><th>Date</th><th>Reason</th><th>Status</th></tr></thead><tbody>
-          <?php foreach($requests as $request): ?><tr><td><?php echo esc_html(date_i18n('M j, Y',strtotime($request['date']))); ?></td><td><?php echo esc_html($request['reason']); ?></td><td><span class="tfp-exp-badge"><?php echo esc_html(ucfirst($request['status'])); ?></span></td></tr><?php endforeach; ?>
-          </tbody></table></div><?php else: ?><div class="tfp-exp-empty">You have not submitted any skip requests.</div><?php endif; ?>
+        <div class="tfp-cal-requests-card">
+          <div class="tfp-cal-requests-toolbar">
+            <label class="tfp-cal-request-filter">Status: 
+              <select data-request-filter aria-label="Filter skip requests by status">
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </label>
+            <a href="#" class="tfp-cal-create-request" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Create New Skip Request</a>
+          </div>
+          <?php if($requests): ?>
+          <div class="tfp-cal-requests-table-wrap"><table class="tfp-cal-requests-table"><thead><tr><th>Request Category</th><th>Affected Date</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead><tbody>
+          <?php foreach($requests as $request): 
+              $status_key = strtolower((string)$request['status']);
+              $status_label = ucfirst($status_key);
+              $reason = trim((string)$request['reason']);
+              $category = 'STUDENT ABSENCE';
+              $time_label = '';
+              $raw_date = (string)$request['date'];
+              $date_ts = strtotime($raw_date);
+              if ($date_ts) $time_label = date_i18n('g:i A', $date_ts);
+          ?>
+            <tr data-request-status="<?php echo esc_attr($status_key); ?>">
+              <td><span class="tfp-cal-request-category"><?php echo esc_html($category); ?></span></td>
+              <td><span class="tfp-cal-request-date"><?php echo esc_html($date_ts ? date_i18n('M j, Y', $date_ts) : $raw_date); ?><?php if($time_label): ?><small> · <?php echo esc_html($time_label); ?></small><?php endif; ?></span></td>
+              <td><?php echo esc_html($reason); ?></td>
+              <td><span class="tfp-cal-request-status tfp-cal-request-status--<?php echo esc_attr($status_key); ?>"><?php echo esc_html($status_label); ?></span></td>
+              <td><button type="button" class="tfp-cal-revoke" data-request-id="<?php echo esc_attr($request['id']); ?>">Revoke</button></td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody></table></div>
+          <?php else: ?><div class="tfp-cal-requests-empty">You have not submitted any skip requests.</div><?php endif; ?>
         </div>
       <?php endif; ?>
 
