@@ -77,9 +77,10 @@ function tfp_dashboard_render_calendar_content() {
           </div>
           <div>
             <h3 class="tfp-cal-sidebar-section__title" style="margin-bottom:16px">Next Meetings</h3>
-            <div class="tfp-cal-sidebar-list">
+            <div class="tfp-cal-sidebar-list tfp-cal-sidebar-list--meetings">
               <?php if($next_meetings): foreach($next_meetings as $m): ?>
-                <button type="button" class="tfp-cal-sidebar-item" data-calendar-date="<?php echo esc_attr($m['date']); ?>" style="width:100%;border:0;text-align:left;cursor:pointer"><span class="tfp-cal-sidebar-item-name"><?php echo esc_html($m['cohort']); ?></span><span class="tfp-cal-sidebar-item-date"><?php echo esc_html(date_i18n('M j',strtotime($m['date']))); ?> · <?php echo esc_html($m['start_label']); ?></span></button>
+                <?php $short_cohort = function_exists('mb_substr') ? mb_substr((string) $m['cohort'], 0, 5) : substr((string) $m['cohort'], 0, 5); ?>
+                <button type="button" class="tfp-cal-sidebar-item tfp-cal-sidebar-item--meeting" data-calendar-date="<?php echo esc_attr($m['date']); ?>"><span class="tfp-cal-sidebar-item-name"><?php echo esc_html($short_cohort); ?>...</span><span class="tfp-cal-sidebar-item-date"><?php echo esc_html(date_i18n('M j',strtotime($m['date']))); ?> · <?php echo esc_html($m['start_label']); ?></span></button>
               <?php endforeach; else: ?><div class="tfp-cal-sidebar-empty-state"><p>No upcoming meetings.</p></div><?php endif; ?>
             </div>
           </div>
