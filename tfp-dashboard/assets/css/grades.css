@@ -197,14 +197,23 @@
 }
 
 /* Table Body Rows */
-.tfp-grades-table tbody td {
+.tfp-grades-table tbody td,
+.tfp-grades-table tbody th {
     padding: 10px 8px !important;
     font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
     font-size: 13.5px !important;
     color: #111827 !important;
     vertical-align: middle !important;
     box-sizing: border-box !important;
-    background-color: #ffffff;
+    background-color: #ffffff !important;
+}
+
+/* Override WordPress reset.css zebra-row background on the Grades table. */
+.tfp-grades-table tbody > tr:nth-child(odd) > td,
+.tfp-grades-table tbody > tr:nth-child(odd) > th,
+.tfp-grades-table tbody > tr:nth-child(even) > td,
+.tfp-grades-table tbody > tr:nth-child(even) > th {
+    background-color: #ffffff !important;
 }
 
 .tfp-grades-table tbody tr:hover td {
