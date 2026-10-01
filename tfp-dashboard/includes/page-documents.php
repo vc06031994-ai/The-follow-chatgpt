@@ -36,7 +36,7 @@ function tfp_dashboard_render_documents_content() {
               <td><span class="tfp-exp-badge"><?php echo esc_html(ucwords(str_replace('_',' ',$row['status']))); ?></span></td>
               <td><div class="tfp-exp-actions">
                 <?php if(!empty($row['url'])): ?><a class="tfp-exp-btn" href="<?php echo esc_url($row['url']); ?>" target="_blank" rel="noopener"><?php echo $active_tab==='receipts'?'View Receipt':'View / Download'; ?></a><?php endif; ?>
-                <?php if($active_tab==='agreements' && in_array($row['status'],['pending','active'],true)): ?><button type="button" class="tfp-exp-btn tfp-exp-btn--primary" data-sign-document="<?php echo esc_attr($row['id']); ?>" data-title="<?php echo esc_attr($row['title']); ?>">Sign</button><?php elseif($active_tab==='agreements' && $row['status']==='signed'): ?><span class="tfp-exp-muted">Signed <?php echo !empty($row['signed_at'])?esc_html(date_i18n(get_option('date_format'),strtotime($row['signed_at']))):''; ?></span><?php endif; ?>
+                <?php if($active_tab==='agreements' && in_array($row['status'],['pending','active'],true)): ?><button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-sign-document="<?php echo esc_attr($row['id']); ?>" data-title="<?php echo esc_attr($row['title']); ?>">Sign</button><?php elseif($active_tab==='agreements' && $row['status']==='signed'): ?><span class="tfp-exp-muted">Signed <?php echo !empty($row['signed_at'])?esc_html(date_i18n(get_option('date_format'),strtotime($row['signed_at']))):''; ?></span><?php endif; ?>
               </div></td>
             </tr>
           <?php endforeach; ?>
@@ -52,7 +52,7 @@ function tfp_dashboard_render_documents_content() {
           <form data-sign-form>
             <input type="hidden" name="document_id">
             <label>Signature<input type="text" name="signature" autocomplete="name" placeholder="Your full name" required></label>
-            <div class="tfp-exp-modal__actions"><button type="button" class="tfp-exp-btn" data-close-modal>Cancel</button><button type="submit" class="tfp-exp-btn tfp-exp-btn--primary">Sign Document</button></div>
+            <div class="tfp-exp-modal__actions"><button type="button" class="tfp-dash-btn" data-close-modal>Cancel</button><button type="submit" class="tfp-dash-btn tfp-dash-btn--primary">Sign Document</button></div>
             <div data-form-status aria-live="polite"></div>
           </form>
         </div>

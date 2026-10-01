@@ -115,20 +115,23 @@
 
 .tfp-exp-table {
     width: 100%;
-    border-collapse: collapse
+    border-collapse: collapse;
+    margin-bottom: 25px !important;
 }
 
 .tfp-exp-table th,
 .tfp-exp-table td {
     padding: 14px 20px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #EAECF0;
     text-align: left;
     font-size: 13px
 }
 
 .tfp-exp-table th {
-    background: #f3f4f6;
-    font-weight: 700
+    background: #DEE2E2;
+    font-weight: 700;
+    font-size: 14px !important;
+    line-height: 130% !important;
 }
 
 .tfp-exp-muted {
@@ -149,15 +152,17 @@
     border-radius: 8px;
     text-decoration: none;
     background: #fff;
-    color: #374151;
-    cursor: pointer
+    color: #151411;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 130%;
 }
 
-.tfp-exp-btn--primary {
-    background: #00666e;
-    color: #fff;
-    border-color: #00666e
+.tfp-exp-btn:hover {
+    color: #151411;
 }
+
 
 .tfp-exp-empty {
     padding: 30px;
@@ -183,4 +188,11 @@
 .tfp-exp-table tbody>tr:nth-child(odd)>td,
 .tfp-exp-table tbody>tr:nth-child(odd)>th {
     background-color: #ffffff !important;
+    vertical-align: middle;
+}
+
+.tfp-exp-table td,
+.tfp-exp-table th {
+    border-right: 0 !important;
+    border-left: 0 !important;
 }
