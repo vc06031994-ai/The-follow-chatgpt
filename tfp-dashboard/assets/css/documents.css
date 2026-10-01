@@ -44,11 +44,9 @@
     border: 1px solid #E5E7EB;
     border-radius: 12px;
     overflow: hidden;
-    /* clips table corners to card radius */
     margin-top: 24px;
 }
 
-/* Title sits inside the card with padding */
 .tfp-docs-panel__title {
     font-size: 1rem;
     font-weight: 700;
@@ -57,7 +55,7 @@
     padding: 20px 24px 16px;
 }
 
-/* ----- Table: full-width, no outer border, no vertical borders ----- */
+/* ----- Table ----- */
 .tfp-docs-table-wrap {
     width: 100%;
     overflow-x: auto;
@@ -67,15 +65,19 @@
     width: 100%;
     min-width: 760px;
     border-collapse: collapse;
-    /* removes all cell gaps */
     text-align: left;
-    border: none;
-    /* no outer table border */
+    border: none !important;
 }
 
-/* Header row: light gray bg, bottom border only */
 .tfp-docs-table-wrap thead tr {
     background-color: #F3F4F6;
+}
+
+.tfp-docs-table-wrap th,
+.tfp-docs-table-wrap td {
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
 }
 
 .tfp-docs-table-wrap th {
@@ -83,29 +85,22 @@
     font-size: 13px;
     font-weight: 700;
     color: #374151;
-    border: none;
-    /* remove ALL borders */
-    border-bottom: 1px solid #E5E7EB;
-    /* only bottom */
+    border-top: none !important;
+    border-bottom: 1px solid #E5E7EB !important;
 }
 
-/* Body rows: white bg, only bottom border (no vertical lines) */
 .tfp-docs-table-wrap tbody tr {
     background: #fff !important;
-    border: none;
+    border: none !important;
 }
 
-/* Override theme reset.css zebra striping (odd row gray bg) */
 .tfp-docs-table-wrap tbody>tr:nth-child(odd)>td,
 .tfp-docs-table-wrap tbody>tr:nth-child(even)>td,
 .tfp-docs-table-wrap tbody>tr:nth-child(odd)>th,
 .tfp-docs-table-wrap tbody>tr:nth-child(even)>th {
     background-color: #fff !important;
-}
-
-.tfp-docs-table-wrap tbody tr:last-child td {
-    border-bottom: none;
-    /* last row has no bottom border */
+    border-left: none !important;
+    border-right: none !important;
 }
 
 .tfp-docs-table-wrap td {
@@ -113,14 +108,18 @@
     font-size: 13px;
     color: #111827;
     background: #fff !important;
-    border: none;
-    /* remove ALL borders */
-    border-bottom: 1px solid #E5E7EB;
-    /* only bottom */
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #E5E7EB !important;
     vertical-align: middle;
 }
 
-/* ----- "Active" badge — teal outline, transparent bg ----- */
+.tfp-docs-table-wrap tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* ----- Status badge ----- */
 .tfp-docs-badge {
     display: inline-flex;
     align-items: center;
@@ -142,7 +141,6 @@
     gap: 8px;
 }
 
-/* "View/ Download" — white bg, gray border */
 .tfp-docs-btn-view {
     display: inline-flex;
     align-items: center;
@@ -166,7 +164,6 @@
     color: #111827;
 }
 
-/* "Sign" — solid teal */
 .tfp-docs-btn-sign {
     display: inline-flex;
     align-items: center;
