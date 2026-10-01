@@ -126,12 +126,34 @@ function tfp_skip_request_meta_box($post) {
 
 function tfp_student_document_meta_box($post) {
     wp_nonce_field('tfp_student_document_save', 'tfp_student_document_nonce');
+
     $user_id = (int) get_post_meta($post->ID, '_user_id', true);
     $type = (string) get_post_meta($post->ID, '_type', true) ?: 'Agreement';
     $date = (string) get_post_meta($post->ID, '_date_issued', true);
     $status = (string) get_post_meta($post->ID, '_status', true) ?: 'pending';
     $url = (string) get_post_meta($post->ID, '_document_url', true);
-    echo '<p><label><strong>User ID</strong><br><input type="number" name="tfp_doc_user_id" value="' . esc_attr($user_id) . '" min="1"></label></p>';
+
+    $students = get_users([
+        'orderby' => 'display_name',
+        'order' => 'ASC',
+        'fields' => ['ID', 'display_name', 'user_email'],
+    ]);
+
+    echo '<p><label><strong>' . esc_html__('Student', 'tfp-dashboard') . '</strong><br>';
+    echo '<select name="tfp_doc_user_id" class="widefat">';
+    echo '<option value="">' . esc_html__('Select Student', 'tfp-dashboard') . '</option>';
+
+    foreach ($students as $student) {
+        $label = $student->display_name;
+        if (empty($label)) {
+            $label = $student->user_email;
+        }
+
+        echo '<option value="' . esc_attr($student->ID) . '" ' . selected($user_id, $student->ID, false) . '>' . esc_html($label) . '</option>';
+    }
+
+    echo '</select></label></p>';
+
     echo '<p><label><strong>Type</strong><br><input type="text" name="tfp_doc_type" value="' . esc_attr($type) . '" class="regular-text"></label></p>';
     echo '<p><label><strong>Date issued</strong><br><input type="date" name="tfp_doc_date" value="' . esc_attr($date) . '"></label></p>';
     echo '<p><label><strong>Status</strong><br><select name="tfp_doc_status">';
@@ -140,7 +162,7 @@ function tfp_student_document_meta_box($post) {
     }
     echo '</select></label></p>';
     echo '<p><label><strong>Document URL</strong><br><input type="url" name="tfp_doc_url" value="' . esc_attr($url) . '" class="widefat" placeholder="https://..."></label></p>';
-    echo '<p>' . esc_html__('Assign this document to a WordPress user. The URL may point to a PDF or secure document viewer.', 'tfp-dashboard') . '</p>';
+    echo '<p>' . esc_html__('Assign this document to a student. The URL may point to a PDF or secure document viewer.', 'tfp-dashboard') . '</p>';
 }
 
 add_action('save_post_tfp_off_day', function ($post_id) {
@@ -161,10 +183,15 @@ add_action('save_post_tfp_skip_request', function ($post_id) {
 
 add_action('save_post_tfp_student_document', function ($post_id) {
     if (!isset($_POST['tfp_student_document_nonce']) || !wp_verify_nonce($_POST['tfp_student_document_nonce'], 'tfp_student_document_save') || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || !current_user_can('edit_post', $post_id)) return;
-    update_post_meta($post_id, '_user_id', absint($_POST['tfp_doc_user_id'] ?? 0));
-    update_post_meta($post_id, '_type', sanitize_text_field($_POST['tfp_doc_type'] ?? 'Agreement'));
-    update_post_meta($post_id, '_date_issued', sanitize_text_field($_POST['tfp_doc_date'] ?? ''));
+
+    $user_id = absint($_POST['tfp_doc_user_id'] ?? 0);
+    $type = sanitize_text_field($_POST['tfp_doc_type'] ?? 'Agreement');
+    $date = sanitize_text_field($_POST['tfp_doc_date'] ?? '');
     $status = sanitize_key($_POST['tfp_doc_status'] ?? 'pending');
+
+    update_post_meta($post_id, '_user_id', $user_id);
+    update_post_meta($post_id, '_type', $type);
+    update_post_meta($post_id, '_date_issued', $date);
     update_post_meta($post_id, '_status', array_key_exists($status, tfp_student_document_statuses()) ? $status : 'pending');
     update_post_meta($post_id, '_document_url', esc_url_raw($_POST['tfp_doc_url'] ?? ''));
 });
@@ -422,10 +449,10 @@ add_action('wp_ajax_tfp_skip_request', function () {
     $notes = sanitize_textarea_field($_POST['notes'] ?? '');
     if (!preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $date) || !$cohort_id || !$reason) wp_send_json_error(['message' => __('Date, cohort and reason are required.', 'tfp-dashboard')], 400);
     $cohort = tfp_calendar_student_cohort($user_id);
-    if (!$cohort || (int) $cohort['id'] !== $cohort_id) wp_send_json_error(['message' => __('That cohort is not available for your account.', 'tfp-dashboard')], 403);
-    $existing = get_posts(['post_type' => 'tfp_skip_request', 'post_status' => 'publish', 'posts_per_page' => 1, 'meta_query' => [['key'=>'_user_id','value'=>$user_id,'type'=>'NUMERIC'],['key'=>'_date','value'=>$date],['key'=>'_status','value'=>['pending','approved'],'compare'=>'IN']]]);
-    if ($existing) wp_send_json_error(['message' => __('A skip request already exists for this date.', 'tfp-dashboard')], 409);
-    $id = wp_insert_post(['post_type'=>'tfp_skip_request','post_status'=>'publish','post_title'=>sprintf(__('Skip Request — %s — %s','tfp-dashboard'), wp_get_current_user()->display_name, $date)]);
+    if (!$cohort || (int) $cohort['id'] !== $cohort_id) wp_send_json_error(['message' => __('That cohort is not available for your account.','tfp-dashboard')], 403);
+    $existing = get_posts(['post_type'=>'tfp_skip_request','post_status'=>'publish','posts_per_page'=>1,'meta_query'=>[['key'=>'_user_id','value'=>$user_id,'type'=>'NUMERIC'],['key'=>'_date','value'=>$date],['key'=>'_status','value'=>['pending','approved'],'compare'=>'IN']]]);
+    if ($existing) wp_send_json_error(['message'=>__('A skip request already exists for this date.','tfp-dashboard')],409);
+    $id = wp_insert_post(['post_type'=>'tfp_skip_request','post_status'=>'publish','post_title'=>sprintf(__('Skip Request — %s — %s','tfp-dashboard'),wp_get_current_user()->display_name,$date)]);
     if (!$id || is_wp_error($id)) wp_send_json_error(['message'=>__('Unable to create the request.','tfp-dashboard')],500);
     update_post_meta($id,'_user_id',$user_id);
     update_post_meta($id,'_date',$date);
