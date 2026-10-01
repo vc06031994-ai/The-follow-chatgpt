@@ -22,26 +22,6 @@
     z-index: 2;
 }
 
-.tfp-cal-btn-skip {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: var(--tfp-dash-teal, #00666E);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-
-.tfp-cal-btn-skip:hover {
-    background-color: var(--tfp-dash-teal-dark, #00505A);
-    color: #fff;
-}
 
 /* ----- Tabs ----- */
 .tfp-cal-tabs {
@@ -417,6 +397,7 @@
     color: #151411 !important;
     flex: 0 0 auto;
 }
+
 /* =========================================================================
    Figma: Calendar > My Requests
    ========================================================================= */
@@ -461,28 +442,7 @@
     box-shadow: none !important;
 }
 
-.tfp-cal-create-request {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    min-height: 38px;
-    padding: 0 16px;
-    border-radius: 7px;
-    background: #00666E !important;
-    border: 1px solid #00666E !important;
-    color: #fff !important;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none !important;
-    white-space: nowrap;
-}
 
-.tfp-cal-create-request:hover,
-.tfp-cal-create-request:focus {
-    background: #00666E !important;
-    color: #fff !important;
-}
 
 .tfp-cal-requests-table-wrap {
     width: 100%;
@@ -503,9 +463,10 @@
     border-bottom: 1px solid #E5E7EB !important;
     border-left: 0 !important;
     border-right: 0 !important;
-    color: #151411 !important;
-    font-size: 12px;
+    color: #000000 !important;
+    font-size: 14px;
     font-weight: 700;
+    line-height: 130%;
     text-align: left;
 }
 
@@ -524,30 +485,41 @@
 }
 
 .tfp-cal-requests-table th:nth-child(1),
-.tfp-cal-requests-table td:nth-child(1) { width: 15%; }
+.tfp-cal-requests-table td:nth-child(1) {
+    width: 15%;
+}
 
 .tfp-cal-requests-table th:nth-child(2),
-.tfp-cal-requests-table td:nth-child(2) { width: 18%; }
+.tfp-cal-requests-table td:nth-child(2) {
+    width: 18%;
+}
 
 .tfp-cal-requests-table th:nth-child(3),
-.tfp-cal-requests-table td:nth-child(3) { width: 45%; }
+.tfp-cal-requests-table td:nth-child(3) {
+    width: 45%;
+}
 
 .tfp-cal-requests-table th:nth-child(4),
-.tfp-cal-requests-table td:nth-child(4) { width: 12%; }
+.tfp-cal-requests-table td:nth-child(4) {
+    width: 12%;
+}
 
 .tfp-cal-requests-table th:nth-child(5),
-.tfp-cal-requests-table td:nth-child(5) { width: 10%; }
+.tfp-cal-requests-table td:nth-child(5) {
+    width: 10%;
+}
 
 .tfp-cal-request-category {
     display: inline-flex;
     align-items: center;
-    min-height: 30px;
+    min-height: 34px;
     padding: 0 9px;
     border-radius: 7px;
-    background: #8A762B;
+    background: #847230;
     color: #fff;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 700;
+    line-height: 130%;
     white-space: nowrap;
 }
 
@@ -598,17 +570,13 @@
     justify-content: center;
     min-height: 28px;
     padding: 0 12px;
-    border: 1px solid #E99A9A !important;
-    border-radius: 6px;
-    background: #FFF7F7 !important;
-    color: #A11A1A !important;
-    font-size: 11px;
-    cursor: pointer;
+    border: 1px solid #AF1E2D !important;
+    border-radius: 8px !important;
+    background: #FBEAEA !important;
+    color: #151411 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 130% !important;
+    cursor: pointer !important;
     box-shadow: none !important;
-}
-
-.tfp-cal-revoke:hover,
-.tfp-cal-revoke:focus {
-    background: #FFF7F7 !important;
-    color: #A11A1A !important;
 }

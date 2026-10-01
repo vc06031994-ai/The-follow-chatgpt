@@ -24,7 +24,7 @@ function tfp_dashboard_render_calendar_content() {
         <h1 class="tfp-dash-pageheader__title" style="font-size:28px;font-weight:700;color:#111827;margin-bottom:8px">My Calendar</h1>
         <p class="tfp-dash-pageheader__subtitle" style="font-size:14px;color:#151411;margin:0">View your upcoming meetings, off days, and skip requests.</p>
       </div>
-      <div class="tfp-cal-skip-action"><a href="#" class="tfp-cal-btn-skip" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Request a Skip</a></div>
+      <div class="tfp-cal-skip-action"><a href="#" class="tfp-cal-btn-skip tfp-dash-btn tfp-dash-btn--primary" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Request a Skip</a></div>
 
       <div class="tfp-cal-tabs">
         <?php foreach($tabs as $key=>$label): ?>
@@ -98,7 +98,7 @@ function tfp_dashboard_render_calendar_content() {
                 <option value="cancelled">Cancelled</option>
               </select>
             </label>
-            <a href="#" class="tfp-cal-create-request" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Create New Skip Request</a>
+            <a href="#" class="tfp-cal-create-request tfp-dash-btn tfp-dash-btn--primary" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Create New Skip Request</a>
           </div>
           <?php if($requests): ?>
           <div class="tfp-cal-requests-table-wrap"><table class="tfp-cal-requests-table"><thead><tr><th>Request Category</th><th>Affected Date</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead><tbody>
