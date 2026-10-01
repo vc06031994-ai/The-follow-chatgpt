@@ -13,7 +13,7 @@
     width: 100%;
 }
 
-.tfp-cal-header-actions > div:not(.tfp-cal-header-left):not(.tfp-cal-tabs):not(.tfp-cal-layout):not(.tfp-exp-modal) {
+.tfp-cal-header-actions>div:not(.tfp-cal-header-left):not(.tfp-cal-tabs):not(.tfp-cal-layout):not(.tfp-exp-modal) {
     position: absolute;
     top: 0;
     right: 0;
@@ -358,9 +358,7 @@
     }
 }
 
-
-/* Override reset.css zebra styling for calendar tables. */
-.tfp-cal-layout table > tbody > tr:nth-child(odd) > th,
-.tfp-cal-layout table > tbody > tr:nth-child(odd) > td {
+.tfp-exp-table>tbody>tr:nth-child(odd)>th,
+.tfp-exp-table>tbody>tr:nth-child(odd)>td {
     background-color: #ffffff !important;
 }
