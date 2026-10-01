@@ -11,6 +11,8 @@
 .tfp-cal-header-left {
     display: block;
     width: 100%;
+    border-bottom: 2px solid #570506;
+    padding-bottom: 20px;
 }
 
 .tfp-cal-skip-action {
@@ -69,7 +71,7 @@
 
 .tfp-cal-tabs__link.is-active {
     color: #151411;
-    border-bottom: 2px solid var(--tfp-dash-maroon, #570506);
+    border-bottom: 2px solid #00666E;
     /* Assuming maroon from screenshot border */
 }
 
@@ -365,6 +367,7 @@
         width: 100%;
     }
 }
+
 /* ----- Figma: Next Meetings sidebar ----- */
 .tfp-cal-sidebar-list--meetings {
     background: #fff;
@@ -372,6 +375,7 @@
     overflow: hidden;
     gap: 0;
 }
+
 .tfp-cal-sidebar-item--meeting {
     width: 100%;
     min-height: 72px;
@@ -382,13 +386,18 @@
     background: #fff !important;
     color: #151411 !important;
     box-shadow: none !important;
-    padding: 12px 16px;
-    text-align: left;
+    padding: 12px 16px !important;
+    text-align: left !important;
+    display: inline-flex !important;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
 }
-.tfp-cal-sidebar-item--meeting:last-child { border-bottom: 0 !important; }
+
+.tfp-cal-sidebar-item--meeting:last-child {
+    border-bottom: 0 !important;
+}
+
 .tfp-cal-sidebar-item--meeting:hover,
 .tfp-cal-sidebar-item--meeting:focus,
 .tfp-cal-sidebar-item--meeting:active {
@@ -397,11 +406,13 @@
     box-shadow: none !important;
     outline: none;
 }
+
 .tfp-cal-sidebar-item--meeting .tfp-cal-sidebar-item-name {
     color: #151411 !important;
     flex: 0 1 45%;
     min-width: 0;
 }
+
 .tfp-cal-sidebar-item--meeting .tfp-cal-sidebar-item-date {
     color: #151411 !important;
     flex: 0 0 auto;
