@@ -357,3 +357,10 @@
         width: 100%;
     }
 }
+
+
+/* Override reset.css zebra styling for calendar tables. */
+.tfp-cal-layout table > tbody > tr:nth-child(odd) > th,
+.tfp-cal-layout table > tbody > tr:nth-child(odd) > td {
+    background-color: #ffffff !important;
+}
