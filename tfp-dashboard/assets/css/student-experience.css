@@ -91,7 +91,8 @@
     margin-bottom: 10px;
     display: grid;
     gap: 20px;
-    font-size: 12px
+    font-size: 12px;
+    margin-top: 10px;
 }
 
 .tfp-exp-card .tfp-dash-btn {

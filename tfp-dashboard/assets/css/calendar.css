@@ -98,13 +98,14 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 12px;
     background: #fff;
-    border: 1px solid #D1D5DB;
+    border: 1px solid #C4C4C4;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
-    color: #374151;
+    line-height: 130%;
+    color: #151411;
     cursor: pointer;
     text-decoration: none;
 }
@@ -141,7 +142,7 @@
 
 .tfp-cal-day {
     aspect-ratio: 1 / 1;
-    border: 1px solid #E5E7EB;
+    border: 1px solid #C4C4C4;
     border-radius: 8px;
     padding: 8px;
     display: flex;
@@ -183,18 +184,21 @@
 /* Event Pills */
 .tfp-cal-event-pill {
     display: inline-block;
-    padding: 2px 6px;
+    padding: 5px 10px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 500;
+    line-height: 130%;
     border-radius: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+    box-shadow: 0px 2px 4px 0px #00000040;
+
 }
 
 .tfp-cal-event-pill--meeting {
-    background-color: #E0F2F1;
+    background-color: #E1F4F2;
     /* Light teal */
     color: var(--tfp-dash-teal, #00666E);
 }
@@ -208,30 +212,34 @@
 
 /* ----- Sidebar Panel ----- */
 .tfp-cal-sidebar {
-    background: #E5E7EB;
-    border-radius: 12px;
+    background: #DEE2E2;
+    border-radius: 11px;
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    border: 1px solid #C4C4C4;
 }
 
 .tfp-cal-sidebar-section__title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
-    color: #111827;
+    color: #151411;
+    line-height: 130%;
     margin: 0 0 4px;
 }
 
 .tfp-cal-sidebar-section__desc {
     font-size: 12px;
-    color: #4B5563;
+    font-weight: 500;
+    color: #151411;
+    line-height: 180%;
     margin: 0 0 16px;
 }
 
 .tfp-cal-sidebar-empty-state {
     background: #fff;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 32px 24px;
     text-align: center;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
