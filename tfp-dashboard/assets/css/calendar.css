@@ -13,7 +13,7 @@
     width: 100%;
 }
 
-.tfp-cal-header-actions>div:not(.tfp-cal-header-left):not(.tfp-cal-tabs):not(.tfp-cal-layout):not(.tfp-exp-modal) {
+.tfp-cal-skip-action {
     position: absolute;
     top: 0;
     right: 0;
