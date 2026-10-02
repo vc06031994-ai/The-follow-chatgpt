@@ -1,0 +1,56 @@
+/* =========================================================================
+   TFP Dashboard — Shared component layer
+   Shared UI primitives live here; page styles should contain only page-specific rules.
+   ========================================================================= */
+
+.tfp-dash-panel {
+    background: #fff;
+    border: 1px solid var(--tfp-dash-border);
+    border-radius: var(--tfp-dash-radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .05);
+}
+
+.tfp-dash-badge {
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--tfp-dash-bg-soft);
+}
+
+.tfp-dash-badge--success {
+    background: rgba(0, 102, 110, .12);
+    color: var(--tfp-dash-teal);
+}
+
+.tfp-dash-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tfp-dash-modal[hidden] { display: none; }
+
+.tfp-dash-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+}
+
+.tfp-dash-modal__box {
+    position: relative;
+    background: #fff;
+    border-radius: var(--tfp-dash-radius);
+    padding: 26px;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tfp-dash-modal__box h6 { margin: 0 0 4px; }
