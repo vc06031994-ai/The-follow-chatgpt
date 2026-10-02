@@ -584,3 +584,87 @@
     text-align: center;
     padding: 32px 0;
 }
+
+/* =========================================================================
+   Mobile responsive fixes
+   ========================================================================= */
+@media (max-width: 767px) {
+    /* Keep the skip CTA below the page description on small screens. */
+    .tfp-cal-header-actions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .tfp-cal-header-left {
+        width: 100%;
+        border-bottom: 0;
+        padding-bottom: 12px;
+    }
+
+    .tfp-cal-skip-action {
+        position: static;
+        width: 100%;
+        padding: 0 0 16px;
+        border-bottom: 2px solid #570506;
+        box-sizing: border-box;
+    }
+
+    .tfp-cal-skip-action .tfp-cal-btn-skip {
+        display: flex;
+        width: 100%;
+        min-height: 48px;
+        box-sizing: border-box;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tfp-cal-tabs {
+        margin-top: 16px;
+    }
+
+    /* My Requests toolbar: allow filter and CTA to wrap instead of
+       overflowing or forcing a horizontal page scroll. */
+    .tfp-cal-requests-toolbar {
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        min-height: 0;
+    }
+
+    .tfp-cal-request-filter {
+        flex: 0 1 auto;
+        max-width: 100%;
+    }
+
+    .tfp-cal-requests-toolbar .tfp-cal-btn-skip {
+        flex: 1 1 180px;
+        min-width: 180px;
+        max-width: 100%;
+        min-height: 48px;
+        box-sizing: border-box;
+    }
+
+    /* Keep the request table readable. The table itself becomes horizontally
+       scrollable inside the card instead of shrinking into overlapping text. */
+    .tfp-cal-requests-table-wrap {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tfp-cal-requests-table {
+        width: 760px;
+        min-width: 760px;
+        table-layout: fixed;
+    }
+
+    .tfp-cal-requests-table th,
+    .tfp-cal-requests-table td {
+        white-space: normal;
+        word-break: normal;
+    }
+}
