@@ -1,0 +1,36 @@
+/* =========================================================================
+   TFP Dashboard — Core tokens and base normalization
+   ========================================================================= */
+
+:root {
+    --tfp-dash-teal: #00666E;
+    --tfp-dash-teal-dark: #00505A;
+    --tfp-dash-maroon: #570506;
+    --tfp-dash-text: #151411;
+    --tfp-dash-muted: #2E2E2E;
+    --tfp-dash-border: rgba(0, 0, 0, .08);
+    --tfp-dash-bg: #FFFFFF;
+    --tfp-dash-bg-soft: #EFEFEF;
+    --tfp-dash-sidebar-width: 240px;
+    --tfp-dash-sidebar-collapsed: 76px;
+    --tfp-dash-radius: 12px;
+    --tfp-dash-font: 'Eudoxus Sans', sans-serif;
+    --tfp-dash-font-alt: 'Lora', sans-serif;
+    --tfp-dash-font-mono: 'Lora-italic', sans-serif;
+}
+
+html,
+body.tfp-dashboard-body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--tfp-dash-bg);
+    font-family: var(--tfp-dash-font);
+    color: var(--tfp-dash-text);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+p { font-family: var(--tfp-dash-font-alt); }
