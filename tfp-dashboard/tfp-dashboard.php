@@ -293,7 +293,7 @@ add_action('wp_enqueue_scripts', function () {
     if ($template === 'tfp-dashboard-documents') {
         wp_enqueue_style('tfp-dashboard-documents', TFP_DASH_URL . 'assets/css/documents.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/css/student-experience.css', ['tfp-dashboard-documents'], TFP_DASH_VERSION);
-        wp_enqueue_script('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/js/student-experience.js', ['tfp-dashboard-components'], TFP_DASH_VERSION, true);
+        wp_enqueue_script('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/js/student-experience.js', [], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-dashboard-student-experience', 'tfpStudentExperience', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'documentsNonce' => wp_create_nonce('tfp_documents_nonce'),
@@ -303,7 +303,7 @@ add_action('wp_enqueue_scripts', function () {
     if ($template === 'tfp-dashboard-calendar') {
         wp_enqueue_style('tfp-dashboard-calendar', TFP_DASH_URL . 'assets/css/calendar.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/css/student-experience.css', ['tfp-dashboard-calendar'], TFP_DASH_VERSION);
-        wp_enqueue_script('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/js/student-experience.js', ['tfp-dashboard-components'], TFP_DASH_VERSION, true);
+        wp_enqueue_script('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/js/student-experience.js', [], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-dashboard-student-experience', 'tfpStudentExperience', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'calendarNonce' => wp_create_nonce('tfp_calendar_nonce'),
