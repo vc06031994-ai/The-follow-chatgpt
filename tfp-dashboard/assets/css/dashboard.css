@@ -308,10 +308,10 @@
 /* Shared page header title: keeps h1/h2 markup visually consistent across pages. */
 .tfp-dash-pageheader__title {
     font-family: var(--tfp-dash-font) !important;
-    font-size: 32px !important;
-    font-weight: 800 !important;
+    font-size: clamp(1.75rem, 1.1rem + 1.8vw, 2.75rem) !important;
+    font-weight: 700 !important;
     margin: 0 0 8px !important;
-    line-height: 1.15 !important;
+    line-height: 130% !important;
     color: var(--tfp-dash-text) !important;
 }
 
