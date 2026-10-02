@@ -92,6 +92,7 @@ require_once TFP_DASH_PATH . 'includes/page-grades.php';
 require_once TFP_DASH_PATH . 'includes/page-documents.php';
 require_once TFP_DASH_PATH . 'includes/page-calendar.php';
 require_once TFP_DASH_PATH . 'includes/student-experience.php';
+require_once TFP_DASH_PATH . 'includes/customer-billing-shortcode.php';
 
 /**
  * Dashboard pages are logged-in, per-user, dynamic content — they must
