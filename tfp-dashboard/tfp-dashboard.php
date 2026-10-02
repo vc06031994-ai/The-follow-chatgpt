@@ -116,7 +116,7 @@ add_action('wp_enqueue_scripts', function () {
     if (function_exists('tfp_checkout_is_template_page') && tfp_checkout_is_template_page()) {
         wp_enqueue_style('tfp-dashboard-base', TFP_DASH_URL . 'assets/css/core.css', [], TFP_DASH_VERSION);
     wp_enqueue_style('tfp-dashboard-core', TFP_DASH_URL . 'assets/css/dashboard.css', ['tfp-dashboard-base'], TFP_DASH_VERSION);
-    wp_enqueue_style('tfp-dashboard-components', TFP_DASH_URL . 'assets/css/components.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-dashboard-components', TFP_DASH_URL . 'assets/css/components.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-checkout', TFP_DASH_URL . 'assets/css/checkout.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
         wp_enqueue_script('tfp-checkout', TFP_DASH_URL . 'assets/js/checkout.js', [], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-checkout', 'tfpCheckoutSettings', [
@@ -153,7 +153,9 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    wp_enqueue_style('tfp-dashboard-core', TFP_DASH_URL . 'assets/css/dashboard.css', [], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-dashboard-base', TFP_DASH_URL . 'assets/css/core.css', [], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-dashboard-core', TFP_DASH_URL . 'assets/css/dashboard.css', ['tfp-dashboard-base'], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-dashboard-components', TFP_DASH_URL . 'assets/css/components.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
     wp_enqueue_script('tfp-dashboard-core', TFP_DASH_URL . 'assets/js/dashboard.js', [], TFP_DASH_VERSION, true);
 
     $template = tfp_dashboard_current_template_slug();
