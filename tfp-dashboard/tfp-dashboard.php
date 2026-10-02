@@ -51,7 +51,7 @@ require_once TFP_DASH_PATH . 'includes/communication/ajax.php';
 require_once TFP_DASH_PATH . 'includes/communication/page-communication.php';
 require_once TFP_DASH_PATH . 'includes/billing/helpers.php';
 require_once TFP_DASH_PATH . 'includes/page-payment-details.php';
-require_once TFP_DASH_PATH . 'tfp-customer-billing-shortcode.php';
+require_once TFP_DASH_PATH . 'includes/customer-billing-shortcode.php';
 require_once TFP_DASH_PATH . 'includes/financial-aid/cpt.php';
 require_once TFP_DASH_PATH . 'includes/financial-aid/ajax.php';
 require_once TFP_DASH_PATH . 'includes/financial-aid/admin.php';
