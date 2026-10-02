@@ -13,6 +13,9 @@ function tfp_dashboard_render_documents_content() {
     elseif($active_tab==='receipts') $rows=tfp_dashboard_user_receipts($user_id);
     ?>
     <div class="tfp-dash-pageheader" data-tfp-documents>
+      <button type="button" class="tfp-dash-pageheader__mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open dashboard menu', 'tfp-dashboard'); ?>">
+        <?php echo tfp_dashboard_icon('toggle'); ?>
+      </button>
       <div class="tfp-dash-pageheader__crumb"><a href="<?php echo esc_url(home_url('/')); ?>">Discipleship</a><span>/</span><span class="tfp-dash-pageheader__current">Documents</span></div>
       <h1 class="tfp-dash-pageheader__title"><?php echo esc_html($first_name); ?>, My Documents</h1>
       <p class="tfp-dash-pageheader__subtitle">Access your agreements, contracts, class materials, and certificates in one place.</p>
