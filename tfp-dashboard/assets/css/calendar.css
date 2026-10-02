@@ -451,6 +451,7 @@
 
 .tfp-cal-requests-table {
     width: 100%;
+    min-width: 760px;
     border-collapse: collapse !important;
     table-layout: fixed;
 }
@@ -485,27 +486,42 @@
 
 .tfp-cal-requests-table th:nth-child(1),
 .tfp-cal-requests-table td:nth-child(1) {
-    width: 15%;
+    width: 160px;
 }
 
 .tfp-cal-requests-table th:nth-child(2),
 .tfp-cal-requests-table td:nth-child(2) {
-    width: 18%;
+    width: 150px;
 }
 
 .tfp-cal-requests-table th:nth-child(3),
 .tfp-cal-requests-table td:nth-child(3) {
-    width: 45%;
+    width: auto;
 }
 
 .tfp-cal-requests-table th:nth-child(4),
 .tfp-cal-requests-table td:nth-child(4) {
-    width: 12%;
+    width: 110px;
 }
 
 .tfp-cal-requests-table th:nth-child(5),
 .tfp-cal-requests-table td:nth-child(5) {
-    width: 10%;
+    width: 100px;
+}
+
+.tfp-cal-requests-table td:nth-child(1),
+.tfp-cal-requests-table td:nth-child(2),
+.tfp-cal-requests-table td:nth-child(3),
+.tfp-cal-requests-table td:nth-child(4),
+.tfp-cal-requests-table td:nth-child(5) {
+    overflow: hidden;
+}
+
+.tfp-cal-request-category {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tfp-cal-request-category {
@@ -638,12 +654,17 @@
         max-width: 100%;
     }
 
-    .tfp-cal-requests-toolbar .tfp-cal-btn-skip {
+    .tfp-cal-requests-toolbar .tfp-cal-btn-skip,
+    .tfp-cal-requests-toolbar .tfp-cal-create-request {
         flex: 1 1 180px;
         min-width: 180px;
         max-width: 100%;
         min-height: 48px;
         box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
     }
 
     /* Keep the request table readable. The table itself becomes horizontally
@@ -660,6 +681,12 @@
         width: 760px;
         min-width: 760px;
         table-layout: fixed;
+    }
+
+    .tfp-cal-requests-table th,
+    .tfp-cal-requests-table td {
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .tfp-cal-requests-table th,
