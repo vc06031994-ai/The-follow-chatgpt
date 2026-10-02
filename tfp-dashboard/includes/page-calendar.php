@@ -20,6 +20,9 @@ function tfp_dashboard_render_calendar_content() {
     ?>
     <div class="tfp-cal-header-actions" data-tfp-calendar>
       <div class="tfp-cal-header-left">
+        <button type="button" class="tfp-dash-pageheader__mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open dashboard menu', 'tfp-dashboard'); ?>">
+            <?php echo tfp_dashboard_icon('toggle'); ?>
+        </button>
         <div class="tfp-dash-pageheader__crumb" style="margin-bottom:8px"><a href="<?php echo esc_url(home_url('/')); ?>">Discipleship</a><span aria-hidden="true">/</span><span class="tfp-dash-pageheader__current">Calendar</span></div>
         <h2 class="tfp-dash-pageheader__title">My Calendar</h2>
         <p class="tfp-dash-pageheader__subtitle">View your upcoming meetings, off days, and skip requests.</p>
