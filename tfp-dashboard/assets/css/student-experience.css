@@ -35,10 +35,17 @@
 }
 
 .tfp-exp-modal__close {
-    border: 0;
+    border: 0 !important;
     background: none;
-    font-size: 24px;
-    cursor: pointer
+    font-size: 24px !important;
+    cursor: pointer !important;
+    color:#151411 !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+}
+
+.tfp-exp-modal__close:hover {
+    background: transparent !important;
 }
 
 .tfp-exp-modal label {
@@ -196,4 +203,19 @@
 .tfp-exp-table th {
     border-right: 0 !important;
     border-left: 0 !important;
+}
+
+.tfp-cancel-btn {
+    display: inline-flex !important;
+    padding: 12px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background-color: #ffffff !important;
+    color: #151411 !important;
+    border: 1px solid #C4C4C4 !important;
+    border-radius: 8px !important;
+    font-family: var(--tfp-dash-font) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 130% !important;
 }

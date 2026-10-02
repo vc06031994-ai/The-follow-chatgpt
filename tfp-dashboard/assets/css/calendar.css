@@ -453,7 +453,6 @@
     width: 100%;
     border-collapse: collapse !important;
     table-layout: fixed;
-    margin: 0 !important;
 }
 
 .tfp-cal-requests-table th {
@@ -579,4 +578,9 @@
     line-height: 130% !important;
     cursor: pointer !important;
     box-shadow: none !important;
+}
+
+.tfp-cal-requests-filter-empty{
+    text-align: center;
+    padding: 32px 0;
 }

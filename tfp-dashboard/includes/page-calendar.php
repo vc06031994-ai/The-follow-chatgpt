@@ -21,8 +21,8 @@ function tfp_dashboard_render_calendar_content() {
     <div class="tfp-cal-header-actions" data-tfp-calendar>
       <div class="tfp-cal-header-left">
         <div class="tfp-dash-pageheader__crumb" style="margin-bottom:8px"><a href="<?php echo esc_url(home_url('/')); ?>">Discipleship</a><span aria-hidden="true">/</span><span class="tfp-dash-pageheader__current">Calendar</span></div>
-        <h1 class="tfp-dash-pageheader__title" style="font-size:28px;font-weight:700;color:#111827;margin-bottom:8px">My Calendar</h1>
-        <p class="tfp-dash-pageheader__subtitle" style="font-size:14px;color:#151411;margin:0">View your upcoming meetings, off days, and skip requests.</p>
+        <h2 class="tfp-dash-pageheader__title">My Calendar</h2>
+        <p class="tfp-dash-pageheader__subtitle">View your upcoming meetings, off days, and skip requests.</p>
       </div>
       <div class="tfp-cal-skip-action"><a href="#" class="tfp-cal-btn-skip tfp-dash-btn tfp-dash-btn--primary" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Request a Skip</a></div>
 
@@ -127,13 +127,13 @@ function tfp_dashboard_render_calendar_content() {
 
       <div class="tfp-exp-modal" data-skip-modal>
         <div class="tfp-exp-modal__box">
-          <div class="tfp-exp-modal__head"><h3>Request a Skip</h3><button type="button" class="tfp-exp-modal__close" data-close-modal aria-label="Close">×</button></div>
+          <div class="tfp-exp-modal__head"><h3>Request a Skip</h3><button type="button" class="tfp-exp-modal__close " data-close-modal aria-label="Close">×</button></div>
           <form>
             <label>Date<input type="date" name="skip_date" required></label>
             <input type="hidden" name="skip_cohort" value="<?php echo esc_attr($cohort['id']??0); ?>">
             <label>Reason<select name="reason" required><option value="">Select a reason</option><option value="Travel">Travel</option><option value="Personal">Personal</option><option value="Work">Work</option><option value="Illness">Illness</option><option value="Other">Other</option></select></label>
             <label>Additional notes<textarea name="notes" rows="4"></textarea></label>
-            <div class="tfp-exp-modal__actions"><button type="button" class="tfp-dash-btn" data-close-modal>Cancel</button><button type="submit" class="tfp-dash-btn tfp-dash-btn--primary">Submit Request</button></div>
+            <div class="tfp-exp-modal__actions"><button type="button" class="tfp-cancel-btn " data-close-modal>Cancel</button><button type="submit" class="tfp-dash-btn tfp-dash-btn--primary">Submit Request</button></div>
             <div data-form-status aria-live="polite"></div>
           </form>
         </div>
