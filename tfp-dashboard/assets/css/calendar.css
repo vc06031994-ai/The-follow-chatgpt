@@ -486,7 +486,8 @@
 
 .tfp-cal-requests-table th:nth-child(1),
 .tfp-cal-requests-table td:nth-child(1) {
-    width: 160px;
+    width: 180px;
+    min-width: 180px;
 }
 
 .tfp-cal-requests-table th:nth-child(2),
@@ -518,10 +519,11 @@
 }
 
 .tfp-cal-request-category {
-    max-width: 100%;
+    width: max-content;
+    max-width: none;
     box-sizing: border-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 .tfp-cal-request-category {
@@ -678,8 +680,8 @@
     }
 
     .tfp-cal-requests-table {
-        width: 760px;
-        min-width: 760px;
+        width: 780px;
+        min-width: 780px;
         table-layout: fixed;
     }
 
