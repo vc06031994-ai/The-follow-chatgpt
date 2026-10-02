@@ -581,6 +581,17 @@
     color: #151411;
 }
 
+/* Keep the action button visually inset from the request card edge. */
+.tfp-cal-requests-table th:last-child,
+.tfp-cal-requests-table td:last-child {
+    padding-right: 20px !important;
+    padding-left: 16px !important;
+}
+
+.tfp-cal-requests-table td:last-child .tfp-cal-revoke {
+    margin-right: 0 !important;
+}
+
 .tfp-cal-revoke {
     display: inline-flex;
     align-items: center;
