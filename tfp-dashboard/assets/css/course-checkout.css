@@ -152,6 +152,15 @@ body.tfp-course-modal-open {
         width: 100%;
         flex-basis: auto;
     }
+
+    .tfp-course-agreement-input-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .tfp-course-sign-agreement {
+        width: 100%;
+    }
 }
 
 /* -------------------------------------------------------------------------
