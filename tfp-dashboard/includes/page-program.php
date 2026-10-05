@@ -253,24 +253,13 @@ function tfp_dashboard_render_program_stats($user_id, $course_id, $state)
 
     $start_ts = function_exists('tfp_program_start_ts') ? tfp_program_start_ts($state) : 0;
 
-    // Current week: calendar-based when the cohort has a start date, otherwise
-    // the completion-based current week (first not-yet-complete week).
-    $current_week_num = function_exists('tfp_program_calendar_week') ? tfp_program_calendar_week($start_ts, $total) : 0;
-    if ($current_week_num <= 0) {
-        $current_week_num = 0;
-        $cw = tfp_ld_get_current_week($user_id, $course_id);
-        if ($cw) {
-            foreach (tfp_ld_get_weeks($course_id) as $idx => $w) {
-                if ($w->ID === $cw->ID) {
-                    $current_week_num = $idx + 1;
-                    break;
-                }
-            }
-        }
-        if ($current_week_num <= 0) {
-            $current_week_num = $total > 0 ? $total : 1; // all complete → last week
-        }
-    }
+    // Display the current week from lesson completion. A student with no
+    // completed lessons is therefore always on Week 1; after each completed
+    // lesson/week the displayed current week advances by one.
+    $completed_lessons = max(0, (int) $progress['completed']);
+    $current_week_num = $total > 0
+        ? min($total, max(1, $completed_lessons + 1))
+        : 1;
 
     $current_week = function_exists('tfp_ld_get_current_week') ? tfp_ld_get_current_week($user_id, $course_id) : null;
     $current_week_sub = $total ? sprintf(__('of %d', 'tfp-dashboard'), $total) : '';
@@ -466,20 +455,24 @@ function tfp_dashboard_render_program_journey($course_id, $state)
 
     $percent = $progress['total'] > 0 ? round(($progress['completed'] / $progress['total']) * 100) : 0;
 
-    $current_week_number = 1;
-    foreach ($weeks as $idx => $week) {
-        if ($current_week && $week->ID === $current_week->ID) {
-            $current_week_number = $idx + 1;
-            break;
-        }
-    }
+    // Keep the journey's displayed current week consistent with the
+    // completion count used by the headline tile.
+    $completed_lessons = max(0, (int) $progress['completed']);
+    $current_week_number = $progress['total'] > 0
+        ? min((int) $progress['total'], max(1, $completed_lessons + 1))
+        : 1;
 
-    // Real cohort meta line (was hardcoded "Spring 2026 Cohort · Facilitator …").
+    // Show the short cohort name here instead of repeating the full course/
+    // cohort title. Cohort names such as "Foundations of Discipleship –
+    // SPR-Cohort A" become simply "SPR-Cohort A".
     $meta_bits = [];
     if (!empty($state['cohort'])) {
         $c = $state['cohort'];
-        if (!empty($c['name'])) {
-            $meta_bits[] = $c['name'];
+        $cohort_name = !empty($c['name']) ? trim((string) $c['name']) : '';
+        if ($cohort_name !== '') {
+            $parts = preg_split('/\\s*[–—]\\s*/u', $cohort_name, 2);
+            $short_cohort_name = !empty($parts[1]) ? trim($parts[1]) : $cohort_name;
+            $meta_bits[] = $short_cohort_name;
         }
         if (!empty($c['facilitator'])) {
             $meta_bits[] = sprintf(__('Facilitator: %s', 'tfp-dashboard'), $c['facilitator']);
@@ -488,7 +481,6 @@ function tfp_dashboard_render_program_journey($course_id, $state)
             $meta_bits[] = $c['schedule'];
         }
     }
-    $meta_line = implode(' · ', $meta_bits);
     ?>
     <div class="tfp-journey">
         <div class="tfp-journey__header">
@@ -506,8 +498,12 @@ function tfp_dashboard_render_program_journey($course_id, $state)
             </div>
         </div>
 
-        <?php if ($meta_line !== ''): ?>
-            <div class="tfp-journey__desc"><?php echo esc_html($meta_line); ?></div>
+        <?php if (!empty($meta_bits)): ?>
+            <div class="tfp-journey__desc">
+                <?php foreach ($meta_bits as $meta_bit): ?>
+                    <span class="tfp-journey__meta-tag"><?php echo esc_html($meta_bit); ?></span>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
 
         <div class="tfp-journey__circles">
