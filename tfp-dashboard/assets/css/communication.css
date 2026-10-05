@@ -706,31 +706,39 @@
     background: #570506;
 }
 
-/* SelectWoo option highlight/active color from Figma */
-.tfp-dash-modal__box .select2-container--default .select2-results__option--highlighted[aria-selected],
-.tfp-dash-modal__box .select2-container--default .select2-results__option--highlighted[aria-selected="true"],
-.tfp-dash-modal__box .select2-container--default .select2-results__option[aria-selected="true"] {
+/* SelectWoo option highlight/active color from Figma.
+ * SelectWoo appends its dropdown to <body>, so these rules must not be
+ * scoped to the modal box.
+ */
+.select2-container--default .select2-results__option--highlighted,
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted[aria-selected="true"] {
     background: #847230 !important;
     color: #ffffff !important;
 }
 
-/* Keep category dots at their assigned colors even when an option is highlighted. */
-.tfp-dash-modal__box .select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--access,
-.tfp-dash-modal__box .select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--access {
+/* Keep category dots at their assigned colors inside the highlighted option. */
+.select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--access,
+.select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--access {
     background: #AF1E2D !important;
 }
 
-.tfp-dash-modal__box .select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--technical,
-.tfp-dash-modal__box .select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--technical {
+.select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--technical,
+.select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--technical {
     background: #BD9817 !important;
 }
 
-.tfp-dash-modal__box .select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--billing,
-.tfp-dash-modal__box .select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--billing {
+.select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--billing,
+.select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--billing {
     background: #2908CE !important;
 }
 
-.tfp-dash-modal__box .select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--facilitator,
-.tfp-dash-modal__box .select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--facilitator {
+.select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--facilitator,
+.select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--facilitator {
     background: #570506 !important;
+}
+
+/* The selected value itself is text-only; no category dot should appear here. */
+.tfp-dash-modal__box .select2-selection__rendered .tfp-select-category-dot {
+    display: none !important;
 }
