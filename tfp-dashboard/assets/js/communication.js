@@ -245,6 +245,10 @@
             var catEl = item.querySelector('.tfp-dash-ticketlist__category');
             if (subtitleEl) subtitleEl.textContent = catEl ? catEl.textContent.trim() : '';
             if (tagTextEl) tagTextEl.textContent = catEl ? catEl.textContent.trim() : '';
+            if (tagDotEl) {
+                var category = item.getAttribute('data-category') || 'access';
+                tagDotEl.className = 'tfp-dash-chatpanel__tag-dot tfp-dash-chatpanel__tag-dot--' + category;
+            }
 
             if (messagesEl) messagesEl.innerHTML = '';
 
@@ -408,29 +412,24 @@
                 if (!state.id) return state.text;
 
                 var value = dotClass(state.id);
-                var wrap = document.createElement('span');
-                wrap.className = 'tfp-select-category-option';
+                var wrap = jQuery('<span class="tfp-select-category-option"></span>');
+                var dot = jQuery('<span class="tfp-select-category-dot"></span>');
+                dot.addClass('tfp-select-category-dot--' + value);
 
-                var dot = document.createElement('span');
-                dot.className = 'tfp-select-category-dot tfp-select-category-dot--' + value;
-
-                var label = document.createTextNode(state.text || '');
-                wrap.appendChild(dot);
-                wrap.appendChild(label);
+                wrap.append(dot);
+                wrap.append(document.createTextNode(state.text || ''));
                 return wrap;
             }
 
             function renderSelected(state) {
                 if (!state.id) return state.text;
 
-                var wrap = document.createElement('span');
-                wrap.className = 'tfp-select-category-selection';
+                var wrap = jQuery('<span class="tfp-select-category-selection"></span>');
+                var dot = jQuery('<span class="tfp-select-category-dot"></span>');
+                dot.addClass('tfp-select-category-dot--' + dotClass(state.id));
 
-                var dot = document.createElement('span');
-                dot.className = 'tfp-select-category-dot tfp-select-category-dot--' + dotClass(state.id);
-
-                wrap.appendChild(dot);
-                wrap.appendChild(document.createTextNode(state.text || ''));
+                wrap.append(dot);
+                wrap.append(document.createTextNode(state.text || ''));
                 return wrap;
             }
 
