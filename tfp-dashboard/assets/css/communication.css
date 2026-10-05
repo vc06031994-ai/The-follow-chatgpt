@@ -233,11 +233,6 @@
     box-sizing: border-box !important;
 }
 
-/* JS filtering state: must override the base display:flex !important. */
-.tfp-dash-ticketlist__item.tfp-ticket-item--filtered {
-    display: none !important;
-}
-
 .tfp-dash-ticketlist__item:hover {
     background: #f9fafb !important;
 }
@@ -721,7 +716,6 @@
     background: #847230 !important;
     color: #ffffff !important;
 }
-
 /* Keep category dots at their assigned colors inside the highlighted option. */
 .select2-container--default .select2-results__option--highlighted .tfp-select-category-dot--access,
 .select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--access {
@@ -747,11 +741,4 @@
 .tfp-dash-modal__box .select2-selection__rendered .tfp-select-category-dot,
 .select2-container--default .select2-results .tfp-select-category-dot {
     display: none !important;
-}
-
-/* New CSS: Select2 results option font size and weight. */
-.select2-results__option {
-    font-size: 13px !important;
-    font-weight: 500 !important;
-    line-height: 130% !important;
 }
