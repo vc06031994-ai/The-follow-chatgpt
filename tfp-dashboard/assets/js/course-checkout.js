@@ -32,6 +32,7 @@
 
         var cohortsLoaded  = false;
         var selectedCohort = null;
+        var purchaseAgreements = [];
 
         /* ---- tiny helpers ---- */
 
@@ -264,6 +265,8 @@
                     return;
                 }
                 selectedCohort = res.cohort;
+                purchaseAgreements = res.agreements || [];
+                renderPurchaseAgreements();
                 markSelected(cohortId);
                 var cont = document.getElementById('tfp-cohorts-continue');
                 if (cont) { cont.disabled = false; }
@@ -334,6 +337,101 @@
             setHTML('tfp-review-line-price', c.price_html || '');
         }
 
+        /* ---- required purchase agreements ---- */
+
+        function renderPurchaseAgreements() {
+            var list = document.getElementById('tfp-course-agreements-list');
+            if (!list) { return; }
+
+            var states = {};
+            purchaseAgreements.forEach(function (item) {
+                states[item.title === 'NDA' ? 'nda' : 'course_agreement'] = item;
+            });
+
+            list.querySelectorAll('.tfp-course-agreement-card').forEach(function (card) {
+                var key = card.getAttribute('data-agreement-key');
+                var item = states[key];
+                var input = card.querySelector('[data-agreement-signature="' + key + '"]');
+                var button = card.querySelector('[data-agreement-sign="' + key + '"]');
+                var status = card.querySelector('[data-agreement-status="' + key + '"]');
+
+                if (!item) {
+                    if (button) { button.disabled = true; }
+                    return;
+                }
+
+                var signed = item.status === 'signed';
+                card.classList.toggle('is-signed', signed);
+                if (input) {
+                    input.disabled = signed;
+                    if (signed) { input.value = 'Signed'; }
+                }
+                if (button) {
+                    button.disabled = signed;
+                    button.textContent = signed ? 'Signed' : (key === 'nda' ? 'Sign NDA' : 'Sign Course Agreement');
+                }
+                if (status) {
+                    status.textContent = signed ? '✓ Signed' : '';
+                    status.className = 'tfp-course-agreement-status' + (signed ? ' is-signed' : '');
+                }
+            });
+
+            updateAgreementContinue();
+        }
+
+        function updateAgreementContinue() {
+            var ready = purchaseAgreements.length === 2 &&
+                purchaseAgreements.every(function (item) { return item.status === 'signed'; });
+            var btn = document.querySelector('.tfp-course-continue-agreements');
+            if (btn) { btn.disabled = !ready; }
+            var tab = checkoutModal && checkoutModal.querySelector('.tfp-checkout-step-tab[data-step-link="contact"]');
+            if (tab) { tab.classList.toggle('is-disabled', !ready); }
+        }
+
+        function signPurchaseAgreement(btn) {
+            var key = btn ? btn.getAttribute('data-agreement-sign') : '';
+            if (!key) { return; }
+
+            var item = purchaseAgreements.find(function (agreement) {
+                return (agreement.title === 'NDA' ? 'nda' : 'course_agreement') === key;
+            });
+            if (!item || item.status === 'signed') { return; }
+
+            var input = document.querySelector('[data-agreement-signature="' + key + '"]');
+            var signature = input ? input.value.trim() : '';
+            var error = document.getElementById('tfp-course-agreement-error');
+            if (error) { error.textContent = ''; }
+
+            if (signature.length < 2) {
+                if (error) { error.textContent = 'Please enter your full name as your signature.'; }
+                if (input) { input.focus(); }
+                return;
+            }
+
+            var original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Signing…';
+
+            ajax('tfp_course_sign_agreement', {
+                document_id: item.id,
+                signature: signature
+            }).then(function (res) {
+                if (!res || !res.success) {
+                    if (error) { error.textContent = (res && res.message) || 'Could not sign this agreement. Please try again.'; }
+                    btn.disabled = false;
+                    btn.innerHTML = original;
+                    return;
+                }
+
+                item.status = 'signed';
+                renderPurchaseAgreements();
+            }).catch(function () {
+                if (error) { error.textContent = 'Something went wrong. Please try again.'; }
+                btn.disabled = false;
+                btn.innerHTML = original;
+            });
+        }
+
         /* ---- step engine ---- */
 
         function setActiveStep(stepName) {
@@ -365,6 +463,12 @@
             if (stepName === 'payment') {
                 enterPaymentStep();
             }
+        }
+
+        function enableCheckoutStep(stepName) {
+            if (!checkoutModal) { return; }
+            var tab = checkoutModal.querySelector('.tfp-checkout-step-tab[data-step-link="' + stepName + '"]');
+            if (tab) { tab.classList.remove('is-disabled'); }
         }
 
         function enablePaymentTab() {
@@ -636,7 +740,26 @@
             if (reviewContinue) {
                 event.preventDefault();
                 showCourseView('wizard');
+                renderPurchaseAgreements();
+                setActiveStep('agreements');
+                return;
+            }
+
+            // Required agreements -> contact.
+            var agreementContinue = event.target.closest('.tfp-course-continue-agreements');
+            if (agreementContinue) {
+                event.preventDefault();
+                if (agreementContinue.disabled) { return; }
+                enableCheckoutStep('contact');
                 setActiveStep('contact');
+                return;
+            }
+
+            // Sign a required purchase agreement.
+            var agreementSign = event.target.closest('.tfp-course-sign-agreement');
+            if (agreementSign) {
+                event.preventDefault();
+                signPurchaseAgreement(agreementSign);
                 return;
             }
 
