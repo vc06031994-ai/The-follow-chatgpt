@@ -42,6 +42,30 @@ add_action('init', function () {
     ]);
 });
 
+/**
+ * Purchase-agreement content.
+ *
+ * TEMPORARY DUMMY CONTENT: these texts are placeholders for development/testing.
+ * Replace them with the client's final legal NDA and Course Agreement content
+ * before the production checkout is launched.
+ */
+function tfp_course_purchase_agreement_content($key) {
+    $content = [
+        'nda' => [
+            'title' => __('NDA', 'tfp-dashboard'),
+            'body' => "NON-DISCLOSURE AGREEMENT\n\nThis Non-Disclosure Agreement is a temporary development draft for The Follow Project. The student agrees to keep confidential any non-public information, course materials, business information, participant information, and other confidential information shared through the program.\n\nConfidential information may be used only for participation in the program and may not be copied, published, shared, or disclosed to another person without prior written permission. These obligations do not apply to information that is publicly available through no breach of this agreement or that must be disclosed by law.\n\nBy signing below, the student confirms that they have reviewed and agree to the confidentiality obligations described above.\n\nIMPORTANT: This is placeholder content for development only and must be replaced by the client's final legal NDA."
+        ],
+        'course_agreement' => [
+            'title' => __('Course Agreement', 'tfp-dashboard'),
+            'body' => "COURSE AGREEMENT\n\nThis Course Agreement is a temporary development draft for The Follow Project. By enrolling in the program, the student agrees to follow the program requirements, use course materials for personal educational purposes, respect the program schedule and cohort policies, and comply with reasonable instructions from the program administrator and facilitators.\n\nCourse materials, recordings, worksheets, and other resources are provided for the enrolled student's use and may not be redistributed, resold, or publicly shared unless the program administrator provides written permission. The student is responsible for providing accurate information and following the participation, attendance, payment, and cancellation policies communicated by the program.\n\nBy signing below, the student confirms that they have reviewed and agree to the course terms described above.\n\nIMPORTANT: This is placeholder content for development only and must be replaced by the client's final Course Agreement."
+        ],
+    ];
+    return $content[$key] ?? [
+        'title' => __('Agreement', 'tfp-dashboard'),
+        'body' => __('Agreement content is not available yet.', 'tfp-dashboard'),
+    ];
+}
+
 function tfp_student_document_statuses() {
     return [
         'pending' => __('Pending Signature', 'tfp-dashboard'),
@@ -133,6 +157,10 @@ function tfp_student_document_meta_box($post) {
     $status = (string) get_post_meta($post->ID, '_status', true) ?: 'pending';
     $url = (string) get_post_meta($post->ID, '_document_url', true);
     $purchase_agreement_key = (string) get_post_meta($post->ID, '_tfp_purchase_agreement_key', true);
+    $agreement_content = (string) get_post_meta($post->ID, '_tfp_agreement_content', true);
+    if ($purchase_agreement_key && !$agreement_content) {
+        $agreement_content = tfp_course_purchase_agreement_content($purchase_agreement_key)['body'];
+    }
     $is_purchase_agreement = !empty($purchase_agreement_key);
 
     $students = get_users([
@@ -178,8 +206,13 @@ function tfp_student_document_meta_box($post) {
         echo '<option value="' . esc_attr($key) . '" ' . selected($status, $key, false) . '>' . esc_html($label) . '</option>';
     }
     echo '</select></label></p>';
-    echo '<p><label><strong>Document URL</strong><br><input type="url" name="tfp_doc_url" value="' . esc_attr($url) . '" class="widefat" placeholder="https://..."></label></p>';
-    echo '<p>' . esc_html__('Assign this document to a student. The URL may point to a PDF or secure document viewer.', 'tfp-dashboard') . '</p>';
+    if ($is_purchase_agreement) {
+        echo '<p><label><strong>' . esc_html__('Agreement Content', 'tfp-dashboard') . '</strong><br><textarea name="tfp_doc_content" class="widefat" rows="16">' . esc_textarea($agreement_content) . '</textarea></label></p>';
+        echo '<p class="description">' . esc_html__('Replace the temporary development draft with the final NDA / Course Agreement content supplied by the client. This content is shown during checkout and included in the student download.', 'tfp-dashboard') . '</p>';
+    } else {
+        echo '<p><label><strong>Document URL</strong><br><input type="url" name="tfp_doc_url" value="' . esc_attr($url) . '" class="widefat" placeholder="https://..."></label></p>';
+        echo '<p>' . esc_html__('Assign this document to a student. The URL may point to a PDF or secure document viewer.', 'tfp-dashboard') . '</p>';
+    }
 }
 
 add_action('save_post_tfp_off_day', function ($post_id) {
@@ -222,7 +255,11 @@ add_action('save_post_tfp_student_document', function ($post_id) {
     update_post_meta($post_id, '_type', $type);
     update_post_meta($post_id, '_date_issued', $date);
     update_post_meta($post_id, '_status', array_key_exists($status, tfp_student_document_statuses()) ? $status : 'pending');
-    update_post_meta($post_id, '_document_url', esc_url_raw($_POST['tfp_doc_url'] ?? ''));
+    if ($is_purchase_agreement) {
+        update_post_meta($post_id, '_tfp_agreement_content', sanitize_textarea_field($_POST['tfp_doc_content'] ?? ''));
+    } else {
+        update_post_meta($post_id, '_document_url', esc_url_raw($_POST['tfp_doc_url'] ?? ''));
+    }
 });
 
 /* -------------------------------------------------------------------------
@@ -381,6 +418,70 @@ function tfp_calendar_selected_day_data($user_id, $date) {
 /* -------------------------------------------------------------------------
  * Document helpers
  * ------------------------------------------------------------------------- */
+/**
+ * Build a protected download URL for a student document.
+ */
+function tfp_dashboard_student_document_download_url($document_id) {
+    $document_id = absint($document_id);
+    if (!$document_id) return '';
+    return wp_nonce_url(
+        admin_url('admin-post.php?action=tfp_download_student_document&document_id=' . $document_id),
+        'tfp_download_student_document_' . $document_id
+    );
+}
+
+add_action('admin_post_tfp_download_student_document', function () {
+    if (!is_user_logged_in()) {
+        wp_die(esc_html__('You must be logged in to download this document.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+
+    $document_id = absint($_GET['document_id'] ?? 0);
+    if (!$document_id || !wp_verify_nonce($_GET['_wpnonce'] ?? '', 'tfp_download_student_document_' . $document_id)) {
+        wp_die(esc_html__('Invalid document download request.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+
+    $post = get_post($document_id);
+    $user_id = get_current_user_id();
+    if (!$post || $post->post_type !== 'tfp_student_document' || (int) get_post_meta($document_id, '_user_id', true) !== $user_id) {
+        wp_die(esc_html__('Document not found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    $key = (string) get_post_meta($document_id, '_tfp_purchase_agreement_key', true);
+    if (!$key) {
+        $url = get_post_meta($document_id, '_document_url', true);
+        if ($url) {
+            wp_safe_redirect($url);
+            exit;
+        }
+        wp_die(esc_html__('This document does not have a downloadable file.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    $agreement = tfp_course_purchase_agreement_content($key);
+    $stored = (string) get_post_meta($document_id, '_tfp_agreement_content', true);
+    $body = $stored ?: $agreement['body'];
+    $title = get_the_title($document_id) ?: $agreement['title'];
+    $student = wp_get_current_user();
+    $date = get_post_meta($document_id, '_date_issued', true) ?: current_time('Y-m-d');
+    $status = get_post_meta($document_id, '_status', true) ?: 'pending';
+    $signature = get_post_meta($document_id, '_signature', true);
+    $signed_at = get_post_meta($document_id, '_signed_at', true);
+
+    nocache_headers();
+    header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
+    header('Content-Disposition: attachment; filename="' . sanitize_file_name($title) . '.html"');
+
+    echo '<!doctype html><html><head><meta charset="' . esc_attr(get_bloginfo('charset')) . '"><title>' . esc_html($title) . '</title>';
+    echo '<style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;line-height:1.65;color:#111}h1{margin-bottom:8px}h2{margin-top:32px} .meta{color:#555;border-bottom:1px solid #ddd;padding-bottom:16px;margin-bottom:24px} .content{white-space:pre-line} .signature{margin-top:40px;border-top:1px solid #222;padding-top:16px}</style></head><body>';
+    echo '<h1>' . esc_html($title) . '</h1>';
+    echo '<div class="meta"><strong>Student:</strong> ' . esc_html($student->display_name ?: $student->user_email) . '<br><strong>Date issued:</strong> ' . esc_html($date) . '<br><strong>Status:</strong> ' . esc_html(ucwords(str_replace('_', ' ', $status))) . '</div>';
+    echo '<div class="content">' . nl2br(esc_html($body)) . '</div>';
+    if ($signature) {
+        echo '<div class="signature"><strong>Signed by:</strong> ' . esc_html($signature) . '<br><strong>Signed at:</strong> ' . esc_html($signed_at ?: '') . '</div>';
+    }
+    echo '</body></html>';
+    exit;
+});
+
 function tfp_dashboard_user_documents($user_id, $type = '') {
     $args = [
         'post_type' => 'tfp_student_document',
@@ -400,7 +501,7 @@ function tfp_dashboard_user_documents($user_id, $type = '') {
             'type' => get_post_meta($p->ID, '_type', true) ?: 'Agreement',
             'date' => get_post_meta($p->ID, '_date_issued', true),
             'status' => get_post_meta($p->ID, '_status', true) ?: 'pending',
-            'url' => get_post_meta($p->ID, '_document_url', true),
+            'url' => get_post_meta($p->ID, '_document_url', true) ?: (get_post_meta($p->ID, '_tfp_purchase_agreement_key', true) ? tfp_dashboard_student_document_download_url($p->ID) : ''),
             'signed_at' => get_post_meta($p->ID, '_signed_at', true),
         ];
     }, $posts);
