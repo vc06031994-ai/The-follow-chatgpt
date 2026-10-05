@@ -421,6 +421,142 @@ function tfp_calendar_selected_day_data($user_id, $date) {
 /**
  * Build a protected download URL for a student document.
  */
+
+/**
+ * Build a small, dependency-free PDF for protected student documents.
+ *
+ * This intentionally uses standard PDF Type1 Helvetica so the plugin does not
+ * require Composer or an additional PDF library on the client's hosting.
+ */
+function tfp_dashboard_build_document_pdf($title, $meta_lines, $body) {
+    $normalize = static function ($text) {
+        $text = (string) $text;
+        $replacements = [
+            "\xC2\xA0" => ' ', '—' => '-', '–' => '-', '“' => '"', '”' => '"',
+            '‘' => "'", '’' => "'", '…' => '...', '•' => '-', '©' => '(c)',
+            '®' => '(R)', '™' => '(TM)',
+        ];
+        $text = strtr($text, $replacements);
+        if (function_exists('iconv')) {
+            $converted = @iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $text);
+            if ($converted !== false) {
+                $text = $converted;
+            }
+        }
+        return preg_replace('/[^\\x20-\\x7E\\xA0-\\xFF\\r\\n\\t]/', '', $text);
+    };
+
+    $escape = static function ($text) use ($normalize) {
+        $text = $normalize($text);
+        return str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $text);
+    };
+
+    $wrap = static function ($text, $width = 88) use ($normalize) {
+        $text = $normalize($text);
+        $lines = [];
+        foreach (preg_split('/\\r\\n|\\r|\\n/', $text) as $paragraph) {
+            $paragraph = trim($paragraph);
+            if ($paragraph === '') {
+                $lines[] = '';
+                continue;
+            }
+            foreach (explode("\n", wordwrap($paragraph, $width, "\n", true)) as $line) {
+                $lines[] = $line;
+            }
+        }
+        return $lines;
+    };
+
+    $lines = [];
+    $lines[] = ['text' => $title, 'size' => 18, 'leading' => 24];
+    $lines[] = ['text' => '', 'size' => 11, 'leading' => 16];
+
+    foreach ((array) $meta_lines as $meta) {
+        $lines[] = ['text' => $meta, 'size' => 10, 'leading' => 15];
+    }
+
+    $lines[] = ['text' => '', 'size' => 11, 'leading' => 16];
+    foreach ($wrap($body) as $line) {
+        $lines[] = ['text' => $line, 'size' => 11, 'leading' => 16];
+    }
+
+    $page_height = 842;
+    $top = 790;
+    $bottom = 55;
+    $pages = [];
+    $current = [];
+    $y = $top;
+
+    foreach ($lines as $line) {
+        $leading = (int) $line['leading'];
+        if ($y - $leading < $bottom) {
+            $pages[] = $current;
+            $current = [];
+            $y = $top;
+        }
+        $current[] = ['text' => $line['text'], 'size' => (int) $line['size'], 'y' => $y];
+        $y -= $leading;
+    }
+    if ($current || !$pages) {
+        $pages[] = $current;
+    }
+
+    $objects = [];
+    $objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+    $objects[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+
+    $page_object_ids = [];
+    $content_object_ids = [];
+    $next_id = 4;
+
+    foreach ($pages as $page) {
+        $page_id = $next_id++;
+        $content_id = $next_id++;
+        $page_object_ids[] = $page_id;
+        $content_object_ids[] = $content_id;
+
+        $stream = "BT\n";
+        foreach ($page as $line) {
+            $stream .= '/F1 ' . $line['size'] . " Tf\n";
+            $stream .= '54 ' . $line['y'] . " Td\n";
+            $stream .= '(' . $escape($line['text']) . ") Tj\n";
+            $stream .= '0 0 Td' . "\n";
+        }
+        $stream .= "ET\n";
+        $objects[$content_id] = '<< /Length ' . strlen($stream) . " >>\nstream\n" . $stream . 'endstream';
+        $objects[$page_id] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents ' . $content_id . ' 0 R >>';
+    }
+
+    $kids = implode(' ', array_map(static function ($id) {
+        return $id . ' 0 R';
+    }, $page_object_ids));
+    $objects[2] = '<< /Type /Pages /Kids [' . $kids . '] /Count ' . count($page_object_ids) . ' >>';
+
+    ksort($objects);
+    $pdf = "%PDF-1.4\n%\xE2\xE3\xCF\xD3\n";
+    $offsets = [0 => 0];
+    $max_id = max(array_keys($objects));
+
+    for ($i = 1; $i <= $max_id; $i++) {
+        if (!isset($objects[$i])) {
+            continue;
+        }
+        $offsets[$i] = strlen($pdf);
+        $pdf .= $i . " 0 obj\n" . $objects[$i] . "\nendobj\n";
+    }
+
+    $xref_offset = strlen($pdf);
+    $pdf .= "xref\n0 " . ($max_id + 1) . "\n";
+    $pdf .= "0000000000 65535 f \n";
+    for ($i = 1; $i <= $max_id; $i++) {
+        $pdf .= sprintf("%010d 00000 n \n", $offsets[$i] ?? 0);
+    }
+    $pdf .= "trailer\n<< /Size " . ($max_id + 1) . " /Root 1 0 R >>\n";
+    $pdf .= "startxref\n" . $xref_offset . "\n%%EOF";
+
+    return $pdf;
+}
+
 function tfp_dashboard_student_document_download_url($document_id) {
     $document_id = absint($document_id);
     if (!$document_id) return '';
@@ -466,19 +602,25 @@ add_action('admin_post_tfp_download_student_document', function () {
     $signature = get_post_meta($document_id, '_signature', true);
     $signed_at = get_post_meta($document_id, '_signed_at', true);
 
-    nocache_headers();
-    header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
-    header('Content-Disposition: attachment; filename="' . sanitize_file_name($title) . '.html"');
-
-    echo '<!doctype html><html><head><meta charset="' . esc_attr(get_bloginfo('charset')) . '"><title>' . esc_html($title) . '</title>';
-    echo '<style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;line-height:1.65;color:#111}h1{margin-bottom:8px}h2{margin-top:32px} .meta{color:#555;border-bottom:1px solid #ddd;padding-bottom:16px;margin-bottom:24px} .content{white-space:pre-line} .signature{margin-top:40px;border-top:1px solid #222;padding-top:16px}</style></head><body>';
-    echo '<h1>' . esc_html($title) . '</h1>';
-    echo '<div class="meta"><strong>Student:</strong> ' . esc_html($student->display_name ?: $student->user_email) . '<br><strong>Date issued:</strong> ' . esc_html($date) . '<br><strong>Status:</strong> ' . esc_html(ucwords(str_replace('_', ' ', $status))) . '</div>';
-    echo '<div class="content">' . nl2br(esc_html($body)) . '</div>';
     if ($signature) {
-        echo '<div class="signature"><strong>Signed by:</strong> ' . esc_html($signature) . '<br><strong>Signed at:</strong> ' . esc_html($signed_at ?: '') . '</div>';
+        $body .= "\n\nSigned by: " . $signature . "\nSigned at: " . ($signed_at ?: '');
     }
-    echo '</body></html>';
+
+    $pdf = tfp_dashboard_build_document_pdf(
+        $title,
+        [
+            'Student: ' . ($student->display_name ?: $student->user_email),
+            'Date issued: ' . $date,
+            'Status: ' . ucwords(str_replace('_', ' ', $status)),
+        ],
+        $body
+    );
+
+    nocache_headers();
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: inline; filename="' . sanitize_file_name($title) . '.pdf"');
+    header('Content-Length: ' . strlen($pdf));
+    echo $pdf;
     exit;
 });
 
