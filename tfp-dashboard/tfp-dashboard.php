@@ -210,8 +210,30 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     if ($template === 'tfp-dashboard-communication') {
-        wp_enqueue_style('tfp-dashboard-communication', TFP_DASH_URL . 'assets/css/communication.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
-        wp_enqueue_script('tfp-dashboard-communication', TFP_DASH_URL . 'assets/js/communication.js', [], TFP_DASH_VERSION, true);
+        // Reuse WooCommerce's bundled SelectWoo (WooCommerce's Select2-compatible
+        // replacement) so the category field uses the same select library as
+        // the rest of the WooCommerce frontend.
+        $communication_script_deps = ['jquery'];
+
+        if (defined('WC_PLUGIN_FILE')) {
+            wp_enqueue_style(
+                'tfp-dashboard-selectwoo',
+                plugins_url('assets/css/select2.css', WC_PLUGIN_FILE),
+                [],
+                defined('WC_VERSION') ? WC_VERSION : null
+            );
+            wp_enqueue_script(
+                'tfp-dashboard-selectwoo',
+                plugins_url('assets/js/selectWoo/selectWoo.full.min.js', WC_PLUGIN_FILE),
+                ['jquery'],
+                defined('WC_VERSION') ? WC_VERSION : null,
+                true
+            );
+            $communication_script_deps[] = 'tfp-dashboard-selectwoo';
+        }
+
+        wp_enqueue_style('tfp-dashboard-communication', TFP_DASH_URL . 'assets/css/communication.css', ['tfp-dashboard-components', 'tfp-dashboard-selectwoo'], TFP_DASH_VERSION);
+        wp_enqueue_script('tfp-dashboard-communication', TFP_DASH_URL . 'assets/js/communication.js', $communication_script_deps, TFP_DASH_VERSION, true);
 
         wp_localize_script('tfp-dashboard-communication', 'tfpChatSettings', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
