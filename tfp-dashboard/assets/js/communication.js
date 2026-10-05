@@ -16,6 +16,7 @@
         var replyForm = document.querySelector('[data-tfp-chat-reply]');
         var replyInput = document.querySelector('[data-tfp-chat-input]');
         var resolveBtn = document.querySelector('[data-tfp-mark-resolved]');
+        var closeChatBtn = document.querySelector('[data-tfp-close-chat]');
         var newTicketBtns = Array.prototype.slice.call(document.querySelectorAll('[data-tfp-new-ticket]'));
         var newTicketModal = document.querySelector('[data-tfp-new-ticket-modal]');
         var newTicketForm = document.querySelector('[data-tfp-new-ticket-form]');
@@ -199,6 +200,19 @@
             });
         }
 
+        function closeChat() {
+            stopPolling();
+            state.activeTicketId = null;
+            state.lastMessageId = 0;
+            items.forEach(function (el) {
+                el.classList.remove('is-active');
+            });
+            if (threadPanel) threadPanel.style.display = 'none';
+            if (emptyPanel) emptyPanel.style.display = '';
+            if (messagesEl) messagesEl.innerHTML = '';
+            if (replyInput) replyInput.value = '';
+        }
+
         function openTicket(item) {
             if (!item) return;
 
@@ -374,8 +388,10 @@
                 if (!state.activeTicketId || resolveBtn.disabled) return;
 
                 if (String(state.activeTicketId).indexOf('demo-') === 0) {
+                    var resolvedDemoId = state.activeTicketId;
                     setStatusBadge('resolved');
-                    updateTicketStatusInList(state.activeTicketId, 'resolved');
+                    updateTicketStatusInList(resolvedDemoId, 'resolved');
+                    closeChat();
                     return;
                 }
 
@@ -390,12 +406,21 @@
                         return;
                     }
 
+                    var resolvedTicketId = state.activeTicketId;
                     setStatusBadge('resolved');
-                    updateTicketStatusInList(state.activeTicketId, 'resolved');
+                    updateTicketStatusInList(resolvedTicketId, 'resolved');
+                    closeChat();
                 }).catch(function () {
                     resolveBtn.disabled = false;
                     window.alert('Could not update this communication. Please try again.');
                 });
+            });
+        }
+
+        // Close the current conversation without changing its status.
+        if (closeChatBtn) {
+            closeChatBtn.addEventListener('click', function () {
+                closeChat();
             });
         }
 
