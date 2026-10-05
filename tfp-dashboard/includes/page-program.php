@@ -38,6 +38,14 @@ function tfp_dashboard_render_program_content()
 
     $course_ids = array_values(array_unique(array_filter($course_ids)));
 
+    // Clicking Start/Continue/Review on a program card opens that course's
+    // existing overall program dashboard rather than looping back to the list.
+    $requested_course_id = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
+    if ($requested_course_id && in_array($requested_course_id, $course_ids, true)) {
+        tfp_dashboard_render_overall_dashboard_content();
+        return;
+    }
+
     if (empty($course_ids)) {
         ?>
         <div class="tfp-dash-panel tfp-program-empty">
@@ -166,13 +174,22 @@ function tfp_dashboard_render_overall_dashboard_content()
     $user_id = get_current_user_id();
     $state = function_exists('tfp_dashboard_get_program_state') ? tfp_dashboard_get_program_state() : null;
 
-    $course_id = ($state && !empty($state['course_id']))
-        ? (int) $state['course_id']
-        : (function_exists('tfp_ld_get_program_course_id') ? (int) tfp_ld_get_program_course_id() : 0);
+    $requested_course_id = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
+    $enrolled_course_ids = function_exists('learndash_user_get_enrolled_courses')
+        ? array_map('absint', (array) learndash_user_get_enrolled_courses($user_id))
+        : [];
 
-    $is_enrolled = $state
-        ? ($state['status'] === 'enrolled')
-        : (function_exists('tfp_billing_user_has_paid') && tfp_billing_user_has_paid());
+    $course_id = ($requested_course_id && in_array($requested_course_id, $enrolled_course_ids, true))
+        ? $requested_course_id
+        : (($state && !empty($state['course_id']))
+            ? (int) $state['course_id']
+            : (function_exists('tfp_ld_get_program_course_id') ? (int) tfp_ld_get_program_course_id() : 0));
+
+    $is_enrolled = $requested_course_id && in_array($requested_course_id, $enrolled_course_ids, true)
+        ? true
+        : ($state
+            ? ($state['status'] === 'enrolled')
+            : (function_exists('tfp_billing_user_has_paid') && tfp_billing_user_has_paid()));
 
     $has_weeks = $course_id && function_exists('tfp_ld_get_weeks') && !empty(tfp_ld_get_weeks($course_id));
 
