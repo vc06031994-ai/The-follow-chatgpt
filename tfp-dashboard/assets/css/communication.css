@@ -738,7 +738,8 @@
     background: #570506 !important;
 }
 
-/* The selected value itself is text-only; no category dot should appear here. */
-.tfp-dash-modal__box .select2-selection__rendered .tfp-select-category-dot {
+/* No category dots inside the SelectWoo field or its dropdown options. */
+.tfp-dash-modal__box .select2-selection__rendered .tfp-select-category-dot,
+.select2-container--default .select2-results .tfp-select-category-dot {
     display: none !important;
 }
