@@ -58,6 +58,86 @@ function tfp_course_cart_cohort_id()
 /**
  * "Seats: 5 of 20" / "Seats available" (unlimited) / "Seats: 12 of 12 — Full".
  */
+/**
+ * Ensure the two program-purchase agreements exist for this student/cohort.
+ * Documents are created as pending until the student signs them in checkout.
+ */
+function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
+    $user_id = absint($user_id);
+    $cohort_id = absint($cohort_id);
+    if (!$user_id || !$cohort_id) {
+        return [];
+    }
+
+    $agreements = [
+        'nda' => __('NDA', 'tfp-dashboard'),
+        'course_agreement' => __('Course Agreement', 'tfp-dashboard'),
+    ];
+    $rows = [];
+
+    foreach ($agreements as $key => $title) {
+        $existing = get_posts([
+            'post_type' => 'tfp_student_document',
+            'post_status' => 'publish',
+            'posts_per_page' => 1,
+            'fields' => 'ids',
+            'meta_query' => [
+                ['key' => '_user_id', 'value' => $user_id, 'type' => 'NUMERIC'],
+                ['key' => '_tfp_purchase_cohort_id', 'value' => $cohort_id, 'type' => 'NUMERIC'],
+                ['key' => '_tfp_purchase_agreement_key', 'value' => $key],
+            ],
+        ]);
+        $document_id = !empty($existing) ? (int) $existing[0] : 0;
+
+        if (!$document_id) {
+            $document_id = wp_insert_post([
+                'post_type' => 'tfp_student_document',
+                'post_status' => 'publish',
+                'post_title' => $title,
+            ], true);
+            if (is_wp_error($document_id) || !$document_id) {
+                continue;
+            }
+
+            update_post_meta($document_id, '_user_id', $user_id);
+            update_post_meta($document_id, '_type', 'Agreement');
+            update_post_meta($document_id, '_date_issued', current_time('Y-m-d'));
+            update_post_meta($document_id, '_status', 'pending');
+            update_post_meta($document_id, '_tfp_purchase_cohort_id', $cohort_id);
+            update_post_meta($document_id, '_tfp_purchase_agreement_key', $key);
+        }
+
+        $rows[] = [
+            'id' => $document_id,
+            'title' => $title,
+            'status' => get_post_meta($document_id, '_status', true) ?: 'pending',
+        ];
+    }
+
+    return $rows;
+}
+
+/**
+ * Return the purchase-agreement state for the current student/cohort.
+ */
+function tfp_course_purchase_agreements($user_id, $cohort_id = 0) {
+    $cohort_id = $cohort_id ?: tfp_course_cart_cohort_id();
+    return $cohort_id ? tfp_course_ensure_purchase_agreements($user_id, $cohort_id) : [];
+}
+
+function tfp_course_purchase_agreements_signed($user_id, $cohort_id = 0) {
+    $rows = tfp_course_purchase_agreements($user_id, $cohort_id);
+    if (count($rows) !== 2) {
+        return false;
+    }
+    foreach ($rows as $row) {
+        if (($row['status'] ?? '') !== 'signed') {
+            return false;
+        }
+    }
+    return true;
+}
+
 function tfp_course_seats_label($cohort)
 {
     if (empty($cohort['seats_total'])) {
@@ -187,6 +267,7 @@ function tfp_course_ajax_reserve_seat()
             'price_html'  => $cohort['price_html'],
         ],
         'summary' => function_exists('tfp_checkout_get_summary_array') ? tfp_checkout_get_summary_array() : null,
+        'agreements' => tfp_course_ensure_purchase_agreements(get_current_user_id(), $cohort_id),
     ]);
 }
 
@@ -199,10 +280,59 @@ function tfp_course_ajax_reserve_seat()
  * order (created later by the Stripe or PayPal path) has a billing name/email.
  * ---------------------------------------------------------------------- */
 
+
+/* -------------------------------------------------------------------------
+ * AJAX: sign a course-purchase agreement
+ * ---------------------------------------------------------------------- */
+add_action('wp_ajax_tfp_course_sign_agreement', 'tfp_course_ajax_sign_agreement');
+
+function tfp_course_ajax_sign_agreement()
+{
+    tfp_checkout_verify_request();
+
+    if (!is_user_logged_in()) {
+        wp_send_json(['success' => false, 'message' => __('You must be logged in.', 'tfp-dashboard')], 403);
+    }
+
+    $document_id = absint($_POST['document_id'] ?? 0);
+    $signature = sanitize_text_field($_POST['signature'] ?? '');
+    $user_id = get_current_user_id();
+    $post = $document_id ? get_post($document_id) : null;
+
+    if (!$post || $post->post_type !== 'tfp_student_document' || (int) get_post_meta($document_id, '_user_id', true) !== $user_id) {
+        wp_send_json(['success' => false, 'message' => __('Agreement not found.', 'tfp-dashboard')], 404);
+    }
+
+    if (!get_post_meta($document_id, '_tfp_purchase_agreement_key', true)) {
+        wp_send_json(['success' => false, 'message' => __('This document is not a course-purchase agreement.', 'tfp-dashboard')], 400);
+    }
+
+    if (get_post_meta($document_id, '_status', true) === 'signed') {
+        wp_send_json_success(['status' => 'signed']);
+    }
+
+    if (strlen($signature) < 2) {
+        wp_send_json(['success' => false, 'message' => __('Please enter your full name as your signature.', 'tfp-dashboard')], 400);
+    }
+
+    update_post_meta($document_id, '_status', 'signed');
+    update_post_meta($document_id, '_signature', $signature);
+    update_post_meta($document_id, '_signed_at', current_time('mysql'));
+    update_post_meta($document_id, '_signed_ip', sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? ''));
+
+    wp_send_json_success(['status' => 'signed']);
+}
+
 add_action('wp_ajax_tfp_course_save_contact', 'tfp_course_ajax_save_contact');
 
 function tfp_course_ajax_save_contact()
 {
+    $cohort_id = tfp_course_cart_cohort_id();
+    if (!$cohort_id || !tfp_course_purchase_agreements_signed(get_current_user_id(), $cohort_id)) {
+        wp_send_json(['success' => false, 'message' => __('Please complete and sign both required agreements before continuing.', 'tfp-dashboard')], 400);
+    }
+
+
     tfp_checkout_verify_request();
 
     if (!function_exists('WC') || !WC()->customer) {
@@ -286,6 +416,11 @@ add_action('wp_ajax_tfp_course_free_enroll', 'tfp_course_ajax_free_enroll');
 
 function tfp_course_ajax_free_enroll()
 {
+    $cohort_id = tfp_course_cart_cohort_id();
+    if (!$cohort_id || !tfp_course_purchase_agreements_signed(get_current_user_id(), $cohort_id)) {
+        wp_send_json(['success' => false, 'message' => __('Please complete and sign both required agreements before completing enrollment.', 'tfp-dashboard')], 400);
+    }
+
     tfp_checkout_verify_request();
 
     if (!is_user_logged_in()) {
