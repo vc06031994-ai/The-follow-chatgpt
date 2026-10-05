@@ -709,3 +709,59 @@
         word-break: normal;
     }
 }
+
+
+/* =========================================================================
+   Skip Request modal — SelectWoo reason field
+   ========================================================================= */
+.tfp-exp-modal .select2-container {
+    width: 100% !important;
+}
+
+.tfp-exp-modal .select2-container--default .select2-selection--single {
+    height: 46px !important;
+    border: 1px solid #151411 !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+}
+
+.tfp-exp-modal .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #151411 !important;
+    font-size: 16px !important;
+    line-height: 44px !important;
+    padding-left: 16px !important;
+    padding-right: 44px !important;
+}
+
+.tfp-exp-modal .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 44px !important;
+    width: 36px !important;
+    right: 8px !important;
+    top: 1px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.tfp-exp-modal .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    margin: 0 !important;
+}
+
+.tfp-calendar-select-dropdown {
+    z-index: 100000 !important;
+}
+
+.tfp-calendar-select-dropdown .select2-results__option {
+    padding: 9px 16px !important;
+    font-size: 14px !important;
+    line-height: 130% !important;
+}
+
+.tfp-calendar-select-dropdown .select2-results__option--highlighted,
+.tfp-calendar-select-dropdown .select2-results__option--highlighted[aria-selected] {
+    background: #847230 !important;
+    color: #fff !important;
+}
