@@ -54,7 +54,7 @@ function tfp_dashboard_render_calendar_content() {
               <div class="<?php echo esc_attr($classes); ?>" data-calendar-date="<?php echo esc_attr($date); ?>" tabindex="0" role="button" aria-label="<?php echo esc_attr($date); ?>">
                 <span class="tfp-cal-day-num"><?php echo esc_html($day); ?></span>
                 <?php if($off): ?><span class="tfp-cal-event-pill tfp-cal-event-pill--holiday"><?php echo esc_html($off['name']); ?></span><?php endif; ?>
-                <?php foreach(array_slice($day_meetings,0,2) as $meeting): ?><span class="tfp-cal-event-pill tfp-cal-event-pill--meeting"><?php echo esc_html($meeting['cohort']); ?></span><?php endforeach; ?>
+                <?php foreach(array_slice($day_meetings,0,2) as $meeting): ?><span class="tfp-cal-event-pill tfp-cal-event-pill--meeting"><?php echo esc_html($meeting['cohort']); ?><?php if (!empty($meeting['start_label'])): ?> · <?php echo esc_html($meeting['start_label']); ?><?php endif; ?></span><?php endforeach; ?>
                 <?php if(count($day_meetings)>2): ?><span class="tfp-cal-event-pill tfp-cal-event-pill--meeting">+<?php echo count($day_meetings)-2; ?> more</span><?php endif; ?>
               </div>
             <?php endfor; ?>
@@ -151,7 +151,7 @@ function tfp_dashboard_render_calendar_content() {
           <h6 id="tfp-revoke-title">Revoke Skip Request</h6>
           <p>Are you sure you want to revoke this request?</p>
           <div class="tfp-cal-revoke-modal__actions">
-            <button type="button" class="tfp-cancel-btn" data-close-revoke>Cancel</button>
+            <button type="button" class="tfp-dash-btn tfp-dash-btn--outline" data-close-revoke>Cancel</button>
             <button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-confirm-revoke>Revoke</button>
           </div>
           <div class="tfp-cal-revoke-modal__status" data-revoke-status aria-live="polite"></div>
