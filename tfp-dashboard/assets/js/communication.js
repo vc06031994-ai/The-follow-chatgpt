@@ -161,7 +161,8 @@
 
             var dot = item.querySelector('.tfp-dash-ticketlist__dot');
             if (dot) {
-                dot.className = 'tfp-dash-ticketlist__dot tfp-dash-ticketlist__dot--' + status;
+                var category = item.getAttribute('data-category') || '';
+            dot.className = 'tfp-dash-ticketlist__dot tfp-dash-ticketlist__dot--' + category;
             }
 
             applyFilters();
@@ -223,7 +224,7 @@
                 if (tagTextEl) tagTextEl.textContent = dData.tag_label || dData.category_label || '';
 
                 if (tagDotEl) {
-                    tagDotEl.className = 'tfp-dash-chatpanel__tag-dot tfp-dash-chatpanel__tag-dot--' + (dData.dot_class || 'teal');
+                    tagDotEl.className = 'tfp-dash-chatpanel__tag-dot tfp-dash-chatpanel__tag-dot--' + (dData.category || 'access');
                 }
 
                 setStatusBadge(dData.status || 'open');
@@ -392,10 +393,65 @@
             });
         }
 
+        // WooCommerce SelectWoo category picker with the Figma category dots.
+        function initCategorySelect() {
+            if (!newTicketForm || !window.jQuery || !jQuery.fn.selectWoo) return;
+
+            var categorySelect = newTicketForm.querySelector('select[name="category"]');
+            if (!categorySelect || jQuery(categorySelect).hasClass('select2-hidden-accessible')) return;
+
+            function dotClass(value) {
+                return String(value || '').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            }
+
+            function renderCategory(state) {
+                if (!state.id) return state.text;
+
+                var value = dotClass(state.id);
+                var wrap = document.createElement('span');
+                wrap.className = 'tfp-select-category-option';
+
+                var dot = document.createElement('span');
+                dot.className = 'tfp-select-category-dot tfp-select-category-dot--' + value;
+
+                var label = document.createTextNode(state.text || '');
+                wrap.appendChild(dot);
+                wrap.appendChild(label);
+                return wrap;
+            }
+
+            function renderSelected(state) {
+                if (!state.id) return state.text;
+
+                var wrap = document.createElement('span');
+                wrap.className = 'tfp-select-category-selection';
+
+                var dot = document.createElement('span');
+                dot.className = 'tfp-select-category-dot tfp-select-category-dot--' + dotClass(state.id);
+
+                wrap.appendChild(dot);
+                wrap.appendChild(document.createTextNode(state.text || ''));
+                return wrap;
+            }
+
+            jQuery(categorySelect).selectWoo({
+                width: '100%',
+                minimumResultsForSearch: Infinity,
+                templateResult: renderCategory,
+                templateSelection: renderSelected,
+                escapeMarkup: function (markup) {
+                    return markup;
+                }
+            });
+        }
+
         // New Ticket Modal controls
         newTicketBtns.forEach(function (button) {
             button.addEventListener('click', function () {
-                if (newTicketModal) newTicketModal.hidden = false;
+                if (newTicketModal) {
+                    newTicketModal.hidden = false;
+                    initCategorySelect();
+                }
             });
         });
 
