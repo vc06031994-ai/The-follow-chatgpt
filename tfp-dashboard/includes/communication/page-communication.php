@@ -361,6 +361,11 @@ function tfp_dashboard_render_communication_content()
                         <button type="button" class="tfp-dash-btn-resolved" data-tfp-mark-resolved>
                             <?php esc_html_e('Mark Resolved', 'tfp-dashboard'); ?>
                         </button>
+                        <button type="button" class="tfp-dash-btn-close-chat" data-tfp-close-chat
+                            aria-label="<?php esc_attr_e('Close conversation', 'tfp-dashboard'); ?>">
+                            <span aria-hidden="true">&times;</span>
+                            <?php esc_html_e('Close', 'tfp-dashboard'); ?>
+                        </button>
                     </div>
                 </div>
 
