@@ -72,6 +72,27 @@ body.tfp-course-modal-open {
     line-height: 1.45;
 }
 
+.tfp-course-agreement-content {
+    max-height: 230px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--tfp-dash-border);
+    border-radius: 10px;
+    background: #fafafa;
+    color: var(--tfp-dash-text);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.tfp-course-agreement-content p {
+    margin: 0 0 10px;
+}
+
+.tfp-course-agreement-content p:last-child {
+    margin-bottom: 0;
+}
+
 .tfp-course-agreement-card__action {
     width: min(100%, 640px);
     flex: 1 1 640px;
