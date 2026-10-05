@@ -154,13 +154,12 @@ function tfp_dashboard_render_program_content()
 
 
 /**
- * The dedicated "Continue Program" overview page (template tfp-dashboard-program).
+ * Enrolled Home overview dashboard.
  *
- * Reached from the enrolled Home program card's "Continue Program" button. It
- * gathers what used to live on Home (the 58-week journey + Current Lesson) and
- * adds a progress dashboard: 4 stat tiles, a PAST DUE card, and a Pending Tasks
- * list — all enrolled-only. The journey's "Continue Lesson" still routes into
- * the lesson player (tfp-dashboard-week).
+ * Home owns the page header and this renderer supplies the overall progress
+ * dashboard: 4 stat tiles, the discipleship journey, Current Lesson, PAST DUE
+ * and Pending Tasks. The journey's "Continue Lesson" still routes into the
+ * lesson player (tfp-dashboard-week).
  */
 function tfp_dashboard_render_overall_dashboard_content()
 {
@@ -174,12 +173,6 @@ function tfp_dashboard_render_overall_dashboard_content()
     $is_enrolled = $state
         ? ($state['status'] === 'enrolled')
         : (function_exists('tfp_billing_user_has_paid') && tfp_billing_user_has_paid());
-
-    tfp_dashboard_render_page_header(
-        __('Program', 'tfp-dashboard'),
-        sprintf(esc_html__('Welcome back, %s', 'tfp-dashboard'), esc_html(tfp_dashboard_user_name())),
-        __("Here's where you are today — your progress, what's due, and what's coming up.", 'tfp-dashboard')
-    );
 
     $has_weeks = $course_id && function_exists('tfp_ld_get_weeks') && !empty(tfp_ld_get_weeks($course_id));
 
