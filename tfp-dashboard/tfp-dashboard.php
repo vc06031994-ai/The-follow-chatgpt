@@ -293,6 +293,42 @@ add_action('wp_enqueue_scripts', function () {
     if ($template === 'tfp-dashboard-documents') {
         wp_enqueue_style('tfp-dashboard-documents', TFP_DASH_URL . 'assets/css/documents.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/css/student-experience.css', ['tfp-dashboard-documents'], TFP_DASH_VERSION);
+
+        // Receipts reuse the existing TFP Authentication order slide-over.
+        // Explicitly enqueue its popup styles and account JS on the Documents page
+        // because the account-page template is not rendered here.
+        if (wp_style_is('tfp-auth-popup', 'registered')) {
+            wp_enqueue_style('tfp-auth-popup');
+        } elseif (defined('TFP_AUTH_URL')) {
+            wp_enqueue_style('tfp-auth-popup-fallback', TFP_AUTH_URL . 'assets/css/popup.css', [], defined('TFP_AUTH_VERSION') ? TFP_AUTH_VERSION : null);
+        }
+
+        if (wp_style_is('tfp-auth-base', 'registered')) {
+            wp_enqueue_style('tfp-auth-base');
+        } elseif (defined('TFP_AUTH_URL')) {
+            wp_enqueue_style('tfp-auth-base-fallback', TFP_AUTH_URL . 'assets/css/tfp-auth.css', [], defined('TFP_AUTH_VERSION') ? TFP_AUTH_VERSION : null);
+        }
+
+        if (wp_script_is('tfp-account-script', 'registered')) {
+            wp_enqueue_script('tfp-account-script');
+            wp_localize_script('tfp-account-script', 'tfpAccountSettings', [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('tfp_account_nonce'),
+            ]);
+        } elseif (defined('TFP_AUTH_URL')) {
+            wp_enqueue_script(
+                'tfp-account-script-fallback',
+                TFP_AUTH_URL . 'assets/js/account.js',
+                ['jquery'],
+                defined('TFP_AUTH_VERSION') ? TFP_AUTH_VERSION : null,
+                true
+            );
+            wp_localize_script('tfp-account-script-fallback', 'tfpAccountSettings', [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('tfp_account_nonce'),
+            ]);
+        }
+
         wp_enqueue_script('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/js/student-experience.js', [], TFP_DASH_VERSION, true);
         wp_localize_script('tfp-dashboard-student-experience', 'tfpStudentExperience', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
