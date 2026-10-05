@@ -177,7 +177,8 @@
 .tfp-exp-empty {
     padding: 30px;
     text-align: center;
-    color: #6b7280
+    color: #C4C4C4;
+    border-top:1px solid #C4C4C4;
 }
 
 .tfp-exp-badge {
