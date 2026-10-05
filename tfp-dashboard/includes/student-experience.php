@@ -96,6 +96,8 @@ function tfp_dashboard_user_skip_requests($user_id) {
             'id' => $post->ID,
             'date' => get_post_meta($post->ID, '_date', true),
             'reason' => get_post_meta($post->ID, '_reason', true),
+            'notes' => get_post_meta($post->ID, '_notes', true),
+            'submitted_at' => get_post_meta($post->ID, '_submitted_at', true) ?: get_post_field('post_date', $post->ID),
             'status' => get_post_meta($post->ID, '_status', true) ?: 'pending',
             'cohort_id' => (int) get_post_meta($post->ID, '_cohort_id', true),
         ];
@@ -730,8 +732,28 @@ add_action('wp_ajax_tfp_skip_request', function () {
     update_post_meta($id,'_cohort_id',$cohort_id);
     update_post_meta($id,'_reason',$reason);
     update_post_meta($id,'_notes',$notes);
+    update_post_meta($id,'_submitted_at',current_time('mysql'));
     update_post_meta($id,'_status','pending');
     wp_send_json_success(['message'=>__('Skip request submitted.','tfp-dashboard'),'id'=>$id]);
+});
+
+add_action('wp_ajax_tfp_skip_revoke', function () {
+    check_ajax_referer('tfp_calendar_nonce', 'nonce');
+    if (!is_user_logged_in()) wp_send_json_error(['message'=>__('Please log in.','tfp-dashboard')],401);
+    $id = absint($_POST['request_id'] ?? 0);
+    if (!$id) wp_send_json_error(['message'=>__('Invalid request.','tfp-dashboard')],400);
+    $post = get_post($id);
+    $user_id = get_current_user_id();
+    if (!$post || $post->post_type !== 'tfp_skip_request' || (int)get_post_meta($id,'_user_id',true) !== $user_id) {
+        wp_send_json_error(['message'=>__('Request not found.','tfp-dashboard')],404);
+    }
+    $status = get_post_meta($id,'_status',true) ?: 'pending';
+    if (!in_array($status,['pending','approved'],true)) {
+        wp_send_json_error(['message'=>__('This request cannot be revoked.','tfp-dashboard')],400);
+    }
+    update_post_meta($id,'_status','cancelled');
+    update_post_meta($id,'_revoked_at',current_time('mysql'));
+    wp_send_json_success(['message'=>__('Skip request revoked.','tfp-dashboard')]);
 });
 
 add_action('wp_ajax_tfp_sign_document', function () {
