@@ -34,3 +34,10 @@ body.tfp-dashboard-body {
 *::after { box-sizing: border-box; }
 
 p { font-family: var(--tfp-dash-font-alt); }
+
+/* Dashboard radio controls */
+.tfp-dashboard input[type="radio"],
+.tfp-dash-page input[type="radio"],
+input.tfp-dashboard-radio[type="radio"] {
+    accent-color: #00666E !important;
+}
