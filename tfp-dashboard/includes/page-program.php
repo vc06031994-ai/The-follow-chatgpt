@@ -2,6 +2,157 @@
 if (!defined('ABSPATH'))
     exit;
 
+
+/**
+ * Programs navigation page — course/program chooser.
+ *
+ * This page intentionally uses the existing dashboard/program-card styles from
+ * course-checkout.css plus the shared dashboard buttons/tokens. It is separate
+ * from the enrolled Home overview dashboard.
+ */
+function tfp_dashboard_render_program_content()
+{
+    $user_id = get_current_user_id();
+    $program_url = function_exists('tfp_dashboard_get_url')
+        ? tfp_dashboard_get_url('tfp-dashboard-program')
+        : '#';
+
+    tfp_dashboard_render_page_header(
+        __('Home', 'tfp-dashboard'),
+        sprintf(esc_html__('Welcome, %s', 'tfp-dashboard'), esc_html(tfp_dashboard_user_name())),
+        __('Welcome back. Select a course to continue where you left off or review what you\\'ve completed.', 'tfp-dashboard')
+    );
+
+    $course_ids = [];
+
+    if (function_exists('learndash_user_get_enrolled_courses')) {
+        $course_ids = array_map('absint', (array) learndash_user_get_enrolled_courses($user_id));
+    }
+
+    // Keep the current program available as a fallback for installations where
+    // LearnDash does not expose the enrolled-course helper.
+    $state = function_exists('tfp_dashboard_get_program_state') ? tfp_dashboard_get_program_state() : null;
+    if (empty($course_ids) && $state && !empty($state['course_id'])) {
+        $course_ids[] = (int) $state['course_id'];
+    }
+
+    $course_ids = array_values(array_unique(array_filter($course_ids)));
+
+    if (empty($course_ids)) {
+        ?>
+        <div class="tfp-dash-panel tfp-program-empty">
+            <h3><?php esc_html_e('No programs available yet', 'tfp-dashboard'); ?></h3>
+            <p><?php esc_html_e('Your available courses will appear here once they are assigned to your account.', 'tfp-dashboard'); ?></p>
+        </div>
+        <?php
+        return;
+    }
+
+    ?>
+    <div class="tfp-program-list">
+        <?php foreach ($course_ids as $course_id): ?>
+            <?php
+            $course = get_post($course_id);
+            if (!$course || $course->post_type !== 'sfwd-courses') {
+                continue;
+            }
+
+            $weeks = function_exists('tfp_ld_get_weeks') ? (array) tfp_ld_get_weeks($course_id) : [];
+            $progress = function_exists('tfp_ld_get_journey_progress')
+                ? tfp_ld_get_journey_progress($user_id, $course_id)
+                : ['completed' => 0, 'total' => count($weeks)];
+
+            $total = max(0, (int) ($progress['total'] ?? count($weeks)));
+            $completed = max(0, (int) ($progress['completed'] ?? 0));
+            $percent = $total > 0 ? min(100, (int) round(($completed / $total) * 100)) : 0;
+
+            $is_complete = function_exists('learndash_course_completed')
+                ? (bool) learndash_course_completed($user_id, $course_id)
+                : ($total > 0 && $completed >= $total);
+
+            if ($is_complete) {
+                $status = 'completed';
+                $button_label = __('Review Program', 'tfp-dashboard');
+            } elseif ($percent > 0) {
+                $status = 'in-progress';
+                $button_label = __('Continue Program', 'tfp-dashboard');
+            } else {
+                $status = 'not-started';
+                $button_label = __('Start Program', 'tfp-dashboard');
+            }
+
+            $image_html = get_the_post_thumbnail($course_id, 'medium');
+            if (!$image_html && function_exists('wc_placeholder_img')) {
+                $image_html = wc_placeholder_img('medium');
+            }
+
+            $course_name = get_the_title($course_id);
+            $description = get_the_excerpt($course_id);
+            if ($description === '') {
+                $description = __('Continue your course, complete each week, and keep your progress moving forward.', 'tfp-dashboard');
+            }
+
+            $meta_bits = [];
+            if ($total > 0) {
+                $meta_bits[] = sprintf(
+                    _n('%d Week', '%d Weeks', $total, 'tfp-dashboard'),
+                    $total
+                );
+            }
+
+            // Reuse the current cohort schedule when this is the active program.
+            $meta = $state && !empty($state['course_id']) && (int) $state['course_id'] === $course_id
+                ? $state
+                : null;
+
+            if ($meta && !empty($meta['cohort']['schedule'])) {
+                $meta_bits[] = sprintf(__('Meets %s', 'tfp-dashboard'), $meta['cohort']['schedule']);
+            }
+            if ($meta && !empty($meta['cohort']['facilitator'])) {
+                $meta_bits[] = sprintf(__('Taught by %s', 'tfp-dashboard'), $meta['cohort']['facilitator']);
+            }
+
+            if (empty($meta_bits)) {
+                $meta_bits[] = __('Course-paced program', 'tfp-dashboard');
+            }
+
+            $details = get_permalink($course_id);
+            $continue_url = add_query_arg(['course_id' => $course_id], $program_url);
+            ?>
+            <article class="tfp-program-card tfp-program-card--<?php echo esc_attr($status); ?>">
+                <div class="tfp-program-card__visual">
+                    <?php echo $image_html; ?>
+                </div>
+
+                <div class="tfp-program-card__content">
+                    <div class="tfp-program-card__topline">
+                        <p class="tfp-program-card__meta"><?php echo esc_html(implode(' • ', $meta_bits)); ?></p>
+                    </div>
+
+                    <h3 class="tfp-program-card__title"><?php echo esc_html($course_name); ?></h3>
+                    <p class="tfp-program-card__desc"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($description), 34)); ?></p>
+
+                    <div class="tfp-program-card__actions">
+                        <a href="<?php echo esc_url($continue_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary">
+                            <?php echo esc_html($button_label); ?>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="tfp-program-card__progress" aria-label="<?php echo esc_attr(sprintf(__('%d%% complete', 'tfp-dashboard'), $percent)); ?>">
+                    <?php echo tfp_dashboard_render_progress_ring($percent, 76, 7); ?>
+                    <span class="tfp-program-card__progress-label"><?php esc_html_e('complete', 'tfp-dashboard'); ?></span>
+                    <span class="tfp-program-card__badge tfp-program-card__badge--<?php echo esc_attr($status === 'in-progress' ? 'enrolled' : ($status === 'completed' ? 'invited' : 'unpaid')); ?>">
+                        <?php echo esc_html($status === 'in-progress' ? __('In Progress', 'tfp-dashboard') : ($status === 'completed' ? __('Completed', 'tfp-dashboard') : __('Not Started', 'tfp-dashboard'))); ?>
+                    </span>
+                </div>
+            </article>
+        <?php endforeach; ?>
+    </div>
+    <?php
+}
+
+
 /**
  * The dedicated "Continue Program" overview page (template tfp-dashboard-program).
  *
@@ -11,7 +162,7 @@ if (!defined('ABSPATH'))
  * list — all enrolled-only. The journey's "Continue Lesson" still routes into
  * the lesson player (tfp-dashboard-week).
  */
-function tfp_dashboard_render_program_content()
+function tfp_dashboard_render_overall_dashboard_content()
 {
     $user_id = get_current_user_id();
     $state = function_exists('tfp_dashboard_get_program_state') ? tfp_dashboard_get_program_state() : null;
