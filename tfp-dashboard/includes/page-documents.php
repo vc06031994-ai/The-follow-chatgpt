@@ -4,11 +4,10 @@ if (!defined('ABSPATH')) exit;
 function tfp_dashboard_render_documents_content() {
     $user_id=get_current_user_id(); $current_user=wp_get_current_user();
     $first_name=$current_user->first_name?:$current_user->display_name;
-    $tabs=['agreements'=>'Agreements','grades'=>'Grades','certificates'=>'Certificates','receipts'=>'Receipts'];
+    $tabs=['agreements'=>'Agreements','certificates'=>'Certificates','receipts'=>'Receipts'];
     $active_tab=isset($_GET['tab'])&&isset($tabs[$_GET['tab']])?sanitize_key($_GET['tab']):'agreements';
     $rows=[];
     if($active_tab==='agreements') $rows=tfp_dashboard_user_documents($user_id,'Agreement');
-    elseif($active_tab==='grades') $rows=tfp_dashboard_user_grades($user_id);
     elseif($active_tab==='certificates') $rows=tfp_dashboard_user_certificates($user_id);
     elseif($active_tab==='receipts') $rows=tfp_dashboard_user_receipts($user_id);
     ?>
@@ -29,7 +28,7 @@ function tfp_dashboard_render_documents_content() {
         <h2 class="tfp-docs-panel__title"><?php echo esc_html($tabs[$active_tab]); ?></h2>
         <?php if($rows): ?>
         <div class="tfp-exp-table-wrap"><table class="tfp-exp-table">
-          <thead><tr><th><?php echo $active_tab==='receipts'?'Receipt':($active_tab==='grades'?'Course / Week':'Document'); ?></th><th>Type</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th><?php echo $active_tab==='receipts'?'Receipt':('Document'); ?></th><th>Type</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
           <?php foreach($rows as $row): ?>
             <tr>
