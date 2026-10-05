@@ -315,10 +315,19 @@
     margin: 0 0 20px 0 !important;
 }
 
+.tfp-journey__meta-tag {
+    display: inline-block !important;
+    margin-right: 16px !important;
+}
+
+.tfp-journey__meta-tag:last-child {
+    margin-right: 0 !important;
+}
+
 .tfp-journey__circles {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 10px !important;
+    gap: 14px !important;
     margin-bottom: 18px !important;
     align-items: center !important;
 }
