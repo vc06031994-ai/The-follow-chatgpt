@@ -295,8 +295,19 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_style('tfp-dashboard-student-experience', TFP_DASH_URL . 'assets/css/student-experience.css', ['tfp-dashboard-documents'], TFP_DASH_VERSION);
 
         // Receipts reuse the existing TFP Authentication order slide-over.
-        // Explicitly enqueue its popup styles and account JS on the Documents page
-        // because the account-page template is not rendered here.
+        // Explicitly enqueue the account-page styles/scripts on Documents because
+        // the account-page template itself is not rendered on this dashboard page.
+        if (defined('TFP_AUTH_URL')) {
+            wp_enqueue_style(
+                'tfp-auth-account',
+                TFP_AUTH_URL . 'assets/css/account.css',
+                [],
+                defined('TFP_AUTH_VERSION') ? TFP_AUTH_VERSION : null
+            );
+        }
+
+        // The generic auth popup stylesheet is not the order slide-over stylesheet,
+        // but keep the existing auth component assets available for shared controls.
         if (wp_style_is('tfp-auth-popup', 'registered')) {
             wp_enqueue_style('tfp-auth-popup');
         } elseif (defined('TFP_AUTH_URL')) {
