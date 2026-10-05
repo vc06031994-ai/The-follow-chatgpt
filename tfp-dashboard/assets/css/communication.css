@@ -233,6 +233,11 @@
     box-sizing: border-box !important;
 }
 
+/* JS filtering state: must override the base display:flex !important. */
+.tfp-dash-ticketlist__item.tfp-ticket-item--filtered {
+    display: none !important;
+}
+
 .tfp-dash-ticketlist__item:hover {
     background: #f9fafb !important;
 }
