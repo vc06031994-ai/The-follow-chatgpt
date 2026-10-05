@@ -501,6 +501,33 @@
     background: #f9fafb !important;
 }
 
+.tfp-dash-btn-close-chat {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    height: 32px !important;
+    padding: 0 12px !important;
+    border-radius: 6px !important;
+    border: 1px solid #d1d5db !important;
+    background: #ffffff !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    white-space: nowrap !important;
+}
+.tfp-dash-btn-close-chat span {
+    font-size: 16px !important;
+    line-height: 1 !important;
+}
+.tfp-dash-btn-close-chat:hover {
+    border-color: #9ca3af !important;
+    background: #f9fafb !important;
+}
+
 /* --- Chat Messages Area --- */
 .tfp-dash-chatpanel__messages {
     flex: 1 !important;
