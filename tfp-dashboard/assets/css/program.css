@@ -69,6 +69,26 @@
     height: 70px;
 }
 
+.tfp-program-list .tfp-program-card--in-progress .tfp-dash-ring__progress {
+    stroke: #570506 !important;
+}
+
+.tfp-program-list .tfp-program-card--not-started .tfp-dash-ring__progress {
+    stroke: #151411 !important;
+}
+
+.tfp-program-list .tfp-program-card--completed .tfp-dash-ring__progress {
+    stroke: #847230 !important;
+}
+
+.tfp-program-list .tfp-program-card--not-started .tfp-program-card__badge::after {
+    background: #151411 !important;
+}
+
+.tfp-program-list .tfp-program-card--completed .tfp-program-card__badge::after {
+    background: #847230 !important;
+}
+
 .tfp-program-list .tfp-program-card__progress-label {
     font-size: 9px;
     color: var(--tfp-dash-text);
