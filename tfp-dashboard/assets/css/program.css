@@ -1,3 +1,128 @@
+
+/* =========================================================================
+   Programs chooser — reuses the existing program-card/dashboard styles.
+   Only the page layout is scoped here so the Home enrollment card keeps its
+   existing appearance.
+   ========================================================================= */
+
+.tfp-program-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tfp-program-list .tfp-program-card {
+    grid-template-columns: 110px minmax(0, 1fr) 94px;
+    gap: 14px;
+    align-items: center;
+    min-height: 112px;
+    padding: 8px 12px;
+}
+
+.tfp-program-list .tfp-program-card__visual {
+    min-height: 112px;
+    height: 112px;
+    border-radius: 2px;
+}
+
+.tfp-program-list .tfp-program-card__content {
+    gap: 6px;
+}
+
+.tfp-program-list .tfp-program-card__meta {
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.tfp-program-list .tfp-program-card__title {
+    font-size: 17px;
+    line-height: 1.2;
+}
+
+.tfp-program-list .tfp-program-card__desc {
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.tfp-program-list .tfp-program-card__actions {
+    margin-top: 0;
+}
+
+.tfp-program-list .tfp-program-card__actions .tfp-dash-btn {
+    padding: 8px 20px !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+}
+
+.tfp-program-list .tfp-program-card__progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    text-align: center;
+}
+
+.tfp-program-list .tfp-program-card__progress svg {
+    width: 70px;
+    height: 70px;
+}
+
+.tfp-program-list .tfp-program-card__progress-label {
+    font-size: 9px;
+    color: var(--tfp-dash-text);
+    line-height: 1.2;
+}
+
+.tfp-program-list .tfp-program-card__progress .tfp-program-card__badge {
+    font-size: 10px;
+    gap: 5px;
+    line-height: 1.2;
+}
+
+.tfp-program-list .tfp-program-card__progress .tfp-program-card__badge::after {
+    width: 11px;
+    height: 11px;
+    border-radius: 1px;
+}
+
+@media (max-width: 720px) {
+    .tfp-program-list .tfp-program-card {
+        grid-template-columns: 90px minmax(0, 1fr);
+        align-items: start;
+    }
+
+    .tfp-program-list .tfp-program-card__visual {
+        min-height: 90px;
+        height: 90px;
+    }
+
+    .tfp-program-list .tfp-program-card__progress {
+        grid-column: 2;
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 560px) {
+    .tfp-program-list .tfp-program-card {
+        grid-template-columns: 1fr;
+    }
+
+    .tfp-program-list .tfp-program-card__visual {
+        width: 100%;
+        min-height: 150px;
+        height: 150px;
+    }
+
+    .tfp-program-list .tfp-program-card__progress {
+        grid-column: auto;
+        justify-content: flex-start;
+        flex-direction: row;
+    }
+}
+
 /* =========================================================================
    Program ("Continue Program") page — new components only. Journey, panel and
    button styles already ship in dashboard.css; this file adds the stat tiles,
