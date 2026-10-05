@@ -55,16 +55,16 @@ function tfp_dashboard_render_home_content()
         __("Here's where you are today — your progress, what's due, and what's coming up.", 'tfp-dashboard')
     );
 
-    // The state-aware program card is always the top of Home: it shows Unpaid,
-    // Waitlisted, Invited or Enrolled and gives each state its own actions, so
-    // a paid student never sees the same view as one who hasn't paid.
-    if ($state) {
-        tfp_dashboard_render_program_card($state);
-    }
-
     $is_enrolled = $state
         ? ($state['status'] === 'enrolled')
         : (function_exists('tfp_billing_user_has_paid') && tfp_billing_user_has_paid());
+
+    // The enrollment/setup program card belongs to the pre-enrollment Home
+    // experience. Once a student is enrolled, Home is the overall dashboard;
+    // the Programs navigation owns the course/program chooser.
+    if ($state && !$is_enrolled) {
+        tfp_dashboard_render_program_card($state);
+    }
 
     $has_order_confirmation = isset($_GET['order_id'], $_GET['order_key'])
         && absint($_GET['order_id'])
