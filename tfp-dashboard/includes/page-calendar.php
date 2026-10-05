@@ -151,7 +151,7 @@ function tfp_dashboard_render_calendar_content() {
           <h6 id="tfp-revoke-title">Revoke Skip Request</h6>
           <p>Are you sure you want to revoke this request?</p>
           <div class="tfp-cal-revoke-modal__actions">
-            <button type="button" class="tfp-dash-btn tfp-dash-btn--outline" data-close-revoke>Cancel</button>
+            <button type="button" class="tfp-cancel-btn" data-close-revoke>Cancel</button>
             <button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-confirm-revoke>Revoke</button>
           </div>
           <div class="tfp-cal-revoke-modal__status" data-revoke-status aria-live="polite"></div>
