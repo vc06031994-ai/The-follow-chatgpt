@@ -230,11 +230,13 @@ function tfp_course_render_checkout_modal($state = null)
                                         <p><?php esc_html_e('Non-Disclosure Agreement. Please review the agreement provided by the program administrator before signing.', 'tfp-dashboard'); ?></p>
                                     </div>
                                     <div class="tfp-course-agreement-card__action">
-                                        <label>
+                                        <label for="tfp-course-agreement-signature-nda">
                                             <span><?php esc_html_e('Full name / signature', 'tfp-dashboard'); ?></span>
-                                            <input type="text" class="tfp-course-agreement-signature" data-agreement-signature="nda" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
                                         </label>
-                                        <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="nda"><?php esc_html_e('Sign NDA', 'tfp-dashboard'); ?></button>
+                                        <div class="tfp-course-agreement-input-row">
+                                            <input id="tfp-course-agreement-signature-nda" type="text" class="tfp-course-agreement-signature" data-agreement-signature="nda" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
+                                            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="nda"><?php esc_html_e('Sign NDA', 'tfp-dashboard'); ?></button>
+                                        </div>
                                         <span class="tfp-course-agreement-status" data-agreement-status="nda" aria-live="polite"></span>
                                     </div>
                                 </div>
@@ -244,11 +246,13 @@ function tfp_course_render_checkout_modal($state = null)
                                         <p><?php esc_html_e('Course Agreement. Please review the agreement provided by the program administrator before signing.', 'tfp-dashboard'); ?></p>
                                     </div>
                                     <div class="tfp-course-agreement-card__action">
-                                        <label>
+                                        <label for="tfp-course-agreement-signature-course">
                                             <span><?php esc_html_e('Full name / signature', 'tfp-dashboard'); ?></span>
-                                            <input type="text" class="tfp-course-agreement-signature" data-agreement-signature="course_agreement" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
                                         </label>
-                                        <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="course_agreement"><?php esc_html_e('Sign Course Agreement', 'tfp-dashboard'); ?></button>
+                                        <div class="tfp-course-agreement-input-row">
+                                            <input id="tfp-course-agreement-signature-course" type="text" class="tfp-course-agreement-signature" data-agreement-signature="course_agreement" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
+                                            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="course_agreement"><?php esc_html_e('Sign Course Agreement', 'tfp-dashboard'); ?></button>
+                                        </div>
                                         <span class="tfp-course-agreement-status" data-agreement-status="course_agreement" aria-live="polite"></span>
                                     </div>
                                 </div>
