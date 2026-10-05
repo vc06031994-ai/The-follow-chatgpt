@@ -73,30 +73,60 @@ body.tfp-course-modal-open {
 }
 
 .tfp-course-agreement-card__action {
-    width: min(280px, 100%);
-    flex: 0 0 280px;
+    width: min(100%, 640px);
+    flex: 1 1 640px;
+    min-width: 0;
 }
 
 .tfp-course-agreement-card__action label {
     display: block;
     margin: 0 0 8px;
+    padding: 0;
 }
 
 .tfp-course-agreement-card__action label > span {
     display: block;
-    margin-bottom: 5px;
+    margin: 0;
     color: var(--tfp-dash-text);
-    font-size: 12px;
-    font-weight: 600;
+    font-family: var(--tfp-dash-font-alt);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.tfp-course-agreement-input-row {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
 }
 
 .tfp-course-agreement-signature {
-    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
     box-sizing: border-box;
+    margin: 0;
+    padding: 11px 13px;
+    border-radius: 12px;
+    border: 1px solid var(--tfp-dash-border);
+    font-family: var(--tfp-dash-font);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+    background: #fff;
+}
+
+.tfp-course-agreement-signature:focus {
+    outline: none;
 }
 
 .tfp-course-sign-agreement {
-    width: 100%;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 143px;
+    margin: 0;
+    white-space: nowrap;
 }
 
 .tfp-course-agreement-status {
@@ -106,6 +136,7 @@ body.tfp-course-modal-open {
     color: var(--tfp-dash-teal);
     font-size: 12px;
     font-weight: 700;
+    line-height: 1.4;
 }
 
 .tfp-course-agreement-status.is-signed {
