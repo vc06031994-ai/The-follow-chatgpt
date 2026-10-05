@@ -191,7 +191,7 @@ function tfp_dashboard_render_communication_content()
                 </p>
             </div>
         </div>
-        <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="tfp-comm-discord-btn tfp-dash-btn tfp-dash-btn--primary">
+        <a href="https://discord.gg/MunVQXc3a" target="_blank" rel="noopener noreferrer" class="tfp-comm-discord-btn tfp-dash-btn tfp-dash-btn--primary">
             <?php esc_html_e('Open Discord', 'tfp-dashboard'); ?>
         </a>
     </div>
