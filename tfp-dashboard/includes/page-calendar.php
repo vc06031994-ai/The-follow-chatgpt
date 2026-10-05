@@ -108,17 +108,20 @@ function tfp_dashboard_render_calendar_content() {
           <?php foreach($requests as $request): 
               $status_key = strtolower((string)$request['status']);
               $status_label = ucfirst($status_key);
-              $reason = trim((string)$request['reason']);
+              $reason = trim((string)$request['notes']);
+              if ($reason === '') $reason = trim((string)$request['reason']);
               $category = 'STUDENT ABSENCE';
-              $time_label = '';
+              $submitted_at = (string) $request['submitted_at'];
+              $submitted_ts = $submitted_at ? strtotime($submitted_at) : 0;
               $raw_date = (string)$request['date'];
               $date_ts = strtotime($raw_date);
-              if ($date_ts) $time_label = date_i18n('g:i A', $date_ts);
+              $submitted_date_label = $submitted_ts ? wp_date('M j, Y', $submitted_ts, wp_timezone()) : '';
+              $submitted_time_label = $submitted_ts ? wp_date('g:i A T', $submitted_ts, wp_timezone()) : '';
           ?>
             <tr data-request-status="<?php echo esc_attr($status_key); ?>">
               <td><span class="tfp-cal-request-category"><?php echo esc_html($category); ?></span></td>
-              <td><span class="tfp-cal-request-date"><?php echo esc_html($date_ts ? date_i18n('M j, Y', $date_ts) : $raw_date); ?><?php if($time_label): ?><small> · <?php echo esc_html($time_label); ?></small><?php endif; ?></span></td>
-              <td><?php echo esc_html($reason); ?></td>
+              <td><span class="tfp-cal-request-date"><?php echo esc_html($date_ts ? wp_date('M j, Y', $date_ts, wp_timezone()) : $raw_date); ?><?php if($submitted_ts): ?><small><?php echo esc_html($submitted_date_label . ' · ' . $submitted_time_label); ?></small><?php endif; ?></span></td>
+              <td class="tfp-cal-request-reason"><?php echo esc_html($reason); ?></td>
               <td><span class="tfp-cal-request-status tfp-cal-request-status--<?php echo esc_attr($status_key); ?>"><?php echo esc_html($status_label); ?></span></td>
               <td><button type="button" class="tfp-cal-revoke" data-request-id="<?php echo esc_attr($request['id']); ?>">Revoke</button></td>
             </tr>
@@ -139,6 +142,19 @@ function tfp_dashboard_render_calendar_content() {
             <div class="tfp-exp-modal__actions"><button type="button" class="tfp-cancel-btn " data-close-modal>Cancel</button><button type="submit" class="tfp-dash-btn tfp-dash-btn--primary">Submit Request</button></div>
             <div data-form-status aria-live="polite"></div>
           </form>
+        </div>
+      </div>
+
+      <div class="tfp-dash-modal tfp-cal-revoke-modal" data-revoke-modal hidden>
+        <div class="tfp-dash-modal__backdrop" data-close-revoke></div>
+        <div class="tfp-dash-modal__box tfp-cal-revoke-modal__box" role="dialog" aria-modal="true" aria-labelledby="tfp-revoke-title">
+          <h6 id="tfp-revoke-title">Revoke Skip Request</h6>
+          <p>Are you sure you want to revoke this request?</p>
+          <div class="tfp-cal-revoke-modal__actions">
+            <button type="button" class="tfp-cancel-btn" data-close-revoke>Cancel</button>
+            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-confirm-revoke>Revoke</button>
+          </div>
+          <div class="tfp-cal-revoke-modal__status" data-revoke-status aria-live="polite"></div>
         </div>
       </div>
     </div>
