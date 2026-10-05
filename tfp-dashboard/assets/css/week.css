@@ -391,6 +391,13 @@
     background: #e6e9ea;
 }
 
+/* Keep the currently active Reading item visually highlighted even when it is already completed. */
+.tfp-reading-item.is-completed.is-active {
+    background: #fff;
+    border-color: var(--tfp-dash-teal);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
 .tfp-reading-item-info {
     flex: 1;
     padding-right: 12px;
