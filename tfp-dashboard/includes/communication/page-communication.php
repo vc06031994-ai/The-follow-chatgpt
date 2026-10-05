@@ -17,7 +17,7 @@ function tfp_communication_get_demo_tickets()
             'status' => 'open',
             'time' => '1 hour ago',
             'meta' => 'Technical • Opened Jun 10, 2026 • Assigned to Support',
-            'dot_class' => 'yellow',
+            'dot_class' => 'technical',
             'preview' => 'Can you help me choose from t...',
             'avatar_url' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
             'messages' => [
@@ -48,7 +48,7 @@ function tfp_communication_get_demo_tickets()
             'status' => 'open',
             'time' => '1 hour ago',
             'meta' => 'Access Issue • Opened Jun 10, 2026 • Assigned to Support',
-            'dot_class' => 'red',
+            'dot_class' => 'access',
             'tag_label' => 'Access Issue',
             'preview' => 'Can you help me choose from t...',
             'avatar_url' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
@@ -96,7 +96,7 @@ function tfp_communication_get_demo_tickets()
             'status' => 'open',
             'time' => '1 hour ago',
             'meta' => 'Access Issue • Opened Jun 10, 2026 • Assigned to Support',
-            'dot_class' => 'teal',
+            'dot_class' => 'access',
             'tag_label' => 'Access Issue',
             'preview' => 'Can you help me choose from t...',
             'avatar_url' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
@@ -266,7 +266,7 @@ function tfp_dashboard_render_communication_content()
 
                                 <span class="tfp-dash-ticketlist__category">
                                     <i
-                                        class="tfp-dash-ticketlist__dot tfp-dash-ticketlist__dot--<?php echo esc_attr($status); ?>"></i>
+                                        class="tfp-dash-ticketlist__dot tfp-dash-ticketlist__dot--<?php echo esc_attr($category); ?>"></i>
                                     <?php echo esc_html($categories[$category] ?? ucfirst($category)); ?>
                                 </span>
 
