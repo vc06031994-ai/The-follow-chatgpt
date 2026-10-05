@@ -306,18 +306,36 @@
     display: inline-block !important;
 }
 
-.tfp-dash-ticketlist__dot--yellow,
+.tfp-dash-ticketlist__dot--access {
+    background: #AF1E2D !important;
+}
+
 .tfp-dash-ticketlist__dot--technical {
-    background: #eab308 !important;
+    background: #BD9817 !important;
 }
 
-.tfp-dash-ticketlist__dot--red,
-.tfp-dash-ticketlist__dot--pending {
-    background: #dc2626 !important;
+.tfp-dash-ticketlist__dot--billing {
+    background: #2908CE !important;
 }
 
-.tfp-dash-ticketlist__dot--teal,
-.tfp-dash-ticketlist__dot--access,
+.tfp-dash-ticketlist__dot--facilitator {
+    background: #570506 !important;
+}
+
+/* Backward-compatible fallback for any older/demo status-based markup. */
+.tfp-dash-ticketlist__dot--yellow {
+    background: #BD9817 !important;
+}
+
+.tfp-dash-ticketlist__dot--red {
+    background: #AF1E2D !important;
+}
+
+.tfp-dash-ticketlist__dot--teal {
+    background: #00666e !important;
+}
+
+.tfp-dash-ticketlist__dot--pending,
 .tfp-dash-ticketlist__dot--open,
 .tfp-dash-ticketlist__dot--resolved {
     background: #00666e !important;
@@ -406,12 +424,28 @@
     flex-shrink: 0 !important;
 }
 
+.tfp-dash-chatpanel__tag-dot--access {
+    background: #AF1E2D !important;
+}
+
+.tfp-dash-chatpanel__tag-dot--technical {
+    background: #BD9817 !important;
+}
+
+.tfp-dash-chatpanel__tag-dot--billing {
+    background: #2908CE !important;
+}
+
+.tfp-dash-chatpanel__tag-dot--facilitator {
+    background: #570506 !important;
+}
+
 .tfp-dash-chatpanel__tag-dot--yellow {
-    background: #eab308 !important;
+    background: #BD9817 !important;
 }
 
 .tfp-dash-chatpanel__tag-dot--red {
-    background: #dc2626 !important;
+    background: #AF1E2D !important;
 }
 
 .tfp-dash-chatpanel__tag-dot--teal {
@@ -612,4 +646,67 @@
     .tfp-dash-msg {
         max-width: 88% !important;
     }
+}
+
+
+/* Communication category SelectWoo */
+.tfp-dash-modal__box .select2-container {
+    width: 100% !important;
+}
+
+.tfp-dash-modal__box .select2-container--default .select2-selection--single {
+    min-height: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    border: 1px solid #1f1f1f !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+}
+
+.tfp-dash-modal__box .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 42px !important;
+    padding-left: 13px !important;
+    color: #151411 !important;
+}
+
+.tfp-dash-modal__box .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 42px !important;
+}
+
+.tfp-select-category-option,
+.tfp-select-category-selection {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tfp-select-category-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 8px;
+}
+
+.tfp-select-category-dot--access {
+    background: #AF1E2D;
+}
+
+.tfp-select-category-dot--technical {
+    background: #BD9817;
+}
+
+.tfp-select-category-dot--billing {
+    background: #2908CE;
+}
+
+.tfp-select-category-dot--facilitator {
+    background: #570506;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] .tfp-select-category-dot--access,
+.select2-container--default .select2-results__option[aria-selected="true"] .tfp-select-category-dot--access {
+    background: #AF1E2D;
 }
