@@ -132,6 +132,8 @@ function tfp_student_document_meta_box($post) {
     $date = (string) get_post_meta($post->ID, '_date_issued', true);
     $status = (string) get_post_meta($post->ID, '_status', true) ?: 'pending';
     $url = (string) get_post_meta($post->ID, '_document_url', true);
+    $purchase_agreement_key = (string) get_post_meta($post->ID, '_tfp_purchase_agreement_key', true);
+    $is_purchase_agreement = !empty($purchase_agreement_key);
 
     $students = get_users([
         'orderby' => 'display_name',
@@ -139,22 +141,37 @@ function tfp_student_document_meta_box($post) {
         'fields' => ['ID', 'display_name', 'user_email'],
     ]);
 
-    echo '<p><label><strong>' . esc_html__('Student', 'tfp-dashboard') . '</strong><br>';
-    echo '<select name="tfp_doc_user_id" class="widefat">';
-    echo '<option value="">' . esc_html__('Select Student', 'tfp-dashboard') . '</option>';
+    echo '<p><strong>' . esc_html__('Student', 'tfp-dashboard') . '</strong><br>';
 
-    foreach ($students as $student) {
-        $label = $student->display_name;
-        if (empty($label)) {
-            $label = $student->user_email;
+    if ($is_purchase_agreement) {
+        $student = $user_id ? get_userdata($user_id) : false;
+        $student_label = $student ? ($student->display_name ?: $student->user_email) : __('Unknown student', 'tfp-dashboard');
+        echo '<input type="text" class="widefat" value="' . esc_attr($student_label) . '" readonly>';
+        echo '<input type="hidden" name="tfp_doc_user_id" value="' . esc_attr($user_id) . '">';
+        echo '<span class="description">' . esc_html__('This agreement was created automatically during course purchase. The student is assigned from the purchase and cannot be changed here.', 'tfp-dashboard') . '</span>';
+    } else {
+        echo '<select name="tfp_doc_user_id" class="widefat">';
+        echo '<option value="">' . esc_html__('Select Student', 'tfp-dashboard') . '</option>';
+
+        foreach ($students as $student) {
+            $label = $student->display_name;
+            if (empty($label)) {
+                $label = $student->user_email;
+            }
+
+            echo '<option value="' . esc_attr($student->ID) . '" ' . selected($user_id, $student->ID, false) . '>' . esc_html($label) . '</option>';
         }
 
-        echo '<option value="' . esc_attr($student->ID) . '" ' . selected($user_id, $student->ID, false) . '>' . esc_html($label) . '</option>';
+        echo '</select>';
     }
 
-    echo '</select></label></p>';
+    echo '</p>';
 
-    echo '<p><label><strong>Type</strong><br><input type="text" name="tfp_doc_type" value="' . esc_attr($type) . '" class="regular-text"></label></p>';
+    if ($is_purchase_agreement) {
+        echo '<p><label><strong>Type</strong><br><input type="text" value="' . esc_attr($type) . '" class="regular-text" readonly></label></p>';
+    } else {
+        echo '<p><label><strong>Type</strong><br><input type="text" name="tfp_doc_type" value="' . esc_attr($type) . '" class="regular-text"></label></p>';
+    }
     echo '<p><label><strong>Date issued</strong><br><input type="date" name="tfp_doc_date" value="' . esc_attr($date) . '"></label></p>';
     echo '<p><label><strong>Status</strong><br><select name="tfp_doc_status">';
     foreach (tfp_student_document_statuses() as $key => $label) {
@@ -184,8 +201,20 @@ add_action('save_post_tfp_skip_request', function ($post_id) {
 add_action('save_post_tfp_student_document', function ($post_id) {
     if (!isset($_POST['tfp_student_document_nonce']) || !wp_verify_nonce($_POST['tfp_student_document_nonce'], 'tfp_student_document_save') || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || !current_user_can('edit_post', $post_id)) return;
 
-    $user_id = absint($_POST['tfp_doc_user_id'] ?? 0);
-    $type = sanitize_text_field($_POST['tfp_doc_type'] ?? 'Agreement');
+    $purchase_agreement_key = (string) get_post_meta($post_id, '_tfp_purchase_agreement_key', true);
+    $is_purchase_agreement = !empty($purchase_agreement_key);
+
+    if ($is_purchase_agreement) {
+        // Purchase agreements are owned by the checkout flow. Never allow an
+        // admin edit to reassign the agreement to another student or change
+        // its document type.
+        $user_id = (int) get_post_meta($post_id, '_user_id', true);
+        $type = 'Agreement';
+    } else {
+        $user_id = absint($_POST['tfp_doc_user_id'] ?? 0);
+        $type = sanitize_text_field($_POST['tfp_doc_type'] ?? 'Agreement');
+    }
+
     $date = sanitize_text_field($_POST['tfp_doc_date'] ?? '');
     $status = sanitize_key($_POST['tfp_doc_status'] ?? 'pending');
 
