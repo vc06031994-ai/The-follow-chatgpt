@@ -60,7 +60,10 @@ function tfp_course_cart_cohort_id()
  */
 /**
  * Ensure the two program-purchase agreements exist for this student/cohort.
- * Documents are created as pending until the student signs them in checkout.
+ *
+ * The agreement text is currently a temporary development draft. The final
+ * NDA and Course Agreement wording must be supplied by the client before
+ * production launch; see tfp_course_purchase_agreement_content().
  */
 function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
     $user_id = absint($user_id);
@@ -105,6 +108,13 @@ function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
             update_post_meta($document_id, '_status', 'pending');
             update_post_meta($document_id, '_tfp_purchase_cohort_id', $cohort_id);
             update_post_meta($document_id, '_tfp_purchase_agreement_key', $key);
+
+            // Store the current draft in the CPT so admins can replace it with
+            // the client's final legal content without changing the checkout code.
+            if (function_exists('tfp_course_purchase_agreement_content')) {
+                $draft = tfp_course_purchase_agreement_content($key);
+                update_post_meta($document_id, '_tfp_agreement_content', $draft['body']);
+            }
         }
 
         $rows[] = [
