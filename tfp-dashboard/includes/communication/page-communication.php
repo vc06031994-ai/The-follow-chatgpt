@@ -413,7 +413,7 @@ function tfp_dashboard_render_communication_content()
     <!-- Modal for Starting a New Conversation -->
     <div class="tfp-dash-modal" data-tfp-new-ticket-modal hidden>
         <div class="tfp-dash-modal__backdrop" data-tfp-modal-close></div>
-        <form class="tfp-dash-modal__box" data-tfp-new-ticket-form>
+        <form class="tfp-dash-modal__box tfp-dash-form__fields" data-tfp-new-ticket-form>
             <h3><?php esc_html_e('Start a Conversation', 'tfp-dashboard'); ?></h3>
 
             <label>
@@ -436,8 +436,9 @@ function tfp_dashboard_render_communication_content()
             </label>
 
             <div class="tfp-dash-modal__buttons">
-                <button type="button" class="tfp-dash-btn tfp-dash-btn--outline"
-                    data-tfp-modal-close><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-cancel-btn"
+                    data-tfp-modal-close>
+                    <?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
                 <button type="submit"
                     class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Send Message', 'tfp-dashboard'); ?></button>
             </div>

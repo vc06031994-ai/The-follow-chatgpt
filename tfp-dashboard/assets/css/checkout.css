@@ -885,20 +885,7 @@
     }
 }
 
-.tfp-cancel-btn{
-display: inline-flex !important;
-padding: 12px !important;
-justify-content: center !important;
-align-items: center !important;
-background-color: #ffffff !important;
-color: #151411 !important;
-border: 1px solid #C4C4C4 !important;
-border-radius: 8px !important;
-font-family: var(--tfp-dash-font) !important;
-font-size: 14px !important;
-font-weight: 500 !important;
-line-height: 130% !important;
-}
+
 
 .tfp-save-btn{
 display: inline-flex !important;
