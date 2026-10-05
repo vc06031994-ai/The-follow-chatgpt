@@ -210,6 +210,9 @@ add_action('wp_ajax_nopriv_tfp_stripe_create_intent', 'tfp_stripe_ajax_create_in
 
 function tfp_stripe_ajax_create_intent()
 {
+    if (function_exists('tfp_course_cart_cohort_id') && tfp_course_cart_cohort_id() && function_exists('tfp_course_purchase_agreements_signed') && !tfp_course_purchase_agreements_signed(get_current_user_id())) {
+        wp_send_json(array('success' => false, 'message' => __('Please complete and sign both required agreements before payment.', 'tfp-dashboard')), 400);
+    }
     tfp_checkout_verify_request();
 
     if (!function_exists('WC') || !WC()->cart || WC()->cart->is_empty()) {
