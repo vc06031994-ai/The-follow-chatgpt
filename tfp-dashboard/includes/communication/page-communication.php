@@ -191,7 +191,7 @@ function tfp_dashboard_render_communication_content()
                 </p>
             </div>
         </div>
-        <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="tfp-comm-discord-btn">
+        <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="tfp-comm-discord-btn tfp-dash-btn tfp-dash-btn--primary">
             <?php esc_html_e('Open Discord', 'tfp-dashboard'); ?>
         </a>
     </div>
@@ -397,7 +397,7 @@ function tfp_dashboard_render_communication_content()
                 <form class="tfp-dash-chatpanel__reply" data-tfp-chat-reply id="tfpChatReplyForm">
                     <input type="text" placeholder="<?php esc_attr_e('Type a reply...', 'tfp-dashboard'); ?>"
                         data-tfp-chat-input required autocomplete="off">
-                    <button type="submit" class="tfp-dash-btn-reply">
+                    <button type="submit" class="tfp-dash-btn-reply tfp-dash-btn--primary tfp-dash-btn">
                         <?php esc_html_e('Reply', 'tfp-dashboard'); ?>
                     </button>
                 </form>
@@ -414,7 +414,7 @@ function tfp_dashboard_render_communication_content()
     <div class="tfp-dash-modal" data-tfp-new-ticket-modal hidden>
         <div class="tfp-dash-modal__backdrop" data-tfp-modal-close></div>
         <form class="tfp-dash-modal__box" data-tfp-new-ticket-form>
-            <h2><?php esc_html_e('Start a Conversation', 'tfp-dashboard'); ?></h2>
+            <h3><?php esc_html_e('Start a Conversation', 'tfp-dashboard'); ?></h3>
 
             <label>
                 <?php esc_html_e('Subject', 'tfp-dashboard'); ?>
