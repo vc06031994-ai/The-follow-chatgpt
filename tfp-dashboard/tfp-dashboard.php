@@ -10,7 +10,7 @@
 if (!defined('ABSPATH'))
     exit;
 
-define('TFP_DASH_VERSION', '1.2.10');
+define('TFP_DASH_VERSION', '1.2.11');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
@@ -164,6 +164,7 @@ add_action('wp_enqueue_scripts', function () {
     if ($template === 'tfp-dashboard-home') {
         wp_enqueue_style('tfp-checkout', TFP_DASH_URL . 'assets/css/checkout.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-course-checkout', TFP_DASH_URL . 'assets/css/course-checkout.css', ['tfp-checkout'], TFP_DASH_VERSION);
+        wp_enqueue_style('tfp-dashboard-program', TFP_DASH_URL . 'assets/css/program.css', ['tfp-course-checkout'], TFP_DASH_VERSION);
         wp_enqueue_script('tfp-course-checkout', TFP_DASH_URL . 'assets/js/course-checkout.js', [], TFP_DASH_VERSION, true);
         wp_enqueue_style('tfp-order-details', TFP_DASH_URL . 'assets/css/order-details.css', [], TFP_DASH_VERSION);
         wp_enqueue_style('tfp-order-confirmation', TFP_DASH_URL . 'assets/css/order-confirmation.css', ['tfp-order-details'], TFP_DASH_VERSION);
@@ -304,7 +305,11 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     if ($template === 'tfp-dashboard-program') {
-        wp_enqueue_style('tfp-dashboard-program', TFP_DASH_URL . 'assets/css/program.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
+        // Program cards reuse the existing course-checkout card styles.
+        // program.css only contains the program-specific layout/status refinements.
+        wp_enqueue_style('tfp-checkout', TFP_DASH_URL . 'assets/css/checkout.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
+        wp_enqueue_style('tfp-course-checkout', TFP_DASH_URL . 'assets/css/course-checkout.css', ['tfp-checkout'], TFP_DASH_VERSION);
+        wp_enqueue_style('tfp-dashboard-program', TFP_DASH_URL . 'assets/css/program.css', ['tfp-course-checkout'], TFP_DASH_VERSION);
     }
 
     if ($template === 'tfp-dashboard-grades') {
