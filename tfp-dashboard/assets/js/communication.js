@@ -146,7 +146,9 @@
                     status === state.activeFilter ||
                     category === state.activeFilter;
 
-                item.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+                // communication.css uses !important on ticket items, so an inline
+                // display value cannot hide them reliably. Toggle a dedicated class instead.
+                item.classList.toggle('tfp-ticket-item--filtered', !(matchesSearch && matchesFilter));
             });
         }
 
