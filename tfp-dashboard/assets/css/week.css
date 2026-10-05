@@ -383,9 +383,8 @@
 
 /* Active Reading item — match the Homework active-question card style. */
 .tfp-reading-item.is-active {
-    background: #fff !important;
+    background: #DEE2E2 !important;
     border-color: var(--tfp-dash-teal) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
 .tfp-reading-item.is-completed {
@@ -679,9 +678,9 @@
 }
 
 .tfp-week__homework-list-item.is-active {
-    background: #fff;
+    background: #DEE2E2;
     border-color: var(--tfp-dash-teal);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    
 }
 
 .tfp-week__homework-list-item.is-completed {
