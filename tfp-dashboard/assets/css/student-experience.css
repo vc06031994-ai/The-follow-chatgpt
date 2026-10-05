@@ -153,22 +153,24 @@
 }
 
 .tfp-exp-btn {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
-    padding: 8px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+    padding: 8px 12px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
     text-decoration: none;
     background: #fff;
-    color: #151411;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
+    color: #151411 !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
     line-height: 130%;
 }
 
-.tfp-exp-btn:hover {
-    color: #151411;
+.tfp-exp-btn:hover,
+.tfp-exp-btn:focus {
+    color: #151411 !important;
+    background-color: #f3f4f6 !important;
 }
 
 
