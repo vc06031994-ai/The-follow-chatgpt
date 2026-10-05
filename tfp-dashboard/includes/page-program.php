@@ -20,7 +20,7 @@ function tfp_dashboard_render_program_content()
     tfp_dashboard_render_page_header(
         __('Home', 'tfp-dashboard'),
         sprintf(esc_html__('Welcome, %s', 'tfp-dashboard'), esc_html(tfp_dashboard_user_name())),
-        __('Welcome back. Select a course to continue where you left off or review what you\\'ve completed.', 'tfp-dashboard')
+        __('Welcome back. Select a course to continue where you left off or review what you\'ve completed.', 'tfp-dashboard')
     );
 
     $course_ids = [];
