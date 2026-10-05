@@ -71,11 +71,15 @@ function tfp_dashboard_render_home_content()
         && !empty($_GET['order_key']);
 
     if ($is_enrolled) {
-        // Enrolled Home is intentionally lean: the program card above + the
-        // profile/billing card only. The weekly journey, current lesson, stat
-        // tiles and pending tasks now live on the dedicated "Continue Program"
-        // page (tfp-dashboard-program), reached from the card's button.
-        tfp_dashboard_render_home_task_cards($name, true);
+        // Enrolled students use the full overall dashboard on Home. This is
+        // the same progress/task dashboard used by the enrolled experience,
+        // rather than the pre-enrollment program/profile card.
+        if (function_exists('tfp_dashboard_render_program_content')) {
+            tfp_dashboard_render_program_content();
+        } else {
+            tfp_dashboard_render_home_task_cards($name, true);
+        }
+
         if ($has_order_confirmation && function_exists('tfp_course_render_order_confirmation_modal')) {
             tfp_course_render_order_confirmation_modal();
         }
