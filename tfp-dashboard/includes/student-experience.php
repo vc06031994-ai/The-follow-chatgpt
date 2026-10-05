@@ -518,9 +518,8 @@ function tfp_dashboard_build_document_pdf($title, $meta_lines, $body) {
         $stream = "BT\n";
         foreach ($page as $line) {
             $stream .= '/F1 ' . $line['size'] . " Tf\n";
-            $stream .= '54 ' . $line['y'] . " Td\n";
+            $stream .= '1 0 0 1 54 ' . $line['y'] . " Tm\n";
             $stream .= '(' . $escape($line['text']) . ") Tj\n";
-            $stream .= '0 0 Td' . "\n";
         }
         $stream .= "ET\n";
         $objects[$content_id] = '<< /Length ' . strlen($stream) . " >>\nstream\n" . $stream . 'endstream';
