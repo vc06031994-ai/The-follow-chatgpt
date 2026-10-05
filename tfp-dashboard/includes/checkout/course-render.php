@@ -97,6 +97,13 @@ function tfp_course_render_checkout_modal($state = null)
         'street' => '', 'apt' => '', 'city' => '', 'state' => '', 'postcode' => '',
     ];
 
+    $nda_agreement = function_exists('tfp_course_purchase_agreement_content')
+        ? tfp_course_purchase_agreement_content('nda')
+        : ['title' => __('NDA', 'tfp-dashboard'), 'body' => __('Agreement content is not available yet.', 'tfp-dashboard')];
+    $course_agreement = function_exists('tfp_course_purchase_agreement_content')
+        ? tfp_course_purchase_agreement_content('course_agreement')
+        : ['title' => __('Course Agreement', 'tfp-dashboard'), 'body' => __('Agreement content is not available yet.', 'tfp-dashboard')];
+
     $steps = [
         'agreements' => __('Agreements', 'tfp-dashboard'),
         'contact' => __('Contact', 'tfp-dashboard'),
@@ -226,8 +233,8 @@ function tfp_course_render_checkout_modal($state = null)
                             <div class="tfp-course-agreements-list" id="tfp-course-agreements-list">
                                 <div class="tfp-course-agreement-card" data-agreement-key="nda">
                                     <div class="tfp-course-agreement-card__copy">
-                                        <h4><?php esc_html_e('NDA', 'tfp-dashboard'); ?></h4>
-                                        <p><?php esc_html_e('Non-Disclosure Agreement. Please review the agreement provided by the program administrator before signing.', 'tfp-dashboard'); ?></p>
+                                        <h4><?php echo esc_html($nda_agreement['title']); ?></h4>
+                                        <div class="tfp-course-agreement-content"><?php echo wpautop(esc_html($nda_agreement['body'])); ?></div>
                                     </div>
                                     <div class="tfp-course-agreement-card__action">
                                         <label for="tfp-course-agreement-signature-nda">
@@ -242,8 +249,8 @@ function tfp_course_render_checkout_modal($state = null)
                                 </div>
                                 <div class="tfp-course-agreement-card" data-agreement-key="course_agreement">
                                     <div class="tfp-course-agreement-card__copy">
-                                        <h4><?php esc_html_e('Course Agreement', 'tfp-dashboard'); ?></h4>
-                                        <p><?php esc_html_e('Course Agreement. Please review the agreement provided by the program administrator before signing.', 'tfp-dashboard'); ?></p>
+                                        <h4><?php echo esc_html($course_agreement['title']); ?></h4>
+                                        <div class="tfp-course-agreement-content"><?php echo wpautop(esc_html($course_agreement['body'])); ?></div>
                                     </div>
                                     <div class="tfp-course-agreement-card__action">
                                         <label for="tfp-course-agreement-signature-course">
