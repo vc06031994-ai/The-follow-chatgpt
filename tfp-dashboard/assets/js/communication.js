@@ -422,15 +422,10 @@
             }
 
             function renderSelected(state) {
-                if (!state.id) return state.text;
-
-                var wrap = jQuery('<span class="tfp-select-category-selection"></span>');
-                var dot = jQuery('<span class="tfp-select-category-dot"></span>');
-                dot.addClass('tfp-select-category-dot--' + dotClass(state.id));
-
-                wrap.append(dot);
-                wrap.append(document.createTextNode(state.text || ''));
-                return wrap;
+                // SelectWoo expects a text/HTML value here; returning a jQuery object
+                // causes the native SelectWoo renderer to display "[object Object]".
+                // The selected value intentionally has no category dot.
+                return state.text || '';
             }
 
             jQuery(categorySelect).selectWoo({
