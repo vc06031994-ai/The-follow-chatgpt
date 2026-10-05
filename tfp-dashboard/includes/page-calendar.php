@@ -134,7 +134,7 @@ function tfp_dashboard_render_calendar_content() {
           <form>
             <label>Date<input type="date" name="skip_date" required></label>
             <input type="hidden" name="skip_cohort" value="<?php echo esc_attr($cohort['id']??0); ?>">
-            <label>Reason<select name="reason" required><option value="">Select a reason</option><option value="Travel">Travel</option><option value="Personal">Personal</option><option value="Work">Work</option><option value="Illness">Illness</option><option value="Other">Other</option></select></label>
+            <label>Reason<select name="reason" class="tfp-calendar-reason-select" required><option value="">Select a reason</option><option value="Travel">Travel</option><option value="Personal">Personal</option><option value="Work">Work</option><option value="Illness">Illness</option><option value="Other">Other</option></select></label>
             <label>Additional notes<textarea name="notes" rows="4"></textarea></label>
             <div class="tfp-exp-modal__actions"><button type="button" class="tfp-cancel-btn " data-close-modal>Cancel</button><button type="submit" class="tfp-dash-btn tfp-dash-btn--primary">Submit Request</button></div>
             <div data-form-status aria-live="polite"></div>
