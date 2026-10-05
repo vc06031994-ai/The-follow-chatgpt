@@ -98,14 +98,17 @@ function tfp_course_render_checkout_modal($state = null)
     ];
 
     $steps = [
+        'agreements' => __('Agreements', 'tfp-dashboard'),
         'contact' => __('Contact', 'tfp-dashboard'),
         'payment' => __('Payment', 'tfp-dashboard'),
     ];
     $step_titles = [
+        'agreements' => __('Required Agreements', 'tfp-dashboard'),
         'contact' => __('Contact Information', 'tfp-dashboard'),
         'payment' => __('Payment Details', 'tfp-dashboard'),
     ];
     $step_subtitles = [
+        'agreements' => __('Please review and sign both required agreements before continuing.', 'tfp-dashboard'),
         'contact' => __('Please provide your contact information.', 'tfp-dashboard'),
         'payment' => __('Choose your payment method and complete your enrollment.', 'tfp-dashboard'),
     ];
@@ -210,12 +213,52 @@ function tfp_course_render_checkout_modal($state = null)
                 </div>
 
                 <div class="tfp-checkout-title-header">
-                    <h1 class="tfp-checkout-page-title" id="tfp-course-checkout-title"><?php echo esc_html($step_titles['contact']); ?></h1>
-                    <p class="tfp-checkout-subtitle"><?php echo esc_html($step_subtitles['contact']); ?></p>
+                    <h1 class="tfp-checkout-page-title" id="tfp-course-checkout-title"><?php echo esc_html($step_titles['agreements']); ?></h1>
+                    <p class="tfp-checkout-subtitle"><?php echo esc_html($step_subtitles['agreements']); ?></p>
                 </div>
 
                 <div class="tfp-checkout-layout">
                     <div class="tfp-checkout-main-column">
+                        <div class="tfp-checkout-panel tfp-course-agreements-panel" data-step="agreements">
+                            <div class="tfp-course-step-header"><?php esc_html_e('Step 1 of 3', 'tfp-dashboard'); ?></div>
+                            <div class="tfp-course-step-subheader"><?php esc_html_e('Required Agreements', 'tfp-dashboard'); ?></div>
+                            <p class="tfp-course-agreements-intro"><?php esc_html_e('Both agreements must be signed before you can continue to contact information and payment.', 'tfp-dashboard'); ?></p>
+                            <div class="tfp-course-agreements-list" id="tfp-course-agreements-list">
+                                <div class="tfp-course-agreement-card" data-agreement-key="nda">
+                                    <div class="tfp-course-agreement-card__copy">
+                                        <h4><?php esc_html_e('NDA', 'tfp-dashboard'); ?></h4>
+                                        <p><?php esc_html_e('Non-Disclosure Agreement. Please review the agreement provided by the program administrator before signing.', 'tfp-dashboard'); ?></p>
+                                    </div>
+                                    <div class="tfp-course-agreement-card__action">
+                                        <label>
+                                            <span><?php esc_html_e('Full name / signature', 'tfp-dashboard'); ?></span>
+                                            <input type="text" class="tfp-course-agreement-signature" data-agreement-signature="nda" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
+                                        </label>
+                                        <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="nda"><?php esc_html_e('Sign NDA', 'tfp-dashboard'); ?></button>
+                                        <span class="tfp-course-agreement-status" data-agreement-status="nda" aria-live="polite"></span>
+                                    </div>
+                                </div>
+                                <div class="tfp-course-agreement-card" data-agreement-key="course_agreement">
+                                    <div class="tfp-course-agreement-card__copy">
+                                        <h4><?php esc_html_e('Course Agreement', 'tfp-dashboard'); ?></h4>
+                                        <p><?php esc_html_e('Course Agreement. Please review the agreement provided by the program administrator before signing.', 'tfp-dashboard'); ?></p>
+                                    </div>
+                                    <div class="tfp-course-agreement-card__action">
+                                        <label>
+                                            <span><?php esc_html_e('Full name / signature', 'tfp-dashboard'); ?></span>
+                                            <input type="text" class="tfp-course-agreement-signature" data-agreement-signature="course_agreement" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
+                                        </label>
+                                        <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="course_agreement"><?php esc_html_e('Sign Course Agreement', 'tfp-dashboard'); ?></button>
+                                        <span class="tfp-course-agreement-status" data-agreement-status="course_agreement" aria-live="polite"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tfp-course-checkout-error" id="tfp-course-agreement-error" role="alert"></div>
+                            <div class="tfp-checkout-actions">
+                                <button type="button" class="tfp-dash-btn tfp-dash--secondary" data-tfp-open-cohorts><?php esc_html_e('Back to Cohort', 'tfp-dashboard'); ?></button>
+                                <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-continue-agreements" disabled><?php esc_html_e('Continue to Contact', 'tfp-dashboard'); ?></button>
+                            </div>
+                        </div>
                         <?php
                         tfp_course_render_contact_panel($data);
                         tfp_course_render_payment_panel();
@@ -241,7 +284,7 @@ function tfp_course_render_contact_panel($data)
     ?>
     <div class="tfp-checkout-panel tfp-contact-panel" data-step="contact" style="display:flex; flex-direction:column; gap:24px;">
         <div class="tfp-checkout-step-shell" style="display:block;">
-            <div class="tfp-course-step-header"><?php esc_html_e('Step 1 of 2', 'tfp-dashboard'); ?></div>
+            <div class="tfp-course-step-header"><?php esc_html_e('Step 2 of 3', 'tfp-dashboard'); ?></div>
             <div class="tfp-course-step-subheader"><?php esc_html_e('Contact Information', 'tfp-dashboard'); ?></div>
 
             <div class="tfp-checkout-section-block">
@@ -297,7 +340,7 @@ function tfp_course_render_payment_panel()
 {
     ?>
     <div class="tfp-checkout-panel tfp-checkout-step-shell" data-step="payment" style="display:none;">
-        <div class="tfp-course-step-header"><?php esc_html_e('Step 2 of 2', 'tfp-dashboard'); ?></div>
+        <div class="tfp-course-step-header"><?php esc_html_e('Step 3 of 3', 'tfp-dashboard'); ?></div>
         <div class="tfp-course-step-subheader"><?php esc_html_e('Payment Details', 'tfp-dashboard'); ?></div>
         <h6 class="tfp-course-pay-heading"><?php esc_html_e('Choose a Payment Method', 'tfp-dashboard'); ?></h6>
 
