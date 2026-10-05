@@ -748,3 +748,10 @@
 .select2-container--default .select2-results .tfp-select-category-dot {
     display: none !important;
 }
+
+/* New CSS: Select2 results option font size and weight. */
+.select2-results__option {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 130% !important;
+}
