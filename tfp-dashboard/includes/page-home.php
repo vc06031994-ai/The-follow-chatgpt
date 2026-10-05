@@ -75,7 +75,7 @@ function tfp_dashboard_render_home_content()
         // the same progress/task dashboard used by the enrolled experience,
         // rather than the pre-enrollment program/profile card.
         if (function_exists('tfp_dashboard_render_program_content')) {
-            tfp_dashboard_render_program_content();
+            tfp_dashboard_render_overall_dashboard_content();
         } else {
             tfp_dashboard_render_home_task_cards($name, true);
         }
