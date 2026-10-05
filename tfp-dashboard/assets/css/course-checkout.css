@@ -120,12 +120,12 @@ body.tfp-course-modal-open {
 }
 
 .tfp-course-agreement-input-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(120px, 143px);
+    display: inline-flex;
     align-items: stretch;
     gap: 12px;
     width: 100%;
     min-width: 0;
+    flex-wrap: wrap;
 }
 
 .tfp-course-agreement-signature {
