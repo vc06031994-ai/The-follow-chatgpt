@@ -25,7 +25,7 @@ function tfp_dashboard_render_calendar_content() {
         </button>
         <div class="tfp-dash-pageheader__crumb" style="margin-bottom:8px"><a href="<?php echo esc_url(home_url('/')); ?>">Discipleship</a><span aria-hidden="true">/</span><span class="tfp-dash-pageheader__current">Calendar</span></div>
         <h2 class="tfp-dash-pageheader__title">My Calendar</h2>
-        <p class="tfp-dash-pageheader__subtitle">View your upcoming meetings, off days, and skip requests.</p>
+        <p class="tfp-dash-pageheader__subtitle" style="color:#151411;">View your upcoming meetings, off days, and skip requests.</p>
       </div>
       <div class="tfp-cal-skip-action"><a href="#" class="tfp-cal-btn-skip tfp-dash-btn tfp-dash-btn--primary" data-open-skip data-date="" data-cohort="<?php echo esc_attr($cohort['id']??0); ?>"><span aria-hidden="true">+</span> Request a Skip</a></div>
 

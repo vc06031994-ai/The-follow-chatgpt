@@ -57,7 +57,8 @@
 
 .tfp-exp-modal input,
 .tfp-exp-modal textarea,
-.tfp-exp-modal select {
+.tfp-exp-modal select,
+.tfp-exp-modal input[type=date] {
     width: 100%;
     margin-top: 6px;
     padding: 10px 12px;

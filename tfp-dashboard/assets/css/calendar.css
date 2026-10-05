@@ -27,7 +27,6 @@
 .tfp-cal-tabs {
     display: flex;
     width: 100%;
-    gap: 32px;
     border-bottom: 2px solid #E5E7EB;
     margin-bottom: 24px;
     margin-top: 24px;
@@ -42,6 +41,8 @@
     color: #C4C4C4;
     margin-bottom: -2px;
     border-bottom: 2px solid transparent;
+    padding-right:20px;
+    padding-left:20px;
     transition: color 0.2s ease, border-color 0.2s ease;
 }
 
