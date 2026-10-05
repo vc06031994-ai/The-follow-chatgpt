@@ -152,7 +152,8 @@
 .tfp-exp-actions {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap
+    flex-wrap: wrap;
+    align-items:center;
 }
 
 .tfp-exp-btn {
