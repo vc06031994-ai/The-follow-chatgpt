@@ -42,6 +42,15 @@
       cal.querySelectorAll('[data-calendar-date]').forEach(function (cell) { cell.addEventListener('click', function () { cal.querySelectorAll('.tfp-cal-day.is-active').forEach(function (x) { x.classList.remove('is-active'); }); cell.classList.add('is-active'); showDay(cell.dataset.calendarDate); }); });
       cal.querySelectorAll('[data-open-skip]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); openSkip(b.dataset.date || '', b.dataset.cohort || ''); }); });
       cal.querySelectorAll('[data-close-modal]').forEach(function (b) { b.addEventListener('click', function () { b.closest('.tfp-exp-modal').classList.remove('is-open'); }); });
+      // Match the Communication page: use WooCommerce SelectWoo for the skip reason dropdown.
+      var reasonSelect = skipModal && skipModal.querySelector('.tfp-calendar-reason-select');
+      if (reasonSelect && window.jQuery && jQuery.fn.selectWoo) {
+        jQuery(reasonSelect).selectWoo({
+          width: '100%',
+          dropdownCssClass: 'tfp-calendar-select-dropdown'
+        });
+      }
+
       var form = skipModal && skipModal.querySelector('form');
       if (form) form.addEventListener('submit', function (e) { e.preventDefault(); var status = form.querySelector('[data-form-status]'); status.textContent = 'Submitting…'; post('tfp_skip_request', { date: form.querySelector('[name="skip_date"]').value, cohort_id: form.querySelector('[name="skip_cohort"]').value, reason: form.querySelector('[name="reason"]').value, notes: form.querySelector('[name="notes"]').value }).then(function (r) { status.textContent = r.success ? (r.data.message || 'Submitted.') : (r.data && r.data.message || 'Unable to submit.'); if (r.success) { setTimeout(function () { location.reload(); }, 600); } }); });
     }
