@@ -766,3 +766,56 @@
     background: #847230 !important;
     color: #fff !important;
 }
+
+
+/* =========================================================================
+   My Requests — Revoke action + confirmation modal
+   ========================================================================= */
+.tfp-cal-revoke {
+    transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease !important;
+}
+.tfp-cal-revoke:hover,
+.tfp-cal-revoke:focus-visible {
+    background: #AF1E2D !important;
+    border-color: #AF1E2D !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(175, 30, 45, .16) !important;
+    outline: none;
+}
+.tfp-cal-requests-table td:last-child {
+    text-align: center;
+}
+.tfp-cal-request-reason {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.tfp-cal-revoke-modal[hidden] {
+    display: none !important;
+}
+.tfp-cal-revoke-modal.is-open {
+    display: flex !important;
+}
+.tfp-cal-revoke-modal__box {
+    max-width: 440px;
+}
+.tfp-cal-revoke-modal__box p {
+    margin: 0;
+    color: var(--tfp-dash-muted);
+    font-family: var(--tfp-dash-font);
+    font-size: 14px;
+    line-height: 1.6;
+}
+.tfp-cal-revoke-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+.tfp-cal-revoke-modal__status {
+    min-height: 18px;
+    margin-top: 2px;
+    color: var(--tfp-dash-muted);
+    font-size: 12px;
+}
