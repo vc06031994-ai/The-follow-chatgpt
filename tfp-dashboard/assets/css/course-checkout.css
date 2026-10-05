@@ -19,6 +19,111 @@ body.tfp-course-modal-open {
 }
 
 /* -------------------------------------------------------------------------
+ * Required course-purchase agreements
+ * ---------------------------------------------------------------------- */
+
+.tfp-course-agreements-panel {
+    display: block;
+}
+
+.tfp-course-agreements-intro {
+    margin: 8px 0 18px;
+    color: var(--tfp-dash-muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.tfp-course-agreements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tfp-course-agreement-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid var(--tfp-dash-border);
+    border-radius: var(--tfp-dash-radius);
+}
+
+.tfp-course-agreement-card.is-signed {
+    border-color: var(--tfp-dash-teal);
+}
+
+.tfp-course-agreement-card__copy {
+    min-width: 0;
+}
+
+.tfp-course-agreement-card__copy h4 {
+    margin: 0;
+    color: var(--tfp-dash-text);
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.tfp-course-agreement-card__copy p {
+    margin: 6px 0 0;
+    color: var(--tfp-dash-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.tfp-course-agreement-card__action {
+    width: min(280px, 100%);
+    flex: 0 0 280px;
+}
+
+.tfp-course-agreement-card__action label {
+    display: block;
+    margin: 0 0 8px;
+}
+
+.tfp-course-agreement-card__action label > span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--tfp-dash-text);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tfp-course-agreement-signature {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tfp-course-sign-agreement {
+    width: 100%;
+}
+
+.tfp-course-agreement-status {
+    display: block;
+    min-height: 18px;
+    margin-top: 6px;
+    color: var(--tfp-dash-teal);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tfp-course-agreement-status.is-signed {
+    color: var(--tfp-dash-teal);
+}
+
+@media (max-width: 700px) {
+    .tfp-course-agreement-card {
+        flex-direction: column;
+    }
+
+    .tfp-course-agreement-card__action {
+        width: 100%;
+        flex-basis: auto;
+    }
+}
+
+/* -------------------------------------------------------------------------
  * Modal shell — size variants + close button
  * ---------------------------------------------------------------------- */
 
