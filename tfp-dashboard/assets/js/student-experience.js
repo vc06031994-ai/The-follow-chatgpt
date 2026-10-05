@@ -53,6 +53,62 @@
 
       var form = skipModal && skipModal.querySelector('form');
       if (form) form.addEventListener('submit', function (e) { e.preventDefault(); var status = form.querySelector('[data-form-status]'); status.textContent = 'Submitting…'; post('tfp_skip_request', { date: form.querySelector('[name="skip_date"]').value, cohort_id: form.querySelector('[name="skip_cohort"]').value, reason: form.querySelector('[name="reason"]').value, notes: form.querySelector('[name="notes"]').value }).then(function (r) { status.textContent = r.success ? (r.data.message || 'Submitted.') : (r.data && r.data.message || 'Unable to submit.'); if (r.success) { setTimeout(function () { location.reload(); }, 600); } }); });
+
+      var revokeModal = cal.querySelector('[data-revoke-modal]');
+      var revokeId = 0;
+      function closeRevokeModal() {
+        if (!revokeModal) return;
+        revokeModal.hidden = true;
+        revokeModal.classList.remove('is-open');
+        var status = revokeModal.querySelector('[data-revoke-status]');
+        if (status) status.textContent = '';
+        revokeId = 0;
+      }
+      function openRevokeModal(id) {
+        if (!revokeModal) return;
+        revokeId = parseInt(id, 10) || 0;
+        if (!revokeId) return;
+        revokeModal.hidden = false;
+        revokeModal.classList.add('is-open');
+        var status = revokeModal.querySelector('[data-revoke-status]');
+        if (status) status.textContent = '';
+      }
+      cal.querySelectorAll('.tfp-cal-revoke[data-request-id]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          openRevokeModal(button.dataset.requestId);
+        });
+      });
+      revokeModal && revokeModal.querySelectorAll('[data-close-revoke]').forEach(function (button) {
+        button.addEventListener('click', closeRevokeModal);
+      });
+      var confirmRevoke = revokeModal && revokeModal.querySelector('[data-confirm-revoke]');
+      if (confirmRevoke) confirmRevoke.addEventListener('click', function () {
+        if (!revokeId) return;
+        var status = revokeModal.querySelector('[data-revoke-status]');
+        confirmRevoke.disabled = true;
+        if (status) status.textContent = 'Revoking…';
+        post('tfp_skip_revoke', { request_id: revokeId }).then(function (r) {
+          if (!r.success) {
+            if (status) status.textContent = r.data && r.data.message || 'Unable to revoke this request.';
+            confirmRevoke.disabled = false;
+            return;
+          }
+          var row = cal.querySelector('.tfp-cal-revoke[data-request-id="' + revokeId + '"]');
+          if (row) {
+            var tr = row.closest('tr');
+            var badge = tr && tr.querySelector('.tfp-cal-request-status');
+            if (badge) {
+              badge.textContent = 'Cancelled';
+              badge.className = 'tfp-cal-request-status tfp-cal-request-status--cancelled';
+            }
+            row.remove();
+          }
+          closeRevokeModal();
+        }).catch(function () {
+          if (status) status.textContent = 'Unable to revoke this request.';
+          confirmRevoke.disabled = false;
+        });
+      });
     }
     if (docs) {
       docs.querySelectorAll('[data-sign-document]').forEach(function (b) { b.addEventListener('click', function () { var modal = docs.querySelector('[data-document-modal]'); modal.classList.add('is-open'); modal.querySelector('[name="document_id"]').value = b.dataset.signDocument; modal.querySelector('[data-doc-title]').textContent = b.dataset.title || 'Document'; modal.querySelector('[name="signature"]').value = ''; }); });
