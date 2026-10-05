@@ -37,7 +37,11 @@ function tfp_dashboard_render_documents_content() {
               <td><?php echo esc_html($row['date']?date_i18n(get_option('date_format'),strtotime($row['date'])):'—'); ?></td>
               <td><span class="tfp-exp-badge"><?php echo esc_html(ucwords(str_replace('_',' ',$row['status']))); ?></span></td>
               <td><div class="tfp-exp-actions">
-                <?php if(!empty($row['url'])): ?><a class="tfp-exp-btn" href="<?php echo esc_url($row['url']); ?>" target="_blank" rel="noopener"><?php echo $active_tab==='receipts'?'View Receipt':'View / Download'; ?></a><?php endif; ?>
+                <?php if($active_tab==='receipts' && !empty($row['id'])): ?>
+                  <button type="button" class="tfp-exp-btn tfp-view-order-btn" data-order-id="<?php echo esc_attr($row['id']); ?>"><?php esc_html_e('View Receipt', 'tfp-dashboard'); ?></button>
+                <?php elseif(!empty($row['url'])): ?>
+                  <a class="tfp-exp-btn" href="<?php echo esc_url($row['url']); ?>" target="_blank" rel="noopener"><?php echo esc_html__('View / Download', 'tfp-dashboard'); ?></a>
+                <?php endif; ?>
                 <?php if($active_tab==='agreements' && in_array($row['status'],['pending','active'],true)): ?><button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-sign-document="<?php echo esc_attr($row['id']); ?>" data-title="<?php echo esc_attr($row['title']); ?>">Sign</button><?php elseif($active_tab==='agreements' && $row['status']==='signed'): ?><span class="tfp-exp-muted">Signed <?php echo !empty($row['signed_at'])?esc_html(date_i18n(get_option('date_format'),strtotime($row['signed_at']))):''; ?></span><?php endif; ?>
               </div></td>
             </tr>
@@ -46,6 +50,17 @@ function tfp_dashboard_render_documents_content() {
         </table></div>
         <?php else: ?><div class="tfp-exp-empty">No <?php echo esc_html(strtolower($tabs[$active_tab])); ?> available yet.</div><?php endif; ?>
       </div>
+
+      <?php if($active_tab==='receipts'): ?>
+        <!-- Reuse the existing TFP Authentication order slide-over for receipt details. -->
+        <div class="tfp-slide-over-backdrop" id="tfp-order-slide-backdrop"></div>
+        <div class="tfp-order-slide-over" id="tfp-order-slide-over">
+          <div class="tfp-slide-over-content" id="tfp-order-slide-content"></div>
+          <div class="tfp-slide-over-loader" id="tfp-order-slide-loader" style="display:none;">
+            <div class="tfp-spinner"></div>
+          </div>
+        </div>
+      <?php endif; ?>
 
       <div class="tfp-exp-modal" data-document-modal>
         <div class="tfp-exp-modal__box">
