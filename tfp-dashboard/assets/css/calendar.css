@@ -734,6 +734,7 @@
     line-height: 44px !important;
     padding-left: 16px !important;
     padding-right: 44px !important;
+    font-weight: 500 !important;
 }
 
 .tfp-exp-modal .select2-container--default .select2-selection--single .select2-selection__arrow {
