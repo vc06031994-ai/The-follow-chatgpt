@@ -17,12 +17,6 @@ function tfp_dashboard_render_program_content()
         ? tfp_dashboard_get_url('tfp-dashboard-program')
         : '#';
 
-    tfp_dashboard_render_page_header(
-        __('Home', 'tfp-dashboard'),
-        sprintf(esc_html__('Welcome, %s', 'tfp-dashboard'), esc_html(tfp_dashboard_user_name())),
-        __('Welcome back. Select a course to continue where you left off or review what you\'ve completed.', 'tfp-dashboard')
-    );
-
     $course_ids = [];
 
     if (function_exists('learndash_user_get_enrolled_courses')) {
@@ -45,6 +39,12 @@ function tfp_dashboard_render_program_content()
         tfp_dashboard_render_program_course_detail($requested_course_id);
         return;
     }
+
+    tfp_dashboard_render_page_header(
+        __('Programs', 'tfp-dashboard'),
+        sprintf(esc_html__('Welcome, %s', 'tfp-dashboard'), esc_html(tfp_dashboard_user_name())),
+        __('Welcome back. Select a course to continue where you left off or review what you\'ve completed.', 'tfp-dashboard')
+    );
 
     if (empty($course_ids)) {
         ?>
