@@ -140,7 +140,7 @@ function tfp_program_overdue_weeks($user_id, $course_id, $state)
 }
 
 /**
- * Gather all pending tasks for the student or staff member.
+ * Gather all pending student tasks for the current program timeline.
  * Returns an array of task items:
  * [
  *     'id'         => string,
@@ -168,7 +168,6 @@ function tfp_program_get_pending_tasks($user_id, $course_id, $state)
         return $tasks;
     }
 
-    $is_staff = function_exists('tfp_dashboard_user_is_staff') && tfp_dashboard_user_is_staff($user_id);
     $overdue_weeks = tfp_program_overdue_weeks($user_id, $course_id, $state);
 
     // 1. Overdue Homework Tasks
@@ -250,53 +249,48 @@ function tfp_program_get_pending_tasks($user_id, $course_id, $state)
             }
         }
 
-        // Attendance confirmation
-        $attendance = get_user_meta($user_id, 'tfp_week_meeting_attendance_' . $week->ID, true);
-        if (!$attendance) {
-            $tasks[] = [
-                'id' => 'meeting_att_' . $week->ID,
-                'title' => $week_num === $current_week_num
-                    ? __('Confirm Weekly Meeting Attendance', 'tfp-dashboard')
-                    : sprintf(__('Confirm Attendance – Week %d', 'tfp-dashboard'), $week_num),
-                'meta' => $cohort_name ?: sprintf(__('Week %d Meeting', 'tfp-dashboard'), $week_num),
-                'btn_text' => __('Update', 'tfp-dashboard'),
-                'btn_type' => 'gray',
-                'url' => add_query_arg(['lesson_id' => $week->ID, 'tab' => 'meeting', 'sub' => 'attendance'], $week_url),
-                'is_overdue' => ($week_num < $current_week_num),
-                'type' => 'attendance',
-            ];
-        }
-
-        // Weekly meeting notes
-        $notes = trim((string) get_user_meta($user_id, 'tfp_week_meeting_notes_' . $week->ID, true));
-        if ($notes === '') {
-            $tasks[] = [
-                'id' => 'meeting_notes_' . $week->ID,
-                'title' => $week_num === $current_week_num
-                    ? __('Submit Weekly Meetings Notes', 'tfp-dashboard')
-                    : sprintf(__('Submit Notes – Week %d', 'tfp-dashboard'), $week_num),
-                'meta' => $cohort_name ?: sprintf(__('Week %d Reflection', 'tfp-dashboard'), $week_num),
-                'btn_text' => __('Action', 'tfp-dashboard'),
-                'btn_type' => 'teal',
-                'url' => add_query_arg(['lesson_id' => $week->ID, 'tab' => 'meeting', 'sub' => 'notes'], $week_url),
-                'is_overdue' => ($week_num < $current_week_num),
-                'type' => 'notes',
-            ];
-        }
-    }
-
-    // 3. Current Week In-Progress Homework (if not already overdue)
+    // 3. Current-week student work: Reading + Homework.
+    // These are student tasks that should be completed before the next
+    // weekly meeting. Facilitator-owned attendance/meeting-note tasks are
+    // intentionally excluded from this list.
     if ($current_week_num > 0 && $current_week_num <= $total_weeks) {
         $cur_week = $weeks[$current_week_num - 1];
         $cur_progress = function_exists('tfp_ld_get_week_progress') ? tfp_ld_get_week_progress($user_id, $cur_week->ID) : [];
-        $already_overdue = false;
-        foreach ($overdue_weeks as $ow) {
-            if ($ow['week']->ID === $cur_week->ID) {
-                $already_overdue = true;
-                break;
+
+        // Reading: show the task until every reading assigned to this week
+        // has been completed by the student.
+        $readings = get_posts([
+            'post_type'      => 'tfp_reading',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'meta_key'       => '_tfp_lesson_id',
+            'meta_value'     => $cur_week->ID,
+            'orderby'        => 'menu_order',
+            'order'          => 'ASC',
+        ]);
+
+        if (!empty($readings)) {
+            $completed_readings = get_user_meta($user_id, 'tfp_reading_progress_' . $cur_week->ID, true);
+            $completed_readings = is_array($completed_readings) ? $completed_readings : [];
+            $reading_ids = wp_list_pluck($readings, 'ID');
+            $completed_readings = array_intersect($reading_ids, $completed_readings);
+
+            if (count($completed_readings) < count($reading_ids)) {
+                $tasks[] = [
+                    'id' => 'current_reading_' . $cur_week->ID,
+                    'title' => sprintf(__('Week %d Reading', 'tfp-dashboard'), $current_week_num),
+                    'meta' => $cohort_name ?: $cur_week->post_title,
+                    'btn_text' => __('Review', 'tfp-dashboard'),
+                    'btn_type' => 'teal',
+                    'url' => add_query_arg(['lesson_id' => $cur_week->ID, 'tab' => 'reading'], $week_url),
+                    'is_overdue' => false,
+                    'type' => 'reading',
+                ];
             }
         }
-        if (!$already_overdue && empty($cur_progress['homework'])) {
+
+        // Homework: show until the current week's homework has been submitted.
+        if (empty($cur_progress['homework'])) {
             $tasks[] = [
                 'id' => 'current_hw_' . $cur_week->ID,
                 'title' => sprintf(__('Week %d Homework', 'tfp-dashboard'), $current_week_num),
@@ -308,20 +302,6 @@ function tfp_program_get_pending_tasks($user_id, $course_id, $state)
                 'type' => 'homework',
             ];
         }
-    }
-
-    // 4. Staff / Facilitator tasks
-    if ($is_staff) {
-        $tasks[] = [
-            'id' => 'fac_follow_up',
-            'title' => __('Follow up on Students Falling Behind', 'tfp-dashboard'),
-            'meta' => $cohort_name ?: __('Enrolled Cohort', 'tfp-dashboard'),
-            'btn_text' => __('Review', 'tfp-dashboard'),
-            'btn_type' => 'teal',
-            'url' => admin_url('admin.php?page=tfp-grades'),
-            'is_overdue' => false,
-            'type' => 'staff',
-        ];
     }
 
     return apply_filters('tfp_program_pending_tasks', $tasks, $user_id, $course_id, $state);
