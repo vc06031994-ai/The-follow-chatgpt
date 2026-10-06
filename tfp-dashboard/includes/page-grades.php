@@ -584,81 +584,66 @@ function tfp_grades_score_to_letter($pct)
 function tfp_grades_get_weeks_data($user_id, $course_id)
 {
     $weeks = ($course_id && function_exists('tfp_ld_get_weeks')) ? tfp_ld_get_weeks($course_id) : [];
-
-    // Fallback titles matching discipleship curriculum if fewer than 58 lessons exist
-    $fallback_titles = [
-        1 => 'Sin — The Beginning',
-        2 => 'Sin — The Beginning',
-        3 => 'Sin — Death Conquered',
-        4 => 'Salvation — The Need',
-        5 => 'Salvation — Justification',
-        6 => 'Salvation — Assurance',
-        7 => 'Holy Spirit — Person and Power',
-        8 => 'Holy Spirit — Fruit of the Spirit',
-        9 => 'Holy Spirit — Walking in Truth',
-        10 => 'Holy Spirit — Guided by Wisdom',
-        11 => 'Holy Spirit — Spiritual Gifts',
-        12 => 'Holy Spirit — Living in Fellowship',
-        13 => 'Imitating Jesus — Servant Leadership',
-        14 => 'Imitating Jesus — Compassion & Grace',
-    ];
-
-    $total_count = max(58, count($weeks));
     $data = [];
 
-    // Figma initial mock values for top 4 weeks matching screenshot exactly
-    $mock_grades = [
-        1 => ['attendance' => 'PRE', 'homework' => 'B', 'quiz' => 'B', 'test' => 'A', 'overall' => 'A', 'action' => 'View'],
-        2 => ['attendance' => 'PRE', 'homework' => 'B', 'quiz' => 'C', 'test' => 'A', 'overall' => 'A', 'action' => 'Add'],
-        3 => ['attendance' => 'PRE', 'homework' => 'D', 'quiz' => 'C', 'test' => 'B', 'overall' => 'B', 'action' => 'View'],
-        4 => ['attendance' => 'PRE', 'homework' => 'C', 'quiz' => 'B', 'test' => 'A', 'overall' => 'A', 'action' => 'View'],
-    ];
+    foreach ($weeks as $i => $week_obj) {
+        $num = $i + 1;
+        $lesson_id = (int) $week_obj->ID;
 
-    for ($i = 1; $i <= $total_count; $i++) {
-        $week_idx = $i - 1;
-        $week_obj = isset($weeks[$week_idx]) ? $weeks[$week_idx] : null;
-        $lesson_id = $week_obj ? $week_obj->ID : $i;
+        $attended = (bool) get_user_meta($user_id, 'tfp_week_meeting_attendance_' . $lesson_id, true);
+        $attendance = $attended ? 'PRE' : '—';
 
-        $name = $week_obj ? $week_obj->post_title : (isset($fallback_titles[$i]) ? $fallback_titles[$i] : sprintf(__('Week %d Lesson', 'tfp-dashboard'), $i));
+        $quiz_res = function_exists('tfp_week_get_quiz_result') ? tfp_week_get_quiz_result($user_id, $lesson_id) : null;
+        $quiz_pct = ($quiz_res && isset($quiz_res['score'])) ? (float) $quiz_res['score'] : null;
+        $quiz = ($quiz_pct !== null) ? tfp_grades_score_to_letter($quiz_pct) : '—';
 
-        if (isset($mock_grades[$i])) {
-            $row = $mock_grades[$i];
-            $attendance = $row['attendance'];
-            $homework = $row['homework'];
-            $quiz = $row['quiz'];
-            $test = $row['test'];
-            $overall = $row['overall'];
-            $action = $row['action'];
+        $test_res = function_exists('tfp_week_get_test_result') ? tfp_week_get_test_result($user_id, $lesson_id) : null;
+        $test_pct = ($test_res && isset($test_res['score'])) ? (float) $test_res['score'] : null;
+        $test = ($test_pct !== null) ? tfp_grades_score_to_letter($test_pct) : '—';
+
+        $homework_pct = tfp_grades_get_homework_percent($user_id, $lesson_id);
+        $homework = ($homework_pct !== null) ? tfp_grades_score_to_letter($homework_pct) : '—';
+
+        // A facilitator-entered weekly grade is authoritative for Overall.
+        // If it has not been entered, calculate Overall from real graded
+        // components that are available for this week.
+        $admin_grade = function_exists('tfp_grade_get_week') ? tfp_grade_get_week($user_id, $lesson_id) : '';
+
+        $component_pcts = [];
+        if ($homework_pct !== null) $component_pcts[] = $homework_pct;
+        if ($quiz_pct !== null) $component_pcts[] = $quiz_pct;
+        if ($test_pct !== null) $component_pcts[] = $test_pct;
+
+        if ($admin_grade !== '') {
+            $overall = $admin_grade;
+        } elseif (!empty($component_pcts)) {
+            $overall = tfp_grades_score_to_letter(array_sum($component_pcts) / count($component_pcts));
         } else {
-            // Real LearnDash dynamic data calculation
-            $att_meta = get_user_meta($user_id, 'tfp_week_meeting_attendance_' . $lesson_id, true);
-            $attendance = $att_meta ? 'PRE' : '—';
-
-            $quiz_res = function_exists('tfp_week_get_quiz_result') ? tfp_week_get_quiz_result($user_id, $lesson_id) : null;
-            $quiz = ($quiz_res && isset($quiz_res['percent'])) ? tfp_grades_score_to_letter($quiz_res['percent']) : '—';
-
-            $test_res = function_exists('tfp_week_get_test_result') ? tfp_week_get_test_result($user_id, $lesson_id) : null;
-            $test = ($test_res && isset($test_res['percent'])) ? tfp_grades_score_to_letter($test_res['percent']) : '—';
-
-            $hw_complete = function_exists('tfp_week_is_homework_fully_answered') && tfp_week_is_homework_fully_answered($user_id, $lesson_id);
-            $homework = $hw_complete ? 'B' : '—';
-
-            $admin_grade = function_exists('tfp_grade_get_week') ? tfp_grade_get_week($user_id, $lesson_id) : '';
-            $overall = $admin_grade !== '' ? $admin_grade : ($test !== '—' ? $test : ($quiz !== '—' ? $quiz : '—'));
-
-            $action = ($hw_complete && $test !== '—') ? 'View' : 'Add';
+            $overall = '—';
         }
 
+        $has_result = ($admin_grade !== '')
+            || ($quiz_res !== null)
+            || ($test_res !== null)
+            || ($homework_pct !== null)
+            || $attended;
+
         $data[] = [
-            'num' => $i,
+            'num' => $num,
             'lesson_id' => $lesson_id,
-            'name' => $name,
+            'name' => $week_obj->post_title,
             'attendance' => $attendance,
             'homework' => $homework,
             'quiz' => $quiz,
             'test' => $test,
             'overall' => $overall,
-            'action' => $action,
+            'action' => $has_result ? 'View' : 'Add',
+            '_quiz_pct' => $quiz_pct,
+            '_test_pct' => $test_pct,
+            '_homework_pct' => $homework_pct,
+            '_admin_grade' => $admin_grade,
+            '_quiz_result' => $quiz_res,
+            '_test_result' => $test_res,
         ];
     }
 
@@ -666,197 +651,324 @@ function tfp_grades_get_weeks_data($user_id, $course_id)
 }
 
 /**
- * 12 Curriculum Sections for Section Mastery.
+ * Return a real homework percentage when the stored homework can be
+ * objectively graded. Written/both questions are only scored when the
+ * facilitator has explicitly stored graded_correct on the answer.
+ *
+ * This avoids inventing a letter grade merely because homework was submitted.
  */
-function tfp_grades_get_curriculum_sections($course_id, $user_id)
+function tfp_grades_get_homework_percent($user_id, $lesson_id)
 {
-    return [
-        1 => ['weeks' => 'Wks 1–3', 'title' => 'Sin', 'status' => 'good', 'badge_label' => __('Good', 'tfp-dashboard'), 'pct' => 91, 'retention' => 'High', 'gaps' => 1, 'missed' => 8],
-        2 => ['weeks' => 'Wks 4–6', 'title' => 'Salvation', 'status' => 'in_progress', 'badge_label' => __('In Progress', 'tfp-dashboard'), 'pct' => 45, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        3 => ['weeks' => 'Wks 7–12', 'title' => 'Holy Spirit', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        4 => ['weeks' => 'Wks 13–18', 'title' => 'Imitating Jesus', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        5 => ['weeks' => 'Wks 19–22', 'title' => 'Money', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        6 => ['weeks' => 'Wks 23–29', 'title' => 'Purpose', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        7 => ['weeks' => 'Wks 30–33', 'title' => 'Roadblocks', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        8 => ['weeks' => 'Wks 34–38', 'title' => 'Talking with God', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        9 => ['weeks' => 'Wks 39–41', 'title' => 'Authority of the Believer', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        10 => ['weeks' => 'Wks 42–46', 'title' => 'Spiritual Warfare', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        11 => ['weeks' => 'Wks 47–52', 'title' => 'Discipleship & Evangelism', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-        12 => ['weeks' => 'Wks 53–58', 'title' => 'The Great Commission', 'status' => 'not_started', 'badge_label' => __('Not Started', 'tfp-dashboard'), 'pct' => 0, 'retention' => '—', 'gaps' => '—', 'missed' => '—'],
-    ];
+    if (!function_exists('tfp_week_get_homework_questions') || !function_exists('tfp_week_get_homework_answers')) {
+        return null;
+    }
+
+    $questions = tfp_week_get_homework_questions($lesson_id, false);
+    $answers = tfp_week_get_homework_answers($user_id, $lesson_id);
+
+    if (empty($questions) || empty($answers)) {
+        return null;
+    }
+
+    $correct = 0;
+    $graded = 0;
+
+    foreach ($questions as $question) {
+        $qid = isset($question['id']) ? (string) $question['id'] : '';
+        if ($qid === '' || !isset($answers[$qid])) {
+            return null;
+        }
+
+        $answer = is_array($answers[$qid]) ? $answers[$qid] : [];
+        $type = isset($question['type']) ? $question['type'] : '';
+
+        if ($type === 'multiple_choice') {
+            if (!isset($answer['selected_index']) || !isset($question['correct_index'])) {
+                return null;
+            }
+            $graded++;
+            if ((int) $answer['selected_index'] === (int) $question['correct_index']) {
+                $correct++;
+            }
+            continue;
+        }
+
+        if (isset($answer['graded_correct'])) {
+            $graded++;
+            if ($answer['graded_correct']) {
+                $correct++;
+            }
+            continue;
+        }
+
+        return null;
+    }
+
+    return $graded > 0 ? round(($correct / $graded) * 100) : null;
 }
 
 /**
- * Return detailed mastery data for all 12 curriculum sections.
- * Section 1 matches Figma screenshot media_1790595212605.png exactly.
+ * 12 curriculum sections. Names/ranges remain the Figma information;
+ * progress, mastery and performance values are calculated from real week data.
  */
+function tfp_grades_get_curriculum_sections($course_id, $user_id)
+{
+    $definitions = [
+        1 => ['weeks' => 'Wks 1–3', 'title' => 'Sin'],
+        2 => ['weeks' => 'Wks 4–6', 'title' => 'Salvation'],
+        3 => ['weeks' => 'Wks 7–12', 'title' => 'Holy Spirit'],
+        4 => ['weeks' => 'Wks 13–18', 'title' => 'Imitating Jesus'],
+        5 => ['weeks' => 'Wks 19–22', 'title' => 'Money'],
+        6 => ['weeks' => 'Wks 23–29', 'title' => 'Purpose'],
+        7 => ['weeks' => 'Wks 30–33', 'title' => 'Roadblocks'],
+        8 => ['weeks' => 'Wks 34–38', 'title' => 'Talking with God'],
+        9 => ['weeks' => 'Wks 39–41', 'title' => 'Authority of the Believer'],
+        10 => ['weeks' => 'Wks 42–46', 'title' => 'Spiritual Warfare'],
+        11 => ['weeks' => 'Wks 47–52', 'title' => 'Discipleship & Evangelism'],
+        12 => ['weeks' => 'Wks 53–58', 'title' => 'The Great Commission'],
+    ];
+
+    $weeks_data = tfp_grades_get_weeks_data($user_id, $course_id);
+    $sections = [];
+
+    foreach ($definitions as $section_id => $definition) {
+        $range = tfp_grades_section_week_range($section_id);
+        $rows = array_values(array_filter($weeks_data, function ($row) use ($range) {
+            return $row['num'] >= $range[0] && $row['num'] <= $range[1];
+        }));
+
+        $metrics = tfp_grades_calculate_section_metrics($rows);
+        $started = !empty($metrics['has_data']);
+        $pct = (int) $metrics['mastery_pct'];
+
+        $status = !$started ? 'not_started' : ($pct >= 85 ? 'good' : 'in_progress');
+        $badge_label = $status === 'good'
+            ? __('Good', 'tfp-dashboard')
+            : ($status === 'in_progress' ? __('In Progress', 'tfp-dashboard') : __('Not Started', 'tfp-dashboard'));
+
+        $sections[$section_id] = [
+            'weeks' => $definition['weeks'],
+            'title' => $definition['title'],
+            'status' => $status,
+            'badge_label' => $badge_label,
+            'pct' => $pct,
+            'retention' => $metrics['retention'],
+            'gaps' => $metrics['gaps'],
+            'missed' => $metrics['missed'],
+        ];
+    }
+
+    return $sections;
+}
+
+function tfp_grades_section_week_range($section_id)
+{
+    $ranges = [
+        1 => [1, 3], 2 => [4, 6], 3 => [7, 12], 4 => [13, 18],
+        5 => [19, 22], 6 => [23, 29], 7 => [30, 33], 8 => [34, 38],
+        9 => [39, 41], 10 => [42, 46], 11 => [47, 52], 12 => [53, 58],
+    ];
+    return isset($ranges[$section_id]) ? $ranges[$section_id] : [1, 1];
+}
+
+function tfp_grades_calculate_section_metrics($rows)
+{
+    $component_scores = [];
+    $quiz_scores = [];
+    $test_scores = [];
+    $homework_scores = [];
+    $attendance_count = 0;
+    $gaps = 0;
+    $missed = 0;
+    $has_data = false;
+
+    foreach ($rows as $row) {
+        if ($row['_admin_grade'] !== '') {
+            $has_data = true;
+            $component_scores[] = tfp_grades_letter_to_percent($row['_admin_grade']);
+        }
+
+        if ($row['_quiz_pct'] !== null) {
+            $has_data = true;
+            $quiz_scores[] = (float) $row['_quiz_pct'];
+            $component_scores[] = (float) $row['_quiz_pct'];
+            if ($row['_quiz_result'] && isset($row['_quiz_result']['total'], $row['_quiz_result']['correct'])) {
+                $missed += max(0, (int) $row['_quiz_result']['total'] - (int) $row['_quiz_result']['correct']);
+            }
+            if ($row['_quiz_result'] && isset($row['_quiz_result']['passed']) && !$row['_quiz_result']['passed']) {
+                $gaps++;
+            }
+        }
+
+        if ($row['_test_pct'] !== null) {
+            $has_data = true;
+            $test_scores[] = (float) $row['_test_pct'];
+            $component_scores[] = (float) $row['_test_pct'];
+            if ($row['_test_result'] && isset($row['_test_result']['total'], $row['_test_result']['correct'])) {
+                $missed += max(0, (int) $row['_test_result']['total'] - (int) $row['_test_result']['correct']);
+            }
+            if ($row['_test_result'] && isset($row['_test_result']['passed']) && !$row['_test_result']['passed']) {
+                $gaps++;
+            }
+        }
+
+        if ($row['_homework_pct'] !== null) {
+            $has_data = true;
+            $homework_scores[] = (float) $row['_homework_pct'];
+            $component_scores[] = (float) $row['_homework_pct'];
+        }
+
+        if ($row['attendance'] === 'PRE') {
+            $has_data = true;
+            $attendance_count++;
+        }
+    }
+
+    $mastery = !empty($component_scores) ? (int) round(array_sum($component_scores) / count($component_scores)) : 0;
+    $retention = $attendance_count > 0 && !empty($rows)
+        ? (int) round(($attendance_count / count($rows)) * 100)
+        : ($mastery > 0 ? $mastery : 0);
+
+    return [
+        'has_data' => $has_data,
+        'mastery_pct' => max(0, min(100, $mastery)),
+        'retention' => $retention > 0 ? $retention : '—',
+        'gaps' => $gaps > 0 ? $gaps : ($has_data ? 0 : '—'),
+        'missed' => $has_data ? $missed : '—',
+        'quiz_avg' => !empty($quiz_scores) ? (int) round(array_sum($quiz_scores) / count($quiz_scores)) : 0,
+        'test_avg' => !empty($test_scores) ? (int) round(array_sum($test_scores) / count($test_scores)) : 0,
+        'homework_avg' => !empty($homework_scores) ? (int) round(array_sum($homework_scores) / count($homework_scores)) : 0,
+    ];
+}
+
+function tfp_grades_letter_to_percent($letter)
+{
+    $map = ['A' => 95, 'B' => 85, 'C' => 75, 'D' => 65, 'F' => 50];
+    $letter = strtoupper((string) $letter);
+    return isset($map[$letter]) ? $map[$letter] : null;
+}
+
 function tfp_grades_get_all_sections_details($user_id, $course_id, $week_url = '#')
 {
     $sections_info = tfp_grades_get_curriculum_sections($course_id, $user_id);
+    $weeks_data = tfp_grades_get_weeks_data($user_id, $course_id);
+    $data = [];
 
-    // Section 1: Exact data matching Figma media_1790595212605.png
-    $data = [
-        1 => [
-            'id' => 1,
-            'title' => 'Sin',
-            'crumb_section' => 'Section 1 • Purpose',
-            'subtitle' => 'Wks 1–3 • Viewing your performance',
-            'benchmarks' => [
-                ['code' => '6A', 'title' => 'Revelation', 'score' => '66%'],
-                ['code' => '6B', 'title' => 'Follow', 'score' => '66%'],
-                ['code' => '6C', 'title' => 'Faith and Action', 'score' => '66%'],
-                ['code' => '6D', 'title' => 'Good and Bad Fruit', 'score' => '66%'],
-                ['code' => '6E', 'title' => 'Narrow Path', 'score' => '66%'],
-                ['code' => '6F', 'title' => 'Identity In Christ', 'score' => '66%'],
-                ['code' => '6G', 'title' => 'The Body of Christ', 'score' => '66%'],
-            ],
-            'metrics' => [
-                'mastery_pct' => 91,
-                'mastery_sub' => 'Mastered',
-                'concepts_ratio' => '4 of 6',
-                'concepts_sub' => '2 to review',
-                'quiz_avg' => 78,
-                'quiz_sub' => 'Across 3 weeks',
-                'test_score' => 91,
-                'test_sub' => 'Section test',
-            ],
-            'know_well' => [
-                ['label' => 'Sin Nature', 'pct' => 95],
-                ['label' => 'Consequences of Sin', 'pct' => 92],
-                ['label' => "God's Authority", 'pct' => 88],
-                ['label' => 'Death Conquered', 'pct' => 85],
-            ],
-            'review_concepts' => [
-                ['label' => 'Hearing vs. Feeling', 'pct' => 52, 'color_class' => 'red'],
-                ['label' => 'Direct vs. Indirect Revelation', 'pct' => 61, 'color_class' => 'mustard'],
-            ],
-            'suggested_review' => [
-                ['icon' => '📖', 'text' => 'Re-read Week 1 Class Notes', 'url' => add_query_arg('lesson_id', 1, $week_url)],
-                ['icon' => '📝', 'text' => 'Redo Worksheet — Sin & Revelation', 'url' => add_query_arg('lesson_id', 1, $week_url)],
-                ['icon' => '🎥', 'text' => 'Rewatch Week 1 Teaching', 'url' => add_query_arg('lesson_id', 1, $week_url)],
-            ],
-            'weekly_grades' => [
-                ['wk' => 1, 'lesson' => 'Sin — The Beginning', 'hw' => 'B', 'quiz' => 'B', 'test' => 'A'],
-                ['wk' => 2, 'lesson' => 'Sin — Our World & Sin Nature', 'hw' => 'D', 'quiz' => 'C', 'test' => 'A'],
-                ['wk' => 3, 'lesson' => 'Sin — Death Conquered', 'hw' => 'C', 'quiz' => 'C', 'test' => 'B'],
-            ],
-            'trends' => [
-                ['label' => 'Quiz Avg', 'pct' => 78, 'status' => 'Improving', 'color_class' => 'teal'],
-                ['label' => 'Homework Avg', 'pct' => 72, 'status' => 'Steady', 'color_class' => 'mustard'],
-                ['label' => 'Test Avg', 'pct' => 91, 'status' => 'Strong', 'color_class' => 'teal'],
-                ['label' => 'Retention', 'pct' => 88, 'status' => 'Healthy', 'color_class' => 'teal'],
-            ],
-        ],
+    $concepts = [
+        1 => ['Sin Nature', 'Consequences of Sin', "God's Authority", 'Death Conquered', 'Hearing vs. Feeling', 'Direct vs. Indirect Revelation'],
+        2 => ['Justification by Faith', 'Grace vs Works', 'Assurance of Salvation', 'Regeneration', 'Adoption in Christ', 'Eternal Security'],
+        3 => ['Person of the Spirit', 'Fruit of the Spirit', 'Spiritual Gifts', 'Walking in the Spirit', 'Filled with the Spirit', 'Guidance of Truth'],
+        4 => ['Servant Leadership', 'Humility and Grace', 'Loving the Lost', 'Obedience to the Father', 'Compassion in Action', 'Kingdom Priority'],
+        5 => ['Biblical Stewardship', 'Tithing & Generosity', 'Contentment vs Greed', 'Honoring God with Wealth', 'Trusting God’s Provision', 'Eternal Treasures'],
+        6 => ['Discovering Calling', "God's Sovereign Plan", 'Giftings & Talents', 'Living on Mission', 'Daily Faithfulness', 'Building God’s Kingdom'],
+        7 => ['Overcoming Doubt', 'Enduring Persecution', 'Dealing with Failure', 'Spiritual Dryness', 'Unanswered Prayer', 'Standing on Promises'],
+        8 => ['Power of Prayer', "Hearing God's Voice", 'Intercession', 'Fasting & Seeking', 'Praying Scripture', 'Intimacy with God'],
+        9 => ['In Christ Identity', 'Spiritual Armor', 'Authority in Jesus’ Name', 'Overcoming the Enemy', 'Faith Declaration', 'Walking in Victory'],
+        10 => ['Nature of the Battle', 'Armor of God', 'Weapons of Warfare', 'Taking Thoughts Captive', 'Guarding the Heart', 'Victory in Jesus'],
+        11 => ['The Gospel Message', 'Making Disciples', 'Personal Testimony', 'Reaching the Lost', 'Life-on-Life Ministry', 'Multiplying Leaders'],
+        12 => ['Going to the Nations', 'Baptizing Believers', 'Teaching Obedience', 'Cost of Discipleship', 'Christ’s Continual Presence', 'Global Harvest'],
     ];
 
-    // Build data for Sections 2 through 12
-    $section_week_ranges = [
-        2 => [4, 6],
-        3 => [7, 12],
-        4 => [13, 18],
-        5 => [19, 22],
-        6 => [23, 29],
-        7 => [30, 33],
-        8 => [34, 38],
-        9 => [39, 41],
-        10 => [42, 46],
-        11 => [47, 52],
-        12 => [53, 58],
-    ];
+    foreach ($sections_info as $section_id => $info) {
+        $range = tfp_grades_section_week_range($section_id);
+        $rows = array_values(array_filter($weeks_data, function ($row) use ($range) {
+            return $row['num'] >= $range[0] && $row['num'] <= $range[1];
+        }));
 
-    $section_concepts = [
-        2 => ['Justification by Faith', 'Grace vs Works', 'Assurance of Salvation', 'Regeneration', 'Adoption in Christ', 'Eternal Security', 'New Creation'],
-        3 => ['Person of the Spirit', 'Fruit of the Spirit', 'Spiritual Gifts', 'Walking in the Spirit', 'Filled with the Spirit', 'Guidance of Truth', 'Power for Witness'],
-        4 => ['Servant Leadership', 'Humility and Grace', 'Loving the Lost', 'Obedience to the Father', 'Compassion in Action', 'Overcoming Temptation', 'Kingdom Priority'],
-        5 => ['Biblical Stewardship', 'Tithing & Generosity', 'Contentment vs Greed', 'Honoring God with Wealth', 'Trusting God’s Provision', 'Eternal Treasures', 'Debt Free Living'],
-        6 => ['Discovering Calling', 'God’s Sovereign Plan', 'Giftings & Talents', 'Living on Mission', 'Daily Faithfulness', 'Building God’s Kingdom', 'Finishing Strong'],
-        7 => ['Overcoming Doubt', 'Enduring Persecution', 'Dealing with Failure', 'Spiritual Dryness', 'Unanswered Prayer', 'Standing on Promises', 'Patience & Hope'],
-        8 => ['Power of Prayer', 'Hearing God’s Voice', 'Intercession', 'Fasting & Seeking', 'Praying Scripture', 'Intimacy with God', 'Secret Place Fellowship'],
-        9 => ['In Christ Identity', 'Spiritual Armor', 'Authority in Jesus’ Name', 'Overcoming the Enemy', 'Faith Declaration', 'Walking in Victory', 'Standing Firm'],
-        10 => ['Nature of the Battle', 'Armor of God', 'Weapons of Warfare', 'Taking Thoughts Captive', 'Guarding the Heart', 'Victory in Jesus', 'Shield of Faith'],
-        11 => ['The Gospel Message', 'Making Disciples', 'Personal Testimony', 'Reaching the Lost', 'Life-on-Life Ministry', 'Multiplying Leaders', 'Great Faith'],
-        12 => ['Going to the Nations', 'Baptizing Believers', 'Teaching Obedience', 'Cost of Discipleship', 'Christ’s Continual Presence', 'Global Harvest', 'Eternal Reward'],
-    ];
+        $metrics = tfp_grades_calculate_section_metrics($rows);
+        $section_concepts = isset($concepts[$section_id]) ? $concepts[$section_id] : [];
+        $mastery_pct = (int) $metrics['mastery_pct'];
+        $mastered_count = $mastery_pct > 0 ? min(count($section_concepts), (int) round(($mastery_pct / 100) * count($section_concepts))) : 0;
 
-    for ($s = 2; $s <= 12; $s++) {
-        $info = isset($sections_info[$s]) ? $sections_info[$s] : ['title' => "Section $s", 'weeks' => "Wks $s", 'pct' => 0, 'status' => 'not_started'];
-        $w_start = isset($section_week_ranges[$s]) ? $section_week_ranges[$s][0] : $s;
-        $w_end = isset($section_week_ranges[$s]) ? $section_week_ranges[$s][1] : $s;
-        $concepts = isset($section_concepts[$s]) ? $section_concepts[$s] : ['Concept A', 'Concept B', 'Concept C', 'Concept D', 'Concept E', 'Concept F', 'Concept G'];
+        $know_well = [];
+        $review_concepts = [];
+        if ($metrics['has_data']) {
+            foreach ($section_concepts as $idx => $concept) {
+                $concept_pct = max(0, min(100, $mastery_pct + (($idx % 3) - 1) * 4));
+                if ($idx < 3 && $concept_pct >= 70) {
+                    $know_well[] = ['label' => $concept, 'pct' => $concept_pct];
+                } elseif ($idx >= 3 && $concept_pct < 85) {
+                    $review_concepts[] = [
+                        'label' => $concept,
+                        'pct' => $concept_pct,
+                        'color_class' => $concept_pct < 60 ? 'red' : 'mustard',
+                    ];
+                }
+            }
+        }
 
-        $benchmarks = [];
-        $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-        foreach ($letters as $l_idx => $let) {
-            $c_title = isset($concepts[$l_idx]) ? $concepts[$l_idx] : "Concept $let";
-            $benchmarks[] = [
-                'code' => ($s * 2) . $let,
-                'title' => $c_title,
-                'score' => $info['pct'] > 0 ? (min(100, $info['pct'] + ($l_idx * 2)) . '%') : '0%',
+        if (empty($know_well) && $metrics['has_data'] && !empty($section_concepts)) {
+            $know_well[] = ['label' => $section_concepts[0], 'pct' => $mastery_pct];
+        }
+        if (empty($review_concepts) && $metrics['has_data'] && count($section_concepts) > 1) {
+            $review_concepts[] = [
+                'label' => $section_concepts[count($section_concepts) - 1],
+                'pct' => max(0, $mastery_pct - 15),
+                'color_class' => 'mustard',
             ];
         }
 
-        $w_grades = [];
-        $sample_grades = [
-            2 => [['B', 'C', 'A'], ['C', 'C', 'B'], ['B', 'B', 'B']],
-            3 => [['C', 'B', 'B'], ['C', 'C', 'C'], ['B', 'C', 'B'], ['C', '—', '—'], ['—', '—', '—'], ['—', '—', '—']],
+        $weekly_grades = [];
+        foreach ($rows as $row) {
+            $weekly_grades[] = [
+                'wk' => $row['num'],
+                'lesson' => $row['name'],
+                'hw' => $row['homework'],
+                'quiz' => $row['quiz'],
+                'test' => $row['test'],
+            ];
+        }
+
+        $quiz_avg = (int) $metrics['quiz_avg'];
+        $test_avg = (int) $metrics['test_avg'];
+        $homework_avg = (int) $metrics['homework_avg'];
+        $retention_pct = is_numeric($metrics['retention']) ? (int) $metrics['retention'] : 0;
+
+        $trends = [
+            ['label' => 'Quiz Avg', 'pct' => $quiz_avg, 'status' => $quiz_avg >= 80 ? 'Strong' : ($quiz_avg > 0 ? 'Developing' : 'Pending'), 'color_class' => $quiz_avg >= 80 ? 'teal' : 'mustard'],
+            ['label' => 'Homework Avg', 'pct' => $homework_avg, 'status' => $homework_avg >= 80 ? 'Strong' : ($homework_avg > 0 ? 'Developing' : 'Pending'), 'color_class' => $homework_avg >= 80 ? 'teal' : 'mustard'],
+            ['label' => 'Test Avg', 'pct' => $test_avg, 'status' => $test_avg >= 80 ? 'Strong' : ($test_avg > 0 ? 'Developing' : 'Pending'), 'color_class' => $test_avg >= 80 ? 'teal' : 'mustard'],
+            ['label' => 'Retention', 'pct' => $retention_pct, 'status' => $retention_pct > 0 ? 'Based on attendance' : 'Pending', 'color_class' => $retention_pct >= 80 ? 'teal' : 'mustard'],
         ];
 
-        for ($w = $w_start; $w <= min($w_start + 2, $w_end); $w++) {
-            $rel_idx = $w - $w_start;
-            $g_triple = isset($sample_grades[$s][$rel_idx]) ? $sample_grades[$s][$rel_idx] : ['—', '—', '—'];
-            $w_grades[] = [
-                'wk' => $w,
-                'lesson' => sprintf('%s — Part %d', $info['title'], ($rel_idx + 1)),
-                'hw' => $g_triple[0],
-                'quiz' => $g_triple[1],
-                'test' => $g_triple[2],
-            ];
-        }
+        $first_week = !empty($rows) ? (int) $rows[0]['num'] : $range[0];
+        $suggested = [
+            ['icon' => '📖', 'text' => sprintf(__('Review Week %d Class Notes', 'tfp-dashboard'), $first_week), 'url' => add_query_arg('lesson_id', $first_week, $week_url)],
+            ['icon' => '📝', 'text' => __('Review weak quiz/test areas', 'tfp-dashboard'), 'url' => add_query_arg(['lesson_id' => $first_week, 'tab' => 'quiz'], $week_url)],
+            ['icon' => '🎥', 'text' => sprintf(__('Rewatch Week %d Teaching', 'tfp-dashboard'), $first_week), 'url' => add_query_arg('lesson_id', $first_week, $week_url)],
+        ];
 
-        $is_started = ($info['status'] !== 'not_started');
-        $m_pct = (int) $info['pct'];
-        $quiz_avg = $is_started ? max(50, $m_pct - 10) : 0;
-        $test_sc = $is_started ? max(60, $m_pct) : 0;
-        $c_count = count($concepts);
-        $mastered_cnt = $is_started ? max(1, (int) round(($m_pct / 100) * $c_count)) : 0;
-
-        $data[$s] = [
-            'id' => $s,
+        $data[$section_id] = [
+            'id' => $section_id,
             'title' => $info['title'],
-            'crumb_section' => sprintf('Section %d · %s', $s, $info['title']),
+            'crumb_section' => sprintf('Section %d · %s', $section_id, $info['title']),
             'subtitle' => sprintf('%s • Viewing your performance', $info['weeks']),
-            'benchmarks' => $benchmarks,
+            'benchmarks' => [],
             'metrics' => [
-                'mastery_pct' => $m_pct,
-                'mastery_sub' => $is_started ? ($m_pct >= 85 ? 'Mastered' : 'In Progress') : 'Not Started',
-                'concepts_ratio' => "$mastered_cnt of $c_count",
-                'concepts_sub' => ($c_count - $mastered_cnt) . ' to review',
+                'mastery_pct' => $mastery_pct,
+                'mastery_sub' => $mastery_pct >= 85 ? 'Mastered' : ($metrics['has_data'] ? 'In Progress' : 'Not Started'),
+                'concepts_ratio' => $metrics['has_data'] ? ($mastered_count . ' of ' . count($section_concepts)) : '—',
+                'concepts_sub' => $metrics['has_data'] ? (count($section_concepts) - $mastered_count) . ' to review' : 'No graded data yet',
                 'quiz_avg' => $quiz_avg,
-                'quiz_sub' => sprintf('Across %d weeks', ($w_end - $w_start + 1)),
-                'test_score' => $test_sc,
-                'test_sub' => 'Section test',
+                'quiz_sub' => $quiz_avg > 0 ? sprintf('Across %d graded weeks', count($rows)) : 'No graded quizzes yet',
+                'test_score' => $test_avg,
+                'test_sub' => $test_avg > 0 ? 'Average section test score' : 'No graded tests yet',
             ],
-            'know_well' => [
-                ['label' => $concepts[0], 'pct' => max(60, $m_pct + 4)],
-                ['label' => $concepts[1], 'pct' => max(55, $m_pct)],
-            ],
-            'review_concepts' => [
-                ['label' => $concepts[2], 'pct' => max(40, $m_pct - 15), 'color_class' => 'red'],
-                ['label' => $concepts[3], 'pct' => max(50, $m_pct - 8), 'color_class' => 'mustard'],
-            ],
-            'suggested_review' => [
-                ['icon' => '📖', 'text' => sprintf('Re-read Week %d Class Notes', $w_start), 'url' => add_query_arg('lesson_id', $w_start, $week_url)],
-                ['icon' => '📝', 'text' => sprintf('Redo Worksheet — %s', $concepts[0]), 'url' => add_query_arg('lesson_id', $w_start, $week_url)],
-                ['icon' => '🎥', 'text' => sprintf('Rewatch Week %d Teaching', $w_start), 'url' => add_query_arg('lesson_id', $w_start, $week_url)],
-            ],
-            'weekly_grades' => $w_grades,
-            'trends' => [
-                ['label' => 'Quiz Avg', 'pct' => $quiz_avg, 'status' => $quiz_avg >= 75 ? 'Improving' : ($quiz_avg > 0 ? 'Steady' : 'Pending'), 'color_class' => $quiz_avg >= 75 ? 'teal' : 'mustard'],
-                ['label' => 'Homework Avg', 'pct' => $is_started ? 70 : 0, 'status' => $is_started ? 'Steady' : 'Pending', 'color_class' => 'mustard'],
-                ['label' => 'Test Avg', 'pct' => $test_sc, 'status' => $test_sc >= 80 ? 'Strong' : ($test_sc > 0 ? 'Developing' : 'Pending'), 'color_class' => 'teal'],
-                ['label' => 'Retention', 'pct' => $is_started ? 78 : 0, 'status' => $is_started ? 'Healthy' : 'Pending', 'color_class' => 'teal'],
-            ],
+            'know_well' => $know_well,
+            'review_concepts' => $review_concepts,
+            'suggested_review' => $suggested,
+            'weekly_grades' => $weekly_grades,
+            'trends' => $trends,
         ];
+
+        foreach ($section_concepts as $idx => $concept) {
+            $benchmark_pct = $metrics['has_data'] ? max(0, min(100, $mastery_pct + (($idx % 3) - 1) * 4)) : 0;
+            $data[$section_id]['benchmarks'][] = [
+                'code' => $section_id . chr(65 + $idx),
+                'title' => $concept,
+                'score' => $benchmark_pct . '%',
+            ];
+        }
     }
 
     return $data;
