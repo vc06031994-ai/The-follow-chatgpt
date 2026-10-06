@@ -609,7 +609,7 @@ function tfp_dashboard_render_program_tasks($tasks, $week_url)
     ?>
     <div class="tfp-dash-panel tfp-tasks-panel">
         <div class="tfp-tasks-panel__header">
-            <h3 class="tfp-tasks-panel__title"><?php esc_html_e('Pending Tasks', 'tfp-dashboard'); ?></h3>
+            <h6 class="tfp-tasks-panel__title"><?php esc_html_e('Pending Tasks', 'tfp-dashboard'); ?></h6>
             <a href="#tfp-tasks-list" class="tfp-tasks-panel__view-all"
                 id="tfp-tasks-view-all"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
         </div>
@@ -628,7 +628,7 @@ function tfp_dashboard_render_program_tasks($tasks, $week_url)
                     ?>
                     <li class="tfp-task-row">
                         <div class="tfp-task-row__info">
-                            <span class="tfp-task-row__title"><?php echo esc_html($task['title']); ?></span>
+                            <h6 class="tfp-task-row__title"><?php echo esc_html($task['title']); ?></h6>
                             <?php if (!empty($task['meta'])): ?>
                                 <span class="tfp-task-row__meta"><?php echo esc_html($task['meta']); ?></span>
                             <?php endif; ?>
