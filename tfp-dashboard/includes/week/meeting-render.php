@@ -46,7 +46,9 @@ function tfp_dashboard_render_week_meeting_experience($week)
                     <div class="tfp-week__meeting-task">
                         <div><strong><?php echo esc_html($task[0]); ?></strong></div>
                         <span class="tfp-week__meeting-status <?php echo $task[1]?'is-complete':''; ?>"><?php echo $task[1] ? esc_html__('Completed','tfp-dashboard') : esc_html__('Not Started','tfp-dashboard'); ?></span>
-                        <a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url($url($key)); ?>"><?php echo esc_html($key==='attendance' && $task[1] ? 'Review' : 'Start'); ?></a>
+                        <?php if (current_user_can('edit_posts')) : ?>
+                            <a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url($url($key)); ?>"><?php echo esc_html($key==='attendance' && $task[1] ? 'Review' : 'Start'); ?></a>
+                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             </div>
