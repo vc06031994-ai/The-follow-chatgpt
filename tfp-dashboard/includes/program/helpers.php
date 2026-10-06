@@ -248,6 +248,7 @@ function tfp_program_get_pending_tasks($user_id, $course_id, $state)
                 ];
             }
         }
+    }
 
     // 3. Current-week student work: Reading + Homework.
     // These are student tasks that should be completed before the next
