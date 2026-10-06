@@ -638,7 +638,7 @@ h4.tfp-pastdue-card__title {
     margin: 0 !important;
 }
 
-/* .tfp-task-btn {
+.tfp-task-btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -655,24 +655,36 @@ h4.tfp-pastdue-card__title {
     text-decoration: none !important;
     text-align: center !important;
     white-space: nowrap !important;
-    border: none !important;
+    border: 1px solid transparent !important;
     cursor: pointer !important;
     box-sizing: border-box !important;
     flex-shrink: 0 !important;
     transition: all 0.2s ease !important;
 }
 
-.tfp-task-btn--teal {
+.tfp-task-btn.tfp-dash-btn--primary {
     background: #00666e !important;
     color: #ffffff !important;
-    border: 1px solid #00666e !important;
+    border-color: #00666e !important;
 }
 
-.tfp-task-btn--teal:hover {
+.tfp-task-btn.tfp-dash-btn--primary:hover {
     background: #004d53 !important;
     color: #ffffff !important;
     border-color: #004d53 !important;
-} */
+}
+
+.tfp-task-btn--gray {
+    background: #e5e7eb !important;
+    color: #374151 !important;
+    border-color: #e5e7eb !important;
+}
+
+.tfp-task-btn--gray:hover {
+    background: #d1d5db !important;
+    color: #111827 !important;
+    border-color: #d1d5db !important;
+}
 
 .tfp-task-btn--gray {
     background: #e5e7eb !important;
