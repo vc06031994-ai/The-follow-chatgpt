@@ -86,7 +86,19 @@ function tfp_dashboard_render_program_course_detail($course_id)
                     <div>
                         <h2><?php echo esc_html(get_the_title($course_id)); ?></h2>
                         <div class="tfp-course-detail__instructor">
-                            <span class="tfp-course-detail__avatar"><?php echo $author_id ? wp_get_attachment_image((int)get_user_meta($author_id, 'tfp_profile_photo_id', true), 32, false) : ''; ?></span>
+                            <span class="tfp-course-detail__avatar">
+                                <?php
+                                if ($author_id) {
+                                    echo get_avatar(
+                                        $author_id,
+                                        32,
+                                        '',
+                                        $author_name,
+                                        ['class' => 'tfp-course-detail__avatar-img']
+                                    );
+                                }
+                                ?>
+                            </span>
                             <span><?php echo esc_html($author_name); ?></span>
                             <?php if ($rating): ?><span class="tfp-course-detail__rating">★ <?php echo esc_html(number_format($rating, 1)); ?><?php if ($comment_count) echo ' (' . esc_html($comment_count) . ' ' . esc_html__('Reviews','tfp-dashboard') . ')'; ?></span><?php endif; ?>
                         </div>
@@ -139,7 +151,23 @@ function tfp_dashboard_render_program_course_detail($course_id)
             <aside class="tfp-course-detail__sidebar">
                 <div class="tfp-course-detail__side-head">
                     <h3><?php echo esc_html(get_the_title($course_id)); ?></h3>
-                    <div><span><?php echo esc_html($author_name); ?></span><span class="tfp-course-detail__side-rating">★ <?php echo esc_html($rating ? number_format($rating,1) : '—'); ?></span></div>
+                    <div class="tfp-course-detail__side-author">
+                        <span class="tfp-course-detail__avatar tfp-course-detail__avatar--side">
+                            <?php
+                            if ($author_id) {
+                                echo get_avatar(
+                                    $author_id,
+                                    32,
+                                    '',
+                                    $author_name,
+                                    ['class' => 'tfp-course-detail__avatar-img']
+                                );
+                            }
+                            ?>
+                        </span>
+                        <span><?php echo esc_html($author_name); ?></span>
+                        <span class="tfp-course-detail__side-rating">★ <?php echo esc_html($rating ? number_format($rating,1) : '—'); ?></span>
+                    </div>
                 </div>
                 <div class="tfp-course-detail__side-progress"><span><?php echo esc_html(count($weeks) ? sprintf(__('%d/%d Module','tfp-dashboard'), $progress['completed'], count($weeks)) : '0/0 Module'); ?></span><strong><?php echo esc_html($percent); ?>%</strong></div>
                 <div class="tfp-course-detail__progressbar"><span style="width:<?php echo esc_attr($percent); ?>%"></span></div>
