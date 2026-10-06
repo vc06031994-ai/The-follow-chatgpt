@@ -622,7 +622,9 @@ function tfp_dashboard_render_program_tasks($tasks, $week_url)
         <?php else: ?>
             <ul class="tfp-tasks-list" id="tfp-tasks-list">
                 <?php foreach ($tasks as $task):
-                    $btn_cls = (!empty($task['btn_type']) && $task['btn_type'] === 'gray') ? 'tfp-task-btn--gray tfp-dash-btn' : 'tfp-dash-btn--primary';
+                    $btn_cls = (!empty($task['btn_type']) && $task['btn_type'] === 'gray')
+                        ? 'tfp-task-btn--gray'
+                        : 'tfp-dash-btn--primary';
                     ?>
                     <li class="tfp-task-row">
                         <div class="tfp-task-row__info">
@@ -631,7 +633,7 @@ function tfp_dashboard_render_program_tasks($tasks, $week_url)
                                 <span class="tfp-task-row__meta"><?php echo esc_html($task['meta']); ?></span>
                             <?php endif; ?>
                         </div>
-                        <a href="<?php echo esc_url($task['url']); ?>" class="tfp-task-btn tfp-dash-btn tfp-dash-btn--primary<?php echo esc_attr($btn_cls); ?>">
+                        <a href="<?php echo esc_url($task['url']); ?>" class="tfp-task-btn tfp-dash-btn <?php echo esc_attr($btn_cls); ?>">
                             <?php echo esc_html($task['btn_text']); ?>
                         </a>
                     </li>
