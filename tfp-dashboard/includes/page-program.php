@@ -549,14 +549,14 @@ function tfp_dashboard_render_program_current_lesson($user_id, $course_id, $week
         $sub_title = sprintf(__('In Progress · Week %1$d %2$s', 'tfp-dashboard'), $week_num, $current_week->post_title);
         ?>
         <div class="tfp-dash-panel tfp-journey__current">
-            <h3><?php esc_html_e('Current Lesson', 'tfp-dashboard'); ?></h3>
+            <h6><?php esc_html_e('Current Lesson', 'tfp-dashboard'); ?></h6>
             <p class="tfp-journey__current-title"><?php echo esc_html($sub_title); ?></p>
             <div class="tfp-journey__current-actions">
-                <a href="<?php echo esc_url($continue_url); ?>" class="tfp-current-lesson-btn">
+                <a href="<?php echo esc_url($continue_url); ?>" class="tfp-current-lesson-btn tfp-dash-btn tfp-dash-btn--primary">
                     <?php esc_html_e('Continue Lesson', 'tfp-dashboard'); ?>
                 </a>
                 <a href="<?php echo esc_url(apply_filters('tfp_dashboard_discord_url', '#')); ?>" target="_blank" rel="noopener"
-                    class="tfp-current-lesson-btn">
+                    class="tfp-current-lesson-btn tfp-dash-btn tfp-dash-btn--primary">
                     <?php esc_html_e('Go to Discord', 'tfp-dashboard'); ?>
                 </a>
             </div>
@@ -622,7 +622,7 @@ function tfp_dashboard_render_program_tasks($tasks, $week_url)
         <?php else: ?>
             <ul class="tfp-tasks-list" id="tfp-tasks-list">
                 <?php foreach ($tasks as $task):
-                    $btn_cls = (!empty($task['btn_type']) && $task['btn_type'] === 'gray') ? 'tfp-task-btn--gray' : 'tfp-task-btn--teal';
+                    $btn_cls = (!empty($task['btn_type']) && $task['btn_type'] === 'gray') ? 'tfp-task-btn--gray tfp-dash-btn' : 'tfp-dash-btn--primary';
                     ?>
                     <li class="tfp-task-row">
                         <div class="tfp-task-row__info">
@@ -631,7 +631,7 @@ function tfp_dashboard_render_program_tasks($tasks, $week_url)
                                 <span class="tfp-task-row__meta"><?php echo esc_html($task['meta']); ?></span>
                             <?php endif; ?>
                         </div>
-                        <a href="<?php echo esc_url($task['url']); ?>" class="tfp-task-btn <?php echo esc_attr($btn_cls); ?>">
+                        <a href="<?php echo esc_url($task['url']); ?>" class="tfp-task-btn tfp-dash-btn tfp-dash-btn--primary<?php echo esc_attr($btn_cls); ?>">
                             <?php echo esc_html($task['btn_text']); ?>
                         </a>
                     </li>

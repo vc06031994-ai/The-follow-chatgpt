@@ -431,52 +431,27 @@
     box-sizing: border-box !important;
 }
 
-.tfp-journey__current h3 {
-    margin: 0 0 6px !important;
-    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
-    font-size: 18px !important;
-    font-weight: 700 !important;
-    color: #111827 !important;
+.tfp-journey__current h6{
+    margin: 0 0 10px !important;
 }
 
 .tfp-journey__current-title {
     margin: 0 0 16px !important;
-    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
-    font-size: 13.5px !important;
-    color: #4b5563 !important;
-    line-height: 1.4 !important;
+    font-family: var(--tfp-dash-font-alt) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    line-height: 180% !important;
+    color: #151411 !important;
+   
 }
 
 .tfp-journey__current-actions {
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important;
+    gap: 17px !important;
 }
 
-.tfp-current-lesson-btn {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 42px !important;
-    background: #00666e !important;
-    color: #ffffff !important;
-    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
-    font-size: 14.5px !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    text-decoration: none !important;
-    border: 1px solid #00666e !important;
-    cursor: pointer !important;
-    box-sizing: border-box !important;
-    transition: all 0.2s ease !important;
-}
 
-.tfp-current-lesson-btn:hover {
-    background: #004d53 !important;
-    color: #ffffff !important;
-    border-color: #004d53 !important;
-}
 
 /* --- PAST DUE card ------------------------------------------------------- */
 .tfp-pastdue-card {
@@ -663,7 +638,7 @@ h4.tfp-pastdue-card__title {
     margin: 0 !important;
 }
 
-.tfp-task-btn {
+/* .tfp-task-btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -697,7 +672,7 @@ h4.tfp-pastdue-card__title {
     background: #004d53 !important;
     color: #ffffff !important;
     border-color: #004d53 !important;
-}
+} */
 
 .tfp-task-btn--gray {
     background: #e5e7eb !important;
