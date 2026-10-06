@@ -12,47 +12,17 @@
 }
 
 .tfp-program-list .tfp-program-card {
-    grid-template-columns: 110px minmax(0, 1fr) 94px;
-    gap: 14px;
+    grid-template-columns: 210px minmax(0, 1fr) 120px;
+    gap: 26px;
     align-items: center;
-    min-height: 112px;
     padding: 8px 12px;
 }
 
-.tfp-program-list .tfp-program-card__visual {
-    min-height: 112px;
-    height: 112px;
-    border-radius: 2px;
-}
-
-.tfp-program-list .tfp-program-card__content {
-    gap: 6px;
-}
-
-.tfp-program-list .tfp-program-card__meta {
-    font-size: 11px;
-    line-height: 1.35;
-}
-
-.tfp-program-list .tfp-program-card__title {
-    font-size: 17px;
-    line-height: 1.2;
-}
-
-.tfp-program-list .tfp-program-card__desc {
-    font-size: 11px;
-    line-height: 1.45;
-}
 
 .tfp-program-list .tfp-program-card__actions {
     margin-top: 0;
 }
 
-.tfp-program-list .tfp-program-card__actions .tfp-dash-btn {
-    padding: 8px 20px !important;
-    border-radius: 6px !important;
-    font-size: 12px !important;
-}
 
 .tfp-program-list .tfp-program-card__progress {
     display: flex;
@@ -113,11 +83,6 @@
         align-items: start;
     }
 
-    .tfp-program-list .tfp-program-card__visual {
-        min-height: 90px;
-        height: 90px;
-    }
-
     .tfp-program-list .tfp-program-card__progress {
         grid-column: 2;
         flex-direction: row;
@@ -130,11 +95,6 @@
         grid-template-columns: 1fr;
     }
 
-    .tfp-program-list .tfp-program-card__visual {
-        width: 100%;
-        min-height: 150px;
-        height: 150px;
-    }
 
     .tfp-program-list .tfp-program-card__progress {
         grid-column: auto;
@@ -494,17 +454,8 @@ h4.tfp-pastdue-card__title {
 }
 
 .tfp-pastdue-card__btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     background: #a61c28 !important;
     color: #ffffff !important;
-    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
-    font-size: 16px !important;
-    font-weight: 700 !important;
-    padding: 10px 24px !important;
-    border-radius: 6px !important;
-    text-decoration: none !important;
     border: 1px solid #a61c28 !important;
     cursor: pointer !important;
     box-sizing: border-box !important;

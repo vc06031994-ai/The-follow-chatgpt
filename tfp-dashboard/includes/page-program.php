@@ -588,7 +588,7 @@ function tfp_dashboard_render_program_pastdue($item, $week_url)
             <?php echo esc_html($week->post_title); ?> &middot;
             <?php printf(esc_html__('Due %s', 'tfp-dashboard'), esc_html($due_label)); ?>
         </p>
-        <a href="<?php echo esc_url($complete_url); ?>" class="tfp-pastdue-card__btn">
+        <a href="<?php echo esc_url($complete_url); ?>" class="tfp-pastdue-card__btn tfp-dash-btn">
             <?php esc_html_e('Complete Now', 'tfp-dashboard'); ?>
         </a>
     </div>

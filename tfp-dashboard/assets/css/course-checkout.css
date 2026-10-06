@@ -529,7 +529,7 @@ body.tfp-course-modal-open {
     overflow: hidden;
     border-radius: 12px;
     background: #f0f0f0;
-    min-height: 180px;
+    height: 100%;
 }
 
 .tfp-program-card__visual img {

@@ -130,7 +130,7 @@ function tfp_dashboard_render_grades_content()
                     </select>
                     <span class="tfp-grades-select-icon" aria-hidden="true">
                         <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-                            <path d="M1 1.5L6 6.5L11 1.5" stroke="#4b5563" stroke-width="1.5" stroke-linecap="round"
+                            <path d="M1 1.5L6 6.5L11 1.5" stroke="#00666E" stroke-width="1.5" stroke-linecap="round"
                                 stroke-linejoin="round" />
                         </svg>
                     </span>
@@ -152,7 +152,7 @@ function tfp_dashboard_render_grades_content()
                     </select>
                     <span class="tfp-grades-select-icon" aria-hidden="true">
                         <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-                            <path d="M1 1.5L6 6.5L11 1.5" stroke="#4b5563" stroke-width="1.5" stroke-linecap="round"
+                            <path d="M1 1.5L6 6.5L11 1.5" stroke="#00666E" stroke-width="1.5" stroke-linecap="round"
                                 stroke-linejoin="round" />
                         </svg>
                     </span>
@@ -161,69 +161,94 @@ function tfp_dashboard_render_grades_content()
 
             <!-- Section 1: 58 Week Discipleship Grades Table -->
             <div class="tfp-grades-card">
-                <h3 class="tfp-grades-card__title"><?php esc_html_e('58 Week Discipleship Grades', 'tfp-dashboard'); ?></h3>
-                <div class="tfp-grades-table-wrap tfp-grades-table-scroll">
-                    <table class="tfp-grades-table">
-                        <thead>
-                            <tr>
-                                <th class="tfp-col-week"><?php esc_html_e('Week', 'tfp-dashboard'); ?></th>
-                                <th class="tfp-col-name"><?php esc_html_e('Week Name', 'tfp-dashboard'); ?></th>
-                                <th class="tfp-col-attendance"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></th>
-                                <th class="tfp-col-grade tfp-col-hw"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></th>
-                                <th class="tfp-col-grade tfp-col-quiz"><?php esc_html_e('Quiz', 'tfp-dashboard'); ?></th>
-                                <th class="tfp-col-grade tfp-col-test"><?php esc_html_e('Test', 'tfp-dashboard'); ?></th>
-                                <th class="tfp-col-grade tfp-col-overall">
-                                    <?php esc_html_e('Overall Grade', 'tfp-dashboard'); ?>
-                                </th>
-                                <th class="tfp-col-action"><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
-                            </tr>
-                        </thead>
-                        <tbody id="tfpGradesTableBody">
-                            <?php foreach ($weeks_data as $row): ?>
-                                <tr class="tfp-grade-row" data-week-num="<?php echo esc_attr($row['num']); ?>">
-                                    <td class="tfp-col-week"><?php echo esc_html(sprintf('%02d', $row['num'])); ?></td>
-                                    <td class="tfp-col-name" title="<?php echo esc_attr($row['name']); ?>">
-                                        <?php echo esc_html($row['name']); ?>
-                                    </td>
-                                    <td class="tfp-col-attendance">
-                                        <?php if ($row['attendance'] === 'PRE'): ?>
-                                            <span
-                                                class="tfp-badge-attendance tfp-badge-attendance--pre"><?php esc_html_e('PRE', 'tfp-dashboard'); ?></span>
-                                        <?php else: ?>
-                                            <span class="tfp-badge-empty">—</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="tfp-col-grade tfp-col-hw">
-                                        <?php echo tfp_grades_render_circle_badge($row['homework']); ?>
-                                    </td>
-                                    <td class="tfp-col-grade tfp-col-quiz">
-                                        <?php echo tfp_grades_render_circle_badge($row['quiz']); ?>
-                                    </td>
-                                    <td class="tfp-col-grade tfp-col-test">
-                                        <?php echo tfp_grades_render_circle_badge($row['test']); ?>
-                                    </td>
-                                    <td class="tfp-col-grade tfp-col-overall">
-                                        <?php echo tfp_grades_render_circle_badge($row['overall']); ?>
-                                    </td>
-                                    <td class="tfp-col-action">
-                                        <?php
-                                        $action_url = add_query_arg('lesson_id', $row['lesson_id'], $week_url);
-                                        if ($row['action'] === 'Add'):
-                                            ?>
-                                            <a href="<?php echo esc_url($action_url); ?>" class="tfp-grade-btn tfp-grade-btn--add">
-                                                <?php esc_html_e('Add', 'tfp-dashboard'); ?>
-                                            </a>
-                                        <?php else: ?>
-                                            <a href="<?php echo esc_url($action_url); ?>" class="tfp-grade-btn tfp-grade-btn--view">
-                                                <?php esc_html_e('View', 'tfp-dashboard'); ?>
-                                            </a>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                <div class="tfp-padding-box">
+                    <h5 class="tfp-grades-card__title"><?php esc_html_e('58 Week Discipleship Grades', 'tfp-dashboard'); ?>
+                    </h5>
                 </div>
+                    <div class="tfp-grades-table-wrap tfp-grades-table-scroll">
+                        <table class="tfp-grades-table">
+                            <thead>
+                                <tr>
+                                    <th class="tfp-col-week">
+                                        <?php esc_html_e('Week', 'tfp-dashboard'); ?>
+                                    </th>
+                                    <th class="tfp-col-name">
+                                        <?php esc_html_e('Week Name', 'tfp-dashboard'); ?>
+                                    </th>
+                                    <th class="tfp-col-attendance">
+                                        <?php esc_html_e('Attendance', 'tfp-dashboard'); ?>
+                                    </th>
+                                    <th class="tfp-col-grade tfp-col-hw">
+                                        <?php esc_html_e('Homework', 'tfp-dashboard'); ?>
+                                    </th>
+                                    <th class="tfp-col-grade tfp-col-quiz">
+                                        <?php esc_html_e('Quiz', 'tfp-dashboard'); ?>
+                                    </th>
+                                    <th class="tfp-col-grade tfp-col-test">
+                                        <?php esc_html_e('Test', 'tfp-dashboard'); ?>
+                                    </th>
+                                    <th class="tfp-col-grade tfp-col-overall">
+                                        <?php esc_html_e('Overall Grade', 'tfp-dashboard'); ?>
+                                    </th>
+                                    <th class="tfp-col-action">
+                                        <?php esc_html_e('Action', 'tfp-dashboard'); ?>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tfpGradesTableBody">
+                                <?php foreach ($weeks_data as $row): ?>
+                                    <tr class="tfp-grade-row" data-week-num="<?php echo esc_attr($row['num']); ?>">
+                                        <td class="tfp-col-week">
+                                            <?php echo esc_html(sprintf('%02d', $row['num'])); ?>
+                                        </td>
+                                        <td class="tfp-col-name" title="<?php echo esc_attr($row['name']); ?>">
+                                            <?php echo esc_html($row['name']); ?>
+                                        </td>
+                                        <td class="tfp-col-attendance">
+                                            <?php if ($row['attendance'] === 'PRE'): ?>
+                                                <span class="tfp-badge-attendance tfp-badge-attendance--pre">
+                                                    <?php esc_html_e('PRE', 'tfp-dashboard'); ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="tfp-badge-empty">—</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="tfp-col-grade tfp-col-hw">
+                                            <?php echo tfp_grades_render_circle_badge($row['homework']); ?>
+                                        </td>
+                                        <td class="tfp-col-grade tfp-col-quiz">
+                                            <?php echo tfp_grades_render_circle_badge($row['quiz']); ?>
+                                        </td>
+                                        <td class="tfp-col-grade tfp-col-test">
+                                            <?php echo tfp_grades_render_circle_badge($row['test']); ?>
+                                        </td>
+                                        <td class="tfp-col-grade tfp-col-overall">
+                                            <?php echo tfp_grades_render_circle_badge($row['overall']); ?>
+                                        </td>
+                                        <td class="tfp-col-action">
+                                            <?php
+                                            $action_url = add_query_arg('lesson_id', $row['lesson_id'], $week_url);
+                                            if ($row['action'] === 'Add'):
+                                                ?>
+                                                <a href="<?php echo esc_url($action_url); ?>"
+                                                    class="tfp-grade-btn tfp-grade-btn--add">
+                                                    <?php esc_html_e('Add', 'tfp-dashboard'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="<?php echo esc_url($action_url); ?>"
+                                                    class="tfp-grade-btn tfp-grade-btn--view">
+                                                    <?php esc_html_e('View', 'tfp-dashboard'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+             
+
             </div>
 
             <!-- Section 2: Section Mastery Cards -->
@@ -496,8 +521,8 @@ function tfp_dashboard_render_grades_content()
 
         <!-- Embedded Mastery Data for instant client-side transitions -->
         <script id="tfpMasteryDataJSON" type="application/json">
-                                            <?php echo wp_json_encode($all_mastery_data); ?>
-                                        </script>
+                                                <?php echo wp_json_encode($all_mastery_data); ?>
+                                            </script>
 
     </div><!-- /.tfp-grades-page -->
     <?php

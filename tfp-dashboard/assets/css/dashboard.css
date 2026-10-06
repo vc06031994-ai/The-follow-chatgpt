@@ -294,11 +294,19 @@
     font-size: 13px;
     margin-bottom: 10px;
     color: var(--tfp-dash-muted);
+    background: #EBEBEB;
+    padding: 6px 12px;
 }
 
 .tfp-dash-pageheader__crumb a {
     color: var(--tfp-dash-teal);
     text-decoration: none;
+}
+
+.tfp-dash-pageheader__crumb a:hover {
+    color: var(--tfp-dash-teal) !important;
+    text-decoration: underline;
+
 }
 
 .tfp-dash-pageheader__crumb span[aria-hidden] {
@@ -479,6 +487,48 @@
 .tfp-dash-btn--outline:hover {
     background: transparent;
     color:#151411
+}
+
+/* Action Buttons */
+.tfp-grade-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 78px !important;
+    height: 30px !important;
+    border-radius: 8px !important;
+    font-family: var(--tfp-dash-font, 'Eudoxus Sans', sans-serif) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 130% !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.tfp-grade-btn--view {
+    background: #00666e !important;
+    color: #ffffff !important;
+    border: 1px solid #00666e !important;
+}
+
+.tfp-grade-btn--view:hover {
+    background: transparent !important;
+    border-color: #00666e !important;
+    color: #00666e !important;
+}
+
+.tfp-grade-btn--add {
+    background: #FBEAEA !important;
+    color: #151411 !important;
+    border: 1px solid #AF1E2D !important;
+}
+
+.tfp-grade-btn--add:hover {
+    background: #fcdada !important;
+    border-color: #f87171 !important;
 }
 
 /* Custom submission popup (matches theme) */

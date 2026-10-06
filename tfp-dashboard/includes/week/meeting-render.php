@@ -54,7 +54,7 @@ function tfp_dashboard_render_week_meeting_experience($week)
             </div>
 
             <div class="tfp-week__meeting-sidebar-footer">
-                <a href="<?php echo esc_url(add_query_arg(['lesson_id' => $lesson_id, 'tab' => 'homework'])); ?>" class="tfp-dash-btn tfp-week__meeting-back-btn">
+                <a href="<?php echo esc_url(add_query_arg(['lesson_id' => $lesson_id, 'tab' => 'homework'])); ?>" class="tfp-dash-btn tfp-week__meeting-back-btn tfp-dash-btn--primary">
                     ‹ <?php esc_html_e('Back to Homework', 'tfp-dashboard'); ?>
                 </a>
             </div>
@@ -73,7 +73,7 @@ function tfp_dashboard_render_week_meeting_experience($week)
                     $time=(string)get_post_meta($lesson_id,'tfp_week_meeting_time',true);
                     $facilitator=(string)get_post_meta($lesson_id,'tfp_week_facilitator_name',true);
                     $discord=(string)get_post_meta($lesson_id,'tfp_week_meeting_discord_url',true);
-                    $discord=$discord?:apply_filters('tfp_dashboard_discord_url','#');
+                    $discord=$discord?:apply_filters('tfp_dashboard_discord_url','https://discord.gg/MunVQXc3a');
                 ?>
                     <article class="tfp-week__meeting-attendance">
                         <h5><?php esc_html_e('Weekly Meetings','tfp-dashboard'); ?></h5>
