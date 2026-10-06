@@ -474,12 +474,7 @@ function tfp_dashboard_render_program_journey($course_id, $state)
             $short_cohort_name = !empty($parts[1]) ? trim($parts[1]) : $cohort_name;
             $meta_bits[] = $short_cohort_name;
         }
-        if (!empty($c['facilitator'])) {
-            $meta_bits[] = sprintf(__('Facilitator: %s', 'tfp-dashboard'), $c['facilitator']);
-        }
-        if (!empty($c['schedule'])) {
-            $meta_bits[] = $c['schedule'];
-        }
+        // Program journey shows only the short cohort name.
     }
     ?>
     <div class="tfp-journey">
