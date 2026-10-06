@@ -42,7 +42,7 @@ function tfp_dashboard_render_program_content()
     // existing overall program dashboard rather than looping back to the list.
     $requested_course_id = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
     if ($requested_course_id && in_array($requested_course_id, $course_ids, true)) {
-        tfp_dashboard_render_overall_dashboard_content();
+        tfp_dashboard_render_program_course_detail($requested_course_id);
         return;
     }
 
