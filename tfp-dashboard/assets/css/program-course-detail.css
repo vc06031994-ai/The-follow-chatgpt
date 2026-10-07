@@ -266,6 +266,39 @@
     display:none;
 }
 
+.tfp-course-detail__progress{
+    width:100%;
+    margin:28px 0 0;
+}
+
+.tfp-course-detail__progress-track{
+    width:100%;
+    height:5px;
+    overflow:hidden;
+    background:#e8e8e8;
+    border-radius:999px;
+}
+
+.tfp-course-detail__progress-track span{
+    display:block;
+    height:100%;
+    min-width:4px;
+    background:#570506;
+    border-radius:999px;
+}
+
+.tfp-course-detail__progress-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:8px;
+    color:#151411;
+    font-family:var(--tfp-dash-font);
+    font-size:12px;
+    font-weight:400;
+    line-height:130%;
+}
+
 .tfp-course-detail__module-summary{
     display:flex;
     align-items:center;
