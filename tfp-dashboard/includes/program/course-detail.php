@@ -216,12 +216,10 @@ function tfp_dashboard_render_program_course_detail($course_id)
                             <?php echo esc_html($rating ? number_format($rating, 1) : '—'); ?></span>
                     </div>
                 </div>
-                <div class="tfp-course-detail__side-progress">
-                    <span><?php echo esc_html(count($weeks) ? sprintf(__('%d/%d Module', 'tfp-dashboard'), $progress['completed'], count($weeks)) : '0/0 Module'); ?></span><strong><?php echo esc_html($percent); ?>%</strong>
+                <div class="tfp-course-detail__module-summary">
+                    <h4><?php echo esc_html(count($weeks)); ?> <?php esc_html_e('Module', 'tfp-dashboard'); ?></h4>
+                    <span><?php echo esc_html(count($weeks) ? sprintf(__('%d/%d Done', 'tfp-dashboard'), $progress['completed'], count($weeks)) : '0/0 Done'); ?></span>
                 </div>
-                <div class="tfp-course-detail__progressbar"><span style="width:<?php echo esc_attr($percent); ?>%"></span>
-                </div>
-                <h4><?php echo esc_html(count($weeks)); ?>     <?php esc_html_e('Module', 'tfp-dashboard'); ?></h4>
                 <ol class="tfp-course-detail__modules">
                     <?php foreach ($weeks as $i => $week):
                         $complete = function_exists('tfp_ld_is_week_complete') && tfp_ld_is_week_complete($user_id, $week->ID);
