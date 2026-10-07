@@ -31,6 +31,95 @@ function tfp_dashboard_render_program_course_detail($course_id)
     if (!in_array($tab, ['about', 'assignment', 'review'], true))
         $tab = 'about';
 
+    // Handle the student course review submission on the same Program Detail screen.
+    if (
+        $tab === 'review'
+        && 'POST' === strtoupper($_SERVER['REQUEST_METHOD'] ?? '')
+        && isset($_POST['tfp_course_review_submit'])
+        && (int) ($_POST['tfp_review_course_id'] ?? 0) === (int) $course_id
+    ) {
+        $nonce = isset($_POST['tfp_course_review_nonce']) ? sanitize_text_field(wp_unslash($_POST['tfp_course_review_nonce'])) : '';
+        if (!wp_verify_nonce($nonce, 'tfp_submit_course_review_' . $course_id)) {
+            wp_die(esc_html__('Security check failed. Please try again.', 'tfp-dashboard'));
+        }
+
+        $review_text = isset($_POST['tfp_review_text']) ? trim(wp_strip_all_tags(wp_unslash($_POST['tfp_review_text']))) : '';
+        $review_rating = isset($_POST['tfp_review_rating']) ? absint($_POST['tfp_review_rating']) : 0;
+        $review_rating = min(5, max(1, $review_rating));
+
+        if ($review_text === '') {
+            $redirect = add_query_arg(
+                ['course_id' => $course_id, 'course_tab' => 'review', 'review_error' => 'empty'],
+                $program_url
+            );
+            wp_safe_redirect($redirect);
+            exit;
+        }
+
+        // One review per student per course. Existing review is updated instead of creating duplicates.
+        $existing_review = get_comments([
+            'post_id' => $course_id,
+            'user_id' => $user_id,
+            'number' => 1,
+            'status' => 'all',
+            'type' => 'comment',
+        ]);
+
+        if (!empty($existing_review)) {
+            $comment_id = (int) $existing_review[0]->comment_ID;
+            wp_update_comment([
+                'comment_ID' => $comment_id,
+                'comment_content' => $review_text,
+                'comment_approved' => 1,
+            ]);
+        } else {
+            $comment_id = wp_insert_comment([
+                'comment_post_ID' => $course_id,
+                'comment_content' => $review_text,
+                'user_id' => $user_id,
+                'comment_author' => wp_get_current_user()->display_name,
+                'comment_author_email' => wp_get_current_user()->user_email,
+                'comment_type' => 'comment',
+                'comment_approved' => 1,
+            ]);
+        }
+
+        if ($comment_id) {
+            update_comment_meta($comment_id, 'tfp_course_review_rating', $review_rating);
+
+            // Keep the course rating in sync with approved student ratings.
+            $rated_comments = get_comments([
+                'post_id' => $course_id,
+                'status' => 'approve',
+                'number' => 0,
+            ]);
+            $ratings = [];
+            foreach ($rated_comments as $rated_comment) {
+                $saved_rating = (int) get_comment_meta($rated_comment->comment_ID, 'tfp_course_review_rating', true);
+                if ($saved_rating >= 1 && $saved_rating <= 5) {
+                    $ratings[] = $saved_rating;
+                }
+            }
+            if ($ratings) {
+                update_post_meta($course_id, 'tfp_course_rating', round(array_sum($ratings) / count($ratings), 1));
+            }
+
+            $redirect = add_query_arg(
+                ['course_id' => $course_id, 'course_tab' => 'review', 'review_submitted' => '1'],
+                $program_url
+            );
+            wp_safe_redirect($redirect);
+            exit;
+        }
+
+        $redirect = add_query_arg(
+            ['course_id' => $course_id, 'course_tab' => 'review', 'review_error' => 'save'],
+            $program_url
+        );
+        wp_safe_redirect($redirect);
+        exit;
+    }
+
     $program_url = function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-program') : '#';
     $continue_url = $current_week
         ? add_query_arg(['lesson_id' => $current_week->ID, 'tab' => 'video'], function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-week') : '#')
@@ -168,25 +257,75 @@ function tfp_dashboard_render_program_course_detail($course_id)
                     <?php tfp_dashboard_render_program_course_assignments($user_id, $course_id, $weeks, $current_week, $program_url); ?>
                 <?php else: ?>
                     <section class="tfp-course-detail__reviews">
-                        <?php if ($course_comments):
-                            foreach ($course_comments as $comment): ?>
+                        <?php if (isset($_GET['review_submitted'])): ?>
+                            <div class="tfp-course-review__notice"><?php esc_html_e('Your review has been saved.', 'tfp-dashboard'); ?></div>
+                        <?php elseif (isset($_GET['review_error'])): ?>
+                            <div class="tfp-course-review__notice tfp-course-review__notice--error">
+                                <?php
+                                $review_error = sanitize_key(wp_unslash($_GET['review_error']));
+                                echo esc_html(
+                                    $review_error === 'empty'
+                                        ? __('Please enter a review before submitting.', 'tfp-dashboard')
+                                        : __('We could not save your review. Please try again.', 'tfp-dashboard')
+                                );
+                                ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($course_comments): ?>
+                            <?php foreach ($course_comments as $comment):
+                                $comment_rating = (int) get_comment_meta($comment->comment_ID, 'tfp_course_review_rating', true);
+                                $comment_rating = $comment_rating >= 1 && $comment_rating <= 5 ? $comment_rating : 0;
+                                ?>
                                 <article class="tfp-course-review">
                                     <h4><?php echo esc_html(get_comment_author($comment)); ?></h4>
-                                    <div class="tfp-course-review__stars">★ ★ ★ ★ ★</div>
+                                    <?php if ($comment_rating): ?>
+                                        <div class="tfp-course-review__stars" aria-label="<?php echo esc_attr(sprintf(__('%d out of 5 stars', 'tfp-dashboard'), $comment_rating)); ?>">
+                                            <?php echo esc_html(str_repeat('★', $comment_rating) . str_repeat('☆', 5 - $comment_rating)); ?>
+                                        </div>
+                                    <?php endif; ?>
                                     <time><?php echo esc_html(get_comment_date(get_option('date_format'), $comment)); ?></time>
                                     <p><?php echo esc_html(get_comment_text($comment)); ?></p>
                                 </article>
-                            <?php endforeach; else: ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <div class="tfp-course-review__empty">
                                 <?php esc_html_e('No course reviews have been published yet.', 'tfp-dashboard'); ?>
                             </div>
                         <?php endif; ?>
-                        <button type="button"
-                            class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Give Review', 'tfp-dashboard'); ?></button>
-                        <?php if ($comment_count > 4): ?><button type="button"
-                                class="tfp-dash-btn tfp-course-detail__more"><?php esc_html_e('See more review', 'tfp-dashboard'); ?></button><?php endif; ?>
-                    </section>
-                <?php endif; ?>
+
+                        <details class="tfp-course-review-form">
+                            <summary class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Give Review', 'tfp-dashboard'); ?></summary>
+                            <form method="post" class="tfp-course-review-form__inner">
+                                <?php wp_nonce_field('tfp_submit_course_review_' . $course_id, 'tfp_course_review_nonce'); ?>
+                                <input type="hidden" name="tfp_course_review_submit" value="1">
+                                <input type="hidden" name="tfp_review_course_id" value="<?php echo esc_attr($course_id); ?>">
+
+                                <div class="tfp-course-review-form__field">
+                                    <label for="tfp-review-rating-<?php echo esc_attr($course_id); ?>"><?php esc_html_e('Your Rating', 'tfp-dashboard'); ?></label>
+                                    <select id="tfp-review-rating-<?php echo esc_attr($course_id); ?>" name="tfp_review_rating" required>
+                                        <option value=""><?php esc_html_e('Select rating', 'tfp-dashboard'); ?></option>
+                                        <option value="5">5 — ★★★★★</option>
+                                        <option value="4">4 — ★★★★☆</option>
+                                        <option value="3">3 — ★★★☆☆</option>
+                                        <option value="2">2 — ★★☆☆☆</option>
+                                        <option value="1">1 — ★☆☆☆☆</option>
+                                    </select>
+                                </div>
+
+                                <div class="tfp-course-review-form__field">
+                                    <label for="tfp-review-text-<?php echo esc_attr($course_id); ?>"><?php esc_html_e('Your Review', 'tfp-dashboard'); ?></label>
+                                    <textarea id="tfp-review-text-<?php echo esc_attr($course_id); ?>" name="tfp_review_text" rows="5" required placeholder="<?php esc_attr_e('Share your experience with this course...', 'tfp-dashboard'); ?>"></textarea>
+                                </div>
+
+                                <button type="submit" class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Submit Review', 'tfp-dashboard'); ?></button>
+                            </form>
+                        </details>
+
+                        <?php if ($comment_count > 4): ?>
+                            <button type="button" class="tfp-dash-btn tfp-course-detail__more"><?php esc_html_e('See more review', 'tfp-dashboard'); ?></button>
+                        <?php endif; ?>
+
             </main>
 
             <aside class="tfp-course-detail__sidebar">
