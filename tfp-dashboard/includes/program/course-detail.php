@@ -326,6 +326,8 @@ function tfp_dashboard_render_program_course_detail($course_id)
                         <?php if ($comment_count > 4): ?>
                             <button type="button" class="tfp-dash-btn tfp-course-detail__more"><?php esc_html_e('See more review', 'tfp-dashboard'); ?></button>
                         <?php endif; ?>
+                    </section>
+                <?php endif; ?>
 
             </main>
 
