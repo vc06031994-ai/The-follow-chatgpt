@@ -10,7 +10,7 @@
 if (!defined('ABSPATH'))
     exit;
 
-define('TFP_DASH_VERSION', '1.2.14');
+define('TFP_DASH_VERSION', '1.2.15');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
