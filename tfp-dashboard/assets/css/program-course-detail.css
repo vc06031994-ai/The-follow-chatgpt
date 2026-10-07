@@ -513,6 +513,82 @@
     font-size:12px;
 }
 
+.tfp-course-review__notice{
+    margin:0 0 20px;
+    padding:12px 14px;
+    border-radius:6px;
+    background:#eef6f6;
+    color:#00666e;
+    font-family:var(--tfp-dash-font-alt);
+    font-size:12px;
+}
+
+.tfp-course-review__notice--error{
+    background:#fff2f2;
+    color:#8b1e1e;
+}
+
+.tfp-course-review-form{
+    margin-top:22px;
+}
+
+.tfp-course-review-form summary{
+    display:inline-flex;
+    list-style:none;
+    cursor:pointer;
+    user-select:none;
+}
+
+.tfp-course-review-form summary::-webkit-details-marker{
+    display:none;
+}
+
+.tfp-course-review-form[open] summary{
+    margin-bottom:16px;
+}
+
+.tfp-course-review-form__inner{
+    padding:20px;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
+    background:#fff;
+}
+
+.tfp-course-review-form__field{
+    margin-bottom:16px;
+}
+
+.tfp-course-review-form__field label{
+    display:block;
+    margin-bottom:7px;
+    color:#151411;
+    font-family:var(--tfp-dash-font);
+    font-size:12px;
+    font-weight:600;
+}
+
+.tfp-course-review-form__field select,
+.tfp-course-review-form__field textarea{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid #d8d8d8;
+    border-radius:6px;
+    padding:10px 12px;
+    background:#fff;
+    color:#151411;
+    font-family:var(--tfp-dash-font-alt);
+    font-size:12px;
+}
+
+.tfp-course-review-form__field textarea{
+    min-height:120px;
+    resize:vertical;
+}
+
+.tfp-course-review-form__inner button{
+    border:0;
+}
+
 .tfp-course-detail__more{
     display:block;
     width:100%;
