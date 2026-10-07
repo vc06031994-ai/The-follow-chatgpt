@@ -550,7 +550,7 @@ function tfp_dashboard_render_program_current_lesson($user_id, $course_id, $week
                 <a href="<?php echo esc_url($continue_url); ?>" class="tfp-current-lesson-btn tfp-dash-btn tfp-dash-btn--primary">
                     <?php esc_html_e('Continue Lesson', 'tfp-dashboard'); ?>
                 </a>
-                <a href="<?php echo esc_url(apply_filters('tfp_dashboard_discord_url', '#')); ?>" target="_blank" rel="noopener"
+                <a href="<?php echo esc_url(apply_filters('tfp_dashboard_discord_url', 'https://discord.gg/MunVQXc3a')); ?>" target="_blank" rel="noopener"
                     class="tfp-current-lesson-btn tfp-dash-btn tfp-dash-btn--primary">
                     <?php esc_html_e('Go to Discord', 'tfp-dashboard'); ?>
                 </a>
