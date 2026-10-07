@@ -216,6 +216,17 @@ function tfp_dashboard_render_program_course_detail($course_id)
                             <?php echo esc_html($rating ? number_format($rating, 1) : '—'); ?></span>
                     </div>
                 </div>
+                <?php if (!empty($progress['completed']) && (int) $progress['completed'] > 0): ?>
+                    <div class="tfp-course-detail__progress">
+                        <div class="tfp-course-detail__progress-track">
+                            <span style="width:<?php echo esc_attr(min(100, max(0, $percent))); ?>%"></span>
+                        </div>
+                        <div class="tfp-course-detail__progress-meta">
+                            <span><?php echo esc_html(count($weeks) ? sprintf(__('%d/%d Module', 'tfp-dashboard'), $progress['completed'], count($weeks)) : '0/0 Module'); ?></span>
+                            <span><?php echo esc_html($percent); ?>%</span>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <div class="tfp-course-detail__module-summary">
                     <h4><?php echo esc_html(count($weeks)); ?> <?php esc_html_e('Module', 'tfp-dashboard'); ?></h4>
                     <span><?php echo esc_html(count($weeks) ? sprintf(__('%d/%d Done', 'tfp-dashboard'), $progress['completed'], count($weeks)) : '0/0 Done'); ?></span>
