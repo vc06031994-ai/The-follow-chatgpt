@@ -282,7 +282,7 @@ function tfp_dashboard_render_program_course_assignments($user_id, $course_id, $
             ?>
             <article class="tfp-course-assignment <?php echo $item['done'] ? 'is-complete' : ''; ?>">
                 <div>
-                    <h3><?php echo esc_html($item['title']); ?></h3>
+                    <h6><?php echo esc_html($item['title']); ?></h6>
                     <p><?php echo esc_html($item['desc']); ?></p>
                 </div>
                 <div class="tfp-course-assignment__actions">
