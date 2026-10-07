@@ -34,6 +34,13 @@ function tfp_dashboard_render_program_course_detail($course_id)
     $program_url = function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-program') : '#';
 
     // Handle the student course review submission on the same Program Detail screen.
+    // This renderer runs inside the page/shortcode output, so do not use a header
+    // redirect here. A redirect can fail after headers have already been sent and
+    // leave the student with a blank page. Instead, save the review and render the
+    // result on the same request.
+    $review_notice = '';
+    $review_notice_error = false;
+
     if (
         $tab === 'review'
         && 'POST' === strtoupper($_SERVER['REQUEST_METHOD'] ?? '')
@@ -50,13 +57,9 @@ function tfp_dashboard_render_program_course_detail($course_id)
         $review_rating = min(5, max(1, $review_rating));
 
         if ($review_text === '') {
-            $redirect = add_query_arg(
-                ['course_id' => $course_id, 'course_tab' => 'review', 'review_error' => 'empty'],
-                $program_url
-            );
-            wp_safe_redirect($redirect);
-            exit;
-        }
+            $review_notice = __('Please enter a review before submitting.', 'tfp-dashboard');
+            $review_notice_error = true;
+        } else {
 
         // One review per student per course. Existing review is updated instead of creating duplicates.
         $existing_review = get_comments([
@@ -67,26 +70,30 @@ function tfp_dashboard_render_program_course_detail($course_id)
             'type' => 'comment',
         ]);
 
-        if (!empty($existing_review)) {
-            $comment_id = (int) $existing_review[0]->comment_ID;
-            wp_update_comment([
-                'comment_ID' => $comment_id,
-                'comment_content' => $review_text,
-                'comment_approved' => 1,
-            ]);
-        } else {
-            $comment_id = wp_insert_comment([
-                'comment_post_ID' => $course_id,
-                'comment_content' => $review_text,
-                'user_id' => $user_id,
-                'comment_author' => wp_get_current_user()->display_name,
-                'comment_author_email' => wp_get_current_user()->user_email,
-                'comment_type' => 'comment',
-                'comment_approved' => 1,
-            ]);
-        }
+            if (!empty($existing_review)) {
+                $comment_id = (int) $existing_review[0]->comment_ID;
+                $save_result = wp_update_comment([
+                    'comment_ID' => $comment_id,
+                    'comment_content' => $review_text,
+                    'comment_approved' => 1,
+                ]);
+                $comment_id = $save_result ? $comment_id : 0;
+            } else {
+                $comment_id = wp_insert_comment([
+                    'comment_post_ID' => $course_id,
+                    'comment_content' => $review_text,
+                    'user_id' => $user_id,
+                    'comment_author' => wp_get_current_user()->display_name,
+                    'comment_author_email' => wp_get_current_user()->user_email,
+                    'comment_type' => 'comment',
+                    'comment_approved' => 1,
+                ]);
+                if (is_wp_error($comment_id)) {
+                    $comment_id = 0;
+                }
+            }
 
-        if ($comment_id) {
+            if ($comment_id) {
             update_comment_meta($comment_id, 'tfp_course_review_rating', $review_rating);
 
             // Keep the course rating in sync with approved student ratings.
@@ -106,20 +113,13 @@ function tfp_dashboard_render_program_course_detail($course_id)
                 update_post_meta($course_id, 'tfp_course_rating', round(array_sum($ratings) / count($ratings), 1));
             }
 
-            $redirect = add_query_arg(
-                ['course_id' => $course_id, 'course_tab' => 'review', 'review_submitted' => '1'],
-                $program_url
-            );
-            wp_safe_redirect($redirect);
-            exit;
+                $review_notice = __('Your review has been saved.', 'tfp-dashboard');
+                $review_notice_error = false;
+            } else {
+                $review_notice = __('We could not save your review. Please try again.', 'tfp-dashboard');
+                $review_notice_error = true;
+            }
         }
-
-        $redirect = add_query_arg(
-            ['course_id' => $course_id, 'course_tab' => 'review', 'review_error' => 'save'],
-            $program_url
-        );
-        wp_safe_redirect($redirect);
-        exit;
     }
 
     $continue_url = $current_week
@@ -258,18 +258,9 @@ function tfp_dashboard_render_program_course_detail($course_id)
                     <?php tfp_dashboard_render_program_course_assignments($user_id, $course_id, $weeks, $current_week, $program_url); ?>
                 <?php else: ?>
                     <section class="tfp-course-detail__reviews">
-                        <?php if (isset($_GET['review_submitted'])): ?>
-                            <div class="tfp-course-review__notice"><?php esc_html_e('Your review has been saved.', 'tfp-dashboard'); ?></div>
-                        <?php elseif (isset($_GET['review_error'])): ?>
-                            <div class="tfp-course-review__notice tfp-course-review__notice--error">
-                                <?php
-                                $review_error = sanitize_key(wp_unslash($_GET['review_error']));
-                                echo esc_html(
-                                    $review_error === 'empty'
-                                        ? __('Please enter a review before submitting.', 'tfp-dashboard')
-                                        : __('We could not save your review. Please try again.', 'tfp-dashboard')
-                                );
-                                ?>
+                        <?php if ($review_notice !== ''): ?>
+                            <div class="tfp-course-review__notice<?php echo $review_notice_error ? ' tfp-course-review__notice--error' : ''; ?>">
+                                <?php echo esc_html($review_notice); ?>
                             </div>
                         <?php endif; ?>
 
