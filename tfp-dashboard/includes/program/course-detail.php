@@ -31,6 +31,8 @@ function tfp_dashboard_render_program_course_detail($course_id)
     if (!in_array($tab, ['about', 'assignment', 'review'], true))
         $tab = 'about';
 
+    $program_url = function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-program') : '#';
+
     // Handle the student course review submission on the same Program Detail screen.
     if (
         $tab === 'review'
@@ -120,7 +122,6 @@ function tfp_dashboard_render_program_course_detail($course_id)
         exit;
     }
 
-    $program_url = function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-program') : '#';
     $continue_url = $current_week
         ? add_query_arg(['lesson_id' => $current_week->ID, 'tab' => 'video'], function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-week') : '#')
         : $program_url;
