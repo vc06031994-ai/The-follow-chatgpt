@@ -220,10 +220,10 @@
 .tfp-course-detail__side-head h3{
     margin:0 0 14px;
     color:#151411;
-    font-family:var(--tfp-dash-font);
-    font-size:16px;
-    font-weight:700;
-    line-height:145%;
+    font-family:var(--tfp-dash-font) !important;
+    font-size:18px !important;
+    font-weight:700 !important;
+    line-height:150% !important;
 }
 
 .tfp-course-detail__side-author{
@@ -240,10 +240,10 @@
 }
 
 .tfp-course-detail__side-author > span:not(.tfp-course-detail__avatar){
-    color:#151411;
+    color:#9C9CA4;
     font-family:var(--tfp-dash-font);
-    font-size:10px;
-    font-weight:500;
+    font-size:16px;
+    font-weight:400;
     line-height:130%;
 }
 
@@ -294,8 +294,8 @@
     margin-top:8px;
     color:#151411;
     font-family:var(--tfp-dash-font);
-    font-size:12px;
-    font-weight:400;
+    font-size:10px;
+    font-weight:500;
     line-height:130%;
 }
 
@@ -303,10 +303,7 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    min-height:80px;
-    margin:28px 0 0;
-    padding:0 22px;
-    border:1px solid #dcdcdc;
+    padding:30px 0 20px 0;
     background:#fff;
 }
 
@@ -314,16 +311,16 @@
     margin:0;
     color:#151411;
     font-family:var(--tfp-dash-font);
-    font-size:22px;
-    font-weight:700;
-    line-height:130%;
+    font-size:16px !important;
+    font-weight:700 !important;
+    line-height:130% !important;
 }
 
 .tfp-course-detail__module-summary span{
-    color:#9699a0;
+    color:#9C9CA4;
     font-family:var(--tfp-dash-font);
-    font-size:14px;
-    font-weight:400;
+    font-size:10px;
+    font-weight:500;
     line-height:130%;
     white-space:nowrap;
 }
@@ -343,29 +340,33 @@
     align-items:center;
     min-height:50px;
     padding:5px 0;
-    color:#5f6065;
+    color:#3C3C43D9;
     font-family:var(--tfp-dash-font);
-    font-size:13px;
-    line-height:135%;
+    font-size:10px;
+    font-weight:500;
+    line-height:130%;
 }
 
 .tfp-course-detail__module-number{
-    width:40px;
-    height:40px;
+    width:30px;
+    height:30px;
     display:flex;
     align-items:center;
     justify-content:center;
     border-radius:7px;
     background:#f5f5f7;
-    color:#242426;
-    font-size:14px;
+    color:#151411;
+    font-size:12px;
     font-weight:500;
+    line-height:130%;
 }
 
 .tfp-course-detail__modules li.is-complete .tfp-course-detail__module-number,
 .tfp-course-detail__modules li.is-current .tfp-course-detail__module-number{
     background:#570506;
     color:#fff;
+    width:28px;
+    height:28px;
 }
 
 .tfp-course-detail__modules li.is-complete .tfp-course-detail__module-number{
