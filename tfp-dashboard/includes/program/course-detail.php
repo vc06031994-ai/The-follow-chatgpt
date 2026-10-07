@@ -265,13 +265,15 @@ function tfp_dashboard_render_program_course_assignments($user_id, $course_id, $
     $quiz_done = !empty($progress['quiz']);
     $test_done = !empty($progress['test']);
     $video_done = !empty($progress['video']);
+    // Assignment sequence: each task unlocks only after the previous task is complete.
+    // This keeps the student journey linear, matching the Figma interaction pattern.
     $items = [
-        ['title' => sprintf(__('%s: Watch Video', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Watch the lesson and take notes as you follow along.', 'tfp-dashboard'), 'tab' => 'video', 'done' => $video_done, 'label' => __('Start Lesson', 'tfp-dashboard')],
-        ['title' => sprintf(__('%s: Start Reading', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Open the reading section to explore this week\'s topic.', 'tfp-dashboard'), 'tab' => 'reading', 'done' => $reading_done, 'label' => __('Start Reading', 'tfp-dashboard')],
-        ['title' => sprintf(__('%s: Homework', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Answer the reflection questions to apply what you learned.', 'tfp-dashboard'), 'tab' => 'homework', 'done' => $homework_done, 'label' => __('Start Homework', 'tfp-dashboard')],
-        ['title' => sprintf(__('%s: Take Quiz', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Complete the short quiz to test your understanding.', 'tfp-dashboard'), 'tab' => 'quiz', 'done' => $quiz_done, 'label' => __('Start Quiz', 'tfp-dashboard')],
-        ['title' => sprintf(__('%s: Take Test', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Complete this test to unlock next week\'s lessons.', 'tfp-dashboard'), 'tab' => 'test', 'done' => $test_done, 'label' => __('Start Test', 'tfp-dashboard')],
-        ['title' => __('Weekly Group Meeting', 'tfp-dashboard'), 'desc' => __('Join your group to review this week\'s topic and finish your weekly progress.', 'tfp-dashboard'), 'tab' => 'meeting', 'done' => false, 'label' => __('Join Meeting', 'tfp-dashboard')],
+        ['title' => sprintf(__('%s: Watch Video', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Watch the lesson and take notes as you follow along.', 'tfp-dashboard'), 'tab' => 'video', 'done' => $video_done, 'enabled' => true, 'label' => __('Start Lesson', 'tfp-dashboard')],
+        ['title' => sprintf(__('%s: Start Reading', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Open the reading section to explore this week\'s topic.', 'tfp-dashboard'), 'tab' => 'reading', 'done' => $reading_done, 'enabled' => $video_done, 'label' => __('Start Reading', 'tfp-dashboard')],
+        ['title' => sprintf(__('%s: Homework', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Answer the reflection questions to apply what you learned.', 'tfp-dashboard'), 'tab' => 'homework', 'done' => $homework_done, 'enabled' => $reading_done, 'label' => __('Start Homework', 'tfp-dashboard')],
+        ['title' => sprintf(__('%s: Take Quiz', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Complete the short quiz to test your understanding.', 'tfp-dashboard'), 'tab' => 'quiz', 'done' => $quiz_done, 'enabled' => $homework_done, 'label' => __('Start Quiz', 'tfp-dashboard')],
+        ['title' => sprintf(__('%s: Take Test', 'tfp-dashboard'), $current_week->post_title), 'desc' => __('Complete this test to unlock next week\'s lessons.', 'tfp-dashboard'), 'tab' => 'test', 'done' => $test_done, 'enabled' => $quiz_done, 'label' => __('Start Test', 'tfp-dashboard')],
+        ['title' => __('Weekly Group Meeting', 'tfp-dashboard'), 'desc' => __('Join your group to review this week\'s topic and finish your weekly progress.', 'tfp-dashboard'), 'tab' => 'meeting', 'done' => false, 'enabled' => $test_done, 'label' => __('Join Meeting', 'tfp-dashboard')],
     ];
     ?>
     <section class="tfp-course-detail__assignment">
@@ -283,8 +285,12 @@ function tfp_dashboard_render_program_course_assignments($user_id, $course_id, $
                     <h3><?php echo esc_html($item['title']); ?></h3>
                     <p><?php echo esc_html($item['desc']); ?></p>
                 </div>
-                <a class="tfp-dash-btn <?php echo $item['done'] ? 'tfp-reded-btn' : 'tfp-dash-btn--primary'; ?>"
-                    href="<?php echo esc_url($url); ?>"><?php echo esc_html($item['done'] ? __('Completed', 'tfp-dashboard') : $item['label']); ?></a>
+                <?php if (!empty($item['enabled'])): ?>
+                    <a class="tfp-dash-btn <?php echo $item['done'] ? 'tfp-reded-btn' : 'tfp-dash-btn--primary'; ?>"
+                        href="<?php echo esc_url($url); ?>"><?php echo esc_html($item['done'] ? __('Completed', 'tfp-dashboard') : $item['label']); ?></a>
+                <?php else: ?>
+                    <span class="tfp-dash-btn tfp-course-assignment__disabled" aria-disabled="true"><?php echo esc_html($item['label']); ?></span>
+                <?php endif; ?>
                 <?php if (!$item['done'] && $item['tab'] !== 'meeting'): ?><span
                         class="tfp-course-assignment__due"><?php esc_html_e('7 Days Left', 'tfp-dashboard'); ?></span><?php endif; ?>
             </article>
