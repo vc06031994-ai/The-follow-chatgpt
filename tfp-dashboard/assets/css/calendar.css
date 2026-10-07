@@ -17,7 +17,7 @@
 
 .tfp-cal-skip-action {
     position: absolute;
-    top: 0;
+    top: 50px;
     right: 0;
     z-index: 2;
 }
@@ -818,4 +818,10 @@
     margin-top: 2px;
     color: var(--tfp-dash-muted);
     font-size: 12px;
+}
+
+.tfp-cal-requests-empty{
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #c4c4c4;
 }

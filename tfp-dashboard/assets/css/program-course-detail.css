@@ -479,14 +479,15 @@
     margin:0 0 4px;
     color:#151411;
     font-family:var(--tfp-dash-font);
-    font-size:13px;
-    font-weight:600;
+    font-size:16px !important;
+    font-weight:700;
 }
 
 .tfp-course-review__stars{
     color:#847230;
     font-size:15px;
     letter-spacing:1px;
+    line-height:130%;
 }
 
 .tfp-course-review time{
@@ -500,10 +501,11 @@
 
 .tfp-course-review p{
     margin:8px 0 0;
-    color:#2e2e2e;
+    color:#151411;
     font-family:var(--tfp-dash-font-alt);
-    font-size:11px;
-    line-height:155%;
+    font-size:14px;
+    font-weight:500;
+    line-height:160%;
 }
 
 .tfp-course-review__empty{
@@ -620,7 +622,7 @@
     }
 
     .tfp-course-detail__modules{
-        max-height:none;
+        max-height:350px;
     }
 }
 
