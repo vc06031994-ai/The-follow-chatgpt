@@ -180,7 +180,7 @@ add_action('wp_enqueue_scripts', function () {
             wp_enqueue_script('tfp-checkout-googlepay', TFP_DASH_URL . 'assets/js/checkout-googlepay.js', ['tfp-course-checkout', 'google-pay-sdk', 'stripe-js'], TFP_DASH_VERSION, true);
         }
 
-        wp_enqueue_script('paypal-sdk', 'https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons', [], null, TFP_DASH_VERSION, true);
+        wp_enqueue_script('paypal-sdk', 'https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons', [], null, true);
         $course_paypal_total = '0.00';
         if (function_exists('WC') && WC()->cart) {
             $course_paypal_total = wc_format_decimal((float) WC()->cart->get_total('edit'), 2);
