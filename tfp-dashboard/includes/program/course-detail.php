@@ -285,14 +285,17 @@ function tfp_dashboard_render_program_course_assignments($user_id, $course_id, $
                     <h3><?php echo esc_html($item['title']); ?></h3>
                     <p><?php echo esc_html($item['desc']); ?></p>
                 </div>
-                <?php if (!empty($item['enabled'])): ?>
-                    <a class="tfp-dash-btn <?php echo $item['done'] ? 'tfp-reded-btn' : 'tfp-dash-btn--primary'; ?>"
-                        href="<?php echo esc_url($url); ?>"><?php echo esc_html($item['done'] ? __('Completed', 'tfp-dashboard') : $item['label']); ?></a>
-                <?php else: ?>
-                    <span class="tfp-dash-btn tfp-course-assignment__disabled" aria-disabled="true"><?php echo esc_html($item['label']); ?></span>
-                <?php endif; ?>
-                <?php if (!$item['done'] && $item['tab'] !== 'meeting'): ?><span
-                        class="tfp-course-assignment__due"><?php esc_html_e('7 Days Left', 'tfp-dashboard'); ?></span><?php endif; ?>
+                <div class="tfp-course-assignment__actions">
+                    <?php if (!empty($item['enabled'])): ?>
+                        <a class="tfp-dash-btn <?php echo $item['done'] ? 'tfp-reded-btn' : 'tfp-dash-btn--primary'; ?>"
+                            href="<?php echo esc_url($url); ?>"><?php echo esc_html($item['done'] ? __('Completed', 'tfp-dashboard') : $item['label']); ?></a>
+                    <?php else: ?>
+                        <span class="tfp-dash-btn tfp-course-assignment__disabled" aria-disabled="true"><?php echo esc_html($item['label']); ?></span>
+                    <?php endif; ?>
+                    <?php if (!$item['done'] && $item['tab'] !== 'meeting'): ?>
+                        <span class="tfp-course-assignment__due"><?php esc_html_e('7 Days Left', 'tfp-dashboard'); ?></span>
+                    <?php endif; ?>
+                </div>
             </article>
         <?php endforeach; ?>
     </section>
