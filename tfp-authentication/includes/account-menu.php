@@ -98,7 +98,13 @@ function tfp_get_account_menu_items($user_id)
         || (function_exists('tfp_dashboard_user_is_staff') && tfp_dashboard_user_is_staff($user_id));
 
     if ($can_enter_program_dashboard && function_exists('tfp_dashboard_get_url')) {
-        $dashboard_url = tfp_dashboard_get_url('tfp-dashboard-home');
+        $is_facilitator = function_exists('tfp_dashboard_user_is_facilitator')
+            && tfp_dashboard_user_is_facilitator($user_id);
+
+        $dashboard_url = $is_facilitator
+            ? tfp_dashboard_get_url('tfp-dashboard-facilitator-home')
+            : tfp_dashboard_get_url('tfp-dashboard-home');
+
         if (!empty($dashboard_url) && $dashboard_url !== '#') {
             $items[] = [
                 'id'    => 'dashboard',
