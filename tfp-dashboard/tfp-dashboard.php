@@ -39,6 +39,7 @@ require_once TFP_DASH_PATH . 'includes/templates.php';
 require_once TFP_DASH_PATH . 'includes/shell.php';
 require_once TFP_DASH_PATH . 'includes/icons.php';
 require_once TFP_DASH_PATH . 'includes/page-home.php';
+require_once TFP_DASH_PATH . 'includes/facilitator/page-home.php';
 require_once TFP_DASH_PATH . 'includes/communication/cpt-tickets.php';
 require_once TFP_DASH_PATH . 'includes/communication/db.php';
 require_once TFP_DASH_PATH . 'includes/communication/ajax.php';
@@ -190,6 +191,10 @@ add_action('wp_enqueue_scripts', function () {
             'nonce' => wp_create_nonce('tfp_checkout_nonce'),
             'total' => $course_paypal_total,
         ]);
+    }
+
+    if ($template === 'tfp-dashboard-facilitator-home') {
+        wp_enqueue_style('tfp-dashboard-facilitator', TFP_DASH_URL . 'assets/css/facilitator.css', ['tfp-dashboard-core', 'tfp-dashboard-components'], TFP_DASH_VERSION);
     }
 
     if ($template === 'tfp-dashboard-communication') {
