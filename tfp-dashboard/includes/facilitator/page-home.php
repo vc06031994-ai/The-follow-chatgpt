@@ -439,6 +439,9 @@ function tfp_dashboard_render_facilitator_page_header($name)
 {
     ?>
     <div class="tfp-dash-pageheader tfp-facilitator-header">
+        <button type="button" class="tfp-dash-pageheader__mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>">
+            <?php echo tfp_dashboard_icon('toggle'); ?>
+        </button>
         <div class="tfp-dash-pageheader__crumb tfp-facilitator-breadcrumb">
             <a href="#"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
             <span aria-hidden="true">/</span>
