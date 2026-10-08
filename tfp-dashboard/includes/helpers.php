@@ -237,7 +237,7 @@ function tfp_dashboard_user_is_staff($user_id = null)
     }
 
     $user = get_userdata($user_id);
-    if ($user && in_array('facilitator', (array) $user->roles, true)) {
+    if ($user && array_intersect(['facilitator', 'group_leader'], (array) $user->roles)) {
         return true;
     }
 
