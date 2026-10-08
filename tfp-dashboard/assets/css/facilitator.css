@@ -96,3 +96,15 @@
 .tfp-roster-pagination a:last-child:hover{background:var(--tfp-dash-teal-dark);color:#fff}
 @media(max-width:900px){.tfp-roster-filters{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tfp-roster-table{min-width:860px}}
 @media(max-width:480px){.tfp-roster-filters{grid-template-columns:1fr!important}.tfp-roster-pagination{align-items:flex-start;flex-direction:column}}
+
+.tfp-roster-table tbody>tr:nth-child(odd)>td, table tbody>tr:nth-child(odd)>th{
+    background-color: transparent !important;
+    
+}
+
+.tfp-roster-table th,
+.tfp-roster-table td,
+.tfp-roster-table tr {
+    border-right:0 !important;
+    border-left:0 !important;
+}
