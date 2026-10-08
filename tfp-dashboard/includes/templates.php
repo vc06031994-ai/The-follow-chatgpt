@@ -20,6 +20,10 @@ function tfp_dashboard_template_map()
             'label' => __('TFP Dashboard — Home', 'tfp-dashboard'),
             'file' => 'templates/template-home.php',
         ],
+        'tfp-dashboard-facilitator-home' => [
+            'label' => __('TFP Facilitator Dashboard — Home', 'tfp-dashboard'),
+            'file' => 'templates/template-facilitator-home.php',
+        ],
         'tfp-dashboard-communication' => [
             'label' => __('TFP Dashboard — Communication', 'tfp-dashboard'),
             'file' => 'templates/template-communication.php',
@@ -62,6 +66,36 @@ function tfp_dashboard_template_map()
         ],
     ];
 }
+
+add_action('init', function () {
+    static $facilitator_checked = false;
+    if ($facilitator_checked) {
+        return;
+    }
+    $facilitator_checked = true;
+
+    $existing = get_page_by_path('facilitator-console');
+    if ($existing) {
+        update_post_meta($existing->ID, '_wp_page_template', 'tfp-dashboard-facilitator-home');
+        return;
+    }
+
+    $new_id = wp_insert_post([
+        'post_title' => 'Facilitator Console',
+        'post_name' => 'facilitator-console',
+        'post_status' => 'publish',
+        'post_type' => 'page',
+        'comment_status' => 'closed',
+        'ping_status' => 'closed',
+    ]);
+
+    if ($new_id && !is_wp_error($new_id)) {
+        update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-home');
+        if (function_exists('flush_rewrite_rules')) {
+            flush_rewrite_rules(false);
+        }
+    }
+});
 
 add_filter('theme_page_templates', function ($templates) {
     foreach (tfp_dashboard_template_map() as $slug => $data) {
