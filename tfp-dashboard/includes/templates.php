@@ -24,6 +24,10 @@ function tfp_dashboard_template_map()
             'label' => __('TFP Facilitator Dashboard — Home', 'tfp-dashboard'),
             'file' => 'templates/template-facilitator-home.php',
         ],
+        'tfp-dashboard-facilitator-roster' => [
+            'label' => __('TFP Facilitator Dashboard — Roster', 'tfp-dashboard'),
+            'file' => 'templates/template-facilitator-roster.php',
+        ],
         'tfp-dashboard-communication' => [
             'label' => __('TFP Dashboard — Communication', 'tfp-dashboard'),
             'file' => 'templates/template-communication.php',
@@ -91,6 +95,52 @@ add_action('init', function () {
 
     if ($new_id && !is_wp_error($new_id)) {
         update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-home');
+        if (function_exists('flush_rewrite_rules')) {
+            flush_rewrite_rules(false);
+        }
+    }
+});
+
+/**
+ * Ensure the Facilitator Roster page exists and uses our custom template.
+ */
+add_action('init', function () {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $checked = true;
+
+    $pages = get_posts([
+        'post_type' => 'page',
+        'post_status' => ['publish', 'draft', 'pending'],
+        'meta_key' => '_wp_page_template',
+        'meta_value' => 'tfp-dashboard-facilitator-roster',
+        'numberposts' => 1,
+        'fields' => 'ids',
+    ]);
+
+    if (!empty($pages)) {
+        return;
+    }
+
+    $page = get_page_by_path('facilitator-roster');
+    if ($page) {
+        update_post_meta($page->ID, '_wp_page_template', 'tfp-dashboard-facilitator-roster');
+        return;
+    }
+
+    $new_id = wp_insert_post([
+        'post_title' => 'Facilitator Roster',
+        'post_name' => 'facilitator-roster',
+        'post_status' => 'publish',
+        'post_type' => 'page',
+        'comment_status' => 'closed',
+        'ping_status' => 'closed',
+    ]);
+
+    if ($new_id && !is_wp_error($new_id)) {
+        update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-roster');
         if (function_exists('flush_rewrite_rules')) {
             flush_rewrite_rules(false);
         }
