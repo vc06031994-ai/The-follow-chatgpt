@@ -2,14 +2,14 @@
  * Shared dashboard UI (panels, typography, buttons, sidebar) comes from
  * core.css, dashboard.css and components.css. Keep this file lightweight.
  */
-.tfp-facilitator-header{margin-bottom:16px}
+.tfp-facilitator-header{margin-bottom:18px}
 .tfp-facilitator-breadcrumb{margin-bottom:10px}
-.tfp-facilitator-filters{display:grid;grid-template-columns:repeat(4, 160px);gap:8px;margin:0 0 16px}
+.tfp-facilitator-filters{display:grid;grid-template-columns:repeat(4, 160px);gap:8px;margin:0 0 20px}
 .tfp-facilitator-filters select{width:100%;height:36px;box-sizing:border-box;border:1px solid #d6d6d6;border-radius:8px;background:#fff;padding:0 12px;font-family:var(--tfp-dash-font);font-size:13px;color:var(--tfp-dash-text)}
 .tfp-facilitator-filters select:focus{outline:2px solid rgba(0,102,110,.18);outline-offset:1px;border-color:var(--tfp-dash-teal)}
 .tfp-facilitator-search{min-width:0}.tfp-facilitator-clear-filter{grid-column:1/-1;display:inline-flex;align-items:center;justify-content:center;min-height:34px;width:max-content;padding:0 12px;border:1px solid var(--tfp-dash-teal);border-radius:8px;color:var(--tfp-dash-teal);text-decoration:none;font:700 12px/1.2 var(--tfp-dash-font)}
 .tfp-facilitator-clear-filter:hover{background:var(--tfp-dash-teal);color:#fff}
-.tfp-facilitator-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.tfp-facilitator-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
 .tfp-facilitator-metric{min-height:86px;padding:10px 16px;border-radius:var(--tfp-dash-radius);display:flex;flex-direction:column;justify-content:center; row-gap:10px}
 .tfp-facilitator-metric{box-shadow: 0px 4px 4px 0px #00000040;}
 .tfp-facilitator-metric:nth-child(1){background:#EDEDED}.tfp-facilitator-metric:nth-child(2){background:#DEE2E2}.tfp-facilitator-metric:nth-child(3){background:#DEE2E2}.tfp-facilitator-metric:nth-child(4){background:#DEE2E2}
@@ -28,7 +28,7 @@
 .tfp-facilitator-action{width:100%;margin-top:15px}
 .tfp-facilitator-task-list>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ddd}.tfp-facilitator-task-list>div:last-child{border-bottom:0}
 .tfp-facilitator-task-list strong{display:block;font-size:12px;margin-bottom:4px}.tfp-facilitator-task-list small{display:block;font-family:var(--tfp-dash-font-alt);font-size:9px}
-.tfp-facilitator-panel--recent{grid-column:1/2;margin-top:0}
+.tfp-facilitator-panel--recent{grid-column:1/2;margin-top:16px;}
 .tfp-facilitator-activity-list{max-height:310px;overflow:auto;border-top:1px solid #ddd}.tfp-facilitator-activity-list>div{display:grid;grid-template-columns:1fr auto;gap:2px 20px;padding:10px 0;border-bottom:1px solid #ddd}
 .tfp-facilitator-activity-list strong{font-size:12px}.tfp-facilitator-activity-list small,.tfp-facilitator-activity-list span{font-family:var(--tfp-dash-font-alt);font-size:9px}.tfp-facilitator-activity-list span{text-align:right}
 .tfp-facilitator-review-items{margin-top:12px;border-top:1px solid #ddd}.tfp-facilitator-review-items>div{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #ddd}.tfp-facilitator-review-items strong{display:block;font-size:12px;margin-bottom:3px}.tfp-facilitator-review-items small{display:block;font-family:var(--tfp-dash-font-alt);font-size:10px}

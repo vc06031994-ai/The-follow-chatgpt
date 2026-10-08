@@ -313,6 +313,7 @@ function tfp_dashboard_render_facilitator_home_content()
     </div>
 
     <div class="tfp-facilitator-grid">
+        <div>
         <section class="tfp-dash-panel tfp-facilitator-panel">
             <div class="tfp-facilitator-panel__head">
                 <div>
@@ -353,6 +354,27 @@ function tfp_dashboard_render_facilitator_home_content()
                 <?php endif; ?>
             </div>
         </section>
+
+            <section class="tfp-dash-panel tfp-facilitator-panel tfp-facilitator-panel--recent">
+            <div class="tfp-facilitator-panel__head">
+                <div>
+                    <h6><?php esc_html_e('Recent Activities', 'tfp-dashboard'); ?></h6>
+                    <p><?php esc_html_e('Your recent facilitation activities', 'tfp-dashboard'); ?></p>
+                </div>
+            </div>
+            <div class="tfp-facilitator-activity-list">
+                <?php if ($activities):
+                    foreach ($activities as $activity): ?>
+                        <div>
+                            <strong><?php echo esc_html($activity['type']); ?></strong><span><?php echo esc_html($activity['date']); ?></span><small><?php echo esc_html($activity['title']); ?></small><span><?php echo esc_html($activity['time']); ?></span>
+                        </div><?php endforeach; else: ?>
+                    <div class="tfp-facilitator-activity-empty">
+                        <?php esc_html_e('No recent activity matches the selected filters.', 'tfp-dashboard'); ?></div>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        </div>
 
         <div class="tfp-facilitator-right">
             <section class="tfp-dash-panel tfp-facilitator-panel tfp-facilitator-panel--quick">
@@ -408,24 +430,7 @@ function tfp_dashboard_render_facilitator_home_content()
             </section>
         </div>
 
-        <section class="tfp-dash-panel tfp-facilitator-panel tfp-facilitator-panel--recent">
-            <div class="tfp-facilitator-panel__head">
-                <div>
-                    <h6><?php esc_html_e('Recent Activities', 'tfp-dashboard'); ?></h6>
-                    <p><?php esc_html_e('Your recent facilitation activities', 'tfp-dashboard'); ?></p>
-                </div>
-            </div>
-            <div class="tfp-facilitator-activity-list">
-                <?php if ($activities):
-                    foreach ($activities as $activity): ?>
-                        <div>
-                            <strong><?php echo esc_html($activity['type']); ?></strong><span><?php echo esc_html($activity['date']); ?></span><small><?php echo esc_html($activity['title']); ?></small><span><?php echo esc_html($activity['time']); ?></span>
-                        </div><?php endforeach; else: ?>
-                    <div class="tfp-facilitator-activity-empty">
-                        <?php esc_html_e('No recent activity matches the selected filters.', 'tfp-dashboard'); ?></div>
-                <?php endif; ?>
-            </div>
-        </section>
+    
     </div>
     <?php
 }
