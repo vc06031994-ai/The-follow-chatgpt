@@ -182,8 +182,7 @@ function tfp_dashboard_render_facilitator_home_content()
     $test_items = tfp_facilitator_test_items($cohorts);
     $homework_count = count($homework_items);
     $tests_count = count($test_items);
-    $date_filter = isset($_GET['tfp_fac_date']) ? sanitize_text_field(wp_unslash($_GET['tfp_fac_date'])) : '';
-    $activities = tfp_facilitator_activity_items($cohorts, $date_filter);
+    $activities = tfp_facilitator_activity_items($cohorts);
 
     tfp_dashboard_render_facilitator_page_header($name);
 
