@@ -1,56 +1,36 @@
-/* Facilitator Console — Figma 921:4082 */
-.tfp-facilitator-header{border-bottom:2px solid #570506;padding:0 0 22px;margin-bottom:16px}
-.tfp-facilitator-breadcrumb{display:flex;gap:16px;align-items:center;font-size:14px;background:#ebebeb;padding:8px 16px;margin:0 0 10px}
-.tfp-facilitator-breadcrumb span{color:#00666e}.tfp-facilitator-breadcrumb b{font-weight:500}.tfp-facilitator-breadcrumb strong{font-weight:700}
-.tfp-facilitator-header h1{font-size:42px;line-height:1.15;margin:0 0 12px;font-weight:700;color:#151411}
-.tfp-facilitator-header p{font-family:'Lora',serif;font-size:16px;line-height:1.5;margin:0;color:#151411}
-.tfp-facilitator-filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:0 0 16px}
-.tfp-facilitator-filters select,.tfp-facilitator-date-filter{height:36px;border:1px solid #d6d6d6;border-radius:7px;background:#fff;padding:0 12px;font-family:'Eudoxus Sans',sans-serif;font-size:13px;color:#151411;text-align:left}
-.tfp-facilitator-date-filter{cursor:pointer}
+/* Facilitator Console — page-specific layout only.
+ * Shared dashboard UI (panels, typography, buttons, sidebar) comes from
+ * core.css, dashboard.css and components.css. Keep this file lightweight.
+ */
+.tfp-facilitator-header{margin-bottom:16px}
+.tfp-facilitator-breadcrumb{margin-bottom:10px}
+.tfp-facilitator-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 16px}
+.tfp-facilitator-filters select,.tfp-facilitator-filters input[type=date]{width:100%;height:36px;box-sizing:border-box;border:1px solid #d6d6d6;border-radius:8px;background:#fff;padding:0 12px;font-family:var(--tfp-dash-font);font-size:13px;color:var(--tfp-dash-text)}
+.tfp-facilitator-filters select:focus,.tfp-facilitator-filters input[type=date]:focus{outline:2px solid rgba(0,102,110,.18);outline-offset:1px;border-color:var(--tfp-dash-teal)}
+.tfp-facilitator-clear-filter{grid-column:1/-1;display:inline-flex;align-items:center;justify-content:center;min-height:34px;width:max-content;padding:0 12px;border:1px solid var(--tfp-dash-teal);border-radius:8px;color:var(--tfp-dash-teal);text-decoration:none;font:700 12px/1.2 var(--tfp-dash-font)}
+.tfp-facilitator-clear-filter:hover{background:var(--tfp-dash-teal);color:#fff}
 .tfp-facilitator-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
-.tfp-facilitator-metric{min-height:86px;padding:10px 16px;background:#ebebeb;border-radius:10px;box-shadow:0 3px 4px rgba(0,0,0,.14);display:flex;flex-direction:column;justify-content:center}
-.tfp-facilitator-metric:nth-child(2){background:#dfe4e5}.tfp-facilitator-metric:nth-child(3){background:#e5e5e5}.tfp-facilitator-metric:nth-child(4){background:#dfe4e5}
-.tfp-facilitator-metric span{font-size:10px}.tfp-facilitator-metric strong{font-size:20px;line-height:1.2;margin:2px 0 3px}.tfp-facilitator-metric small{font-family:'Lora',serif;font-size:11px}
-.tfp-facilitator-metric--teal strong{color:#00666e}.tfp-facilitator-metric--gold strong{color:#a88420}.tfp-facilitator-metric--red strong{color:#b3262e}
+.tfp-facilitator-metric{min-height:86px;padding:10px 16px;border-radius:var(--tfp-dash-radius);display:flex;flex-direction:column;justify-content:center}
+.tfp-facilitator-metric:nth-child(1){background:#ebebeb}.tfp-facilitator-metric:nth-child(2){background:#dfe4e5}.tfp-facilitator-metric:nth-child(3){background:#e5e5e5}.tfp-facilitator-metric:nth-child(4){background:#dfe4e5}
+.tfp-facilitator-metric span{font-size:10px}.tfp-facilitator-metric strong{font-size:20px;line-height:1.2;margin:2px 0 3px}.tfp-facilitator-metric small{font-family:var(--tfp-dash-font-alt);font-size:11px}
+.tfp-facilitator-metric--teal strong{color:var(--tfp-dash-teal)}.tfp-facilitator-metric--gold strong{color:#a88420}.tfp-facilitator-metric--red strong{color:#b3262e}
 .tfp-facilitator-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.9fr);gap:16px;align-items:start}
-.tfp-facilitator-panel{border:1px solid #d4d4d4;border-radius:12px;background:#fff;padding:14px 16px;min-width:0}
+.tfp-facilitator-panel{min-width:0;padding:14px 16px}
 .tfp-facilitator-panel__head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px}
-.tfp-facilitator-panel h2{font-size:15px;margin:0 0 4px;font-weight:700}.tfp-facilitator-panel p{font-family:'Lora',serif;font-size:11px;margin:0;color:#151411}
-.tfp-facilitator-panel__head>a{font-size:10px;color:#00666e;text-decoration:none;margin-top:4px}.tfp-facilitator-panel__head>a:hover{text-decoration:underline}
-.tfp-facilitator-course-list{border-top:1px solid #ddd}
-.tfp-facilitator-course-row{display:flex;justify-content:space-between;gap:20px;padding:11px 0;border-bottom:1px solid #ddd}
-.tfp-facilitator-course-row h3{font-size:13px;margin:0 0 8px}.tfp-facilitator-course-row p{font-family:'Lora',serif;font-size:10px;margin:0 0 7px}
-.tfp-facilitator-course-meta{min-width:115px;text-align:right;display:flex;flex-direction:column;gap:10px;font-family:'Lora',serif;font-size:10px}.tfp-facilitator-course-meta strong{font-family:'Eudoxus Sans',sans-serif;font-size:12px}
-.tfp-facilitator-empty{font-family:'Lora',serif;font-size:12px;padding:20px 0}
-.tfp-facilitator-right{display:flex;flex-direction:column;gap:16px}
-.tfp-facilitator-panel--quick{padding-bottom:18px}.tfp-facilitator-panel--quick>h2{margin-bottom:4px}.tfp-facilitator-panel--quick>p{margin-bottom:12px}
-.tfp-facilitator-action{display:flex;align-items:center;justify-content:center;height:43px;background:#00666e;color:#fff!important;border-radius:7px;text-decoration:none;font-size:13px;margin-top:10px}.tfp-facilitator-action:hover{background:#00545b}
-.tfp-facilitator-task-list>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ddd}
-.tfp-facilitator-task-list>div:last-child{border-bottom:0}.tfp-facilitator-task-list strong{display:block;font-size:12px;margin-bottom:4px}.tfp-facilitator-task-list small{display:block;font-family:'Lora',serif;font-size:9px}
-.tfp-facilitator-task-list a{display:inline-flex;align-items:center;justify-content:center;min-width:76px;height:31px;padding:0 14px;border-radius:7px;background:#00666e;color:#fff;text-decoration:none;font-size:11px}.tfp-facilitator-task-list a:hover{background:#00545b}
+.tfp-facilitator-panel h2{font-size:15px;margin:0 0 4px;font-weight:700}.tfp-facilitator-panel p{font-family:var(--tfp-dash-font-alt);font-size:11px;margin:0;color:var(--tfp-dash-text)}
+.tfp-facilitator-panel__head>a{font-size:10px;color:var(--tfp-dash-teal);text-decoration:none;margin-top:4px}.tfp-facilitator-panel__head>a:hover{text-decoration:underline}
+.tfp-facilitator-course-list{border-top:1px solid #ddd}.tfp-facilitator-course-row{display:flex;justify-content:space-between;gap:20px;padding:11px 0;border-bottom:1px solid #ddd}
+.tfp-facilitator-course-row h3{font-size:13px;margin:0 0 8px}.tfp-facilitator-course-row p{font-family:var(--tfp-dash-font-alt);font-size:10px;margin:0 0 7px}
+.tfp-facilitator-course-meta{min-width:115px;text-align:right;display:flex;flex-direction:column;gap:10px;font-family:var(--tfp-dash-font-alt);font-size:10px}.tfp-facilitator-course-meta strong{font-family:var(--tfp-dash-font);font-size:12px}
+.tfp-facilitator-empty,.tfp-facilitator-task-empty,.tfp-facilitator-activity-empty{font-family:var(--tfp-dash-font-alt);font-size:12px;padding:20px 0}
+.tfp-facilitator-right{display:flex;flex-direction:column;gap:16px}.tfp-facilitator-panel--quick{padding-bottom:18px}.tfp-facilitator-panel--quick>h2{margin-bottom:4px}.tfp-facilitator-panel--quick>p{margin-bottom:12px}
+.tfp-facilitator-action{width:100%;margin-top:10px}
+.tfp-facilitator-task-list>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ddd}.tfp-facilitator-task-list>div:last-child{border-bottom:0}
+.tfp-facilitator-task-list strong{display:block;font-size:12px;margin-bottom:4px}.tfp-facilitator-task-list small{display:block;font-family:var(--tfp-dash-font-alt);font-size:9px}
 .tfp-facilitator-panel--recent{grid-column:1/2;margin-top:0}
-.tfp-facilitator-activity-list{max-height:310px;overflow:auto;border-top:1px solid #ddd}
-.tfp-facilitator-activity-list>div{display:grid;grid-template-columns:1fr auto;gap:2px 20px;padding:10px 0;border-bottom:1px solid #ddd}
-.tfp-facilitator-activity-list strong{font-size:12px}.tfp-facilitator-activity-list small{font-family:'Lora',serif;font-size:9px}.tfp-facilitator-activity-list span{font-family:'Lora',serif;font-size:9px;text-align:right}
+.tfp-facilitator-activity-list{max-height:310px;overflow:auto;border-top:1px solid #ddd}.tfp-facilitator-activity-list>div{display:grid;grid-template-columns:1fr auto;gap:2px 20px;padding:10px 0;border-bottom:1px solid #ddd}
+.tfp-facilitator-activity-list strong{font-size:12px}.tfp-facilitator-activity-list small,.tfp-facilitator-activity-list span{font-family:var(--tfp-dash-font-alt);font-size:9px}.tfp-facilitator-activity-list span{text-align:right}
+.tfp-facilitator-review-items{margin-top:12px;border-top:1px solid #ddd}.tfp-facilitator-review-items>div{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #ddd}.tfp-facilitator-review-items strong{display:block;font-size:12px;margin-bottom:3px}.tfp-facilitator-review-items small{display:block;font-family:var(--tfp-dash-font-alt);font-size:10px}
 @media(max-width:1100px){.tfp-facilitator-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.tfp-facilitator-grid{grid-template-columns:1fr}.tfp-facilitator-panel--recent{grid-column:auto}}
-@media(max-width:767px){.tfp-facilitator-header h1{font-size:32px}.tfp-facilitator-filters{grid-template-columns:1fr 1fr}.tfp-facilitator-metrics{grid-template-columns:1fr 1fr}.tfp-facilitator-course-row{flex-direction:column}.tfp-facilitator-course-meta{text-align:left}.tfp-facilitator-grid{display:block}.tfp-facilitator-right{margin-top:16px}.tfp-facilitator-panel{margin-bottom:16px}}
-@media(max-width:480px){.tfp-facilitator-filters,.tfp-facilitator-metrics{grid-template-columns:1fr}.tfp-facilitator-header h1{font-size:28px}}
-
-/* Match the wider Figma facilitator shell */
-.tfp-dashboard--facilitator .tfp-dash-sidebar{width:260px;flex-basis:260px;padding:16px 14px;border-right:2px solid #570506}
-.tfp-dashboard--facilitator .tfp-dash-main{padding:0 48px 48px}
-.tfp-dashboard--facilitator .tfp-dash-sidebar__nav{gap:8px}
-.tfp-dashboard--facilitator .tfp-dash-sidebar__link{min-height:46px;padding:11px 14px}
-.tfp-dashboard--facilitator .tfp-dash-sidebar__brand{padding-top:10px;padding-bottom:28px}
-@media(max-width:991px){.tfp-dashboard--facilitator .tfp-dash-main{padding:20px 16px 40px}}
-
-/* Live filter and task states */
-.tfp-facilitator-filters select,.tfp-facilitator-filters input[type=date]{box-sizing:border-box;width:100%}
-.tfp-facilitator-clear-filter{grid-column:1/-1;display:inline-flex;align-items:center;justify-content:center;min-height:34px;width:max-content;padding:0 12px;border:1px solid #00666e;border-radius:7px;color:#00666e;text-decoration:none;font:700 12px/1.2 'Eudoxus Sans',sans-serif}
-.tfp-facilitator-clear-filter:hover{background:#00666e;color:#fff}
-.tfp-facilitator-task-empty,.tfp-facilitator-activity-empty{padding:14px 0}
-.tfp-facilitator-task-empty strong{display:block;font-size:12px;margin-bottom:4px}
-.tfp-facilitator-task-empty small,.tfp-facilitator-activity-empty{display:block;font-family:'Lora',serif;font-size:10px}
-@media(max-width:767px){.tfp-facilitator-clear-filter{grid-column:auto}}
-
-.tfp-facilitator-review-items{margin-top:12px;border-top:1px solid #ddd}.tfp-facilitator-review-items>div{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #ddd}.tfp-facilitator-review-items strong{display:block;font-size:12px;margin-bottom:3px}.tfp-facilitator-review-items small{display:block;font-family:'Lora',serif;font-size:10px}.tfp-facilitator-review-items a{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:30px;padding:0 12px;border-radius:7px;background:#00666e;color:#fff;text-decoration:none;font-size:11px}@media(max-width:767px){.tfp-facilitator-review-items>div{align-items:flex-start;flex-direction:column}.tfp-facilitator-review-items a{width:100%}}
+@media(max-width:767px){.tfp-facilitator-filters{grid-template-columns:1fr 1fr}.tfp-facilitator-metrics{grid-template-columns:1fr 1fr}.tfp-facilitator-course-row{flex-direction:column}.tfp-facilitator-course-meta{text-align:left}.tfp-facilitator-grid{display:block}.tfp-facilitator-right{margin-top:16px}.tfp-facilitator-panel{margin-bottom:16px}.tfp-facilitator-review-items>div{align-items:flex-start;flex-direction:column}}
+@media(max-width:480px){.tfp-facilitator-filters,.tfp-facilitator-metrics{grid-template-columns:1fr}}
