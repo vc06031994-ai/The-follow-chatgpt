@@ -222,6 +222,13 @@ add_action('wp_enqueue_scripts', function () {
             $facilitator_deps,
             TFP_DASH_VERSION
         );
+        wp_enqueue_script(
+            'tfp-dashboard-facilitator',
+            TFP_DASH_URL . 'assets/js/facilitator.js',
+            ['jquery', 'tfp-dashboard-selectwoo'],
+            TFP_DASH_VERSION,
+            true
+        );
 
 
     }
