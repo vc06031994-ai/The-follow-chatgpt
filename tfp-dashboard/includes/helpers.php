@@ -232,6 +232,21 @@ add_filter('tfp_profile_completion_fields', function ($fields) {
  * Administrators and Shop Managers are treated as staff. If a
  * "facilitator" role exists on the site, that role is staff too.
  */
+function tfp_dashboard_user_is_facilitator($user_id = null)
+{
+    $user_id = $user_id ?: get_current_user_id();
+    if (!$user_id) {
+        return false;
+    }
+
+    $user = get_userdata($user_id);
+    if (!$user) {
+        return false;
+    }
+
+    return (bool) array_intersect(['facilitator', 'group_leader'], (array) $user->roles);
+}
+
 function tfp_dashboard_user_is_staff($user_id = null)
 {
     $user_id = $user_id ?: get_current_user_id();
