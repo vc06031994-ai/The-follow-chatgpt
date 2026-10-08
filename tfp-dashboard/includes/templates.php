@@ -553,6 +553,22 @@ function tfp_dashboard_require_login()
         exit;
     }
 
+    // Facilitators / Group Leaders must stay inside the facilitator console.
+    // This also protects against an old account-menu Dashboard URL or a
+    // manually entered student dashboard URL.
+    $current_template = tfp_dashboard_current_template_slug();
+    if (
+        function_exists('tfp_dashboard_user_is_facilitator') &&
+        tfp_dashboard_user_is_facilitator() &&
+        strpos((string) $current_template, 'tfp-dashboard-facilitator-') !== 0
+    ) {
+        $facilitator_home = function_exists('tfp_dashboard_get_url')
+            ? tfp_dashboard_get_url('tfp-dashboard-facilitator-home')
+            : home_url('/facilitator-console/');
+        wp_safe_redirect($facilitator_home ?: home_url('/facilitator-console/'));
+        exit;
+    }
+
     // During registration/payment setup, students should only be able to use
     // Home/Profile-related dashboard pages. Program/class features stay hidden
     // and cannot be opened directly until enrollment is fully confirmed.
