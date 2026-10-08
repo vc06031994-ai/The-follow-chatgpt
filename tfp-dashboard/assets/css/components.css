@@ -54,3 +54,7 @@
 }
 
 .tfp-dash-modal__box h6 { margin: 0 0 4px; }
+
+
+/* Shared dashboard search control — reused by communication and facilitator views. */
+.tfp-dash-search{position:relative;width:100%}.tfp-dash-search__icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);display:flex;align-items:center;pointer-events:none;color:#4b5563}.tfp-dash-search input{width:100%;height:38px;border-radius:8px;border:1px solid #d1d5db;padding:8px 12px 8px 36px;font-family:var(--tfp-dash-font,'Eudoxus Sans',sans-serif);font-size:13px;color:#111827;background:#fff;box-sizing:border-box}.tfp-dash-search input:focus{outline:none;border-color:var(--tfp-dash-teal);box-shadow:0 0 0 2px rgba(0,102,110,.1)}
