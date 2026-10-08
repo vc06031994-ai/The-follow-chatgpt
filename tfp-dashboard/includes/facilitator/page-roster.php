@@ -342,7 +342,7 @@ function tfp_dashboard_render_facilitator_roster_content()
                             <td><span class="tfp-roster-status tfp-roster-status--<?php echo esc_attr($row['quiz']['tone']); ?>"><?php echo esc_html($row['quiz']['label']); ?></span></td>
                             <td><span class="tfp-roster-status tfp-roster-status--<?php echo esc_attr($row['test']['tone']); ?>"><?php echo esc_html($row['test']['label']); ?></span></td>
                             <td><span class="tfp-roster-grade"><?php echo $row['grade'] ? esc_html($row['grade']) : '—'; ?></span></td>
-                            <td><a class="tfp-roster-view-btn" href="<?php echo esc_url(add_query_arg(['tfp_roster_student' => $row['student_id'], 'tfp_roster_page' => 1])); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                            <td><a class="tfp-roster-view-btn" href="<?php echo esc_url(add_query_arg('tfp_student_id', $row['student_id'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -395,38 +395,4 @@ function tfp_dashboard_render_facilitator_roster_content()
         <?php endif; ?>
     </section>
 
-    <?php
-    $student_view_id = isset($_GET['tfp_roster_student']) ? absint($_GET['tfp_roster_student']) : 0;
-    if ($student_view_id) {
-        $student_row = null;
-        foreach ($all_rows as $candidate) {
-            if ((int) $candidate['student_id'] === $student_view_id) {
-                $student_row = $candidate;
-                break;
-            }
-        }
-        if ($student_row) {
-            $student = get_userdata($student_view_id);
-            $back_url = remove_query_arg('tfp_roster_student');
-            ?>
-            <section class="tfp-dash-panel tfp-facilitator-panel tfp-roster-student-detail">
-                <div class="tfp-facilitator-panel__head">
-                    <div>
-                        <h6><?php echo esc_html($student_row['name']); ?></h6>
-                        <p><?php echo esc_html($student ? $student->user_email : ''); ?></p>
-                    </div>
-                    <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('Back to Roster', 'tfp-dashboard'); ?></a>
-                </div>
-                <div class="tfp-roster-detail-grid">
-                    <div><span><?php esc_html_e('Current Module', 'tfp-dashboard'); ?></span><strong><?php echo esc_html($student_row['module']); ?></strong></div>
-                    <div><span><?php esc_html_e('Overall Grade', 'tfp-dashboard'); ?></span><strong><?php echo esc_html($student_row['grade'] ?: '—'); ?></strong></div>
-                    <div><span><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></span><strong><?php echo $student_row['attendance'] === '' ? '—' : esc_html($student_row['attendance'] . '%'); ?></strong></div>
-                    <div><span><?php esc_html_e('Homework', 'tfp-dashboard'); ?></span><strong><?php echo esc_html($student_row['homework']['label']); ?></strong></div>
-                    <div><span><?php esc_html_e('Quiz', 'tfp-dashboard'); ?></span><strong><?php echo esc_html($student_row['quiz']['label']); ?></strong></div>
-                    <div><span><?php esc_html_e('Test', 'tfp-dashboard'); ?></span><strong><?php echo esc_html($student_row['test']['label']); ?></strong></div>
-                </div>
-            </section>
-            <?php
-        }
-    }
 }
