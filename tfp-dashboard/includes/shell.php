@@ -16,8 +16,8 @@ function tfp_dashboard_nav_items()
     if (function_exists('tfp_dashboard_is_facilitator_context') && tfp_dashboard_is_facilitator_context()) {
         return apply_filters('tfp_dashboard_facilitator_nav_items', [
             ['id' => 'facilitator-home',       'label' => __('Home', 'tfp-dashboard'),              'icon' => 'home',     'template' => 'tfp-dashboard-facilitator-home'],
-            ['id' => 'facilitator-roster',     'label' => __('Roster', 'tfp-dashboard'),            'icon' => 'users',    'template' => 'tfp-dashboard-facilitator-roster'],
-            ['id' => 'facilitator-cohorts',    'label' => __('Cohorts', 'tfp-dashboard'),           'icon' => 'users',    'template' => 'tfp-dashboard-facilitator-cohorts'],
+            ['id' => 'facilitator-roster',     'label' => __('Roster', 'tfp-dashboard'),            'icon' => 'program',    'template' => 'tfp-dashboard-facilitator-roster'],
+            ['id' => 'facilitator-cohorts',    'label' => __('Cohorts', 'tfp-dashboard'),           'icon' => 'program',    'template' => 'tfp-dashboard-facilitator-cohorts'],
             ['id' => 'facilitator-homework',   'label' => __('Homework Review', 'tfp-dashboard'),   'icon' => 'doc',      'template' => 'tfp-dashboard-facilitator-homework'],
             ['id' => 'facilitator-tests',      'label' => __('Quiz & Test Review', 'tfp-dashboard'),'icon' => 'grades',   'template' => 'tfp-dashboard-facilitator-tests'],
             ['id' => 'facilitator-attendance', 'label' => __('Attendance', 'tfp-dashboard'),         'icon' => 'calendar', 'template' => 'tfp-dashboard-facilitator-attendance'],
@@ -26,7 +26,7 @@ function tfp_dashboard_nav_items()
             ['id' => 'facilitator-communication','label' => __('Communication', 'tfp-dashboard'),    'icon' => 'chat',     'template' => 'tfp-dashboard-facilitator-communication'],
             ['id' => 'facilitator-documents',  'label' => __('Documents', 'tfp-dashboard'),         'icon' => 'doc',      'template' => 'tfp-dashboard-facilitator-documents'],
             ['id' => 'facilitator-calendar',   'label' => __('Calendar', 'tfp-dashboard'),           'icon' => 'calendar', 'template' => 'tfp-dashboard-facilitator-calendar'],
-            ['id' => 'facilitator-settings',   'label' => __('Settings', 'tfp-dashboard'),           'icon' => 'settings', 'template' => 'tfp-dashboard-facilitator-settings'],
+            ['id' => 'facilitator-settings',   'label' => __('Settings', 'tfp-dashboard'),           'icon' => 'lock', 'template' => 'tfp-dashboard-facilitator-settings'],
             ['id' => 'facilitator-profile',    'label' => __('Profile', 'tfp-dashboard'),            'icon' => 'user',     'template' => 'tfp-dashboard-facilitator-profile'],
         ]);
     }
