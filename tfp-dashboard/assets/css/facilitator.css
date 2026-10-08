@@ -94,10 +94,5 @@
 .tfp-roster-pagination a.is-disabled{color:#9CA3AF;pointer-events:none}
 .tfp-roster-pagination a:last-child{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:8px;background:var(--tfp-dash-teal);color:#fff}
 .tfp-roster-pagination a:last-child:hover{background:var(--tfp-dash-teal-dark);color:#fff}
-.tfp-roster-student-detail{margin-top:16px}
-.tfp-roster-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
-.tfp-roster-detail-grid>div{padding:14px;border:1px solid var(--tfp-dash-border);border-radius:8px;background:#FAFAFA}
-.tfp-roster-detail-grid span{display:block;font:500 10px/130% var(--tfp-dash-font-alt);color:var(--tfp-dash-muted);margin-bottom:5px}
-.tfp-roster-detail-grid strong{font:700 13px/130% var(--tfp-dash-font)}
-@media(max-width:900px){.tfp-roster-filters{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tfp-roster-table{min-width:860px}.tfp-roster-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:480px){.tfp-roster-filters{grid-template-columns:1fr!important}.tfp-roster-pagination{align-items:flex-start;flex-direction:column}.tfp-roster-detail-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.tfp-roster-filters{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tfp-roster-table{min-width:860px}}
+@media(max-width:480px){.tfp-roster-filters{grid-template-columns:1fr!important}.tfp-roster-pagination{align-items:flex-start;flex-direction:column}}
