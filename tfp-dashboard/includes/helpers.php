@@ -10,11 +10,18 @@ if (!defined('ABSPATH')) exit;
 function tfp_dashboard_is_facilitator_context()
 {
     if (function_exists('tfp_dashboard_current_template_slug')) {
-        return tfp_dashboard_current_template_slug() === 'tfp-dashboard-facilitator-home';
+        $template = (string) tfp_dashboard_current_template_slug();
+        if ($template === 'tfp-dashboard-facilitator-home') {
+            return true;
+        }
+        // Every facilitator page uses the tfp-dashboard-facilitator-* template
+        // namespace, so the shared shell automatically renders facilitator
+        // navigation on Roster and all future facilitator screens as well.
+        return strpos($template, 'tfp-dashboard-facilitator-') === 0;
     }
 
     $path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
-    return basename($path) === 'facilitator-console';
+    return basename($path) === 'facilitator-console' || strpos($path, 'facilitator-') !== false;
 }
 
 function tfp_dashboard_user_name()
