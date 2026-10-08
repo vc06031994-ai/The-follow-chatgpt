@@ -395,4 +395,5 @@ function tfp_dashboard_render_facilitator_roster_content()
         <?php endif; ?>
     </section>
 
+<?php
 }
