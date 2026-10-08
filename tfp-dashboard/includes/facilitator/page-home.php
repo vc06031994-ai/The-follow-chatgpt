@@ -22,11 +22,33 @@ function tfp_facilitator_current_cohorts($user_id = 0)
         'order' => 'ASC',
     ];
 
-    // Facilitators see their assigned cohorts. Admin/shop-manager users can
-    // see all cohorts, which keeps the dashboard useful for testing.
+    // Administrators/shop managers can review all cohorts. Facilitators
+    // only see cohorts explicitly assigned to their WordPress user.
     $is_admin = user_can($user_id, 'manage_options') || user_can($user_id, 'manage_woocommerce');
-    if (!$is_admin && $name !== '') {
-        $args['meta_query'] = [
+    if ($is_admin) {
+        return get_posts($args);
+    }
+
+    $meta_query = [
+        [
+            'key' => '_facilitator_user_id',
+            'value' => $user_id,
+            'compare' => '=',
+            'type' => 'NUMERIC',
+        ],
+    ];
+
+    // Keep legacy cohorts working while they are migrated to user-ID
+    // assignments.
+    if ($name !== '') {
+        $meta_query = [
+            'relation' => 'OR',
+            [
+                'key' => '_facilitator_user_id',
+                'value' => $user_id,
+                'compare' => '=',
+                'type' => 'NUMERIC',
+            ],
             [
                 'key' => '_facilitator',
                 'value' => $name,
@@ -35,16 +57,8 @@ function tfp_facilitator_current_cohorts($user_id = 0)
         ];
     }
 
-    $cohorts = get_posts($args);
-
-    // If the role exists but cohort records have not been assigned yet, show
-    // the published cohort list instead of an empty dashboard.
-    if (!$cohorts && !$is_admin) {
-        $args['meta_query'] = [];
-        $cohorts = get_posts($args);
-    }
-
-    return $cohorts;
+    $args['meta_query'] = $meta_query;
+    return get_posts($args);
 }
 
 function tfp_facilitator_cohort_students($cohort_id)
