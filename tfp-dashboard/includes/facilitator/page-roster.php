@@ -251,6 +251,9 @@ function tfp_dashboard_render_facilitator_roster_content()
     $clear_url = remove_query_arg(['tfp_roster_course', 'tfp_roster_cohort', 'tfp_roster_search', 'tfp_roster_page']);
     ?>
     <div class="tfp-dash-pageheader tfp-facilitator-header">
+        <button type="button" class="tfp-dash-pageheader__mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>">
+            <?php echo tfp_dashboard_icon('toggle'); ?>
+        </button>
         <div class="tfp-dash-pageheader__crumb tfp-facilitator-breadcrumb">
             <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home')); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
             <span aria-hidden="true">/</span>
