@@ -284,7 +284,7 @@ function tfp_dashboard_render_facilitator_home_content()
                     <a href="#tfp-facilitator-review-list"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
                 </div>
                 <div class="tfp-facilitator-task-list" id="tfp-facilitator-review-list">
-                    <?php if($homework_count): ?><div><span><strong><?php printf(esc_html__('%d homework submission%s to review','tfp-dashboard'),$homework_count,$homework_count===1?'':'s'); ?></strong><small><?php esc_html_e('LearnDash assignments awaiting approval','tfp-dashboard'); ?></small></span><a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-task-action" href="#tfp-facilitator-homework"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
+                    <?php if($homework_count): ?><div><span><strong><?php printf(esc_html__('%d homework submission%s to review','tfp-dashboard'),$homework_count,$homework_count===1?'':'s'); ?></strong><small><?php esc_html_e('LearnDash assignments awaiting approval','tfp-dashboard'); ?></small></span><a class="tfp-grade-btn tfp-grade-btn--view" href="#tfp-facilitator-homework"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
                     <?php if($tests_count): ?><div><span><strong><?php printf(esc_html__('%d quiz/test response%s to review','tfp-dashboard'),$tests_count,$tests_count===1?'':'s'); ?></strong><small><?php esc_html_e('Submitted responses awaiting grading','tfp-dashboard'); ?></small></span><a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-task-action" href="#tfp-facilitator-tests"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
                     <?php if(!$homework_count&&!$tests_count): ?><div class="tfp-facilitator-task-empty"><strong><?php esc_html_e("You're all caught up",'tfp-dashboard'); ?></strong><small><?php esc_html_e('No submitted homework or quiz responses require review for the selected filters.','tfp-dashboard'); ?></small></div><?php endif; ?>
                 </div>
@@ -296,7 +296,7 @@ function tfp_dashboard_render_facilitator_home_content()
                                     <strong><?php echo esc_html(get_the_title($review_post)); ?></strong>
                                     <small><?php echo esc_html(get_the_author_meta('display_name', $review_post->post_author)); ?> · <?php echo esc_html(get_the_date('m/d/Y g:i A', $review_post)); ?></small>
                                 </span>
-                                <a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-review-action" href="<?php echo esc_url(get_permalink($review_post->ID)); ?>"><?php esc_html_e('Open', 'tfp-dashboard'); ?></a>
+                                <a class="tfp-grade-btn tfp-grade-btn--view" href="<?php echo esc_url(get_permalink($review_post->ID)); ?>"><?php esc_html_e('Open', 'tfp-dashboard'); ?></a>
                             </div>
                         <?php endforeach; ?>
                     </div>
