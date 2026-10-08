@@ -105,12 +105,17 @@ function tfp_facilitator_filter_cohorts($cohorts) {
     $course = isset($_GET['tfp_fac_course']) ? absint($_GET['tfp_fac_course']) : 0;
     $cohort = isset($_GET['tfp_fac_cohort']) ? absint($_GET['tfp_fac_cohort']) : 0;
     $week = isset($_GET['tfp_fac_week']) ? absint($_GET['tfp_fac_week']) : 0;
+    $search = isset($_GET['tfp_fac_search']) ? sanitize_text_field(wp_unslash($_GET['tfp_fac_search'])) : '';
     if (!$course && !$cohort && !$week) return $cohorts;
     return array_values(array_filter($cohorts, function($item) use ($course, $cohort, $week) {
         $course_id = tfp_facilitator_cohort_course_id($item->ID);
         if ($course && $course_id !== $course) return false;
         if ($cohort && (int) $item->ID !== $cohort) return false;
         if ($week && tfp_facilitator_cohort_week($item->ID, $course_id) !== $week) return false;
+        if ($search) {
+            $haystack = strtolower($item->post_title . ' ' . ($course_id ? get_the_title($course_id) : ''));
+            if (strpos($haystack, strtolower($search)) === false) return false;
+        }
         return true;
     }));
 }
@@ -196,14 +201,15 @@ function tfp_dashboard_render_facilitator_home_content()
     $selected_course = isset($_GET['tfp_fac_course']) ? absint($_GET['tfp_fac_course']) : 0;
     $selected_cohort = isset($_GET['tfp_fac_cohort']) ? absint($_GET['tfp_fac_cohort']) : 0;
     $selected_week = isset($_GET['tfp_fac_week']) ? absint($_GET['tfp_fac_week']) : 0;
+    $search_term = isset($_GET['tfp_fac_search']) ? sanitize_text_field(wp_unslash($_GET['tfp_fac_search'])) : '';
     if ($selected_course) foreach ($all_cohorts as $cohort) if (tfp_facilitator_cohort_course_id($cohort->ID) !== $selected_course) unset($cohort_options[$cohort->ID]);
     ?>
     <form class="tfp-facilitator-filters" method="get" action="<?php echo esc_url(get_permalink()); ?>">
         <select name="tfp_fac_course" aria-label="<?php esc_attr_e('Course','tfp-dashboard'); ?>" onchange="this.form.submit()"><option value="0"><?php esc_html_e('All Courses','tfp-dashboard'); ?></option><?php foreach($course_options as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>" <?php selected($selected_course,$id); ?>><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
         <select name="tfp_fac_cohort" aria-label="<?php esc_attr_e('Cohort','tfp-dashboard'); ?>" onchange="this.form.submit()"><option value="0"><?php esc_html_e('All Cohorts','tfp-dashboard'); ?></option><?php foreach($cohort_options as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>" <?php selected($selected_cohort,$id); ?>><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
         <select name="tfp_fac_week" aria-label="<?php esc_attr_e('Week','tfp-dashboard'); ?>" onchange="this.form.submit()"><option value="0"><?php esc_html_e('All Weeks','tfp-dashboard'); ?></option><?php for($w=1;$w<=$max_week;$w++): ?><option value="<?php echo esc_attr($w); ?>" <?php selected($selected_week,$w); ?>><?php printf(esc_html__('Week %d','tfp-dashboard'),$w); ?></option><?php endfor; ?></select>
-        <button type="button" class="tfp-facilitator-date-filter" data-tfp-facilitator-date-filter aria-label="<?php esc_attr_e('Filter by date','tfp-dashboard'); ?>"><span class="tfp-facilitator-date-filter__icon" aria-hidden="true"></span><span data-tfp-facilitator-date-label><?php echo $date_filter ? esc_html(date_i18n('M j, Y', strtotime($date_filter))) : esc_html__('All Weeks', 'tfp-dashboard'); ?></span></button><input type="date" name="tfp_fac_date" value="<?php echo esc_attr($date_filter); ?>" data-tfp-facilitator-date-input aria-hidden="true" tabindex="-1">
-        <?php if($selected_course||$selected_cohort||$selected_week||$date_filter): ?><a class="tfp-facilitator-clear-filter" href="<?php echo esc_url(get_permalink()); ?>"><?php esc_html_e('Clear Filters','tfp-dashboard'); ?></a><?php endif; ?>
+        <div class="tfp-dash-search tfp-facilitator-search"><span class="tfp-dash-search__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.8"/><path d="M12.2 12.2L16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><input type="search" name="tfp_fac_search" value="<?php echo esc_attr($search_term); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort','tfp-dashboard'); ?>" aria-label="<?php esc_attr_e('Search Name or Cohort','tfp-dashboard'); ?>"></div>
+        <?php if($selected_course||$selected_cohort||$selected_week||$search_term): ?><a class="tfp-facilitator-clear-filter" href="<?php echo esc_url(get_permalink()); ?>"><?php esc_html_e('Clear Filters','tfp-dashboard'); ?></a><?php endif; ?>
     </form>
 
     <div class="tfp-facilitator-metrics">
