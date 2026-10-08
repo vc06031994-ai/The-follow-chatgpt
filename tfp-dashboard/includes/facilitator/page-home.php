@@ -230,7 +230,7 @@ function tfp_dashboard_render_facilitator_home_content()
     </div>
 
     <div class="tfp-facilitator-grid">
-        <section class="tfp-facilitator-panel">
+        <section class="tfp-dash-panel tfp-facilitator-panel">
             <div class="tfp-facilitator-panel__head">
                 <div>
                     <h2><?php esc_html_e('Your Active Courses', 'tfp-dashboard'); ?></h2>
@@ -268,10 +268,10 @@ function tfp_dashboard_render_facilitator_home_content()
         </section>
 
         <div class="tfp-facilitator-right">
-            <section class="tfp-facilitator-panel tfp-facilitator-panel--quick">
+            <section class="tfp-dash-panel tfp-facilitator-panel tfp-facilitator-panel--quick">
                 <h2><?php esc_html_e('Quick Actions', 'tfp-dashboard'); ?></h2>
                 <p><?php esc_html_e('Common tasks for every class', 'tfp-dashboard'); ?></p>
-                <a class="tfp-facilitator-action" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-homework')); ?>"><?php esc_html_e('Review Homework Submissions', 'tfp-dashboard'); ?></a>
+                <a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-action" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-homework')); ?>"><?php esc_html_e('Review Homework Submissions', 'tfp-dashboard'); ?></a>
                 <a class="tfp-facilitator-action" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')); ?>"><?php esc_html_e('Review Quizzes & Tests', 'tfp-dashboard'); ?></a>
             </section>
 
@@ -284,8 +284,8 @@ function tfp_dashboard_render_facilitator_home_content()
                     <a href="#tfp-facilitator-review-list"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
                 </div>
                 <div class="tfp-facilitator-task-list" id="tfp-facilitator-review-list">
-                    <?php if($homework_count): ?><div><span><strong><?php printf(esc_html__('%d homework submission%s to review','tfp-dashboard'),$homework_count,$homework_count===1?'':'s'); ?></strong><small><?php esc_html_e('LearnDash assignments awaiting approval','tfp-dashboard'); ?></small></span><a href="#tfp-facilitator-homework"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
-                    <?php if($tests_count): ?><div><span><strong><?php printf(esc_html__('%d quiz/test response%s to review','tfp-dashboard'),$tests_count,$tests_count===1?'':'s'); ?></strong><small><?php esc_html_e('Submitted responses awaiting grading','tfp-dashboard'); ?></small></span><a href="#tfp-facilitator-tests"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
+                    <?php if($homework_count): ?><div><span><strong><?php printf(esc_html__('%d homework submission%s to review','tfp-dashboard'),$homework_count,$homework_count===1?'':'s'); ?></strong><small><?php esc_html_e('LearnDash assignments awaiting approval','tfp-dashboard'); ?></small></span><a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-task-action" href="#tfp-facilitator-homework"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
+                    <?php if($tests_count): ?><div><span><strong><?php printf(esc_html__('%d quiz/test response%s to review','tfp-dashboard'),$tests_count,$tests_count===1?'':'s'); ?></strong><small><?php esc_html_e('Submitted responses awaiting grading','tfp-dashboard'); ?></small></span><a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-task-action" href="#tfp-facilitator-tests"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
                     <?php if(!$homework_count&&!$tests_count): ?><div class="tfp-facilitator-task-empty"><strong><?php esc_html_e("You're all caught up",'tfp-dashboard'); ?></strong><small><?php esc_html_e('No submitted homework or quiz responses require review for the selected filters.','tfp-dashboard'); ?></small></div><?php endif; ?>
                 </div>
                 <?php if ($homework_items || $test_items) : ?>
@@ -296,7 +296,7 @@ function tfp_dashboard_render_facilitator_home_content()
                                     <strong><?php echo esc_html(get_the_title($review_post)); ?></strong>
                                     <small><?php echo esc_html(get_the_author_meta('display_name', $review_post->post_author)); ?> · <?php echo esc_html(get_the_date('m/d/Y g:i A', $review_post)); ?></small>
                                 </span>
-                                <a href="<?php echo esc_url(get_permalink($review_post->ID)); ?>"><?php esc_html_e('Open', 'tfp-dashboard'); ?></a>
+                                <a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-review-action" href="<?php echo esc_url(get_permalink($review_post->ID)); ?>"><?php esc_html_e('Open', 'tfp-dashboard'); ?></a>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -304,7 +304,7 @@ function tfp_dashboard_render_facilitator_home_content()
             </section>
         </div>
 
-        <section class="tfp-facilitator-panel tfp-facilitator-panel--recent">
+        <section class="tfp-dash-panel tfp-facilitator-panel tfp-facilitator-panel--recent">
             <div class="tfp-facilitator-panel__head">
                 <div>
                     <h2><?php esc_html_e('Recent Activities', 'tfp-dashboard'); ?></h2>
@@ -322,14 +322,14 @@ function tfp_dashboard_render_facilitator_home_content()
 function tfp_dashboard_render_facilitator_page_header($name)
 {
     ?>
-    <div class="tfp-facilitator-header">
-        <div class="tfp-facilitator-breadcrumb">
-            <span><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></span>
-            <b>/</b>
+    <div class="tfp-dash-pageheader tfp-facilitator-header">
+        <div class="tfp-dash-pageheader__crumb tfp-facilitator-breadcrumb">
+            <a href="#"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
+            <span aria-hidden="true">/</span>
             <strong><?php esc_html_e('Console', 'tfp-dashboard'); ?></strong>
         </div>
-        <h1><?php printf(esc_html__('Welcome, %s', 'tfp-dashboard'), esc_html($name)); ?></h1>
-        <p><?php esc_html_e("Here’s your teaching overview and recent activities.", 'tfp-dashboard'); ?></p>
+        <h1 class="tfp-dash-pageheader__title"><?php printf(esc_html__('Welcome, %s', 'tfp-dashboard'), esc_html($name)); ?></h1>
+        <p class="tfp-dash-pageheader__subtitle"><?php esc_html_e("Here’s your teaching overview and recent activities.", 'tfp-dashboard'); ?></p>
     </div>
     <?php
 }
