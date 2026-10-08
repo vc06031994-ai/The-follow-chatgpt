@@ -40,6 +40,7 @@ require_once TFP_DASH_PATH . 'includes/shell.php';
 require_once TFP_DASH_PATH . 'includes/icons.php';
 require_once TFP_DASH_PATH . 'includes/page-home.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-home.php';
+require_once TFP_DASH_PATH . 'includes/facilitator/page-roster.php';
 require_once TFP_DASH_PATH . 'includes/communication/cpt-tickets.php';
 require_once TFP_DASH_PATH . 'includes/communication/db.php';
 require_once TFP_DASH_PATH . 'includes/communication/ajax.php';
@@ -193,7 +194,7 @@ add_action('wp_enqueue_scripts', function () {
         ]);
     }
 
-    if ($template === 'tfp-dashboard-facilitator-home') {
+    if (in_array($template, ['tfp-dashboard-facilitator-home', 'tfp-dashboard-facilitator-roster'], true)) {
         $facilitator_deps = ['tfp-dashboard-core', 'tfp-dashboard-components'];
 
         // Reuse WooCommerce's already-bundled SelectWoo/Select2 library instead
