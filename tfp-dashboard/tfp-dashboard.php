@@ -194,7 +194,85 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     if ($template === 'tfp-dashboard-facilitator-home') {
-        wp_enqueue_style('tfp-dashboard-facilitator', TFP_DASH_URL . 'assets/css/facilitator.css', ['tfp-dashboard-core', 'tfp-dashboard-components'], TFP_DASH_VERSION);
+        $facilitator_deps = ['tfp-dashboard-core', 'tfp-dashboard-components'];
+
+        // Reuse WooCommerce's already-bundled SelectWoo/Select2 library instead
+        // of shipping another select library with the facilitator dashboard.
+        if (defined('WC_PLUGIN_FILE')) {
+            wp_enqueue_style(
+                'tfp-dashboard-selectwoo',
+                plugins_url('assets/css/select2.css', WC_PLUGIN_FILE),
+                [],
+                defined('WC_VERSION') ? WC_VERSION : null
+            );
+            wp_enqueue_script(
+                'tfp-dashboard-selectwoo',
+                plugins_url('assets/js/select2/selectWoo.full.min.js', WC_PLUGIN_FILE),
+                ['jquery'],
+                defined('WC_VERSION') ? WC_VERSION : null,
+                true
+            );
+            $facilitator_deps[] = 'tfp-dashboard-selectwoo';
+        }
+
+        wp_enqueue_style(
+            'tfp-dashboard-facilitator',
+            TFP_DASH_URL . 'assets/css/facilitator.css',
+            $facilitator_deps,
+            TFP_DASH_VERSION
+        );
+
+        wp_add_inline_script('tfp-dashboard-selectwoo', <<<'JS'
+(function($){
+    'use strict';
+
+    function initFacilitatorFilters() {
+        if (!$.fn.selectWoo) return;
+
+        $('.tfp-facilitator-filters select[name="tfp_fac_course"], .tfp-facilitator-filters select[name="tfp_fac_cohort"], .tfp-facilitator-filters select[name="tfp_fac_week"]').each(function(){
+            var $select = $(this);
+            if ($select.hasClass('select2-hidden-accessible')) return;
+
+            $select.selectWoo({
+                width: '100%',
+                minimumResultsForSearch: Infinity
+            }).on('select2:select', function(){
+                this.form.submit();
+            });
+        });
+
+        var $dateButton = $('[data-tfp-facilitator-date-filter]');
+        var $dateInput = $('[data-tfp-facilitator-date-input]');
+        var $dateLabel = $('[data-tfp-facilitator-date-label]');
+
+        if ($dateButton.length && $dateInput.length) {
+            $dateButton.on('click', function(){
+                var input = $dateInput[0];
+                if (!input) return;
+                if (typeof input.showPicker === 'function') {
+                    input.showPicker();
+                } else {
+                    input.focus();
+                    input.click();
+                }
+            });
+
+            $dateInput.on('change', function(){
+                if (this.value) {
+                    var parts = this.value.split('-');
+                    var date = new Date(parts[0], parts[1] - 1, parts[2]);
+                    $dateLabel.text(date.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}));
+                    $dateButton.addClass('is-active');
+                }
+                this.form.submit();
+            });
+        }
+    }
+
+    $(initFacilitatorFilters);
+})(jQuery);
+JS
+        );
     }
 
     if ($template === 'tfp-dashboard-communication') {
