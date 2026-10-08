@@ -272,10 +272,10 @@ function tfp_dashboard_render_facilitator_home_content()
                 <h2><?php esc_html_e('Quick Actions', 'tfp-dashboard'); ?></h2>
                 <p><?php esc_html_e('Common tasks for every class', 'tfp-dashboard'); ?></p>
                 <a class="tfp-dash-btn tfp-dash-btn--primary tfp-facilitator-action" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-homework')); ?>"><?php esc_html_e('Review Homework Submissions', 'tfp-dashboard'); ?></a>
-                <a class="tfp-facilitator-action" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')); ?>"><?php esc_html_e('Review Quizzes & Tests', 'tfp-dashboard'); ?></a>
+                <a class="tfp-facilitator-action tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')); ?>"><?php esc_html_e('Review Quizzes & Tests', 'tfp-dashboard'); ?></a>
             </section>
 
-            <section class="tfp-facilitator-panel">
+            <section class="tfp-facilitator-panel tfp-dash-panel">
                 <div class="tfp-facilitator-panel__head">
                     <div>
                         <h2><?php esc_html_e('Pending Tasks', 'tfp-dashboard'); ?></h2>
