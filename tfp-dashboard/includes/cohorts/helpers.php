@@ -22,7 +22,8 @@ function tfp_cohort_meta_keys()
         'product'    => '_related_product',  // WC product id (optional override)
         'start_date' => '_start_date',       // YYYY-MM-DD
         'schedule'   => '_schedule_text',    // e.g. "Thursdays 6:00 PM PT"
-        'facilitator'=> '_facilitator',      // instructor name
+        'facilitator'=> '_facilitator',      // legacy instructor name
+        'facilitator_user_id' => '_facilitator_user_id', // WordPress user ID
         'seats_total'=> '_seats_total',      // integer capacity
         'price'      => '_price',            // optional per-cohort price override
     ];
@@ -33,6 +34,37 @@ function tfp_cohort_meta_keys()
  *
  * @return WP_Post[]
  */
+/**
+ * Resolve the WordPress user assigned as facilitator for a cohort.
+ * Falls back to the legacy display-name field for existing cohorts.
+ */
+function tfp_cohort_get_facilitator_user_id($cohort_id)
+{
+    $cohort_id = absint($cohort_id);
+    if (!$cohort_id) {
+        return 0;
+    }
+
+    $user_id = (int) get_post_meta($cohort_id, '_facilitator_user_id', true);
+    if ($user_id && get_userdata($user_id)) {
+        return $user_id;
+    }
+
+    $legacy_name = trim((string) get_post_meta($cohort_id, '_facilitator', true));
+    if ($legacy_name === '') {
+        return 0;
+    }
+
+    $users = get_users([
+        'search' => $legacy_name,
+        'search_columns' => ['display_name', 'user_login', 'user_email'],
+        'fields' => 'ID',
+        'number' => 1,
+    ]);
+
+    return !empty($users) ? (int) $users[0] : 0;
+}
+
 function tfp_cohorts_for_course($course_id)
 {
     $course_id = absint($course_id);
@@ -215,6 +247,7 @@ function tfp_cohort_get($cohort_id)
         'start_label'     => $start_ts ? date_i18n(get_option('date_format'), $start_ts) : '',
         'schedule'        => (string) get_post_meta($cohort_id, '_schedule_text', true),
         'facilitator'     => (string) get_post_meta($cohort_id, '_facilitator', true),
+        'facilitator_user_id' => tfp_cohort_get_facilitator_user_id($cohort_id),
         'seats_total'     => $total,
         'seats_taken'     => $taken,
         'seats_remaining' => $total > 0 ? max(0, $total - $taken) : PHP_INT_MAX,
