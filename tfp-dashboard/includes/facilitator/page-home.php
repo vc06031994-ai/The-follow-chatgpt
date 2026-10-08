@@ -113,8 +113,17 @@ function tfp_facilitator_filter_cohorts($cohorts) {
         if ($cohort && (int) $item->ID !== $cohort) return false;
         if ($week && tfp_facilitator_cohort_week($item->ID, $course_id) !== $week) return false;
         if ($search) {
+            $needle = strtolower($search);
             $haystack = strtolower($item->post_title . ' ' . ($course_id ? get_the_title($course_id) : ''));
-            if (strpos($haystack, strtolower($search)) === false) return false;
+            $student_match = false;
+            foreach (tfp_facilitator_cohort_students($item->ID) as $student_id) {
+                $student = get_userdata($student_id);
+                if ($student && strpos(strtolower($student->display_name . ' ' . $student->user_email), $needle) !== false) {
+                    $student_match = true;
+                    break;
+                }
+            }
+            if (strpos($haystack, $needle) === false && !$student_match) return false;
         }
         return true;
     }));
