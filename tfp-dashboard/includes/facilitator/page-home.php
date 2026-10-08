@@ -112,9 +112,9 @@ function tfp_facilitator_filter_cohorts($cohorts)
     $cohort = isset($_GET['tfp_fac_cohort']) ? absint($_GET['tfp_fac_cohort']) : 0;
     $week = isset($_GET['tfp_fac_week']) ? absint($_GET['tfp_fac_week']) : 0;
     $search = isset($_GET['tfp_fac_search']) ? sanitize_text_field(wp_unslash($_GET['tfp_fac_search'])) : '';
-    if (!$course && !$cohort && !$week)
+    if (!$course && !$cohort && !$week && !$search)
         return $cohorts;
-    return array_values(array_filter($cohorts, function ($item) use ($course, $cohort, $week) {
+    return array_values(array_filter($cohorts, function ($item) use ($course, $cohort, $week, $search) {
         $course_id = tfp_facilitator_cohort_course_id($item->ID);
         if ($course && $course_id !== $course)
             return false;
