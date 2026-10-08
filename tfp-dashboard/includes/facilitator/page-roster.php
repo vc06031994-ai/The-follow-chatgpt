@@ -335,7 +335,6 @@ function tfp_dashboard_render_facilitator_roster_content()
                         <tr>
                             <td>
                                 <strong><?php echo esc_html($row['name']); ?></strong>
-                                <small><?php echo esc_html($row['email']); ?></small>
                             </td>
                             <td><?php echo esc_html($row['module']); ?></td>
                             <td><span class="tfp-roster-status tfp-roster-status--<?php echo esc_attr($row['homework']['tone']); ?>"><?php echo esc_html($row['homework']['label']); ?></span></td>
