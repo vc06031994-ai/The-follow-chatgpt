@@ -116,12 +116,21 @@ add_action('init', function(){
 	// Login user is successful!
 	wp_set_current_user( $auth_user->ID );
 
-	// Redirect logic
-	$redirect_url = ! empty( $_POST['redirect'] ) ? esc_url_raw( wp_unslash( $_POST['redirect'] ) ) : '';
-	if ( empty( $redirect_url ) ) {
-		$redirect_url = wp_get_referer();
-		if ( ! $redirect_url ) {
-			$redirect_url = home_url( $_SERVER['REQUEST_URI'] );
+	// Redirect logic. Facilitators / Group Leaders always land on the
+	// custom Facilitator Console instead of the customer/student dashboard.
+	$user_roles = (array) $auth_user->roles;
+	$is_facilitator = array_intersect( [ 'facilitator', 'group_leader' ], $user_roles );
+
+	if ( ! empty( $is_facilitator ) ) {
+		$facilitator_page = get_page_by_path( 'facilitator-console' );
+		$redirect_url = $facilitator_page ? get_permalink( $facilitator_page->ID ) : '';
+	} else {
+		$redirect_url = ! empty( $_POST['redirect'] ) ? esc_url_raw( wp_unslash( $_POST['redirect'] ) ) : '';
+		if ( empty( $redirect_url ) ) {
+			$redirect_url = wp_get_referer();
+			if ( ! $redirect_url ) {
+				$redirect_url = home_url( $_SERVER['REQUEST_URI'] );
+			}
 		}
 	}
 
