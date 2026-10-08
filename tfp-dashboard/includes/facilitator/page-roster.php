@@ -227,8 +227,10 @@ function tfp_dashboard_render_facilitator_roster_content()
     $page = max(1, isset($_GET['tfp_roster_page']) ? absint($_GET['tfp_roster_page']) : 1);
     $per_page = 20;
     $total = count($rows);
+    $pages = $total > 0 ? (int) ceil($total / $per_page) : 1;
+    // Never render an empty out-of-range page.
+    $page = min($page, $pages);
     $paged_rows = array_slice($rows, ($page - 1) * $per_page, $per_page);
-    $pages = max(1, (int) ceil($total / $per_page));
 
     if ($selected_course) {
         foreach ($all_cohorts as $cohort) {
@@ -350,23 +352,47 @@ function tfp_dashboard_render_facilitator_roster_content()
             </table>
         </div>
 
-        <div class="tfp-roster-pagination">
-            <span><?php printf(esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), $total ? (($page - 1) * $per_page) + 1 : 0, min($page * $per_page, $total), $total); ?></span>
-            <div>
-                <?php
-                $prev_url = $page > 1 ? add_query_arg(['tfp_roster_page' => $page - 1], get_permalink()) : '';
-                $next_url = $page < $pages ? add_query_arg(['tfp_roster_page' => $page + 1], get_permalink()) : '';
-                if ($prev_url) {
-                    $prev_url = add_query_arg(array_filter(['tfp_roster_course' => $selected_course, 'tfp_roster_cohort' => $selected_cohort, 'tfp_roster_search' => $search_term]), $prev_url);
-                }
-                if ($next_url) {
-                    $next_url = add_query_arg(array_filter(['tfp_roster_course' => $selected_course, 'tfp_roster_cohort' => $selected_cohort, 'tfp_roster_search' => $search_term]), $next_url);
-                }
-                ?>
-                <a class="<?php echo $prev_url ? '' : 'is-disabled'; ?>" href="<?php echo $prev_url ? esc_url($prev_url) : '#'; ?>" aria-disabled="<?php echo $prev_url ? 'false' : 'true'; ?>"><?php esc_html_e('Previous', 'tfp-dashboard'); ?></a>
-                <a class="<?php echo $next_url ? '' : 'is-disabled'; ?>" href="<?php echo $next_url ? esc_url($next_url) : '#'; ?>" aria-disabled="<?php echo $next_url ? 'false' : 'true'; ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> <span aria-hidden="true">›</span></a>
+        <?php if ($total > $per_page): ?>
+            <div class="tfp-roster-pagination">
+                <span><?php printf(esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), (($page - 1) * $per_page) + 1, min($page * $per_page, $total), $total); ?></span>
+                <div>
+                    <?php
+                    $pagination_base = remove_query_arg('tfp_roster_page', get_permalink());
+                    $pagination_args = array_filter([
+                        'tfp_roster_course' => $selected_course,
+                        'tfp_roster_cohort' => $selected_cohort,
+                        'tfp_roster_search' => $search_term,
+                    ]);
+
+                    $prev_url = '';
+                    $next_url = '';
+
+                    if ($page > 1) {
+                        $prev_url = add_query_arg(
+                            array_merge($pagination_args, ['tfp_roster_page' => $page - 1]),
+                            $pagination_base
+                        );
+                    }
+
+                    if ($page < $pages) {
+                        $next_url = add_query_arg(
+                            array_merge($pagination_args, ['tfp_roster_page' => $page + 1]),
+                            $pagination_base
+                        );
+                    }
+                    ?>
+                    <?php if ($prev_url): ?>
+                        <a href="<?php echo esc_url($prev_url); ?>"><?php esc_html_e('Previous', 'tfp-dashboard'); ?></a>
+                    <?php else: ?>
+                        <a class="is-disabled" href="#" aria-disabled="true"><?php esc_html_e('Previous', 'tfp-dashboard'); ?></a>
+                    <?php endif; ?>
+
+                    <?php if ($next_url): ?>
+                        <a href="<?php echo esc_url($next_url); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> <span aria-hidden="true">›</span></a>
+                    <?php endif; ?>
+                </div>
             </div>
-        </div>
+        <?php endif; ?>
     </section>
 
     <?php
