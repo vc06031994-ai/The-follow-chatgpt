@@ -84,38 +84,127 @@ function tfp_facilitator_metric_counts($cohorts)
     ];
 }
 
+function tfp_facilitator_cohort_course_id($cohort_id) {
+    return (int) get_post_meta($cohort_id, '_related_course', true);
+}
+function tfp_facilitator_course_weeks($course_id) {
+    if ($course_id && function_exists('tfp_ld_get_weeks')) {
+        $weeks = tfp_ld_get_weeks($course_id);
+        return is_array($weeks) ? count($weeks) : 0;
+    }
+    return 0;
+}
+function tfp_facilitator_cohort_week($cohort_id, $course_id = 0) {
+    $start = get_post_meta($cohort_id, '_start_date', true);
+    if (!$start || !strtotime($start)) return 1;
+    $week = (int) floor(max(0, current_time('timestamp') - strtotime($start)) / WEEK_IN_SECONDS) + 1;
+    $total = tfp_facilitator_course_weeks($course_id);
+    return $total > 0 ? min($week, $total) : $week;
+}
+function tfp_facilitator_filter_cohorts($cohorts) {
+    $course = isset($_GET['tfp_fac_course']) ? absint($_GET['tfp_fac_course']) : 0;
+    $cohort = isset($_GET['tfp_fac_cohort']) ? absint($_GET['tfp_fac_cohort']) : 0;
+    $week = isset($_GET['tfp_fac_week']) ? absint($_GET['tfp_fac_week']) : 0;
+    if (!$course && !$cohort && !$week) return $cohorts;
+    return array_values(array_filter($cohorts, function($item) use ($course, $cohort, $week) {
+        $course_id = tfp_facilitator_cohort_course_id($item->ID);
+        if ($course && $course_id !== $course) return false;
+        if ($cohort && (int) $item->ID !== $cohort) return false;
+        if ($week && tfp_facilitator_cohort_week($item->ID, $course_id) !== $week) return false;
+        return true;
+    }));
+}
+function tfp_facilitator_homework_items($cohorts) {
+    $students = $courses = [];
+    foreach ($cohorts as $cohort) {
+        $students = array_merge($students, tfp_facilitator_cohort_students($cohort->ID));
+        $course_id = tfp_facilitator_cohort_course_id($cohort->ID);
+        if ($course_id) $courses[] = $course_id;
+    }
+    $students = array_values(array_unique(array_map('absint', $students)));
+    $courses = array_values(array_unique(array_map('absint', $courses)));
+    if (!$students || !$courses || !post_type_exists('sfwd-assignment')) return [];
+    $posts = get_posts(['post_type'=>'sfwd-assignment','post_status'=>['publish','pending','draft','graded','not_graded'],'posts_per_page'=>200,'author__in'=>$students,'orderby'=>'date','order'=>'DESC']);
+    $items = [];
+    foreach ($posts as $post) {
+        $course_id = function_exists('learndash_get_course_id') ? (int) learndash_get_course_id($post->ID) : 0;
+        if ($course_id && !in_array($course_id, $courses, true)) continue;
+        if (function_exists('learndash_is_assignment_approved') && learndash_is_assignment_approved($post->ID)) continue;
+        $items[] = $post;
+    }
+    return $items;
+}
+function tfp_facilitator_test_items($cohorts) {
+    $students = $courses = [];
+    foreach ($cohorts as $cohort) {
+        $students = array_merge($students, tfp_facilitator_cohort_students($cohort->ID));
+        $course_id = tfp_facilitator_cohort_course_id($cohort->ID);
+        if ($course_id) $courses[] = $course_id;
+    }
+    $students = array_values(array_unique(array_map('absint', $students)));
+    $courses = array_values(array_unique(array_map('absint', $courses)));
+    if (!$students || !$courses || !post_type_exists('sfwd-essays')) return [];
+    $posts = get_posts(['post_type'=>'sfwd-essays','post_status'=>['publish','pending','draft','not_graded'],'posts_per_page'=>200,'author__in'=>$students,'orderby'=>'date','order'=>'DESC']);
+    $items = [];
+    foreach ($posts as $post) {
+        $course_id = (int) get_post_meta($post->ID, 'course_id', true);
+        if (!$course_id && function_exists('learndash_get_course_id')) $course_id = (int) learndash_get_course_id($post->ID);
+        if ($course_id && !in_array($course_id, $courses, true)) continue;
+        if ($post->post_status === 'graded') continue;
+        $items[] = $post;
+    }
+    return $items;
+}
+function tfp_facilitator_activity_items($cohorts, $date = '') {
+    $posts = array_merge(tfp_facilitator_homework_items($cohorts), tfp_facilitator_test_items($cohorts));
+    $items = [];
+    foreach ($posts as $post) {
+        if ($date && get_the_date('Y-m-d', $post) !== $date) continue;
+        $items[] = ['type'=>get_post_type($post)==='sfwd-essays'?__('Quiz / test submitted','tfp-dashboard'):__('Homework submitted','tfp-dashboard'),'title'=>get_the_title($post),'date'=>get_the_date('m/d/Y',$post),'time'=>get_the_date('g:i A',$post),'url'=>get_permalink($post->ID),'timestamp'=>get_post_time('U',true,$post)];
+    }
+    usort($items,function($a,$b){return $b['timestamp']<=>$a['timestamp'];});
+    return array_slice($items,0,8);
+}
+
 function tfp_dashboard_render_facilitator_home_content()
 {
     $user = wp_get_current_user();
     $name = $user && $user->exists() ? $user->display_name : __('Facilitator', 'tfp-dashboard');
-    $cohorts = tfp_facilitator_current_cohorts();
+    $all_cohorts = tfp_facilitator_current_cohorts();
+    $cohorts = tfp_facilitator_filter_cohorts($all_cohorts);
     $metrics = tfp_facilitator_metric_counts($cohorts);
+    $homework_items = tfp_facilitator_homework_items($cohorts);
+    $test_items = tfp_facilitator_test_items($cohorts);
+    $homework_count = count($homework_items);
+    $tests_count = count($test_items);
+    $date_filter = isset($_GET['tfp_fac_date']) ? sanitize_text_field(wp_unslash($_GET['tfp_fac_date'])) : '';
+    $activities = tfp_facilitator_activity_items($cohorts, $date_filter);
 
     tfp_dashboard_render_facilitator_page_header($name);
 
-    $homework_count = 0;
-    $tests_count = 0;
-
-    // These counters are deliberately conservative until the dedicated review
-    // pages are implemented. Existing submission data can be plugged into the
-    // same cards without changing the visual layout.
-    $homework_count = (int) apply_filters('tfp_facilitator_homework_review_count', $homework_count, $cohorts);
-    $tests_count = (int) apply_filters('tfp_facilitator_test_review_count', $tests_count, $cohorts);
     ?>
-    <div class="tfp-facilitator-filters" aria-label="<?php esc_attr_e('Dashboard filters', 'tfp-dashboard'); ?>">
-        <select aria-label="<?php esc_attr_e('Course', 'tfp-dashboard'); ?>">
-            <option><?php esc_html_e('All Courses', 'tfp-dashboard'); ?></option>
-        </select>
-        <select aria-label="<?php esc_attr_e('Cohort', 'tfp-dashboard'); ?>">
-            <option><?php esc_html_e('All Cohorts', 'tfp-dashboard'); ?></option>
-        </select>
-        <select aria-label="<?php esc_attr_e('Week', 'tfp-dashboard'); ?>">
-            <option><?php esc_html_e('All Weeks', 'tfp-dashboard'); ?></option>
-        </select>
-        <button type="button" class="tfp-facilitator-date-filter" aria-label="<?php esc_attr_e('Filter by date', 'tfp-dashboard'); ?>">
-            <span aria-hidden="true">▣</span> <?php esc_html_e('All Weeks', 'tfp-dashboard'); ?>
-        </button>
-    </div>
+    <?php
+    $course_options = [];
+    $cohort_options = [];
+    $max_week = 1;
+    foreach ($all_cohorts as $cohort) {
+        $course_id = tfp_facilitator_cohort_course_id($cohort->ID);
+        if ($course_id) $course_options[$course_id] = get_the_title($course_id);
+        $cohort_options[$cohort->ID] = $cohort->post_title;
+        $max_week = max($max_week, tfp_facilitator_cohort_week($cohort->ID, $course_id));
+    }
+    $selected_course = isset($_GET['tfp_fac_course']) ? absint($_GET['tfp_fac_course']) : 0;
+    $selected_cohort = isset($_GET['tfp_fac_cohort']) ? absint($_GET['tfp_fac_cohort']) : 0;
+    $selected_week = isset($_GET['tfp_fac_week']) ? absint($_GET['tfp_fac_week']) : 0;
+    if ($selected_course) foreach ($all_cohorts as $cohort) if (tfp_facilitator_cohort_course_id($cohort->ID) !== $selected_course) unset($cohort_options[$cohort->ID]);
+    ?>
+    <form class="tfp-facilitator-filters" method="get" action="<?php echo esc_url(get_permalink()); ?>">
+        <select name="tfp_fac_course" aria-label="<?php esc_attr_e('Course','tfp-dashboard'); ?>" onchange="this.form.submit()"><option value="0"><?php esc_html_e('All Courses','tfp-dashboard'); ?></option><?php foreach($course_options as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>" <?php selected($selected_course,$id); ?>><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
+        <select name="tfp_fac_cohort" aria-label="<?php esc_attr_e('Cohort','tfp-dashboard'); ?>" onchange="this.form.submit()"><option value="0"><?php esc_html_e('All Cohorts','tfp-dashboard'); ?></option><?php foreach($cohort_options as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>" <?php selected($selected_cohort,$id); ?>><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
+        <select name="tfp_fac_week" aria-label="<?php esc_attr_e('Week','tfp-dashboard'); ?>" onchange="this.form.submit()"><option value="0"><?php esc_html_e('All Weeks','tfp-dashboard'); ?></option><?php for($w=1;$w<=$max_week;$w++): ?><option value="<?php echo esc_attr($w); ?>" <?php selected($selected_week,$w); ?>><?php printf(esc_html__('Week %d','tfp-dashboard'),$w); ?></option><?php endfor; ?></select>
+        <input type="date" name="tfp_fac_date" value="<?php echo esc_attr($date_filter); ?>" aria-label="<?php esc_attr_e('Filter by date','tfp-dashboard'); ?>" onchange="this.form.submit()">
+        <?php if($selected_course||$selected_cohort||$selected_week||$date_filter): ?><a class="tfp-facilitator-clear-filter" href="<?php echo esc_url(get_permalink()); ?>"><?php esc_html_e('Clear Filters','tfp-dashboard'); ?></a><?php endif; ?>
+    </form>
 
     <div class="tfp-facilitator-metrics">
         <article class="tfp-facilitator-metric">
@@ -126,7 +215,7 @@ function tfp_dashboard_render_facilitator_home_content()
         <article class="tfp-facilitator-metric tfp-facilitator-metric--teal">
             <span><?php esc_html_e('Total Students', 'tfp-dashboard'); ?></span>
             <strong><?php echo esc_html($metrics['students']); ?></strong>
-            <small><?php esc_html_e('Across All Cohorts', 'tfp-dashboard'); ?></small>
+            <small><?php esc_html_e('Across Selected Cohorts', 'tfp-dashboard'); ?></small>
         </article>
         <article class="tfp-facilitator-metric tfp-facilitator-metric--gold">
             <span><?php esc_html_e('Homework to Review', 'tfp-dashboard'); ?></span>
@@ -157,16 +246,17 @@ function tfp_dashboard_render_facilitator_home_content()
                         $course_title = $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard');
                         $students = count(tfp_facilitator_cohort_students($cohort->ID));
                         $schedule = (string) get_post_meta($cohort->ID, '_schedule_text', true);
-                        $weeks = ($course_id && function_exists('tfp_ld_get_weeks')) ? count(tfp_ld_get_weeks($course_id)) : 0;
+                        $weeks = tfp_facilitator_course_weeks($course_id);
+                        $current_week = tfp_facilitator_cohort_week($cohort->ID, $course_id);
                         ?>
                         <div class="tfp-facilitator-course-row">
                             <div>
                                 <h3><?php echo esc_html($course_title); ?> – <?php echo esc_html(get_the_title($cohort->ID)); ?></h3>
                                 <p># <?php echo esc_html($students); ?> <?php esc_html_e('Students', 'tfp-dashboard'); ?></p>
-                                <p><?php esc_html_e('Current Week', 'tfp-dashboard'); ?>: <em><?php esc_html_e('Module Topic', 'tfp-dashboard'); ?></em></p>
+                                <p><?php esc_html_e('Current Week', 'tfp-dashboard'); ?>: <em><?php printf(esc_html__('Week %d', 'tfp-dashboard'), $current_week); ?></em></p>
                             </div>
                             <div class="tfp-facilitator-course-meta">
-                                <strong><?php echo esc_html($weeks ? 'Week 1/' . $weeks : 'Week 1'); ?></strong>
+                                <strong><?php echo esc_html($weeks ? 'Week ' . $current_week . '/' . $weeks : 'Week ' . $current_week); ?></strong>
                                 <span><?php echo esc_html($schedule ?: '—'); ?></span>
                             </div>
                         </div>
@@ -194,11 +284,9 @@ function tfp_dashboard_render_facilitator_home_content()
                     <a href="#"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
                 </div>
                 <div class="tfp-facilitator-task-list">
-                    <div><span><strong><?php esc_html_e('Review submitted homework', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Student submissions', 'tfp-dashboard'); ?></small></span><a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-homework')); ?>"><?php esc_html_e('Review', 'tfp-dashboard'); ?></a></div>
-                    <div><span><strong><?php esc_html_e('Review quizzes & tests', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Student results', 'tfp-dashboard'); ?></small></span><a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')); ?>"><?php esc_html_e('Review', 'tfp-dashboard'); ?></a></div>
-                    <div><span><strong><?php esc_html_e('Confirm weekly meeting attendance', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Cohort attendance', 'tfp-dashboard'); ?></small></span><a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-attendance')); ?>"><?php esc_html_e('Update', 'tfp-dashboard'); ?></a></div>
-                    <div><span><strong><?php esc_html_e('Submit weekly meeting notes', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Cohort notes', 'tfp-dashboard'); ?></small></span><a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings')); ?>"><?php esc_html_e('Action', 'tfp-dashboard'); ?></a></div>
-                    <div><span><strong><?php esc_html_e('Follow up on students falling behind', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Student progress', 'tfp-dashboard'); ?></small></span><a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-roster')); ?>"><?php esc_html_e('Review', 'tfp-dashboard'); ?></a></div>
+                    <?php if($homework_count): ?><div><span><strong><?php printf(esc_html__('%d homework submission%s to review','tfp-dashboard'),$homework_count,$homework_count===1?'':'s'); ?></strong><small><?php esc_html_e('LearnDash assignments awaiting approval','tfp-dashboard'); ?></small></span><a href="#tfp-facilitator-homework"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
+                    <?php if($tests_count): ?><div><span><strong><?php printf(esc_html__('%d quiz/test response%s to review','tfp-dashboard'),$tests_count,$tests_count===1?'':'s'); ?></strong><small><?php esc_html_e('Submitted responses awaiting grading','tfp-dashboard'); ?></small></span><a href="#tfp-facilitator-tests"><?php esc_html_e('Review','tfp-dashboard'); ?></a></div><?php endif; ?>
+                    <?php if(!$homework_count&&!$tests_count): ?><div class="tfp-facilitator-task-empty"><strong><?php esc_html_e("You're all caught up",'tfp-dashboard'); ?></strong><small><?php esc_html_e('No submitted homework or quiz responses require review for the selected filters.','tfp-dashboard'); ?></small></div><?php endif; ?>
                 </div>
             </section>
         </div>
@@ -211,14 +299,7 @@ function tfp_dashboard_render_facilitator_home_content()
                 </div>
             </div>
             <div class="tfp-facilitator-activity-list">
-                <?php for ($i = 0; $i < 6; $i++) : ?>
-                    <div>
-                        <strong><?php esc_html_e('Task Completed', 'tfp-dashboard'); ?></strong>
-                        <span><?php echo esc_html(date_i18n('m/d/Y')); ?></span>
-                        <small><?php esc_html_e('Student activity', 'tfp-dashboard'); ?></small>
-                        <span><?php echo esc_html(date_i18n('g:i A')); ?></span>
-                    </div>
-                <?php endfor; ?>
+                <?php if($activities): foreach($activities as $activity): ?><div><strong><?php echo esc_html($activity['type']); ?></strong><span><?php echo esc_html($activity['date']); ?></span><small><?php echo esc_html($activity['title']); ?></small><span><?php echo esc_html($activity['time']); ?></span></div><?php endforeach; else: ?><div class="tfp-facilitator-activity-empty"><?php esc_html_e('No recent activity matches the selected filters.','tfp-dashboard'); ?></div><?php endif; ?>
             </div>
         </section>
     </div>
