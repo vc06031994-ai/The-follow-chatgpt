@@ -9,6 +9,18 @@
     --tfp-dash-text: #151411;
     --tfp-dash-muted: #2E2E2E;
     --tfp-dash-golden: #847230;
+    --tfp-dash-status-warning: #847230;
+    --tfp-dash-status-warning-bg: #F6E9C7;
+    --tfp-dash-status-warning-border: #D9B85F;
+    --tfp-dash-status-danger: #AF1E2D;
+    --tfp-dash-status-danger-bg: #FBEAEA;
+    --tfp-dash-status-danger-border: #AF1E2D;
+    --tfp-dash-status-neutral: #4B5563;
+    --tfp-dash-status-neutral-bg: #EEF1F1;
+    --tfp-dash-status-neutral-border: #AEB5B5;
+    --tfp-dash-status-success: #00666E;
+    --tfp-dash-status-success-bg: #E4F1F2;
+    --tfp-dash-status-success-border: #00666E;
     --tfp-dash-border: rgba(0, 0, 0, .08);
     --tfp-dash-bg: #FFFFFF;
     --tfp-dash-bg-soft: #EFEFEF;
