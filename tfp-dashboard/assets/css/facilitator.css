@@ -52,3 +52,5 @@
 .tfp-facilitator-task-empty strong{display:block;font-size:12px;margin-bottom:4px}
 .tfp-facilitator-task-empty small,.tfp-facilitator-activity-empty{display:block;font-family:'Lora',serif;font-size:10px}
 @media(max-width:767px){.tfp-facilitator-clear-filter{grid-column:auto}}
+
+.tfp-facilitator-review-items{margin-top:12px;border-top:1px solid #ddd}.tfp-facilitator-review-items>div{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #ddd}.tfp-facilitator-review-items strong{display:block;font-size:12px;margin-bottom:3px}.tfp-facilitator-review-items small{display:block;font-family:'Lora',serif;font-size:10px}.tfp-facilitator-review-items a{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:30px;padding:0 12px;border-radius:7px;background:#00666e;color:#fff;text-decoration:none;font-size:11px}@media(max-width:767px){.tfp-facilitator-review-items>div{align-items:flex-start;flex-direction:column}.tfp-facilitator-review-items a{width:100%}}
