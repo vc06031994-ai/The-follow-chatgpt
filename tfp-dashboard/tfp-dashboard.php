@@ -207,7 +207,7 @@ add_action('wp_enqueue_scripts', function () {
             );
             wp_enqueue_script(
                 'tfp-dashboard-selectwoo',
-                plugins_url('assets/js/select2/selectWoo.full.min.js', WC_PLUGIN_FILE),
+                plugins_url('assets/js/selectWoo/selectWoo.full.min.js', WC_PLUGIN_FILE),
                 ['jquery'],
                 defined('WC_VERSION') ? WC_VERSION : null,
                 true
