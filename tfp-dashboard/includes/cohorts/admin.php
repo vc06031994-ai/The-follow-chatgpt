@@ -26,6 +26,7 @@ function tfp_cohort_meta_box_html($post)
     $start_date  = get_post_meta($post->ID, '_start_date', true);
     $schedule    = get_post_meta($post->ID, '_schedule_text', true);
     $facilitator = get_post_meta($post->ID, '_facilitator', true);
+    $facilitator_user_id = (int) get_post_meta($post->ID, '_facilitator_user_id', true);
     $seats_total = get_post_meta($post->ID, '_seats_total', true);
     $meeting_url = get_post_meta($post->ID, '_meeting_url', true);
     $price       = get_post_meta($post->ID, '_price', true);
@@ -80,8 +81,20 @@ function tfp_cohort_meta_box_html($post)
     // Facilitator.
     echo '<tr>';
     echo '<th scope="row"><label for="tfp_cohort_facilitator">' . esc_html__('Facilitator', 'tfp-dashboard') . '</label></th>';
-    echo '<td><input type="text" name="tfp_cohort_facilitator" id="tfp_cohort_facilitator" class="regular-text" value="' . esc_attr($facilitator) . '" placeholder="' . esc_attr__('Pastor Jane Doe', 'tfp-dashboard') . '"></td>';
-    echo '</tr>';
+    echo '<td><select name="tfp_cohort_facilitator_user_id" id="tfp_cohort_facilitator" class="regular-text">';
+    echo '<option value="0">' . esc_html__('— Select facilitator —', 'tfp-dashboard') . '</option>';
+    $facilitator_users = get_users([
+        'role__in' => ['facilitator', 'group_leader'],
+        'orderby' => 'display_name',
+        'order' => 'ASC',
+        'fields' => ['ID', 'display_name', 'user_email'],
+    ]);
+    foreach ($facilitator_users as $u) {
+        echo '<option value="' . esc_attr($u->ID) . '" ' . selected($facilitator_user_id, $u->ID, false) . '>' . esc_html($u->display_name . ' (' . $u->user_email . ')') . '</option>';
+    }
+    echo '</select>';
+    echo '<p class="description">' . esc_html__('Select the WordPress user who facilitates this cohort.', 'tfp-dashboard') . '</p>';
+    echo '</td></tr>';
 
     // Seats total.
     echo '<tr>';
@@ -130,7 +143,17 @@ add_action('save_post_tfp_cohort', function ($post_id) {
     update_post_meta($post_id, '_start_date', sanitize_text_field($_POST['tfp_cohort_start_date'] ?? ''));
     update_post_meta($post_id, '_schedule_text', sanitize_text_field($_POST['tfp_cohort_schedule'] ?? ''));
     update_post_meta($post_id, '_meeting_url', esc_url_raw($_POST['tfp_cohort_meeting_url'] ?? ''));
-    update_post_meta($post_id, '_facilitator', sanitize_text_field($_POST['tfp_cohort_facilitator'] ?? ''));
+
+    $facilitator_user_id = absint($_POST['tfp_cohort_facilitator_user_id'] ?? 0);
+    if ($facilitator_user_id) {
+        update_post_meta($post_id, '_facilitator_user_id', $facilitator_user_id);
+        $facilitator_user = get_userdata($facilitator_user_id);
+        update_post_meta($post_id, '_facilitator', $facilitator_user ? $facilitator_user->display_name : '');
+    } else {
+        delete_post_meta($post_id, '_facilitator_user_id');
+        update_post_meta($post_id, '_facilitator', '');
+    }
+
     update_post_meta($post_id, '_seats_total', absint($_POST['tfp_cohort_seats_total'] ?? 0));
 
     $price = $_POST['tfp_cohort_price'] ?? '';
