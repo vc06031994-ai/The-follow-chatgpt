@@ -222,57 +222,7 @@ add_action('wp_enqueue_scripts', function () {
             TFP_DASH_VERSION
         );
 
-        wp_add_inline_script('tfp-dashboard-selectwoo', <<<'JS'
-(function($){
-    'use strict';
 
-    function initFacilitatorFilters() {
-        if (!$.fn.selectWoo) return;
-
-        $('.tfp-facilitator-filters select[name="tfp_fac_course"], .tfp-facilitator-filters select[name="tfp_fac_cohort"], .tfp-facilitator-filters select[name="tfp_fac_week"]').each(function(){
-            var $select = $(this);
-            if ($select.hasClass('select2-hidden-accessible')) return;
-
-            $select.selectWoo({
-                width: '100%',
-                minimumResultsForSearch: Infinity
-            }).on('select2:select', function(){
-                this.form.submit();
-            });
-        });
-
-        var $dateButton = $('[data-tfp-facilitator-date-filter]');
-        var $dateInput = $('[data-tfp-facilitator-date-input]');
-        var $dateLabel = $('[data-tfp-facilitator-date-label]');
-
-        if ($dateButton.length && $dateInput.length) {
-            $dateButton.on('click', function(){
-                var input = $dateInput[0];
-                if (!input) return;
-                if (typeof input.showPicker === 'function') {
-                    input.showPicker();
-                } else {
-                    input.focus();
-                    input.click();
-                }
-            });
-
-            $dateInput.on('change', function(){
-                if (this.value) {
-                    var parts = this.value.split('-');
-                    var date = new Date(parts[0], parts[1] - 1, parts[2]);
-                    $dateLabel.text(date.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}));
-                    $dateButton.addClass('is-active');
-                }
-                this.form.submit();
-            });
-        }
-    }
-
-    $(initFacilitatorFilters);
-})(jQuery);
-JS
-        );
     }
 
     if ($template === 'tfp-dashboard-communication') {
