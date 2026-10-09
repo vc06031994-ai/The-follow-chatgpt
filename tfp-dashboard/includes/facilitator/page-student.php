@@ -408,7 +408,7 @@ function tfp_facilitator_student_render_filters($student_id, $course_id, $cohort
             <option value="0"><?php esc_html_e('All Weeks', 'tfp-dashboard'); ?></option>
             <?php foreach ($weeks as $index => $week): ?>
                 <option value="<?php echo esc_attr($week->ID); ?>" <?php selected($selected_week, $week->ID); ?>>
-                    <?php printf(esc_html__('Week %d', 'tfp-dashboard'), $index + 1); ?>
+                    <?php echo esc_html__('Week ' . ($index + 1), 'tfp-dashboard'); ?>
                 </option>
             <?php endforeach; ?>
         </select>
@@ -472,6 +472,9 @@ function tfp_dashboard_render_facilitator_student_content() {
 
     ?>
     <div class="tfp-student-profile">
+        <button type="button" class="tfp-dash-pageheader__mobile-toggle tfp-student-mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>">
+            <?php echo tfp_dashboard_icon('toggle'); ?>
+        </button>
         <div class="tfp-student-breadcrumb">
             <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home')); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
             <span>/</span>
@@ -507,6 +510,7 @@ function tfp_dashboard_render_facilitator_student_content() {
         if ($selected_week) {
             tfp_facilitator_student_render_week_view($student_id, $course_id, $cohort_id, $weeks, $selected_week, $activities);
         } else {
+            echo '<h2 class="tfp-student-overview-title">' . esc_html__('All Weeks Overview — Full Program Performance', 'tfp-dashboard') . '</h2>';
             tfp_facilitator_student_render_overview($student_id, $course_id, $cohort_id, $weeks, $profile_progress, $assessment, $attendance_percent, $overall_grade, $activities);
         }
 
