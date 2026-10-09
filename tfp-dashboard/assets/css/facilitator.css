@@ -247,3 +247,6 @@
     .tfp-student-metrics{grid-template-columns:1fr!important}
     .tfp-student-contact-row{flex-direction:column;align-items:flex-start;gap:8px}
 }
+
+.tfp-student-overview-title{margin:0 0 14px;font-size:18px;line-height:1.2;font-weight:700}.tfp-student-mobile-toggle{display:none}
+@media(max-width:991px){.tfp-student-mobile-toggle{display:flex;position:relative;margin:0 0 10px}.tfp-student-profile{padding-top:2px}}
