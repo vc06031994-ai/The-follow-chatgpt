@@ -388,6 +388,17 @@ function tfp_facilitator_student_post_action() {
 }
 add_action('template_redirect', 'tfp_facilitator_student_post_action', 1);
 
+function tfp_facilitator_student_display_status($item) {
+    $tone = isset($item['tone']) ? (string) $item['tone'] : 'neutral';
+    $needs_review = in_array($tone, ['warning', 'danger'], true)
+        || in_array((string) ($item['label'] ?? ''), ['Needs Review', 'In Progress', 'Not Started'], true);
+
+    return [
+        'label' => $needs_review ? __('Needs Review', 'tfp-dashboard') : __('Completed', 'tfp-dashboard'),
+        'tone'  => $needs_review ? 'danger' : 'success',
+    ];
+}
+
 function tfp_facilitator_student_status_badge($status, $tone = 'neutral', $class = '') {
     echo '<span class="tfp-student-status tfp-student-status--' . esc_attr($tone) . ' ' . esc_attr($class) . '">' . esc_html($status) . '</span>';
 }
@@ -658,9 +669,10 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
                 ];
                 foreach ($cards as $card): ?>
                     <a class="tfp-student-week-card" href="<?php echo esc_url($card['url']); ?>">
-                        <span class="tfp-student-week-ring tfp-student-week-ring--<?php echo esc_attr($card['tone']); ?>"><?php echo esc_html($card['value']); ?><?php if (is_numeric($card['value']) && in_array($card['key'], ['reading','homework'], true)) echo '%'; ?></span>
-                        <span><strong><?php echo esc_html($card['label']); ?></strong><small><?php echo !empty($progress[$card['key']]) ? esc_html__('Completed','tfp-dashboard') : esc_html__('Review this week','tfp-dashboard'); ?></small></span>
-                        <?php tfp_facilitator_student_status_badge($status[$card['key']]['label'],$status[$card['key']]['tone']); ?>
+                        <?php $display_status = tfp_facilitator_student_display_status($status[$card['key']]); ?>
+                        <span class="tfp-student-week-ring tfp-student-week-ring--<?php echo esc_attr($card['tone']); ?>"><?php echo esc_html($card['value']); ?><?php if (is_numeric($card['value']) && $card['key'] === 'homework') echo '%'; ?></span>
+                        <span><strong><?php echo esc_html($card['label']); ?></strong><small><?php echo $display_status['label']; ?></small></span>
+                        <?php tfp_facilitator_student_status_badge($display_status['label'], $display_status['tone']); ?>
                     </a>
                 <?php endforeach; ?>
             </div>
