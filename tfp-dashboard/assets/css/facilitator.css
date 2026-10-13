@@ -1079,7 +1079,8 @@ table tbody>tr:nth-child(odd)>th {
     border: 1px solid;
     font-size: 9px;
     font-weight: 500;
-    white-space: nowrap
+    white-space: nowrap;
+    line-height: 130%;
 }
 
 .tfp-student-status--neutral {
@@ -1306,15 +1307,23 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-student-week-card strong {
     display: block;
-    font-size: 14px
+    font-size: 16px;
+    font-weight:700;
+    line-height:130%;
 }
 
 .tfp-student-week-card small {
     display: block;
     margin-top: 3px;
     font-family: var(--tfp-dash-font-alt);
-    font-size: 9px;
-    color: #666
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 130%;
+    color: #151411;
+}
+
+.tfp-student-week-card:hover{
+    color: var(--tfp-dash-text) !important;
 }
 
 .tfp-student-week-notes {
@@ -2271,7 +2280,7 @@ table tbody>tr:nth-child(odd)>th {
         margin: 0 !important;
         flex: 0 0 68px;
         font-size: 8px !important;
-        line-height: 1 !important;
+        line-height: 130% !important;
         border-radius: 999px;
     }
 }
