@@ -276,8 +276,8 @@ function tfp_facilitator_student_activity_items($student_id, $course_id) {
                 'title' => 'Homework submitted for Week ' . $week_no,
                 'date' => get_the_date('M j, Y', $week),
                 'time' => get_the_date('g:i A T', $week),
-                'status' => 'Completed',
-                'tone' => 'success',
+                'status' => tfp_facilitator_student_reviewed('homework', $lesson_id) ? 'Completed' : 'Needs Review',
+                'tone' => tfp_facilitator_student_reviewed('homework', $lesson_id) ? 'success' : 'danger',
                 'timestamp' => get_post_timestamp($lesson_id, 'modified'),
                 'week' => $week_no,
             ];
@@ -290,8 +290,8 @@ function tfp_facilitator_student_activity_items($student_id, $course_id) {
                 'title' => 'Quiz review for Week ' . $week_no,
                 'date' => !empty($quiz['graded_at']) ? date_i18n('M j, Y', strtotime($quiz['graded_at'])) : get_the_date('M j, Y', $week),
                 'time' => !empty($quiz['graded_at']) ? date_i18n('g:i A T', strtotime($quiz['graded_at'])) : get_the_date('g:i A T', $week),
-                'status' => !empty($quiz['passed']) ? 'Completed' : 'Needs Review',
-                'tone' => !empty($quiz['passed']) ? 'success' : 'danger',
+                'status' => tfp_facilitator_student_reviewed('quiz', $lesson_id) ? 'Completed' : 'Needs Review',
+                'tone' => tfp_facilitator_student_reviewed('quiz', $lesson_id) ? 'success' : 'danger',
                 'timestamp' => !empty($quiz['graded_at']) ? strtotime($quiz['graded_at']) : get_post_timestamp($lesson_id, 'modified'),
                 'week' => $week_no,
             ];
@@ -304,8 +304,8 @@ function tfp_facilitator_student_activity_items($student_id, $course_id) {
                 'title' => 'Test review for Week ' . $week_no,
                 'date' => !empty($test['graded_at']) ? date_i18n('M j, Y', strtotime($test['graded_at'])) : get_the_date('M j, Y', $week),
                 'time' => !empty($test['graded_at']) ? date_i18n('g:i A T', strtotime($test['graded_at'])) : get_the_date('g:i A T', $week),
-                'status' => !empty($test['passed']) ? 'Completed' : 'Needs Review',
-                'tone' => !empty($test['passed']) ? 'success' : 'danger',
+                'status' => tfp_facilitator_student_reviewed('test', $lesson_id) ? 'Completed' : 'Needs Review',
+                'tone' => tfp_facilitator_student_reviewed('test', $lesson_id) ? 'success' : 'danger',
                 'timestamp' => !empty($test['graded_at']) ? strtotime($test['graded_at']) : get_post_timestamp($lesson_id, 'modified'),
                 'week' => $week_no,
             ];
