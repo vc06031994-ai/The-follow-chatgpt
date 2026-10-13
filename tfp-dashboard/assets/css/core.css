@@ -58,3 +58,12 @@ p {
 input.tfp-dashboard-radio[type="radio"] {
     accent-color: #00666E !important;
 }
+
+table tbody tr:hover>td, table tbody tr:hover>th {
+    background-color: transparent !important;
+}
+
+table tbody>tr:nth-child(odd)>td, 
+table tbody>tr:nth-child(odd)>th{
+    background-color: transparent !important;
+}

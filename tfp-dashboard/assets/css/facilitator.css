@@ -1029,7 +1029,10 @@ table tbody>tr:nth-child(odd)>th {
     border-left: 0 !important;
     border-right: 0 !important;
     border-bottom: 1px solid #cfd4d5 !important;
-    font-size: 11px
+    font-size: 14px;
+    font-weight: 700;
+    color: #000000;
+    line-height: 130%;
 }
 
 .tfp-student-performance-table td {
@@ -1052,10 +1055,11 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-performance-table td:first-child a {
-    font-size: 11px;
+    font-size: 14px;
     color: var(--tfp-dash-text);
     text-decoration: none;
-    font-weight: 700
+    font-weight: 700;
+    line-height: 130%;
 }
 
 .tfp-student-pill-link {
@@ -1067,14 +1071,13 @@ table tbody>tr:nth-child(odd)>th {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 50px;
-    min-height: 23px;
+    min-width: 31px;
+    min-height: 26px;
     padding: 3px 9px;
     border-radius: 999px;
     border: 1px solid;
     font-size: 9px;
     font-weight: 500;
-    line-height: 1.1;
     white-space: nowrap
 }
 
@@ -1996,3 +1999,4 @@ table tbody>tr:nth-child(odd)>th {
         align-items: flex-start;
     }
 }
+
