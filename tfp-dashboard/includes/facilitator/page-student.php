@@ -418,6 +418,68 @@ function tfp_facilitator_student_post_action() {
 }
 add_action('template_redirect', 'tfp_facilitator_student_post_action', 1);
 
+function tfp_facilitator_student_card_meta($student_id, $lesson_id, $week_number, $key, $progress, $status, $week_activity) {
+    $label = 'Not Started';
+    $timestamp = 0;
+
+    switch ($key) {
+        case 'reading':
+            $label = (($status['reading']['completed'] ?? 0) >= ($status['reading']['total'] ?? 0) && ($status['reading']['total'] ?? 0) > 0)
+                ? 'Completed'
+                : 'Not Started';
+            foreach ($week_activity as $event) {
+                if (($event['type'] ?? '') === 'READING') {
+                    $timestamp = max($timestamp, (int) ($event['timestamp'] ?? 0));
+                }
+            }
+            break;
+
+        case 'homework':
+            $label = !empty($progress['homework']) ? 'Completed' : 'Not Started';
+            foreach ($week_activity as $event) {
+                if (($event['type'] ?? '') === 'HOMEWORK') {
+                    $timestamp = max($timestamp, (int) ($event['timestamp'] ?? 0));
+                }
+            }
+            break;
+
+        case 'quiz':
+            $result = function_exists('tfp_week_get_quiz_result') ? tfp_week_get_quiz_result($student_id, $lesson_id) : null;
+            $label = $result ? 'Completed' : 'Not Started';
+            if ($result && !empty($result['graded_at'])) {
+                $timestamp = strtotime($result['graded_at']);
+            }
+            break;
+
+        case 'test':
+            $result = function_exists('tfp_week_get_test_result') ? tfp_week_get_test_result($student_id, $lesson_id) : null;
+            $label = $result ? 'Completed' : 'Not Started';
+            if ($result && !empty($result['graded_at'])) {
+                $timestamp = strtotime($result['graded_at']);
+            }
+            break;
+
+        case 'attendance':
+            $attendance = tfp_facilitator_student_attendance($student_id, $lesson_id);
+            $label = !empty($attendance['status']) ? 'Confirmed' : 'Not Started';
+            if (!empty($attendance['updated_at'])) {
+                $timestamp = strtotime($attendance['updated_at']);
+            }
+            break;
+    }
+
+    if ($timestamp <= 0) {
+        return $label;
+    }
+
+    return sprintf(
+        '%s · %s – %s',
+        $label,
+        date_i18n('g:i A', $timestamp),
+        date_i18n('m/d/Y', $timestamp)
+    );
+}
+
 function tfp_facilitator_student_display_status($item) {
     return [
         'label' => !empty($item['label']) ? (string) $item['label'] : __('Needs Review', 'tfp-dashboard'),
@@ -695,9 +757,12 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
                 ];
                 foreach ($cards as $card): ?>
                     <a class="tfp-student-week-card" href="<?php echo esc_url($card['url']); ?>">
-                        <?php $display_status = tfp_facilitator_student_display_status($status[$card['key']]); ?>
+                        <?php
+                        $display_status = tfp_facilitator_student_display_status($status[$card['key']]);
+                        $card_meta = tfp_facilitator_student_card_meta($student_id, $week->ID, $week_number, $card['key'], $progress, $status, $week_activity);
+                        ?>
                         <span class="tfp-student-week-ring tfp-student-week-ring--<?php echo esc_attr($card['tone']); ?>"><?php echo esc_html($card['value']); ?><?php if (is_numeric($card['value']) && $card['key'] === 'homework') echo '%'; ?></span>
-                        <span><strong><?php echo esc_html($card['label']); ?></strong><small><?php echo $display_status['label']; ?></small></span>
+                        <span><strong><?php echo esc_html($card['label']); ?></strong><small><?php echo esc_html($card_meta); ?></small></span>
                         <?php tfp_facilitator_student_status_badge($display_status['label'], $display_status['tone']); ?>
                     </a>
                 <?php endforeach; ?>
