@@ -491,7 +491,7 @@ function tfp_dashboard_render_facilitator_student_content() {
             <div class="tfp-student-profile-person">
                 <div class="tfp-student-avatar"><?php echo get_avatar($student_id, 94, '', $student->display_name, ['class' => 'tfp-student-avatar-img']); ?></div>
                 <div>
-                    <h1><?php echo esc_html($student->display_name); ?></h1>
+                    <h2><?php echo esc_html($student->display_name); ?></h2>
                     <div class="tfp-student-contact-row">
                         <span><?php echo tfp_dashboard_icon('mail'); ?><?php echo esc_html($student->user_email); ?></span>
                         <span><?php echo tfp_dashboard_icon('chat'); ?><?php echo esc_html($student->user_email); ?></span>
@@ -510,7 +510,7 @@ function tfp_dashboard_render_facilitator_student_content() {
         if ($selected_week) {
             tfp_facilitator_student_render_week_view($student_id, $course_id, $cohort_id, $weeks, $selected_week, $activities);
         } else {
-            echo '<h2 class="tfp-student-overview-title">' . esc_html__('All Weeks Overview — Full Program Performance', 'tfp-dashboard') . '</h2>';
+            echo '<h4 class="tfp-student-overview-title">' . esc_html__('All Weeks Overview — Full Program Performance', 'tfp-dashboard') . '</h4>';
             tfp_facilitator_student_render_overview($student_id, $course_id, $cohort_id, $weeks, $profile_progress, $assessment, $attendance_percent, $overall_grade, $activities);
         }
 
@@ -545,7 +545,7 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
                 <section class="tfp-dash-panel tfp-student-panel">
                     <div class="tfp-student-panel-head">
                         <div>
-                            <h2><?php printf(esc_html__('Program Progress: Sections 1–%d', 'tfp-dashboard'), count($show_weeks)); ?></h2>
+                            <h5><?php printf(esc_html__('Program Progress: Sections 1–%d', 'tfp-dashboard'), count($show_weeks)); ?></h5>
                             <p><?php esc_html_e('Current Active Module', 'tfp-dashboard'); ?> – <?php echo esc_html($current_week ? $current_week->post_title : '—'); ?></p>
                         </div>
                     </div>
@@ -564,7 +564,7 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
                 </section>
 
                 <section class="tfp-dash-panel tfp-student-panel tfp-student-performance">
-                    <h2><?php esc_html_e('Current Performance Reports', 'tfp-dashboard'); ?></h2>
+                    <h5><?php esc_html_e('Current Performance Reports', 'tfp-dashboard'); ?></h5>
                     <div class="tfp-student-table-wrap">
                         <table class="tfp-student-performance-table">
                             <thead><tr><th>Week</th><th>Reading</th><th>Homework</th><th>Quiz</th><th>Tests</th><th>Attend.</th></tr></thead>
@@ -596,7 +596,7 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
             </div>
 
             <section class="tfp-dash-panel tfp-student-panel tfp-student-notes-panel">
-                <div class="tfp-student-panel-head"><div><h2><?php esc_html_e('Program Notes', 'tfp-dashboard'); ?></h2><p><?php esc_html_e("Review all notes written throughout the student's journey.", 'tfp-dashboard'); ?></p></div></div>
+                <div class="tfp-student-panel-head"><div><h5><?php esc_html_e('Program Notes', 'tfp-dashboard'); ?></h5><p><?php esc_html_e("Review all notes written throughout the student's journey.", 'tfp-dashboard'); ?></p></div></div>
                 <div class="tfp-student-notes-scroll">
                     <?php $has_notes = false; foreach ($weeks as $index => $week): $notes = tfp_facilitator_student_notes($student_id, $week->ID); if ($notes): $has_notes = true; ?>
                         <div class="tfp-student-week-note">
@@ -614,7 +614,7 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
 
         <section class="tfp-dash-panel tfp-student-panel tfp-student-recent">
             <div class="tfp-student-panel-head">
-                <div><h2><?php esc_html_e('Recent Course Activity', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Use the dropdown above to view a specific week · Scroll for full history', 'tfp-dashboard'); ?></p></div>
+                <div><h5><?php esc_html_e('Recent Course Activity', 'tfp-dashboard'); ?></h5><p><?php esc_html_e('Use the dropdown above to view a specific week · Scroll for full history', 'tfp-dashboard'); ?></p></div>
                 <a href="<?php echo esc_url(add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_activity'=>'all'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
             </div>
             <div class="tfp-student-activity-list">
@@ -662,7 +662,7 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
             </div>
 
             <section class="tfp-dash-panel tfp-student-panel tfp-student-week-notes">
-                <h2><?php esc_html_e('Weekly Notes','tfp-dashboard'); ?></h2>
+                <h5><?php esc_html_e('Weekly Notes','tfp-dashboard'); ?></h5>
                 <p><?php esc_html_e('Use this space to record your weekly notes, for this student.','tfp-dashboard'); ?></p>
                 <div class="tfp-student-notes-scroll tfp-student-notes-scroll--week">
                     <?php if ($notes): foreach (array_slice($notes,0,4) as $note): ?>
@@ -689,7 +689,7 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
         </div>
 
         <section class="tfp-dash-panel tfp-student-panel tfp-student-recent">
-            <div class="tfp-student-panel-head"><div><h2>Recent Course Activity</h2><p>Use the dropdown above to view a specific week · Scroll for full history</p></div><a href="<?php echo esc_url(add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_activity'=>'all'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>">View All</a></div>
+            <div class="tfp-student-panel-head"><div><h5>Recent Course Activity</h5><p>Use the dropdown above to view a specific week · Scroll for full history</p></div><a href="<?php echo esc_url(add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_activity'=>'all'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>">View All</a></div>
             <div class="tfp-student-activity-list">
                 <?php foreach (array_slice($week_activity,0,6) as $item): ?><div class="tfp-student-activity-row"><strong><?php echo esc_html($item['type']); ?></strong><div><b><?php echo esc_html($item['title']); ?></b><small><?php echo esc_html($item['date'].' · '.$item['time']); ?></small></div><?php tfp_facilitator_student_status_badge($item['status'],$item['tone']); ?></div><?php endforeach; ?>
                 <?php if (!$week_activity): ?><div class="tfp-student-empty-state">No activity recorded for this week yet.</div><?php endif; ?>

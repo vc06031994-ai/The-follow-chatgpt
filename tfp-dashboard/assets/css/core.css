@@ -44,9 +44,13 @@ body.tfp-dashboard-body {
 
 *,
 *::before,
-*::after { box-sizing: border-box; }
+*::after {
+    box-sizing: border-box;
+}
 
-p { font-family: var(--tfp-dash-font-alt); }
+p {
+    font-family: var(--tfp-dash-font-alt);
+}
 
 /* Dashboard radio controls */
 .tfp-dashboard input[type="radio"],

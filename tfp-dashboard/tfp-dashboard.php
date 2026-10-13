@@ -42,6 +42,7 @@ require_once TFP_DASH_PATH . 'includes/page-home.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-home.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-roster.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-student.php';
+require_once TFP_DASH_PATH . 'includes/facilitator/page-attendance.php';
 require_once TFP_DASH_PATH . 'includes/communication/cpt-tickets.php';
 require_once TFP_DASH_PATH . 'includes/communication/db.php';
 require_once TFP_DASH_PATH . 'includes/communication/ajax.php';
@@ -90,7 +91,6 @@ require_once TFP_DASH_PATH . 'includes/page-grades.php';
 require_once TFP_DASH_PATH . 'includes/page-documents.php';
 require_once TFP_DASH_PATH . 'includes/page-calendar.php';
 require_once TFP_DASH_PATH . 'includes/student-experience.php';
-require_once TFP_DASH_PATH . 'includes/customer-billing-shortcode.php';
 
 add_action('template_redirect', function () {
     if (function_exists('tfp_dashboard_is_dashboard_page') && tfp_dashboard_is_dashboard_page()) {
@@ -195,7 +195,7 @@ add_action('wp_enqueue_scripts', function () {
         ]);
     }
 
-    if (in_array($template, ['tfp-dashboard-facilitator-home', 'tfp-dashboard-facilitator-roster', 'tfp-dashboard-facilitator-student'], true)) {
+    if (in_array($template, ['tfp-dashboard-facilitator-home', 'tfp-dashboard-facilitator-roster', 'tfp-dashboard-facilitator-student', 'tfp-dashboard-facilitator-attendance'], true)) {
         $facilitator_deps = ['tfp-dashboard-core', 'tfp-dashboard-components'];
 
         // Reuse WooCommerce's already-bundled SelectWoo/Select2 library instead

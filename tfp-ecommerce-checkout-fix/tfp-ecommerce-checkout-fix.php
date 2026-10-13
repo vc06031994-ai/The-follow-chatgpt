@@ -8,7 +8,7 @@ function tfp_ecom_course($o=null){
 function tfp_ecom_confirm($o){
  if(!$o||!is_a($o,'WC_Order'))return '';
  $p=get_page_by_path('order-confirmed',OBJECT,'page');
- if(!$p||'publish'!==get_post_status($p->ID))return $o->get_checkout_order_received_url();
+ if(!$p||'publish'!==get_post_status($p->ID))return '';
  return add_query_arg(['order_id'=>$o->get_id(),'order_key'=>$o->get_order_key()],get_permalink($p->ID));
 }
 add_action('woocommerce_checkout_create_order',function($o,$data){

@@ -84,12 +84,3 @@ function tfp_auth_enqueue_styles(){
  * Load plugin styles and scripts on the front end.
  */
 add_action('wp_enqueue_scripts', 'tfp_auth_enqueue_styles');
-add_action('init', function () {
-
-    if ( isset($_GET['tfp_test']) ) {
-
-        wp_die('INIT WORKING');
-
-    }
-
-});

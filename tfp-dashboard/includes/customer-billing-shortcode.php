@@ -134,13 +134,14 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    wp_enqueue_style('tfp-dashboard-core', plugins_url('assets/css/dashboard.css', __FILE__), [], '1.2.5');
-    wp_enqueue_style('tfp-customer-billing', plugins_url('assets/css/customer-billing.css', __FILE__), ['tfp-dashboard-core'], '1.0.2');
-    wp_enqueue_style('tfp-dashboard-forms', plugins_url('assets/css/forms.css', __FILE__), ['tfp-dashboard-core'], '1.2.5');
+    $base_url = defined('TFP_DASH_URL') ? TFP_DASH_URL : plugins_url('../', __FILE__);
+    wp_enqueue_style('tfp-dashboard-core', $base_url . 'assets/css/dashboard.css', [], '1.2.5');
+    wp_enqueue_style('tfp-customer-billing', $base_url . 'assets/css/customer-billing.css', ['tfp-dashboard-core'], '1.0.2');
+    wp_enqueue_style('tfp-dashboard-forms', $base_url . 'assets/css/forms.css', ['tfp-dashboard-core'], '1.2.5');
 
     if (function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured()) {
         wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', [], null, true);
-        wp_enqueue_script('tfp-dashboard-billing', plugins_url('assets/js/billing.js', __FILE__), ['stripe-js'], '1.0.2', true);
+        wp_enqueue_script('tfp-dashboard-billing', $base_url . 'assets/js/billing.js', ['stripe-js'], '1.0.2', true);
         wp_localize_script('tfp-dashboard-billing', 'tfpDashboardBilling', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('tfp_billing_nonce'),
