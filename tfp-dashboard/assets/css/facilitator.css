@@ -1147,38 +1147,99 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-recent {
-    margin-top: 18px
+    margin-top: 18px;
+    padding: 16px 18px 18px;
+}
+
+.tfp-student-recent .tfp-student-panel-head {
+    margin-bottom: 12px;
+}
+
+.tfp-student-recent .tfp-student-panel-head h2 {
+    font-size: 17px;
+    line-height: 1.2;
+}
+
+.tfp-student-recent .tfp-student-panel-head p {
+    font-size: 10px;
+    line-height: 1.35;
+}
+
+.tfp-student-recent .tfp-student-panel-head a {
+    font-size: 9px;
+    font-weight: 600;
 }
 
 .tfp-student-activity-list {
-    border-top: 1px solid #ddd
+    max-height: 96px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    scrollbar-width: thin;
+}
+
+.tfp-student-activity-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.tfp-student-activity-list::-webkit-scrollbar-thumb {
+    background: #8F9697;
+    border-radius: 8px;
+}
+
+.tfp-student-activity-list::-webkit-scrollbar-track {
+    background: #E4E8E8;
+    border-radius: 8px;
 }
 
 .tfp-student-activity-row {
     display: grid;
     grid-template-columns: 78px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid #dedede
+    gap: 14px;
+    min-height: 38px;
+    padding: 8px 9px;
+    margin-bottom: 6px;
+    background: #fff;
+    border: 1px solid #D9DEDF;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.tfp-student-activity-row:first-child {
+    background: #DCE2E2;
+}
+
+.tfp-student-activity-row:last-child {
+    margin-bottom: 0;
 }
 
 .tfp-student-activity-row>strong {
     font-size: 10px;
-    color: var(--tfp-dash-teal)
+    font-weight: 700;
+    color: var(--tfp-dash-teal);
 }
 
 .tfp-student-activity-row b {
     display: block;
-    font-size: 10px
+    font-size: 10px;
+    line-height: 1.2;
 }
 
 .tfp-student-activity-row small {
     display: block;
-    margin-top: 3px;
+    margin-top: 2px;
     font-family: var(--tfp-dash-font-alt);
     font-size: 8px;
-    color: #888
+    line-height: 1.2;
+    color: #6E7778;
+}
+
+.tfp-student-activity-row .tfp-student-status {
+    min-width: 58px;
+    min-height: 24px;
+    padding: 3px 9px;
+    font-size: 8px;
 }
 
 .tfp-student-empty-state {
