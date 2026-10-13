@@ -2176,3 +2176,48 @@ table tbody>tr:nth-child(odd)>th {
         flex-basis: 64px;
     }
 }
+
+/* Prevent student overview panels from creating horizontal overflow on small screens. */
+.tfp-student-overview-grid,
+.tfp-student-overview-left,
+.tfp-student-overview-grid > *,
+.tfp-student-panel {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.tfp-student-panel-head > div {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.tfp-student-panel-head h2,
+.tfp-student-panel-head p,
+.tfp-student-progress-line span,
+.tfp-student-progress-line strong {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.tfp-student-progress-line {
+    min-width: 0;
+}
+
+.tfp-student-week-dots {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+@media (max-width: 767px) {
+    .tfp-student-overview-grid,
+    .tfp-student-overview-left {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .tfp-student-panel {
+        width: 100%;
+    }
+}
