@@ -99,52 +99,82 @@ function tfp_facilitator_student_reading_status($student_id, $lesson_id) {
     ]);
 
     if (!$readings) {
-        return ['label' => 'Not Started', 'tone' => 'neutral', 'value' => 0];
+        return [
+            'label' => 'Needs Review',
+            'tone' => 'danger',
+            'value' => 0,
+            'total' => 0,
+            'completed' => 0,
+        ];
     }
 
     $completed = get_user_meta($student_id, 'tfp_reading_progress_' . absint($lesson_id), true);
     $completed = is_array($completed) ? array_map('absint', $completed) : [];
     $count = count(array_intersect(wp_list_pluck($readings, 'ID'), $completed));
-    $percent = (int) round(($count / count($readings)) * 100);
+    $total = count($readings);
 
-    if ($percent >= 100) return ['label' => 'Completed', 'tone' => 'success', 'value' => 100];
-    if ($percent > 0) return ['label' => 'In Progress', 'tone' => 'warning', 'value' => $percent];
-    return ['label' => 'Not Started', 'tone' => 'neutral', 'value' => 0];
+    return [
+        'label' => $count >= $total ? 'Completed' : 'Needs Review',
+        'tone' => $count >= $total ? 'success' : 'danger',
+        'value' => $total,
+        'total' => $total,
+        'completed' => $count,
+    ];
 }
 
 function tfp_facilitator_student_step_statuses($student_id, $lesson_id) {
     $progress = function_exists('tfp_ld_get_week_progress') ? tfp_ld_get_week_progress($student_id, $lesson_id) : [];
     $homework = function_exists('tfp_week_homework_progress') ? tfp_week_homework_progress($student_id, $lesson_id) : ['completed' => 0, 'total' => 0];
     $quiz = function_exists('tfp_week_get_quiz_result') ? tfp_week_get_quiz_result($student_id, $lesson_id) : null;
+    $quiz_questions = function_exists('tfp_week_get_quiz_questions') ? tfp_week_get_quiz_questions($lesson_id, false) : [];
     $test = function_exists('tfp_week_get_test_result') ? tfp_week_get_test_result($student_id, $lesson_id) : null;
+    $test_questions = function_exists('tfp_week_get_test_questions') ? tfp_week_get_test_questions($lesson_id, false) : [];
     $attendance = tfp_facilitator_student_attendance($student_id, $lesson_id);
     $reading = tfp_facilitator_student_reading_status($student_id, $lesson_id);
+
+    $homework_submitted = !empty($progress['homework']);
+    $quiz_submitted = is_array($quiz) && isset($quiz['score']);
+    $test_submitted = is_array($test) && isset($test['score']);
+
+    $homework_reviewed = tfp_facilitator_student_reviewed('homework', $lesson_id);
+    $quiz_reviewed = tfp_facilitator_student_reviewed('quiz', $lesson_id);
+    $test_reviewed = tfp_facilitator_student_reviewed('test', $lesson_id);
 
     return [
         'reading' => $reading,
         'homework' => [
-            'label' => !empty($progress['homework']) ? 'Completed' : (($homework['completed'] > 0) ? 'In Progress' : 'Not Started'),
-            'tone' => !empty($progress['homework']) ? 'success' : (($homework['completed'] > 0) ? 'warning' : 'neutral'),
-            'value' => $homework['total'] > 0 ? (int) round(($homework['completed'] / $homework['total']) * 100) : (!empty($progress['homework']) ? 100 : 0),
+            'label' => ($homework_submitted && $homework_reviewed) ? 'Completed' : 'Needs Review',
+            'tone' => ($homework_submitted && $homework_reviewed) ? 'success' : 'danger',
+            'value' => $homework['total'] > 0 ? (int) round(($homework['completed'] / $homework['total']) * 100) : 0,
+            'total' => (int) $homework['total'],
+            'completed' => (int) $homework['completed'],
+            'submitted' => $homework_submitted,
+            'reviewed' => $homework_reviewed,
         ],
         'quiz' => [
-            'label' => $quiz ? (tfp_facilitator_student_score_letter($quiz['score'] ?? '') ?: '—') : '—',
-            'tone' => $quiz ? (!empty($quiz['passed']) ? 'success' : 'danger') : 'neutral',
-            'value' => $quiz ? (int) ($quiz['score'] ?? 0) : 0,
+            'label' => ($quiz_submitted && $quiz_reviewed) ? 'Completed' : 'Needs Review',
+            'tone' => ($quiz_submitted && $quiz_reviewed) ? 'success' : 'danger',
+            'value' => count($quiz_questions),
+            'total' => count($quiz_questions),
+            'submitted' => $quiz_submitted,
+            'reviewed' => $quiz_reviewed,
         ],
         'test' => [
-            'label' => $test ? (tfp_facilitator_student_score_letter($test['score'] ?? '') ?: '—') : '—',
-            'tone' => $test ? (!empty($test['passed']) ? 'success' : 'danger') : 'neutral',
-            'value' => $test ? (int) ($test['score'] ?? 0) : 0,
+            'label' => ($test_submitted && $test_reviewed) ? 'Completed' : 'Needs Review',
+            'tone' => ($test_submitted && $test_reviewed) ? 'success' : 'danger',
+            'value' => count($test_questions),
+            'total' => count($test_questions),
+            'submitted' => $test_submitted,
+            'reviewed' => $test_reviewed,
         ],
         'attendance' => [
-            'label' => $attendance['status'] ? strtoupper((string) $attendance['status']) : '—',
-            'tone' => $attendance['status'] === 'P' ? 'success' : (($attendance['status'] === 'UA') ? 'danger' : (($attendance['status'] === 'EA') ? 'warning' : 'neutral')),
-            'value' => $attendance['status'],
+            'label' => !empty($attendance['status']) ? 'Completed' : 'Needs Review',
+            'tone' => !empty($attendance['status']) ? 'success' : 'danger',
+            'value' => 'ATT',
+            'submitted' => !empty($attendance['status']),
         ],
     ];
 }
-
 function tfp_facilitator_student_weeks($course_id) {
     return $course_id && function_exists('tfp_ld_get_weeks') ? tfp_ld_get_weeks($course_id) : [];
 }
@@ -389,13 +419,9 @@ function tfp_facilitator_student_post_action() {
 add_action('template_redirect', 'tfp_facilitator_student_post_action', 1);
 
 function tfp_facilitator_student_display_status($item) {
-    $tone = isset($item['tone']) ? (string) $item['tone'] : 'neutral';
-    $needs_review = in_array($tone, ['warning', 'danger'], true)
-        || in_array((string) ($item['label'] ?? ''), ['Needs Review', 'In Progress', 'Not Started'], true);
-
     return [
-        'label' => $needs_review ? __('Needs Review', 'tfp-dashboard') : __('Completed', 'tfp-dashboard'),
-        'tone'  => $needs_review ? 'danger' : 'success',
+        'label' => !empty($item['label']) ? (string) $item['label'] : __('Needs Review', 'tfp-dashboard'),
+        'tone'  => !empty($item['tone']) ? (string) $item['tone'] : 'danger',
     ];
 }
 
