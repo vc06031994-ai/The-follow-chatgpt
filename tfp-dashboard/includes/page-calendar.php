@@ -148,11 +148,14 @@ function tfp_dashboard_render_calendar_content() {
       <div class="tfp-dash-modal tfp-cal-revoke-modal" data-revoke-modal hidden>
         <div class="tfp-dash-modal__backdrop" data-close-revoke></div>
         <div class="tfp-dash-modal__box tfp-cal-revoke-modal__box" role="dialog" aria-modal="true" aria-labelledby="tfp-revoke-title">
-          <h6 id="tfp-revoke-title">Revoke Skip Request</h6>
-          <p>Are you sure you want to revoke this request?</p>
+          <div class="tfp-cal-revoke-modal__icon" aria-hidden="true">!</div>
+          <div class="tfp-cal-revoke-modal__content">
+            <h6 id="tfp-revoke-title">Revoke Skip Request?</h6>
+            <p>Are you sure you want to revoke this skip request? This action will cancel the request.</p>
+          </div>
           <div class="tfp-cal-revoke-modal__actions">
-            <button type="button" class="tfp-cancel-btn" data-close-revoke>Cancel</button>
-            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-confirm-revoke>Revoke</button>
+            <button type="button" class="tfp-cal-revoke-modal__cancel" data-close-revoke>Cancel</button>
+            <button type="button" class="tfp-cal-revoke-modal__confirm" data-confirm-revoke>Revoke Request</button>
           </div>
           <div class="tfp-cal-revoke-modal__status" data-revoke-status aria-live="polite"></div>
         </div>
