@@ -585,28 +585,37 @@
 /* Keep the action button visually inset from the request card edge. */
 .tfp-cal-requests-table th:last-child,
 .tfp-cal-requests-table td:last-child {
-    padding-right: 20px !important;
-    padding-left: 16px !important;
+    width: 120px !important;
+    min-width: 120px !important;
+    padding: 10px 16px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.tfp-cal-requests-table th:last-child {
+    text-align: center !important;
 }
 
 .tfp-cal-requests-table td:last-child .tfp-cal-revoke {
-    margin-right: 0 !important;
+    margin: 0 auto !important;
 }
 
 .tfp-cal-revoke {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 28px;
+    width: 78px !important;
+    min-height: 32px;
     padding: 0 12px !important;
     border: 1px solid #AF1E2D !important;
     border-radius: 8px !important;
     background: #FBEAEA !important;
     color: #151411 !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    line-height: 130% !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
     cursor: pointer !important;
+    box-sizing: border-box !important;
     box-shadow: none !important;
 }
 
@@ -797,27 +806,85 @@
     display: flex !important;
 }
 .tfp-cal-revoke-modal__box {
-    max-width: 440px;
+    max-width: 430px;
+    padding: 28px !important;
+    border: 1px solid #D9DEDF !important;
+    border-radius: 14px !important;
+    box-shadow: 0 18px 50px rgba(0,0,0,.18) !important;
+    gap: 0 !important;
 }
-.tfp-cal-revoke-modal__box p {
+.tfp-cal-revoke-modal__icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FBEAEA;
+    border: 1px solid #E7A8AE;
+    color: #AF1E2D;
+    font-family: var(--tfp-dash-font);
+    font-size: 20px;
+    font-weight: 800;
+}
+.tfp-cal-revoke-modal__content h6 {
+    margin: 0 0 8px !important;
+    font-family: var(--tfp-dash-font);
+    font-size: 20px;
+    line-height: 1.25;
+    color: var(--tfp-dash-text);
+}
+.tfp-cal-revoke-modal__content p {
     margin: 0;
     color: var(--tfp-dash-muted);
-    font-family: var(--tfp-dash-font);
-    font-size: 14px;
+    font-family: var(--tfp-dash-font-alt);
+    font-size: 13px;
     line-height: 1.6;
 }
 .tfp-cal-revoke-modal__actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-top: 8px;
+    margin-top: 24px;
+}
+.tfp-cal-revoke-modal__actions button {
+    width: 100%;
+    min-height: 42px;
+    border-radius: 8px;
+    font-family: var(--tfp-dash-font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.tfp-cal-revoke-modal__cancel {
+    border: 1px solid #C8CED0;
+    background: #F5F6F6;
+    color: #151411;
+}
+.tfp-cal-revoke-modal__cancel:hover {
+    background: #ECEFEF;
+}
+.tfp-cal-revoke-modal__confirm {
+    border: 1px solid #AF1E2D;
+    background: #AF1E2D;
+    color: #fff;
+}
+.tfp-cal-revoke-modal__confirm:hover {
+    background: #8F1825;
+    border-color: #8F1825;
+}
+.tfp-cal-revoke-modal__confirm:disabled {
+    opacity: .65;
+    cursor: wait;
 }
 .tfp-cal-revoke-modal__status {
     min-height: 18px;
-    margin-top: 2px;
+    margin-top: 10px;
     color: var(--tfp-dash-muted);
-    font-size: 12px;
+    font-size: 11px;
+    text-align: center;
 }
 
 .tfp-cal-requests-empty{
