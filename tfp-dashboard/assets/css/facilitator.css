@@ -898,7 +898,8 @@ table tbody>tr:nth-child(odd)>th {
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 12px
+    margin-bottom: 12px;
+    flex-wrap:wrap;
 }
 
 .tfp-student-panel-head a {
@@ -1203,7 +1204,7 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-activity-row:hover {
-    background: var( --tfp-dash-hover-square);
+    background: var( --tfp-dash-hover-square) ;
 }
 
 .tfp-student-activity-row:last-child {
@@ -2260,7 +2261,6 @@ table tbody>tr:nth-child(odd)>th {
 
     .tfp-student-activity-row > .tfp-student-status {
         justify-self: end;
-        align-self: center;
         width: 68px !important;
         min-width: 68px !important;
         max-width: 68px !important;
