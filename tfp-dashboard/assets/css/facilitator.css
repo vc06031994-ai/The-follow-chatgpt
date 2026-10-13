@@ -2221,3 +2221,70 @@ table tbody>tr:nth-child(odd)>th {
         width: 100%;
     }
 }
+
+/* Recent Course Activity — mobile/tablet grid fix */
+@media (max-width: 767px) {
+    .tfp-student-activity-list {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    .tfp-student-activity-row {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        grid-template-columns: 88px minmax(0, 1fr) 74px !important;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .tfp-student-activity-row > strong,
+    .tfp-student-activity-row > div {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .tfp-student-activity-row > strong {
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .tfp-student-activity-row b,
+    .tfp-student-activity-row small {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .tfp-student-activity-row .tfp-student-status {
+        width: 74px;
+        min-width: 74px;
+        max-width: 74px;
+        box-sizing: border-box;
+        white-space: nowrap;
+        padding-left: 5px;
+        padding-right: 5px;
+        font-size: 8px;
+    }
+}
+
+@media (max-width: 420px) {
+    .tfp-student-activity-row {
+        grid-template-columns: 78px minmax(0, 1fr) 68px !important;
+        gap: 7px;
+        padding: 7px;
+    }
+
+    .tfp-student-activity-row > strong {
+        font-size: 10px;
+    }
+
+    .tfp-student-activity-row .tfp-student-status {
+        width: 68px;
+        min-width: 68px;
+        max-width: 68px;
+        font-size: 7px;
+    }
+}
