@@ -68,3 +68,24 @@ table tbody>tr:nth-child(odd)>td,
 table tbody>tr:nth-child(odd)>th{
     background-color: transparent !important;
 }
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border: none !important;
+    border-width: 0 !important;
+    width: 10px !important;
+    height: 7px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5' fill='none'%3E%3Cpath d='M0.94 0L4 3.05333L7.06 0L8 0.94L4 4.94L0 0.94L0.94 0Z' fill='%2300666E'/%3E%3C/svg%3E") !important;
+    transition: transform 0.2s ease !important;
+}
+
+/* Dropdown open hone par smooth flip */
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    transform: translate(-50%, -50%) rotate(180deg) !important;
+}

@@ -500,7 +500,11 @@ function tfp_dashboard_render_facilitator_student_content() {
             </div>
             <div class="tfp-student-head-side">
                 <?php if ($last_activity): ?><small><?php esc_html_e('Last Active:', 'tfp-dashboard'); ?> <?php echo esc_html($last_activity['date'] . ' ' . $last_activity['time']); ?></small><?php endif; ?>
-                <a class="tfp-dash-btn tfp-dash-btn--primary tfp-student-back" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-roster')); ?>">← <?php esc_html_e('Back to Roster', 'tfp-dashboard'); ?></a>
+                <a class="tfp-dash-btn-second tfp-dash-btn--primary tfp-student-back" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-roster')); ?>">
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M7 5L3 9L7 13M3 9H16C18.7614 9 21 11.2386 21 14C21 16.7614 18.7614 19 16 19H11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>    
+                <?php esc_html_e('Back to Roster', 'tfp-dashboard'); ?></a>
             </div>
         </div>
 
@@ -641,7 +645,7 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
     $week_activity = array_values(array_filter($activities, static function ($item) use ($week_number) { return (int) ($item['week'] ?? 0) === (int) $week_number; }));
     ?>
     <section class="tfp-student-week-view">
-        <h2 class="tfp-student-week-title"><?php printf(esc_html__('Week %02d: %s', 'tfp-dashboard'), $week_number, esc_html($week->post_title)); ?></h2>
+        <h4 class="tfp-student-week-title"><?php printf(esc_html__('Week %02d: %s', 'tfp-dashboard'), $week_number, esc_html($week->post_title)); ?></h4>
         <div class="tfp-student-week-grid">
             <div class="tfp-student-week-left">
                 <?php
@@ -705,8 +709,12 @@ function tfp_facilitator_student_render_activity_overlay($student_id, $activitie
     <div class="tfp-student-overlay">
         <div class="tfp-student-overlay-card tfp-student-overlay-card--activity">
             <div class="tfp-student-overlay-head">
-                <div><h2>All Course Activity</h2><p>Scroll for full history of all Students Activities</p></div>
-                <a href="<?php echo esc_url($close); ?>" class="tfp-dash-btn tfp-dash-btn--primary">× Close</a>
+                <div><h5>All Course Activity</h5><p>Scroll for full history of all Students Activities</p></div>
+                <a href="<?php echo esc_url($close); ?>" class="tfp-dash-btn-second tfp-dash-btn--primary">
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+<path d="M8.99998 8.99998L5.00001 5.00001M5.00001 5.00001L1 1M5.00001 5.00001L9.00002 1M5.00001 5.00001L1 9.00002" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>    
+                Close</a>
             </div>
             <div class="tfp-student-activity-scroll">
                 <?php foreach ($activities as $item): ?>
@@ -728,7 +736,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
     <div class="tfp-student-overlay">
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
             <div class="tfp-student-overlay-head">
-                <div><h2><?php echo esc_html($panel === 'attendance' ? 'Weekly Attendance' : ($panel === 'notes' ? 'Weekly Notes' : ucfirst($panel) . ' Review')); ?></h2><p><?php echo esc_html($panel === 'attendance' ? 'Use this area to record this students weekly attendance, for the selected week.' : ($panel === 'notes' ? 'Use this space to record your weekly notes, for this student.' : 'Review the student’s submitted work for this week.')); ?></p></div>
+                <div><h5><?php echo esc_html($panel === 'attendance' ? 'Weekly Attendance' : ($panel === 'notes' ? 'Weekly Notes' : ucfirst($panel) . ' Review')); ?></h5><p><?php echo esc_html($panel === 'attendance' ? 'Use this area to record this students weekly attendance, for the selected week.' : ($panel === 'notes' ? 'Use this space to record your weekly notes, for this student.' : 'Review the student’s submitted work for this week.')); ?></p></div>
                 <a href="<?php echo esc_url($close); ?>" class="tfp-dash-btn tfp-dash-btn--primary">× Close</a>
             </div>
 
