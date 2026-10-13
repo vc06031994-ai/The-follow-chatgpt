@@ -1171,11 +1171,8 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-activity-list {
-    max-height: 96px;
-    overflow-y: auto;
-    overflow-x: hidden;
+
     padding-right: 6px;
-    scrollbar-width: thin;
 }
 
 .tfp-student-activity-list::-webkit-scrollbar {
@@ -1194,11 +1191,10 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-student-activity-row {
     display: grid;
-    grid-template-columns: 78px minmax(0, 1fr) auto;
-    align-items: center;
+    grid-template-columns: 150px minmax(0, 1fr) auto;
     gap: 14px;
     min-height: 38px;
-    padding: 8px 9px;
+    padding: 10px 9px;
     margin-bottom: 6px;
     background: #fff;
     border: 1px solid #D9DEDF;
@@ -1206,8 +1202,8 @@ table tbody>tr:nth-child(odd)>th {
     box-sizing: border-box;
 }
 
-.tfp-student-activity-row:first-child {
-    background: #DCE2E2;
+.tfp-student-activity-row:hover {
+    background: var( --tfp-dash-hover-square);
 }
 
 .tfp-student-activity-row:last-child {
@@ -1215,31 +1211,34 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-activity-row>strong {
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 700;
+    line-height: 130%;
     color: var(--tfp-dash-teal);
 }
 
 .tfp-student-activity-row b {
     display: block;
     font-size: 10px;
-    line-height: 1.2;
+    line-height: 130%;
 }
 
 .tfp-student-activity-row small {
     display: block;
     margin-top: 2px;
     font-family: var(--tfp-dash-font-alt);
-    font-size: 8px;
-    line-height: 1.2;
-    color: #6E7778;
+    font-size: 10px;
+    line-height: 130%;
+    color: var(--tfp-dash-text);
 }
 
 .tfp-student-activity-row .tfp-student-status {
     min-width: 58px;
     min-height: 24px;
     padding: 3px 9px;
-    font-size: 8px;
+    font-size: 10px;
+    line-height: 130%;
+    font-weight: 500;
 }
 
 .tfp-student-empty-state {

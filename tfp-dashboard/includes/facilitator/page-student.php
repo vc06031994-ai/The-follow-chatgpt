@@ -621,7 +621,7 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
                 <?php foreach (array_slice($activities, 0, 6) as $activity): ?>
                     <div class="tfp-student-activity-row">
                         <strong><?php echo esc_html($activity['type']); ?></strong>
-                        <div><b><?php echo esc_html($activity['title']); ?></b><small><?php echo esc_html($activity['date'].' · '.$activity['time']); ?></small></div>
+                        <div class="st-activity-content"><b><?php echo esc_html($activity['title']); ?></b><small><?php echo esc_html($activity['date'].' · '.$activity['time']); ?></small></div>
                         <?php tfp_facilitator_student_status_badge($activity['status'],$activity['tone']); ?>
                     </div>
                 <?php endforeach; ?>
