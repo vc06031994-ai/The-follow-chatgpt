@@ -691,7 +691,7 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
                     ['key'=>'homework','label'=>'Homework','value'=>$status['homework']['value'],'url'=>add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'homework']),'tone'=>$status['homework']['tone']],
                     ['key'=>'quiz','label'=>'Quiz','value'=>$status['quiz']['value'],'url'=>add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'quiz']),'tone'=>$status['quiz']['tone']],
                     ['key'=>'test','label'=>'Test','value'=>$status['test']['value'],'url'=>add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'test']),'tone'=>$status['test']['tone']],
-                    ['key'=>'attendance','label'=>'Attendance','value'=>$status['attendance']['label'],'url'=>add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'attendance']),'tone'=>$status['attendance']['tone']],
+                    ['key'=>'attendance','label'=>'Attendance','value'=>'ATT','url'=>add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'attendance']),'tone'=>$status['attendance']['tone']],
                 ];
                 foreach ($cards as $card): ?>
                     <a class="tfp-student-week-card" href="<?php echo esc_url($card['url']); ?>">
