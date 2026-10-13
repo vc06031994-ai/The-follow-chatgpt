@@ -1005,32 +1005,50 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-table-wrap {
-    overflow-x: auto
+    overflow-x: auto;
+    margin-left: -18px;
+    margin-right: -18px;
+    width: calc(100% + 36px)
 }
 
 .tfp-student-performance-table {
     width: 100%;
-    border-collapse: collapse;
-    min-width: 650px
+    min-width: 650px;
+    border-collapse: collapse !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important
 }
 
 .tfp-student-performance-table th {
     padding: 9px 10px;
     background: #dfe3e4;
     text-align: left;
-    border-bottom: 1px solid #cfd4d5;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid #cfd4d5 !important;
     font-size: 11px
 }
 
 .tfp-student-performance-table td {
     padding: 8px 10px;
-    border-bottom: 1px solid #e2e5e6;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid #e2e5e6 !important;
     font-size: 10px;
     vertical-align: middle
 }
 
+.tfp-student-performance-table tr {
+    border-left: 0 !important;
+    border-right: 0 !important
+}
+
 .tfp-student-performance-table tbody tr:last-child td {
-    border-bottom: 0
+    border-bottom: 0 !important
 }
 
 .tfp-student-performance-table td:first-child a {
