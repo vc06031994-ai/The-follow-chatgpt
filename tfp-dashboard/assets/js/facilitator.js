@@ -56,9 +56,9 @@
     function completeStudentReview(button) {
         var $button = $(button);
         var $overlay = $button.closest('[data-student-overlay]');
-        var studentId = parseInt($overlay.data('student-id'), 10) || 0;
-        var lessonId = parseInt($overlay.data('lesson-id'), 10) || 0;
-        var type = $overlay.data('panel') || $overlay.attr('data-panel') || '';
+        var studentId = parseInt($overlay.attr('data-student-id'), 10) || 0;
+        var lessonId = parseInt($overlay.attr('data-lesson-id'), 10) || 0;
+        var type = $overlay.attr('data-panel') || $overlay.find('[data-review-type]').data('review-type') || '';
 
         if (!studentId || !lessonId || !type || !window.tfpFacilitatorStudent) {
             return;
@@ -88,7 +88,7 @@
             }
 
             $('.tfp-student-week-card[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status')
-                .removeClass('tfp-student-status--danger')
+                .removeClass('tfp-student-status--danger tfp-student-status--neutral')
                 .addClass('tfp-student-status--success')
                 .text('Completed');
 
@@ -96,20 +96,41 @@
                 .text('Completed');
 
             $('.tfp-student-pill-link[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status')
-                .removeClass('tfp-student-status--danger')
+                .removeClass('tfp-student-status--danger tfp-student-status--neutral')
                 .addClass('tfp-student-status--success')
                 .text('Completed');
 
             $('.tfp-student-activity-row[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status')
-                .removeClass('tfp-student-status--danger')
+                .removeClass('tfp-student-status--danger tfp-student-status--neutral')
                 .addClass('tfp-student-status--success')
                 .text('Completed');
 
             closeStudentReview();
-        }).fail(function () {
-            window.alert('Unable to complete this review. Please try again.');
+        }).fail(function (xhr) {
+            var message = xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
+                ? xhr.responseJSON.data.message
+                : 'Unable to complete this review. Please try again.';
+            window.alert(message);
         }).always(function () {
             $button.prop('disabled', false).removeAttr('aria-busy');
+        });
+    }
+
+    function switchReviewQuestion(button) {
+        var $button = $(button);
+        var $layout = $button.closest('.tfp-student-review-layout');
+        var index = String($button.data('review-question'));
+        var $items = $layout.find('[data-review-panel-question]');
+        var $buttons = $layout.find('[data-review-question]');
+
+        $buttons.removeClass('is-active').attr('aria-selected', 'false');
+        $button.addClass('is-active').attr('aria-selected', 'true');
+
+        $items.each(function () {
+            var $item = $(this);
+            var isActive = String($item.data('review-panel-question')) === index;
+            $item.toggleClass('is-active', isActive);
+            $item.prop('hidden', !isActive);
         });
     }
 
@@ -135,7 +156,12 @@
         }
     });
 
-    $(document).on('click', '.tfp-student-review-complete-form button', function (event) {
+    $(document).on('click', '[data-review-question]', function (event) {
+        event.preventDefault();
+        switchReviewQuestion(this);
+    });
+
+    $(document).on('click', '[data-complete-student-review], .tfp-student-review-complete-form button', function (event) {
         event.preventDefault();
         completeStudentReview(this);
     });
