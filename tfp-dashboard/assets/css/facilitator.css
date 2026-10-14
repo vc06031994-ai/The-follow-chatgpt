@@ -1552,7 +1552,7 @@ table tbody>tr:nth-child(odd)>th {
     display: flex;
     align-items: center;
     gap: 13px;
-    margin: 28px 0
+    margin: 15px 0
 }
 
 .tfp-student-submitted-icon {
@@ -1576,8 +1576,10 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-student-note-text {
     font-family: var(--tfp-dash-font-alt);
     font-size: 14px;
-    color: #c4c4c4;
-    margin: 9px 0 26px !important
+    font-weight: 500;
+    line-height: 180%;
+    color: #9C9CA4;
+    margin: 0px 0 46px !important
 }
 
 .tfp-student-muted-label {

@@ -1098,7 +1098,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
                         </span>
 
                         </div><div><h3>Attendance Submitted</h3><p class="attendance-status"><?php echo esc_html($attendance['status'] === 'P' ? 'Present' : ($attendance['status'] === 'EA' ? 'Excused Absence' : 'Unexcused Absence')); ?></p></div></div>
-                        <h3>Saved Note</h3><p class="tfp-student-note-text"><?php echo esc_html($attendance['note'] ?: '—'); ?></p>
+                        <h6>Saved Note</h6><p class="tfp-student-note-text"><?php echo esc_html($attendance['note'] ?: '—'); ?></p>
                         <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'attendance','tfp_student_attendance_edit'=>1], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>">Edit Attendance</a>
                     <?php else: ?>
                         <form method="post" class="tfp-student-form-panel">
