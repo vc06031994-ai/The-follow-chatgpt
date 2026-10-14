@@ -1034,7 +1034,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
             <div class="tfp-student-overlay-head">
                 <div><h5><?php echo esc_html($panel === 'attendance' ? 'Weekly Attendance' : ($panel === 'notes' ? 'Weekly Notes' : ucfirst($panel) . ' Review')); ?></h5><p><?php echo esc_html($panel === 'attendance' ? 'Use this area to record this students weekly attendance, for the selected week.' : ($panel === 'notes' ? 'Use this space to record your weekly notes, for this student.' : 'Review the student’s submitted work for this week.')); ?></p></div>
-                <a href="<?php echo esc_url($close); ?>" class="tfp-dash-btn tfp-dash-btn--primary">× Close</a>
+                <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-student-overlay-close" data-close-student-overlay>× Close</button>
             </div>
 
             <?php if ($panel === 'attendance'): ?>
