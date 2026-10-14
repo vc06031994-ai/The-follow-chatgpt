@@ -347,6 +347,141 @@ function tfp_facilitator_student_activity_items($student_id, $course_id) {
     return $events;
 }
 
+
+function tfp_facilitator_student_ajax_render_panel($student_id, $lesson_id, $panel) {
+    $week = get_post($lesson_id);
+    if (!$week || $week->post_type !== 'sfwd-lessons') {
+        return '';
+    }
+
+    ob_start();
+
+    if ($panel === 'reading') {
+        tfp_facilitator_student_render_reading_body($student_id, $week);
+    } elseif (in_array($panel, ['attendance', 'notes', 'homework', 'quiz', 'test'], true)) {
+        tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel);
+    }
+
+    return ob_get_clean();
+}
+
+function tfp_facilitator_student_render_reading_body($student_id, $week) {
+    $readings = get_posts([
+        'post_type' => 'tfp_reading',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'meta_query' => [[
+            'key' => '_tfp_lesson_id',
+            'value' => (int) $week->ID,
+            'type' => 'NUMERIC',
+        ]],
+        'orderby' => 'menu_order',
+        'order' => 'ASC',
+    ]);
+
+    $completed_ids = get_user_meta($student_id, 'tfp_reading_progress_' . (int) $week->ID, true);
+    $completed_ids = is_array($completed_ids) ? array_map('absint', $completed_ids) : [];
+
+    ?>
+    <div class="tfp-student-overlay tfp-student-overlay--ajax" data-student-overlay data-panel="reading">
+        <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
+            <div class="tfp-student-overlay-head">
+                <div>
+                    <h5><?php esc_html_e('Reading Review', 'tfp-dashboard'); ?></h5>
+                    <p><?php esc_html_e('Review the student’s reading activity for this week.', 'tfp-dashboard'); ?></p>
+                </div>
+                <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-student-overlay-close" data-close-student-overlay>× <?php esc_html_e('Close', 'tfp-dashboard'); ?></button>
+            </div>
+
+            <div class="tfp-student-review-body tfp-student-reading-review">
+                <div class="tfp-student-reading-scroll">
+                    <?php if ($readings): foreach ($readings as $index => $reading):
+                        $is_complete = in_array((int) $reading->ID, $completed_ids, true);
+                        ?>
+                        <article class="tfp-student-reading-item">
+                            <span class="tfp-student-review-number"><?php echo esc_html($index + 1); ?></span>
+                            <div>
+                                <strong><?php echo esc_html(get_the_title($reading->ID)); ?></strong>
+                                <small><?php echo $is_complete ? esc_html__('Completed', 'tfp-dashboard') : esc_html__('Not Started', 'tfp-dashboard'); ?></small>
+                            </div>
+                            <?php tfp_facilitator_student_status_badge($is_complete ? 'Completed' : 'Needs Review', $is_complete ? 'success' : 'danger'); ?>
+                        </article>
+                    <?php endforeach; else: ?>
+                        <div class="tfp-student-empty-state"><?php esc_html_e('No reading content is available for this week.', 'tfp-dashboard'); ?></div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+function tfp_facilitator_student_ajax_panel() {
+    if (!is_user_logged_in() || !function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) {
+        wp_send_json_error(['message' => __('Unauthorized.', 'tfp-dashboard')], 403);
+    }
+
+    check_ajax_referer('tfp_facilitator_student_ajax', 'nonce');
+
+    $student_id = absint($_POST['student_id'] ?? 0);
+    $lesson_id = absint($_POST['lesson_id'] ?? 0);
+    $panel = sanitize_key(wp_unslash($_POST['panel'] ?? ''));
+
+    if (!$student_id || !$lesson_id || !in_array($panel, ['reading', 'attendance', 'notes', 'homework', 'quiz', 'test'], true)) {
+        wp_send_json_error(['message' => __('Invalid request.', 'tfp-dashboard')], 400);
+    }
+
+    if (!tfp_facilitator_student_allowed($student_id)) {
+        wp_send_json_error(['message' => __('You are not allowed to view this student.', 'tfp-dashboard')], 403);
+    }
+
+    $context = tfp_facilitator_student_course_context($student_id);
+    if (!$context['course_id'] || !function_exists('learndash_get_course_id') || (int) learndash_get_course_id($lesson_id) !== (int) $context['course_id']) {
+        wp_send_json_error(['message' => __('Invalid week for this student.', 'tfp-dashboard')], 400);
+    }
+
+    $html = tfp_facilitator_student_ajax_render_panel($student_id, $lesson_id, $panel);
+    if ($html === '') {
+        wp_send_json_error(['message' => __('Unable to load this review.', 'tfp-dashboard')], 500);
+    }
+
+    wp_send_json_success(['html' => $html]);
+}
+add_action('wp_ajax_tfp_facilitator_student_panel', 'tfp_facilitator_student_ajax_panel');
+
+function tfp_facilitator_student_ajax_complete_review() {
+    if (!is_user_logged_in() || !function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) {
+        wp_send_json_error(['message' => __('Unauthorized.', 'tfp-dashboard')], 403);
+    }
+
+    check_ajax_referer('tfp_facilitator_student_ajax', 'nonce');
+
+    $student_id = absint($_POST['student_id'] ?? 0);
+    $lesson_id = absint($_POST['lesson_id'] ?? 0);
+    $type = sanitize_key(wp_unslash($_POST['review_type'] ?? ''));
+
+    if (!$student_id || !$lesson_id || !in_array($type, ['homework', 'quiz', 'test'], true)) {
+        wp_send_json_error(['message' => __('Invalid review request.', 'tfp-dashboard')], 400);
+    }
+
+    if (!tfp_facilitator_student_allowed($student_id)) {
+        wp_send_json_error(['message' => __('You are not allowed to review this student.', 'tfp-dashboard')], 403);
+    }
+
+    update_user_meta(
+        $student_id,
+        tfp_facilitator_student_review_key($type, $lesson_id),
+        current_time('mysql')
+    );
+
+    wp_send_json_success([
+        'type' => $type,
+        'lesson_id' => $lesson_id,
+        'status' => 'Completed',
+    ]);
+}
+add_action('wp_ajax_tfp_facilitator_student_complete_review', 'tfp_facilitator_student_ajax_complete_review');
+
 function tfp_facilitator_student_post_action() {
     if (empty($_POST['tfp_student_action'])) return;
     if (!is_user_logged_in() || !function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) return;
@@ -620,10 +755,6 @@ function tfp_dashboard_render_facilitator_student_content() {
         if ($activity_view === 'all') {
             tfp_facilitator_student_render_activity_overlay($student_id, $activities);
         }
-
-        if (in_array($active_panel, ['attendance', 'notes', 'homework', 'quiz', 'test'], true) && $selected_week) {
-            tfp_facilitator_student_render_panel_overlay($student_id, $selected_week, $active_panel);
-        }
         ?>
     </div>
     <?php
@@ -687,7 +818,7 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
                                         }
                                         $item = $statuses[$type];
                                         ?>
-                                        <td><a href="<?php echo esc_url($url); ?>" class="tfp-student-pill-link"><?php tfp_facilitator_student_status_badge($item['label'],$item['tone']); ?></a></td>
+                                        <td><a href="<?php echo esc_url($url); ?>" class="tfp-student-pill-link" data-student-review="<?php echo esc_attr($type); ?>" data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>"><?php tfp_facilitator_student_status_badge($item['label'],$item['tone']); ?></a></td>
                                     <?php endforeach; ?>
                                 </tr>
                             <?php endforeach; ?>
@@ -811,7 +942,7 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
                     ['key'=>'attendance','label'=>'Attendance','value'=>'ATT','url'=>add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'attendance']),'tone'=>$status['attendance']['tone']],
                 ];
                 foreach ($cards as $card): ?>
-                    <a class="tfp-student-week-card" href="<?php echo esc_url($card['url']); ?>">
+                    <a class="tfp-student-week-card" data-student-review="<?php echo esc_attr($card['key']); ?>" data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>" href="<?php echo esc_url($card['url']); ?>">
                         <?php
                         $display_status = tfp_facilitator_student_display_status($status[$card['key']]);
                         $card_meta = tfp_facilitator_student_card_meta($student_id, $week->ID, $week_number, $card['key'], $progress, $status, $week_activity);
