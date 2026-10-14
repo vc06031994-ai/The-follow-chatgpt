@@ -673,18 +673,17 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
                             <thead><tr><th>Week</th><th>Reading</th><th>Homework</th><th>Quiz</th><th>Tests</th><th>Attend.</th></tr></thead>
                             <tbody>
                             <?php foreach (array_slice($weeks, 0, 7) as $index => $week):
-                                $statuses = tfp_facilitator_student_step_statuses($student_id, $week->ID);
+                                $statuses = tfp_facilitator_student_performance_statuses($student_id, $week->ID);
                                 $week_href = add_query_arg(['tfp_student_id' => $student_id, 'tfp_student_week' => $week->ID], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'));
                                 ?>
                                 <tr>
                                     <td><a href="<?php echo esc_url($week_href); ?>"><?php printf(esc_html__('Week %d', 'tfp-dashboard'), $index + 1); ?></a></td>
                                     <?php foreach (['reading','homework','quiz','test','attendance'] as $type):
+                                        $url = $week_href;
                                         if ($type === 'attendance') {
                                             $url = add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'attendance'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'));
                                         } elseif (in_array($type, ['homework','quiz','test'], true)) {
                                             $url = add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>$type], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'));
-                                        } else {
-                                            $url = $week_href;
                                         }
                                         $item = $statuses[$type];
                                         ?>
@@ -733,6 +732,62 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
         </section>
     </section>
     <?php
+}
+
+function tfp_facilitator_student_performance_statuses($student_id, $lesson_id) {
+    $reading = tfp_facilitator_student_reading_status($student_id, $lesson_id);
+    $homework = function_exists('tfp_week_homework_progress')
+        ? tfp_week_homework_progress($student_id, $lesson_id)
+        : ['completed' => 0, 'total' => 0];
+
+    $quiz = function_exists('tfp_week_get_quiz_result')
+        ? tfp_week_get_quiz_result($student_id, $lesson_id)
+        : null;
+    $test = function_exists('tfp_week_get_test_result')
+        ? tfp_week_get_test_result($student_id, $lesson_id)
+        : null;
+
+    $attendance = tfp_facilitator_student_attendance($student_id, $lesson_id);
+
+    $reading_complete = ($reading['total'] ?? 0) > 0
+        && (int) ($reading['completed'] ?? 0) >= (int) ($reading['total'] ?? 0);
+
+    $homework_complete = (int) ($homework['total'] ?? 0) > 0
+        && (int) ($homework['completed'] ?? 0) >= (int) ($homework['total'] ?? 0);
+
+    $quiz_score = ($quiz && isset($quiz['score']) && is_numeric($quiz['score']))
+        ? (int) $quiz['score']
+        : null;
+    $test_score = ($test && isset($test['score']) && is_numeric($test['score']))
+        ? (int) $test['score']
+        : null;
+
+    $attendance_code = !empty($attendance['status'])
+        ? strtoupper((string) $attendance['status'])
+        : '';
+
+    return [
+        'reading' => [
+            'label' => $reading_complete ? 'Completed' : '—',
+            'tone' => $reading_complete ? 'success' : 'neutral',
+        ],
+        'homework' => [
+            'label' => $homework_complete ? 'Completed' : '—',
+            'tone' => $homework_complete ? 'success' : 'neutral',
+        ],
+        'quiz' => [
+            'label' => $quiz_score !== null ? (tfp_facilitator_student_score_letter($quiz_score) ?: '—') : '—',
+            'tone' => $quiz_score === null ? 'neutral' : ($quiz_score >= 80 ? 'success' : 'danger'),
+        ],
+        'test' => [
+            'label' => $test_score !== null ? (tfp_facilitator_student_score_letter($test_score) ?: '—') : '—',
+            'tone' => $test_score === null ? 'neutral' : ($test_score >= 80 ? 'success' : 'danger'),
+        ],
+        'attendance' => [
+            'label' => in_array($attendance_code, ['P', 'EA', 'UA'], true) ? $attendance_code : '—',
+            'tone' => $attendance_code === 'P' ? 'success' : ($attendance_code === 'EA' ? 'warning' : ($attendance_code === 'UA' ? 'danger' : 'neutral')),
+        ],
+    ];
 }
 
 function tfp_facilitator_student_render_week_view($student_id, $course_id, $cohort_id, $weeks, $week, $activities) {
