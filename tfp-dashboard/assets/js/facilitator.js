@@ -244,7 +244,7 @@
         if (event.target && event.target.classList && event.target.classList.contains('tfp-student-overlay')) {
             closeStudentReview();
         }
-    });
+    }, true);
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape' && document.querySelector('[data-student-overlay]')) {
