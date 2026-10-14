@@ -437,11 +437,6 @@ function tfp_dashboard_render_facilitator_attendance_content()
     $filter_cohort = isset($_GET['cohort_id']) ? absint($_GET['cohort_id']) : 0;
 
     $all_courses = tfp_facilitator_attendance_get_courses();
-    $all_cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $filter_course);
-
-    $all_courses = tfp_facilitator_attendance_get_courses();
-    $filter_course = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
-    $filter_cohort = isset($_GET['cohort_id']) ? absint($_GET['cohort_id']) : 0;
 
     $all_cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $filter_course);
     if ($filter_cohort) {
@@ -499,6 +494,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
         ($attendance_page - 1) * $attendance_per_page,
         $attendance_per_page
     );
+    ?>
     <div class="tfp-attendance-page-wrap">
         <!-- Top Breadcrumbs -->
         <nav class="tfp-attendance-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
