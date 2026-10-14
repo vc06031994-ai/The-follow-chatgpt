@@ -8,12 +8,31 @@ if (!defined('ABSPATH')) exit;
  * derived from the real facilitator attendance records saved against students.
  */
 
-function tfp_facilitator_attendance_get_courses()
+function tfp_facilitator_attendance_get_courses($user_id = 0)
 {
+    $user_id = $user_id ?: get_current_user_id();
+
+    $cohorts = function_exists('tfp_facilitator_current_cohorts')
+        ? tfp_facilitator_current_cohorts($user_id)
+        : [];
+
+    $course_ids = [];
+    foreach ((array) $cohorts as $cohort) {
+        $course_id = (int) get_post_meta($cohort->ID, '_related_course', true);
+        if ($course_id) {
+            $course_ids[$course_id] = true;
+        }
+    }
+
+    if (!$course_ids) {
+        return [];
+    }
+
     $courses = get_posts([
         'post_type'      => 'sfwd-courses',
         'post_status'    => 'publish',
         'posts_per_page' => -1,
+        'post__in'       => array_keys($course_ids),
         'orderby'        => 'title',
         'order'          => 'ASC',
     ]);
@@ -133,11 +152,16 @@ function tfp_facilitator_attendance_report($cohorts)
     $logs = [];
     $student_stats = [];
     $weeks_by_cohort = [];
+    $week_ids_by_cohort = [];
 
     foreach ((array) $cohorts as $cohort) {
         $cohort_id = (int) $cohort->ID;
         $course_id = (int) get_post_meta($cohort_id, '_related_course', true);
         $weeks_by_cohort[$cohort_id] = tfp_facilitator_attendance_get_weeks($course_id);
+        $week_ids_by_cohort[$cohort_id] = array_fill_keys(
+            wp_list_pluck($weeks_by_cohort[$cohort_id], 'ID'),
+            true
+        );
 
         $student_ids = function_exists('tfp_facilitator_cohort_students')
             ? tfp_facilitator_cohort_students($cohort_id)
@@ -162,6 +186,13 @@ function tfp_facilitator_attendance_report($cohorts)
                 $record = isset($meta_values[0]) ? maybe_unserialize($meta_values[0]) : [];
 
                 if (!is_array($record) || empty($record['status'])) {
+                    continue;
+                }
+
+                if (
+                    empty($week_ids_by_cohort[$cohort_id])
+                    || empty($week_ids_by_cohort[$cohort_id][$lesson_id])
+                ) {
                     continue;
                 }
 
@@ -355,12 +386,19 @@ function tfp_facilitator_attendance_upcoming_submissions($cohorts, $report)
 
 function tfp_facilitator_attendance_format_breakdown($log)
 {
-    return sprintf(
-        '%d PRE • %d EA • %d UA',
-        (int) $log['present'],
-        (int) $log['excused'],
-        (int) $log['unexcused']
-    );
+    $parts = [];
+
+    if ((int) $log['present'] > 0) {
+        $parts[] = (int) $log['present'] . ' PRE';
+    }
+    if ((int) $log['excused'] > 0) {
+        $parts[] = (int) $log['excused'] . ' EA';
+    }
+    if ((int) $log['unexcused'] > 0) {
+        $parts[] = (int) $log['unexcused'] . ' UA';
+    }
+
+    return $parts ? implode(' • ', $parts) : '—';
 }
 
 /**
@@ -436,7 +474,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
     $filter_course = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
     $filter_cohort = isset($_GET['cohort_id']) ? absint($_GET['cohort_id']) : 0;
 
-    $all_courses = tfp_facilitator_attendance_get_courses();
+    $all_courses = tfp_facilitator_attendance_get_courses($current_user_id);
 
     $all_cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $filter_course);
     if ($filter_cohort) {
