@@ -1107,22 +1107,22 @@ function tfp_facilitator_student_render_review_body($student_id, $week, $panel) 
         $questions = is_array($result) && !empty($result['results']) ? $result['results'] : [];
         $answers = [];
     }
-
     ?>
     <div class="tfp-student-review-body tfp-student-review-body--questions" data-review-type="<?php echo esc_attr($panel); ?>">
         <?php if ($questions): ?>
-            <div class="tfp-week__meeting-review tfp-facilitator-review-layout">
-                <div class="tfp-week__meeting-question-rail tfp-facilitator-review-rail" aria-label="<?php esc_attr_e('Review questions', 'tfp-dashboard'); ?>">
+            <div class="tfp-facilitator-review-layout">
+                <div class="tfp-facilitator-review-rail" aria-label="<?php esc_attr_e('Review questions', 'tfp-dashboard'); ?>">
                     <?php foreach ($questions as $index => $q): ?>
                         <button type="button"
-                            class="tfp-hw-rail-btn tfp-facilitator-review-rail-btn <?php echo $index === 0 ? 'is-active' : ''; ?>"
-                            data-review-question="<?php echo esc_attr($index); ?>">
+                            class="tfp-facilitator-review-rail-btn<?php echo $index === 0 ? ' is-active' : ''; ?>"
+                            data-review-question="<?php echo esc_attr($index); ?>"
+                            aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>">
                             <?php echo esc_html($index + 1); ?>
                         </button>
                     <?php endforeach; ?>
                 </div>
 
-                <div class="tfp-week__meeting-review-main tfp-facilitator-review-main">
+                <div class="tfp-facilitator-review-main">
                     <?php foreach ($questions as $index => $q):
                         $answer = (isset($q['id'], $answers[$q['id']]) && is_array($answers[$q['id']])) ? $answers[$q['id']] : [];
                         $selected = isset($answer['selected_index'])
@@ -1159,38 +1159,38 @@ function tfp_facilitator_student_render_review_body($student_id, $week, $panel) 
                         $status_class = $is_correct ? 'is-correct' : 'is-incorrect';
                         $status_icon = $is_correct ? '✓' : '!';
                         ?>
-                        <div class="tfp-week__meeting-homework-panel tfp-facilitator-review-question-panel <?php echo $index === 0 ? 'is-active' : ''; ?>"
-                             data-review-panel="<?php echo esc_attr($index); ?>"
-                             <?php echo $index === 0 ? '' : 'style="display:none;"'; ?>>
-                            <h3 class="tfp-week__meeting-test-prompt tfp-facilitator-review-prompt">
+                        <article class="tfp-facilitator-review-question-panel<?php echo $index === 0 ? ' is-active' : ''; ?>"
+                                 data-review-panel="<?php echo esc_attr($index); ?>"
+                                 <?php echo $index === 0 ? '' : 'hidden'; ?>>
+                            <h3 class="tfp-facilitator-review-prompt">
                                 <?php printf(esc_html__('Q%d. %s', 'tfp-dashboard'), $index + 1, $q['prompt'] ?? ''); ?>
                             </h3>
 
-                            <div class="tfp-week__meeting-answer-label <?php echo esc_attr($status_class); ?>">
+                            <div class="tfp-facilitator-review-answer-label <?php echo esc_attr($status_class); ?>">
                                 <span><?php echo esc_html($status_icon); ?></span>
                                 <?php esc_html_e('Your Answer', 'tfp-dashboard'); ?>
                             </div>
 
-                            <div class="tfp-week__meeting-answer-box">
+                            <div class="tfp-facilitator-review-answer-box">
                                 <?php echo nl2br(esc_html($user_answer)); ?>
                             </div>
 
-                            <h4 class="tfp-facilitator-review-review-heading"><?php esc_html_e('Review Answer', 'tfp-dashboard'); ?></h4>
+                            <h4 class="tfp-facilitator-review-heading"><?php esc_html_e('Review Answer', 'tfp-dashboard'); ?></h4>
 
-                            <div class="tfp-week__meeting-explanation-box">
+                            <div class="tfp-facilitator-review-explanation-box">
                                 <?php if ($correct_answer !== ''): ?>
-                                    <p class="tfp-week__meeting-correct-answer <?php echo esc_attr($status_class); ?>">
+                                    <p class="tfp-facilitator-review-correct-answer <?php echo esc_attr($status_class); ?>">
                                         <span><?php esc_html_e('Answer: ', 'tfp-dashboard'); ?></span><?php echo esc_html($correct_answer); ?>
                                     </p>
                                 <?php endif; ?>
 
-                                <h4 class="tfp-week__meeting-explanation-title"><?php esc_html_e('Explanation:', 'tfp-dashboard'); ?></h4>
+                                <h4><?php esc_html_e('Explanation:', 'tfp-dashboard'); ?></h4>
                                 <?php
                                 $explanation = (string) ($q['explanation'] ?? '');
                                 echo wp_kses_post(wpautop($explanation ?: __('Your response is available here for review and discussion during the weekly meeting.', 'tfp-dashboard')));
                                 ?>
                             </div>
-                        </div>
+                        </article>
                     <?php endforeach; ?>
                 </div>
             </div>
