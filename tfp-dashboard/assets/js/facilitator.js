@@ -69,9 +69,36 @@
 
             document.body.appendChild(overlay);
 
+            var closeButtons = overlay.querySelectorAll('[data-close-student-overlay]');
+            closeButtons.forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeStudentReview();
+                });
+            });
+
+            var questionButtons = overlay.querySelectorAll('[data-review-question]');
+            questionButtons.forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    switchReviewQuestion(button);
+                });
+            });
+
+            var completeButton = overlay.querySelector('[data-complete-student-review]');
+            if (completeButton) {
+                completeButton.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    completeStudentReview(completeButton);
+                });
+            }
+
             var firstQuestion = overlay.querySelector('[data-review-question]');
             if (firstQuestion) {
-                firstQuestion.click();
+                switchReviewQuestion(firstQuestion);
             }
         })
         .catch(function (error) {
@@ -209,7 +236,7 @@
             return;
         }
 
-        if (event.target.classList && event.target.classList.contains('tfp-student-overlay')) {
+        if (event.target && event.target.classList && event.target.classList.contains('tfp-student-overlay')) {
             closeStudentReview();
         }
     });
