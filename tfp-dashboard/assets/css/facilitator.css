@@ -2325,3 +2325,250 @@ table tbody>tr:nth-child(odd)>th {
         font-size: 7px !important;
     }
 }
+
+
+/* Facilitator review modal — question navigator and Figma layout */
+.tfp-student-overlay-open {
+    overflow: hidden !important;
+}
+
+.tfp-student-overlay--ajax,
+.tfp-student-overlay[data-student-overlay] {
+    cursor: default;
+}
+
+.tfp-student-overlay .tfp-student-overlay-card--panel {
+    display: flex;
+    flex-direction: column;
+    width: min(670px, 92vw);
+    max-height: 90vh;
+    box-sizing: border-box;
+    padding: 28px 30px 26px;
+}
+
+.tfp-student-overlay .tfp-student-overlay-head {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+.tfp-student-overlay .tfp-student-overlay-close,
+.tfp-student-overlay .tfp-dash-btn {
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.tfp-student-review-body--questions {
+    width: 100%;
+    min-width: 0;
+}
+
+.tfp-student-review-layout {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 10px;
+    min-width: 0;
+}
+
+.tfp-student-review-nav {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 0 0 1px;
+}
+
+.tfp-student-review-nav::before {
+    content: "";
+    position: absolute;
+    left: 1px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 4px;
+    background: #E0E5E5;
+}
+
+.tfp-student-review-nav__item {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 8px 10px 16px;
+    border: 0;
+    border-left: 4px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: #9AA0A1;
+    font-family: var(--tfp-dash-font);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tfp-student-review-nav__item:hover {
+    color: var(--tfp-dash-text);
+}
+
+.tfp-student-review-nav__item.is-active {
+    color: var(--tfp-dash-text);
+    border-left-color: var(--tfp-dash-maroon);
+}
+
+.tfp-student-review-question-stack {
+    min-width: 0;
+}
+
+.tfp-student-review-question--panel {
+    display: none;
+    min-width: 0;
+    padding: 6px 0 0;
+    border: 0;
+}
+
+.tfp-student-review-question--panel.is-active {
+    display: block;
+}
+
+.tfp-student-review-question__header {
+    display: block;
+    margin: 0 0 16px;
+}
+
+.tfp-student-review-question__eyebrow {
+    display: none;
+}
+
+.tfp-student-review-question--panel > div > strong,
+.tfp-student-review-question__header > strong {
+    display: block;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.35;
+    color: var(--tfp-dash-text);
+}
+
+.tfp-student-review-question--panel .tfp-student-answer-line {
+    margin: 14px 0 18px;
+    font-family: var(--tfp-dash-font-alt);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.tfp-student-review-question--panel .tfp-student-answer-line .is-incorrect {
+    color: var(--tfp-dash-status-danger);
+    font-family: var(--tfp-dash-font);
+    font-size: 11px;
+}
+
+.tfp-student-review-question--panel .tfp-student-answer-line .is-correct {
+    color: var(--tfp-dash-teal);
+    font-family: var(--tfp-dash-font);
+    font-size: 11px;
+}
+
+.tfp-student-review-question--panel .tfp-student-correct-answer {
+    margin: 0 0 16px;
+    font-family: var(--tfp-dash-font-alt);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.tfp-student-review-question--panel h3 {
+    margin: 18px 0 6px;
+    font-size: 15px;
+    line-height: 1.3;
+}
+
+.tfp-student-review-question--panel > div > p,
+.tfp-student-review-question--panel > p {
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.tfp-student-review-complete-form {
+    flex: 0 0 auto;
+    margin-top: 20px;
+    padding-top: 0;
+}
+
+.tfp-student-review-complete-form button {
+    min-width: 215px;
+    pointer-events: auto;
+}
+
+.tfp-student-reading-review {
+    min-width: 0;
+}
+
+.tfp-student-reading-scroll {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+}
+
+.tfp-student-reading-item {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #DEDEDE;
+}
+
+.tfp-student-reading-item strong {
+    display: block;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.tfp-student-reading-item small {
+    display: block;
+    margin-top: 4px;
+    color: #888;
+    font-family: var(--tfp-dash-font-alt);
+    font-size: 9px;
+}
+
+@media (max-width: 767px) {
+    .tfp-student-overlay {
+        align-items: flex-start;
+        overflow-y: auto;
+        padding: 8px;
+    }
+
+    .tfp-student-overlay .tfp-student-overlay-card--panel {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100vh - 16px);
+        padding: 22px 18px;
+    }
+
+    .tfp-student-review-layout {
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .tfp-student-review-nav__item {
+        min-height: 42px;
+        padding-left: 13px;
+        font-size: 11px;
+    }
+
+    .tfp-student-review-question--panel > div > strong,
+    .tfp-student-review-question__header > strong {
+        font-size: 14px;
+    }
+
+    .tfp-student-review-question--panel .tfp-student-answer-line,
+    .tfp-student-review-question--panel > div > p,
+    .tfp-student-review-question--panel > p {
+        font-size: 12px;
+    }
+
+    .tfp-student-review-complete-form button {
+        width: 100%;
+        min-width: 0;
+    }
+}
