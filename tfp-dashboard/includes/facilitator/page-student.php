@@ -390,7 +390,11 @@ function tfp_facilitator_student_render_reading_body($student_id, $week) {
                     <h5><?php esc_html_e('Reading Review', 'tfp-dashboard'); ?></h5>
                     <p><?php esc_html_e('Review the student’s reading activity for this week.', 'tfp-dashboard'); ?></p>
                 </div>
-                <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-student-overlay-close" data-close-student-overlay>× <?php esc_html_e('Close', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-dash-btn-second tfp-dash-btn--primary tfp-student-overlay-close" data-close-student-overlay>
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+<path d="M8.99998 8.99998L5.00001 5.00001M5.00001 5.00001L1 1M5.00001 5.00001L9.00002 1M5.00001 5.00001L1 9.00002" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg></span>    
+                <?php esc_html_e('Close', 'tfp-dashboard'); ?></button>
             </div>
 
             <div class="tfp-student-review-body tfp-student-reading-review">
@@ -1046,7 +1050,11 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
             <div class="tfp-student-overlay-head">
                 <div><h5><?php echo esc_html($panel === 'attendance' ? 'Weekly Attendance' : ($panel === 'notes' ? 'Weekly Notes' : ucfirst($panel) . ' Review')); ?></h5><p><?php echo esc_html($panel === 'attendance' ? 'Use this area to record this students weekly attendance, for the selected week.' : ($panel === 'notes' ? 'Use this space to record your weekly notes, for this student.' : 'Review the student’s submitted work for this week.')); ?></p></div>
-                <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-student-overlay-close" data-close-student-overlay>× Close</button>
+                <button type="button" class="tfp-dash-btn-second tfp-dash-btn--primary tfp-student-overlay-close" data-close-student-overlay>
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+<path d="M8.99998 8.99998L5.00001 5.00001M5.00001 5.00001L1 1M5.00001 5.00001L9.00002 1M5.00001 5.00001L1 9.00002" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg></span>    
+                <?php esc_html_e('Close', 'tfp-dashboard'); ?></button>
             </div>
 
             <?php if ($panel === 'attendance'): ?>
