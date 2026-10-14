@@ -135,6 +135,74 @@
         });
     }
 
+    function saveStudentAttendance(form) {
+        var settings = getSettings();
+        var overlay = form.closest('[data-student-overlay]');
+
+        if (!settings || !settings.ajaxUrl || !settings.nonce || !overlay) {
+            return;
+        }
+
+        var studentId = parseInt(overlay.getAttribute('data-student-id'), 10) || 0;
+        var lessonId = parseInt(overlay.getAttribute('data-lesson-id'), 10) || 0;
+        var button = form.querySelector('.tfp-student-attendance-save');
+
+        if (!studentId || !lessonId || !button) {
+            return;
+        }
+
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+
+        var formData = new FormData(form);
+        formData.set('action', 'tfp_facilitator_student_save_attendance');
+        formData.set('nonce', settings.nonce);
+        formData.set('student_id', String(studentId));
+        formData.set('lesson_id', String(lessonId));
+
+        fetch(settings.ajaxUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (response) {
+            if (!response || !response.success) {
+                throw new Error(
+                    response && response.data && response.data.message
+                        ? response.data.message
+                        : 'Unable to save attendance.'
+                );
+            }
+
+            var statusLabel = response.data.status_label || 'Present';
+            var metaText = 'Confirmed · ' + (response.data.display_time || '') + ' – ' + (response.data.display_date || '');
+
+            document.querySelectorAll(
+                '.tfp-student-week-card[data-student-review="attendance"][data-lesson-id="' + lessonId + '"] .tfp-student-status'
+            ).forEach(function (badge) {
+                badge.classList.remove('tfp-student-status--danger', 'tfp-student-status--neutral');
+                badge.classList.add('tfp-student-status--success');
+                badge.textContent = 'Completed';
+            });
+
+            document.querySelectorAll(
+                '.tfp-student-week-card[data-student-review="attendance"][data-lesson-id="' + lessonId + '"] small'
+            ).forEach(function (meta) {
+                meta.textContent = metaText;
+            });
+
+            closeStudentReview();
+        })
+        .catch(function (error) {
+            window.alert(error && error.message ? error.message : 'Unable to save attendance.');
+            button.disabled = false;
+            button.removeAttribute('aria-busy');
+        });
+    }
+
     function completeStudentReview(button) {
         var settings = getSettings();
         var overlay = button.closest('[data-student-overlay]');
@@ -214,7 +282,7 @@
             ? event.target.closest('[data-student-review]')
             : null;
 
-        if (reviewTrigger && (reviewTrigger.matches('.tfp-student-week-card') || reviewTrigger.matches('.tfp-student-pill-link'))) {
+        if (reviewTrigger && (reviewTrigger.matches('.tfp-student-week-card') || reviewTrigger.matches('.tfp-student-pill-link') || reviewTrigger.matches('.tfp-student-attendance-edit'))) {
             event.preventDefault();
             openStudentReview(reviewTrigger);
             return;
@@ -234,6 +302,13 @@
             return;
         }
 
+        var attendanceForm = event.target.closest ? event.target.closest('.tfp-student-attendance-form') : null;
+        if (attendanceForm && event.target.matches && event.target.matches('.tfp-student-attendance-save')) {
+            event.preventDefault();
+            saveStudentAttendance(attendanceForm);
+            return;
+        }
+
         var completeButton = event.target.closest ? event.target.closest('[data-complete-student-review]') : null;
         if (completeButton) {
             event.preventDefault();
@@ -243,6 +318,15 @@
 
         if (event.target && event.target.classList && event.target.classList.contains('tfp-student-overlay')) {
             closeStudentReview();
+        }
+    }, true);
+
+    document.addEventListener('submit', function (event) {
+        var attendanceForm = event.target.closest ? event.target.closest('.tfp-student-attendance-form') : null;
+        if (attendanceForm) {
+            event.preventDefault();
+            event.stopPropagation();
+            saveStudentAttendance(attendanceForm);
         }
     }, true);
 
