@@ -217,6 +217,16 @@ add_action('wp_enqueue_scripts', function () {
             $facilitator_deps[] = 'tfp-dashboard-selectwoo';
         }
 
+        if ($template === 'tfp-dashboard-facilitator-student') {
+            wp_enqueue_style(
+                'tfp-dashboard-week',
+                TFP_DASH_URL . 'assets/css/week.css',
+                ['tfp-dashboard-components'],
+                TFP_DASH_VERSION
+            );
+            $facilitator_deps[] = 'tfp-dashboard-week';
+        }
+
         wp_enqueue_style(
             'tfp-dashboard-facilitator',
             TFP_DASH_URL . 'assets/css/facilitator.css',
