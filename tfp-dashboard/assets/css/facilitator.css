@@ -2391,19 +2391,19 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-student-review-nav__item {
     position: relative;
     z-index: 1;
-    width: 100%;
-    min-height: 48px;
-    padding: 10px 8px 10px 16px;
-    border: 0;
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 10px 8px 10px 16px !important;
+    border: 0 !important;
     border-left: 4px solid transparent;
-    border-radius: 0;
-    background: transparent;
-    color: #9AA0A1;
-    font-family: var(--tfp-dash-font);
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-    cursor: pointer;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #9AA0A1 !important;
+    font-family: var(--tfp-dash-font) !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    cursor: pointer !important;
 }
 
 .tfp-student-review-nav__item:hover {
