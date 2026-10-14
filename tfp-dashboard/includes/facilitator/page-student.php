@@ -1092,7 +1092,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
                     <?php if ($attendance['status'] && !$edit_attendance): ?>
                         <div class="tfp-student-submitted"><div class="tfp-student-submitted-icon">
                         <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 34 34" fill="none" aria-hidden="true">
 <path d="M28.3307 29.7472C28.3307 25.8356 23.257 22.6646 16.9984 22.6646C10.7398 22.6646 5.66614 25.8356 5.66614 29.7472M16.9984 18.415C13.0868 18.415 9.91574 15.2439 9.91574 11.3323C9.91574 7.42065 13.0868 4.24963 16.9984 4.24963C20.91 4.24963 24.0811 7.42065 24.0811 11.3323C24.0811 15.2439 20.91 18.415 16.9984 18.415Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
                         </span>
