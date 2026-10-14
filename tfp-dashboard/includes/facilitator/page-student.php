@@ -17,6 +17,20 @@ function tfp_facilitator_student_attendance_key($lesson_id) {
     return 'tfp_facilitator_student_attendance_' . absint($lesson_id);
 }
 
+function tfp_facilitator_student_attendance_history_key($lesson_id) {
+    return 'tfp_facilitator_student_attendance_history_' . absint($lesson_id);
+}
+
+function tfp_facilitator_student_attendance_history($student_id, $lesson_id) {
+    $history = get_user_meta(
+        (int) $student_id,
+        tfp_facilitator_student_attendance_history_key($lesson_id),
+        true
+    );
+
+    return is_array($history) ? $history : [];
+}
+
 function tfp_facilitator_student_review_key($type, $lesson_id) {
     return 'tfp_facilitator_review_' . sanitize_key($type) . '_' . absint($lesson_id);
 }
@@ -534,12 +548,47 @@ function tfp_facilitator_student_post_action() {
             $status = strtoupper(sanitize_text_field(wp_unslash($_POST['attendance_status'] ?? '')));
             if (!in_array($status, ['P', 'EA', 'UA'], true) || !$lesson_id) return;
 
-            update_user_meta($student_id, tfp_facilitator_student_attendance_key($lesson_id), [
+            $note = sanitize_textarea_field(wp_unslash($_POST['attendance_note'] ?? ''));
+            $updated_at = current_time('mysql');
+            $author_id = get_current_user_id();
+
+            $previous = tfp_facilitator_student_attendance($student_id, $lesson_id);
+            $current = [
                 'status' => $status,
-                'note' => sanitize_textarea_field(wp_unslash($_POST['attendance_note'] ?? '')),
-                'updated_at' => current_time('mysql'),
-                'author_id' => get_current_user_id(),
-            ]);
+                'note' => $note,
+                'updated_at' => $updated_at,
+                'author_id' => $author_id,
+            ];
+
+            // Keep an audit trail of each real attendance change while the
+            // attendance meta continues to represent only the latest value.
+            if (
+                (string) ($previous['status'] ?? '') !== $status
+                || (string) ($previous['note'] ?? '') !== $note
+            ) {
+                $history = tfp_facilitator_student_attendance_history($student_id, $lesson_id);
+                $history[] = [
+                    'action' => empty($previous['status']) ? 'created' : 'updated',
+                    'old_status' => (string) ($previous['status'] ?? ''),
+                    'old_note' => (string) ($previous['note'] ?? ''),
+                    'status' => $status,
+                    'note' => $note,
+                    'changed_at' => $updated_at,
+                    'author_id' => $author_id,
+                ];
+
+                update_user_meta(
+                    $student_id,
+                    tfp_facilitator_student_attendance_history_key($lesson_id),
+                    $history
+                );
+            }
+
+            update_user_meta(
+                $student_id,
+                tfp_facilitator_student_attendance_key($lesson_id),
+                $current
+            );
 
             wp_safe_redirect(add_query_arg([
                 'tfp_student_week' => $lesson_id,
