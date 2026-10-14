@@ -852,7 +852,11 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
             </div>
             <div class="tfp-student-activity-list">
                 <?php foreach (array_slice($activities, 0, 6) as $activity): ?>
-                    <div class="tfp-student-activity-row">
+                    <div class="tfp-student-activity-row" data-student-review="<?php echo esc_attr(strtolower($activity['type'])); ?>" data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php
+                        $activity_week_index = max(1, (int) ($activity['week'] ?? 1));
+                        $activity_week_post = $weeks[$activity_week_index - 1] ?? null;
+                        echo esc_attr($activity_week_post ? (int) $activity_week_post->ID : 0);
+                    ?>">
                         <strong><?php echo esc_html($activity['type']); ?></strong>
                         <div class="st-activity-content"><b><?php echo esc_html($activity['title']); ?></b><small><?php echo esc_html($activity['date'].' · '.$activity['time']); ?></small></div>
                         <?php tfp_facilitator_student_status_badge($activity['status'],$activity['tone']); ?>
