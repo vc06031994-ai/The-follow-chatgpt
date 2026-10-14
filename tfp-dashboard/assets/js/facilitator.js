@@ -108,7 +108,7 @@
     }
 
     function switchReviewQuestion(button) {
-        var layout = button.closest('.tfp-student-review-layout');
+        var layout = button.closest('.tfp-facilitator-review-layout');
         if (!layout) {
             return;
         }
