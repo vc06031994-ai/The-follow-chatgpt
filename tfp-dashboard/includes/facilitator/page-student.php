@@ -383,34 +383,64 @@ function tfp_facilitator_student_render_reading_body($student_id, $week) {
     $completed_ids = is_array($completed_ids) ? array_map('absint', $completed_ids) : [];
 
     ?>
-    <div class="tfp-student-overlay tfp-student-overlay--ajax" data-student-overlay data-panel="reading" data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>">
+    <div class="tfp-student-overlay tfp-student-overlay--ajax"
+        data-student-overlay
+        data-panel="reading"
+        data-student-id="<?php echo esc_attr($student_id); ?>"
+        data-lesson-id="<?php echo esc_attr($week->ID); ?>">
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
             <div class="tfp-student-overlay-head">
                 <div>
                     <h5><?php esc_html_e('Reading Review', 'tfp-dashboard'); ?></h5>
                     <p><?php esc_html_e('Review the student’s reading activity for this week.', 'tfp-dashboard'); ?></p>
                 </div>
-                <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-student-overlay-close" data-close-student-overlay>× <?php esc_html_e('Close', 'tfp-dashboard'); ?></button>
+                <button type="button"
+                    class="tfp-dash-btn tfp-dash-btn--primary tfp-student-overlay-close"
+                    data-close-student-overlay>× <?php esc_html_e('Close', 'tfp-dashboard'); ?></button>
             </div>
 
-            <div class="tfp-student-review-body tfp-student-reading-review">
-                <div class="tfp-student-reading-scroll">
-                    <?php if ($readings): foreach ($readings as $index => $reading):
-                        $is_complete = in_array((int) $reading->ID, $completed_ids, true);
-                        ?>
-                        <article class="tfp-student-reading-item">
-                            <span class="tfp-student-review-number"><?php echo esc_html($index + 1); ?></span>
-                            <div>
-                                <strong><?php echo esc_html(get_the_title($reading->ID)); ?></strong>
-                                <small><?php echo $is_complete ? esc_html__('Completed', 'tfp-dashboard') : esc_html__('Not Started', 'tfp-dashboard'); ?></small>
-                            </div>
-                            <?php tfp_facilitator_student_status_badge($is_complete ? 'Completed' : 'Needs Review', $is_complete ? 'success' : 'danger'); ?>
-                        </article>
-                    <?php endforeach; else: ?>
-                        <div class="tfp-student-empty-state"><?php esc_html_e('No reading content is available for this week.', 'tfp-dashboard'); ?></div>
-                    <?php endif; ?>
+            <?php if ($readings): ?>
+                <div class="tfp-facilitator-review-layout tfp-facilitator-reading-layout">
+                    <div class="tfp-facilitator-review-rail" aria-label="<?php esc_attr_e('Reading items', 'tfp-dashboard'); ?>">
+                        <?php foreach ($readings as $index => $reading): ?>
+                            <button type="button"
+                                class="tfp-facilitator-review-rail-btn<?php echo $index === 0 ? ' is-active' : ''; ?>"
+                                data-review-question="<?php echo esc_attr($index); ?>"
+                                aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>">
+                                <?php echo esc_html($index + 1); ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="tfp-facilitator-review-main tfp-facilitator-reading-main">
+                        <?php foreach ($readings as $index => $reading):
+                            $is_complete = in_array((int) $reading->ID, $completed_ids, true);
+                            ?>
+                            <article class="tfp-facilitator-review-question-panel<?php echo $index === 0 ? ' is-active' : ''; ?>"
+                                data-review-panel="<?php echo esc_attr($index); ?>"
+                                <?php echo $index === 0 ? '' : 'hidden'; ?>>
+                                <h3 class="tfp-facilitator-review-prompt">
+                                    <?php echo esc_html(get_the_title($reading->ID)); ?>
+                                </h3>
+
+                                <div class="tfp-facilitator-reading-status <?php echo $is_complete ? 'is-complete' : 'is-pending'; ?>">
+                                    <span><?php echo $is_complete ? '✓' : '!'; ?></span>
+                                    <strong><?php echo $is_complete ? esc_html__('Completed', 'tfp-dashboard') : esc_html__('Needs Review', 'tfp-dashboard'); ?></strong>
+                                </div>
+
+                                <div class="tfp-facilitator-reading-content">
+                                    <?php
+                                    $content = apply_filters('the_content', get_post_field('post_content', $reading->ID));
+                                    echo wp_kses_post($content);
+                                    ?>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-            </div>
+            <?php else: ?>
+                <div class="tfp-student-empty-state"><?php esc_html_e('No reading content is available for this week.', 'tfp-dashboard'); ?></div>
+            <?php endif; ?>
         </div>
     </div>
     <?php
