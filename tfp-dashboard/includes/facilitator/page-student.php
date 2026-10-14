@@ -372,7 +372,7 @@ function tfp_facilitator_student_ajax_render_panel($student_id, $lesson_id, $pan
 
     if ($panel === 'reading') {
         tfp_facilitator_student_render_reading_body($student_id, $week);
-    } elseif (in_array($panel, ['attendance', 'notes', 'homework', 'quiz', 'test'], true)) {
+    } elseif (in_array($panel, ['attendance', 'attendance_edit', 'notes', 'homework', 'quiz', 'test'], true)) {
         tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel);
     }
 
@@ -474,7 +474,7 @@ function tfp_facilitator_student_ajax_panel() {
     $lesson_id = absint($_POST['lesson_id'] ?? 0);
     $panel = sanitize_key(wp_unslash($_POST['panel'] ?? ''));
 
-    if (!$student_id || !$lesson_id || !in_array($panel, ['reading', 'attendance', 'notes', 'homework', 'quiz', 'test'], true)) {
+    if (!$student_id || !$lesson_id || !in_array($panel, ['reading', 'attendance', 'attendance_edit', 'notes', 'homework', 'quiz', 'test'], true)) {
         wp_send_json_error(['message' => __('Invalid request.', 'tfp-dashboard')], 400);
     }
 
@@ -495,6 +495,76 @@ function tfp_facilitator_student_ajax_panel() {
     wp_send_json_success(['html' => $html]);
 }
 add_action('wp_ajax_tfp_facilitator_student_panel', 'tfp_facilitator_student_ajax_panel');
+
+
+function tfp_facilitator_student_ajax_save_attendance() {
+    if (!is_user_logged_in() || !function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) {
+        wp_send_json_error(['message' => __('Unauthorized.', 'tfp-dashboard')], 403);
+    }
+
+    check_ajax_referer('tfp_facilitator_student_ajax', 'nonce');
+
+    $student_id = absint($_POST['student_id'] ?? 0);
+    $lesson_id = absint($_POST['lesson_id'] ?? 0);
+    $status = strtoupper(sanitize_text_field(wp_unslash($_POST['attendance_status'] ?? '')));
+    $note = sanitize_textarea_field(wp_unslash($_POST['attendance_note'] ?? ''));
+
+    if (!$student_id || !$lesson_id || !in_array($status, ['P', 'EA', 'UA'], true)) {
+        wp_send_json_error(['message' => __('Invalid attendance data.', 'tfp-dashboard')], 400);
+    }
+
+    if (!tfp_facilitator_student_allowed($student_id)) {
+        wp_send_json_error(['message' => __('You are not allowed to update this student.', 'tfp-dashboard')], 403);
+    }
+
+    $updated_at = current_time('mysql');
+    $author_id = get_current_user_id();
+    $previous = tfp_facilitator_student_attendance($student_id, $lesson_id);
+    $current = [
+        'status' => $status,
+        'note' => $note,
+        'updated_at' => $updated_at,
+        'author_id' => $author_id,
+    ];
+
+    if (
+        (string) ($previous['status'] ?? '') !== $status
+        || (string) ($previous['note'] ?? '') !== $note
+    ) {
+        $history = tfp_facilitator_student_attendance_history($student_id, $lesson_id);
+        $history[] = [
+            'action' => empty($previous['status']) ? 'created' : 'updated',
+            'old_status' => (string) ($previous['status'] ?? ''),
+            'old_note' => (string) ($previous['note'] ?? ''),
+            'status' => $status,
+            'note' => $note,
+            'changed_at' => $updated_at,
+            'author_id' => $author_id,
+        ];
+
+        update_user_meta(
+            $student_id,
+            tfp_facilitator_student_attendance_history_key($lesson_id),
+            $history
+        );
+    }
+
+    update_user_meta(
+        $student_id,
+        tfp_facilitator_student_attendance_key($lesson_id),
+        $current
+    );
+
+    wp_send_json_success([
+        'status' => $status,
+        'status_label' => $status === 'P' ? 'Present' : ($status === 'EA' ? 'Excused Absence' : 'Unexcused Absence'),
+        'note' => $note,
+        'updated_at' => $updated_at,
+        'display_time' => date_i18n('g:i A', current_time('timestamp')),
+        'display_date' => date_i18n('m/d/Y', current_time('timestamp')),
+    ]);
+}
+add_action('wp_ajax_tfp_facilitator_student_save_attendance', 'tfp_facilitator_student_ajax_save_attendance');
 
 function tfp_facilitator_student_ajax_complete_review() {
     if (!is_user_logged_in() || !function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) {
@@ -1122,7 +1192,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
     $close = tfp_facilitator_student_close_url(['tfp_student_week' => $week->ID]);
     $notes = tfp_facilitator_student_notes($student_id, $week->ID);
     $attendance = tfp_facilitator_student_attendance($student_id, $week->ID);
-    $edit_attendance = isset($_GET['tfp_student_attendance_edit']) && absint($_GET['tfp_student_attendance_edit']) === 1;
+    $edit_attendance = $panel === 'attendance_edit' || (isset($_GET['tfp_student_attendance_edit']) && absint($_GET['tfp_student_attendance_edit']) === 1);
     ?>
     <div class="tfp-student-overlay" data-student-overlay data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>" data-panel="<?php echo esc_attr($panel); ?>">
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
@@ -1148,9 +1218,15 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
 
                         </div><div><h3>Attendance Submitted</h3><p class="attendance-status"><?php echo esc_html($attendance['status'] === 'P' ? 'Present' : ($attendance['status'] === 'EA' ? 'Excused Absence' : 'Unexcused Absence')); ?></p></div></div>
                         <h6>Saved Note</h6><p class="tfp-student-note-text"><?php echo esc_html($attendance['note'] ?: '—'); ?></p>
-                        <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_week'=>$week->ID,'tfp_student_panel'=>'attendance','tfp_student_attendance_edit'=>1], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>">Edit Attendance</a>
+                        <button type="button"
+                            class="tfp-dash-btn tfp-dash-btn--primary tfp-student-attendance-edit"
+                            data-student-review="attendance_edit"
+                            data-student-id="<?php echo esc_attr($student_id); ?>"
+                            data-lesson-id="<?php echo esc_attr($week->ID); ?>">
+                            Edit Attendance
+                        </button>
                     <?php else: ?>
-                        <form method="post" class="tfp-student-form-panel">
+                        <form method="post" class="tfp-student-form-panel tfp-student-attendance-form">
                             <?php wp_nonce_field('tfp_student_detail','tfp_student_nonce'); ?>
                             <input type="hidden" name="tfp_student_action" value="save_attendance">
                             <input type="hidden" name="tfp_student_id" value="<?php echo esc_attr($student_id); ?>">
@@ -1160,7 +1236,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
                             <label><input type="radio" name="attendance_status" value="UA" <?php checked($attendance['status'],'UA'); ?>> Unexcused Absence</label>
                             <h3>Optional Notes</h3>
                             <textarea name="attendance_note" placeholder="Type your answer here..."><?php echo esc_textarea($attendance['note']); ?></textarea>
-                            <button class="tfp-dash-btn tfp-dash-btn--primary" type="submit">Save Attendance</button>
+                            <button class="tfp-dash-btn tfp-dash-btn--primary tfp-student-attendance-save" type="submit">Save Attendance</button>
                         </form>
                     <?php endif; ?>
                 </div>
