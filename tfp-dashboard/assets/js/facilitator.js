@@ -1,184 +1,232 @@
-(function ($) {
+(function () {
     'use strict';
 
-    function openStudentReview(trigger) {
-        var $trigger = $(trigger);
-        var panel = $trigger.data('student-review');
-        var studentId = parseInt($trigger.data('student-id'), 10) || 0;
-        var lessonId = parseInt($trigger.data('lesson-id'), 10) || 0;
+    function getSettings() {
+        return window.tfpFacilitatorStudent || null;
+    }
 
-        if (!panel || !studentId || !lessonId || !window.tfpFacilitatorStudent) {
-            return false;
+    function closeStudentReview() {
+        var overlays = document.querySelectorAll('[data-student-overlay]');
+        overlays.forEach(function (overlay) {
+            overlay.remove();
+        });
+        document.body.classList.remove('tfp-student-overlay-open');
+    }
+
+    function openStudentReview(trigger) {
+        var settings = getSettings();
+        if (!settings || !settings.ajaxUrl || !settings.nonce) {
+            return;
         }
 
-        var $existing = $('[data-student-overlay]');
-        $existing.remove();
+        var panel = trigger.getAttribute('data-student-review');
+        var studentId = parseInt(trigger.getAttribute('data-student-id'), 10) || 0;
+        var lessonId = parseInt(trigger.getAttribute('data-lesson-id'), 10) || 0;
 
-        $('body').addClass('tfp-student-overlay-open');
+        if (!panel || !studentId || !lessonId) {
+            return;
+        }
 
-        $.ajax({
-            url: tfpFacilitatorStudent.ajaxUrl,
+        closeStudentReview();
+        document.body.classList.add('tfp-student-overlay-open');
+
+        var formData = new FormData();
+        formData.append('action', 'tfp_facilitator_student_panel');
+        formData.append('nonce', settings.nonce);
+        formData.append('student_id', studentId);
+        formData.append('lesson_id', lessonId);
+        formData.append('panel', panel);
+
+        fetch(settings.ajaxUrl, {
             method: 'POST',
-            dataType: 'json',
-            data: {
-                action: 'tfp_facilitator_student_panel',
-                nonce: tfpFacilitatorStudent.nonce,
-                student_id: studentId,
-                lesson_id: lessonId,
-                panel: panel
-            }
-        }).done(function (response) {
-            if (response && response.success && response.data && response.data.html) {
-                $('body').append(response.data.html);
-                var $overlay = $('[data-student-overlay]').last();
-                $overlay.attr('data-student-id', studentId).attr('data-lesson-id', lessonId).attr('data-panel', panel);
-            } else {
-                window.alert(
+            credentials: 'same-origin',
+            body: formData
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (response) {
+            if (!response || !response.success || !response.data || !response.data.html) {
+                throw new Error(
                     response && response.data && response.data.message
                         ? response.data.message
                         : 'Unable to load this review.'
                 );
-                $('body').removeClass('tfp-student-overlay-open');
-            }
-        }).fail(function () {
-            window.alert('Unable to load this review. Please try again.');
-            $('body').removeClass('tfp-student-overlay-open');
-        });
-
-        return false;
-    }
-
-    function closeStudentReview() {
-        $('[data-student-overlay]').remove();
-        $('body').removeClass('tfp-student-overlay-open');
-    }
-
-    function completeStudentReview(button) {
-        var $button = $(button);
-        var $overlay = $button.closest('[data-student-overlay]');
-        var studentId = parseInt($overlay.attr('data-student-id'), 10) || 0;
-        var lessonId = parseInt($overlay.attr('data-lesson-id'), 10) || 0;
-        var type = $overlay.attr('data-panel') || $overlay.find('[data-review-type]').data('review-type') || '';
-
-        if (!studentId || !lessonId || !type || !window.tfpFacilitatorStudent) {
-            return;
-        }
-
-        $button.prop('disabled', true).attr('aria-busy', 'true');
-
-        $.ajax({
-            url: tfpFacilitatorStudent.ajaxUrl,
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                action: 'tfp_facilitator_student_complete_review',
-                nonce: tfpFacilitatorStudent.nonce,
-                student_id: studentId,
-                lesson_id: lessonId,
-                review_type: type
-            }
-        }).done(function (response) {
-            if (!response || !response.success) {
-                window.alert(
-                    response && response.data && response.data.message
-                        ? response.data.message
-                        : 'Unable to complete this review.'
-                );
-                return;
             }
 
-            $('.tfp-student-week-card[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status')
-                .removeClass('tfp-student-status--danger tfp-student-status--neutral')
-                .addClass('tfp-student-status--success')
-                .text('Completed');
+            var wrapper = document.createElement('div');
+            wrapper.innerHTML = response.data.html.trim();
+            var overlay = wrapper.firstElementChild;
 
-            $('.tfp-student-week-card[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] small')
-                .text('Completed');
+            if (!overlay) {
+                throw new Error('Unable to load this review.');
+            }
 
-            $('.tfp-student-pill-link[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status')
-                .removeClass('tfp-student-status--danger tfp-student-status--neutral')
-                .addClass('tfp-student-status--success')
-                .text('Completed');
+            overlay.setAttribute('data-student-overlay', '');
+            overlay.setAttribute('data-student-id', String(studentId));
+            overlay.setAttribute('data-lesson-id', String(lessonId));
+            overlay.setAttribute('data-panel', panel);
 
-            $('.tfp-student-activity-row[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status')
-                .removeClass('tfp-student-status--danger tfp-student-status--neutral')
-                .addClass('tfp-student-status--success')
-                .text('Completed');
+            document.body.appendChild(overlay);
 
+            var firstQuestion = overlay.querySelector('[data-review-question]');
+            if (firstQuestion) {
+                firstQuestion.click();
+            }
+        })
+        .catch(function (error) {
             closeStudentReview();
-        }).fail(function (xhr) {
-            var message = xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
-                ? xhr.responseJSON.data.message
-                : 'Unable to complete this review. Please try again.';
-            window.alert(message);
-        }).always(function () {
-            $button.prop('disabled', false).removeAttr('aria-busy');
+            window.alert(error && error.message ? error.message : 'Unable to load this review.');
         });
     }
 
     function switchReviewQuestion(button) {
-        var $button = $(button);
-        var $layout = $button.closest('.tfp-student-review-layout');
-        var index = String($button.data('review-question'));
-        var $items = $layout.find('[data-review-panel-question]');
-        var $buttons = $layout.find('[data-review-question]');
+        var layout = button.closest('.tfp-student-review-layout');
+        if (!layout) {
+            return;
+        }
 
-        $buttons.removeClass('is-active').attr('aria-selected', 'false');
-        $button.addClass('is-active').attr('aria-selected', 'true');
+        var index = String(button.getAttribute('data-review-question'));
+        var buttons = layout.querySelectorAll('[data-review-question]');
+        var items = layout.querySelectorAll('[data-review-panel-question]');
 
-        $items.each(function () {
-            var $item = $(this);
-            var isActive = String($item.data('review-panel-question')) === index;
-            $item.toggleClass('is-active', isActive);
-            $item.prop('hidden', !isActive);
+        buttons.forEach(function (item) {
+            var active = String(item.getAttribute('data-review-question')) === index;
+            item.classList.toggle('is-active', active);
+            item.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+
+        items.forEach(function (item) {
+            var active = String(item.getAttribute('data-review-panel-question')) === index;
+            item.classList.toggle('is-active', active);
+            item.hidden = !active;
         });
     }
 
-    $(document).on('click', '.tfp-student-week-card[data-student-review], .tfp-student-pill-link[data-student-review]', function (event) {
-        var panel = $(this).data('student-review');
+    function completeStudentReview(button) {
+        var settings = getSettings();
+        var overlay = button.closest('[data-student-overlay]');
 
-        if (!panel) {
+        if (!settings || !settings.ajaxUrl || !settings.nonce || !overlay) {
             return;
         }
 
-        event.preventDefault();
-        openStudentReview(this);
-    });
+        var studentId = parseInt(overlay.getAttribute('data-student-id'), 10) || 0;
+        var lessonId = parseInt(overlay.getAttribute('data-lesson-id'), 10) || 0;
+        var type = overlay.getAttribute('data-panel') || '';
 
-    $(document).on('click', '[data-close-student-overlay]', function (event) {
-        event.preventDefault();
-        closeStudentReview();
-    });
+        if (!studentId || !lessonId || !type) {
+            return;
+        }
 
-    $(document).on('click', '[data-student-overlay]', function (event) {
-        if (event.target === this) {
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+
+        var formData = new FormData();
+        formData.append('action', 'tfp_facilitator_student_complete_review');
+        formData.append('nonce', settings.nonce);
+        formData.append('student_id', studentId);
+        formData.append('lesson_id', lessonId);
+        formData.append('review_type', type);
+
+        fetch(settings.ajaxUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (response) {
+            if (!response || !response.success) {
+                throw new Error(
+                    response && response.data && response.data.message
+                        ? response.data.message
+                        : 'Unable to complete this review.'
+                );
+            }
+
+            document.querySelectorAll(
+                '.tfp-student-week-card[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status'
+            ).forEach(function (badge) {
+                badge.classList.remove('tfp-student-status--danger', 'tfp-student-status--neutral');
+                badge.classList.add('tfp-student-status--success');
+                badge.textContent = 'Completed';
+            });
+
+            document.querySelectorAll(
+                '.tfp-student-week-card[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] small'
+            ).forEach(function (meta) {
+                meta.textContent = 'Completed';
+            });
+
+            document.querySelectorAll(
+                '.tfp-student-pill-link[data-student-review="' + type + '"][data-lesson-id="' + lessonId + '"] .tfp-student-status'
+            ).forEach(function (badge) {
+                badge.classList.remove('tfp-student-status--danger', 'tfp-student-status--neutral');
+                badge.classList.add('tfp-student-status--success');
+                badge.textContent = 'Completed';
+            });
+
+            closeStudentReview();
+        })
+        .catch(function (error) {
+            window.alert(error && error.message ? error.message : 'Unable to complete this review.');
+            button.disabled = false;
+            button.removeAttribute('aria-busy');
+        });
+    }
+
+    document.addEventListener('click', function (event) {
+        var reviewTrigger = event.target.closest
+            ? event.target.closest('[data-student-review]')
+            : null;
+
+        if (reviewTrigger && (reviewTrigger.matches('.tfp-student-week-card') || reviewTrigger.matches('.tfp-student-pill-link'))) {
+            event.preventDefault();
+            openStudentReview(reviewTrigger);
+            return;
+        }
+
+        var closeButton = event.target.closest ? event.target.closest('[data-close-student-overlay]') : null;
+        if (closeButton) {
+            event.preventDefault();
+            closeStudentReview();
+            return;
+        }
+
+        var questionButton = event.target.closest ? event.target.closest('[data-review-question]') : null;
+        if (questionButton) {
+            event.preventDefault();
+            switchReviewQuestion(questionButton);
+            return;
+        }
+
+        var completeButton = event.target.closest ? event.target.closest('[data-complete-student-review]') : null;
+        if (completeButton) {
+            event.preventDefault();
+            completeStudentReview(completeButton);
+            return;
+        }
+
+        if (event.target.classList && event.target.classList.contains('tfp-student-overlay')) {
             closeStudentReview();
         }
     });
 
-    $(document).on('click', '[data-review-question]', function (event) {
-        event.preventDefault();
-        switchReviewQuestion(this);
-    });
-
-    $(document).on('click', '[data-complete-student-review], .tfp-student-review-complete-form button', function (event) {
-        event.preventDefault();
-        completeStudentReview(this);
-    });
-
-    $(document).on('keydown', function (event) {
-        if (event.key === 'Escape' && $('[data-student-overlay]').length) {
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && document.querySelector('[data-student-overlay]')) {
             closeStudentReview();
         }
     });
 
-    $(document).ready(function () {
-        if (!window.jQuery || !jQuery.fn.selectWoo) {
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.jQuery || !window.jQuery.fn || !window.jQuery.fn.selectWoo) {
             return;
         }
 
-        jQuery('.tfp-facilitator-filters select').each(function () {
-            var $select = jQuery(this);
+        window.jQuery('.tfp-facilitator-filters select').each(function () {
+            var $select = window.jQuery(this);
 
             if ($select.hasClass('select2-hidden-accessible')) {
                 return;
@@ -187,8 +235,8 @@
             $select.selectWoo({
                 width: '100%',
                 minimumResultsForSearch: Infinity,
-                dropdownAutoWidth: false,
+                dropdownAutoWidth: false
             });
         });
     });
-})(jQuery);
+})();
