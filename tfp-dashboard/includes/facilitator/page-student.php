@@ -1108,24 +1108,21 @@ function tfp_facilitator_student_render_review_body($student_id, $week, $panel) 
         $answers = [];
     }
 
-    $reviewed = tfp_facilitator_student_reviewed($panel, $week->ID);
     ?>
     <div class="tfp-student-review-body tfp-student-review-body--questions" data-review-type="<?php echo esc_attr($panel); ?>">
         <?php if ($questions): ?>
-            <div class="tfp-student-review-layout">
-                <nav class="tfp-student-review-nav" aria-label="<?php esc_attr_e('Review questions', 'tfp-dashboard'); ?>">
+            <div class="tfp-week__meeting-review tfp-facilitator-review-layout">
+                <div class="tfp-week__meeting-question-rail tfp-facilitator-review-rail" aria-label="<?php esc_attr_e('Review questions', 'tfp-dashboard'); ?>">
                     <?php foreach ($questions as $index => $q): ?>
                         <button type="button"
-                            class="tfp-student-review-nav__item<?php echo $index === 0 ? ' is-active' : ''; ?>"
-                            data-review-question="<?php echo esc_attr($index); ?>"
-                            aria-controls="tfp-review-question-<?php echo esc_attr($panel . '-' . $index); ?>"
-                            aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>">
+                            class="tfp-hw-rail-btn tfp-facilitator-review-rail-btn <?php echo $index === 0 ? 'is-active' : ''; ?>"
+                            data-review-question="<?php echo esc_attr($index); ?>">
                             <?php echo esc_html($index + 1); ?>
                         </button>
                     <?php endforeach; ?>
-                </nav>
+                </div>
 
-                <div class="tfp-student-review-question-stack">
+                <div class="tfp-week__meeting-review-main tfp-facilitator-review-main">
                     <?php foreach ($questions as $index => $q):
                         $answer = (isset($q['id'], $answers[$q['id']]) && is_array($answers[$q['id']])) ? $answers[$q['id']] : [];
                         $selected = isset($answer['selected_index'])
@@ -1137,59 +1134,63 @@ function tfp_facilitator_student_render_review_body($student_id, $week, $panel) 
                             ? (bool) $q['is_correct']
                             : ($selected >= 0 && $correct >= 0 && $selected === $correct);
 
-                        $homework_type = (string) ($q['type'] ?? '');
+                        $type = (string) ($q['type'] ?? '');
+                        $user_answer = '—';
+                        $correct_answer = '';
+
                         if ($panel === 'homework') {
-                            if ($homework_type === 'written') {
-                                $answer_text = trim((string) ($answer['text'] ?? ''));
-                            } elseif ($homework_type === 'both') {
+                            if ($type === 'multiple_choice') {
+                                $user_answer = ($selected >= 0 && isset($options[$selected])) ? (string) $options[$selected] : '—';
+                                $correct_answer = ($correct >= 0 && isset($options[$correct])) ? (string) $options[$correct] : (string) ($q['correct_answer_text'] ?? '');
+                            } elseif ($type === 'both') {
                                 $yes_no = isset($answer['yes_no']) ? ucfirst((string) $answer['yes_no']) : '';
-                                $answer_text = trim((string) ($answer['text'] ?? ''));
-                                $answer_text = $yes_no && $answer_text ? $yes_no . ' — ' . $answer_text : ($yes_no ?: $answer_text);
-                            } elseif ($selected >= 0 && isset($options[$selected])) {
-                                $answer_text = (string) $options[$selected];
+                                $text_answer = trim((string) ($answer['text'] ?? ''));
+                                $user_answer = $yes_no && $text_answer ? $yes_no . ' — ' . $text_answer : ($yes_no ?: ($text_answer ?: '—'));
+                                $correct_answer = (string) ($q['correct_answer_text'] ?? '');
                             } else {
-                                $answer_text = trim((string) ($answer['text'] ?? ''));
+                                $user_answer = trim((string) ($answer['text'] ?? '')) ?: '—';
+                                $correct_answer = (string) ($q['correct_answer_text'] ?? '');
                             }
                         } else {
-                            $answer_text = ($selected >= 0 && isset($options[$selected])) ? (string) $options[$selected] : '—';
+                            $user_answer = ($selected >= 0 && isset($options[$selected])) ? (string) $options[$selected] : '—';
+                            $correct_answer = ($correct >= 0 && isset($options[$correct])) ? (string) $options[$correct] : '';
                         }
+
+                        $status_class = $is_correct ? 'is-correct' : 'is-incorrect';
+                        $status_icon = $is_correct ? '✓' : '!';
                         ?>
-                        <article
-                            id="tfp-review-question-<?php echo esc_attr($panel . '-' . $index); ?>"
-                            class="tfp-student-review-question tfp-student-review-question--panel<?php echo $index === 0 ? ' is-active' : ''; ?>"
-                            data-review-panel-question="<?php echo esc_attr($index); ?>"
-                            <?php echo $index === 0 ? '' : 'hidden'; ?>>
-                            <div class="tfp-student-review-question__header">
-                                <span class="tfp-student-review-question__eyebrow">Q<?php echo esc_html($index + 1); ?></span>
-                                <strong><?php echo esc_html($q['prompt'] ?? ''); ?></strong>
+                        <div class="tfp-week__meeting-homework-panel tfp-facilitator-review-question-panel <?php echo $index === 0 ? 'is-active' : ''; ?>"
+                             data-review-panel="<?php echo esc_attr($index); ?>"
+                             <?php echo $index === 0 ? '' : 'style="display:none;"'; ?>>
+                            <h3 class="tfp-week__meeting-test-prompt tfp-facilitator-review-prompt">
+                                <?php printf(esc_html__('Q%d. %s', 'tfp-dashboard'), $index + 1, $q['prompt'] ?? ''); ?>
+                            </h3>
+
+                            <div class="tfp-week__meeting-answer-label <?php echo esc_attr($status_class); ?>">
+                                <span><?php echo esc_html($status_icon); ?></span>
+                                <?php esc_html_e('Your Answer', 'tfp-dashboard'); ?>
                             </div>
 
-                            <?php if ($answer_text !== ''): ?>
-                                <p class="tfp-student-answer-line">
-                                    <?php echo esc_html($panel === 'homework' ? 'Your Answer: ' : 'Your Answer: '); ?>
-                                    <?php echo esc_html($answer_text); ?>
-                                    <?php if ($panel !== 'homework'): ?>
-                                        <em class="<?php echo $is_correct ? 'is-correct' : 'is-incorrect'; ?>">
-                                            <?php echo esc_html($is_correct ? 'Correct' : 'Incorrect'); ?>
-                                        </em>
-                                    <?php endif; ?>
-                                </p>
-                            <?php endif; ?>
+                            <div class="tfp-week__meeting-answer-box">
+                                <?php echo nl2br(esc_html($user_answer)); ?>
+                            </div>
 
-                            <?php if ($panel !== 'homework' && !$is_correct && $correct >= 0 && isset($options[$correct])): ?>
-                                <p class="tfp-student-correct-answer">Correct Answer: <?php echo esc_html($options[$correct]); ?></p>
-                            <?php endif; ?>
+                            <h4 class="tfp-facilitator-review-review-heading"><?php esc_html_e('Review Answer', 'tfp-dashboard'); ?></h4>
 
-                            <?php if (!empty($q['explanation'])): ?>
-                                <h3>Explanation:</h3>
-                                <p><?php echo esc_html($q['explanation']); ?></p>
-                            <?php endif; ?>
+                            <div class="tfp-week__meeting-explanation-box">
+                                <?php if ($correct_answer !== ''): ?>
+                                    <p class="tfp-week__meeting-correct-answer <?php echo esc_attr($status_class); ?>">
+                                        <span><?php esc_html_e('Answer: ', 'tfp-dashboard'); ?></span><?php echo esc_html($correct_answer); ?>
+                                    </p>
+                                <?php endif; ?>
 
-                            <?php if ($panel === 'homework' && empty($q['explanation']) && !empty($q['correct_answer_text'])): ?>
-                                <h3>Explanation:</h3>
-                                <p><?php echo esc_html($q['correct_answer_text']); ?></p>
-                            <?php endif; ?>
-                        </article>
+                                <h4 class="tfp-week__meeting-explanation-title"><?php esc_html_e('Explanation:', 'tfp-dashboard'); ?></h4>
+                                <?php
+                                $explanation = (string) ($q['explanation'] ?? '');
+                                echo wp_kses_post(wpautop($explanation ?: __('Your response is available here for review and discussion during the weekly meeting.', 'tfp-dashboard')));
+                                ?>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             </div>
