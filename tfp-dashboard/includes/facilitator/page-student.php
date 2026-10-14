@@ -373,7 +373,13 @@ function tfp_facilitator_student_ajax_render_panel($student_id, $lesson_id, $pan
     if ($panel === 'reading') {
         tfp_facilitator_student_render_reading_body($student_id, $week);
     } elseif (in_array($panel, ['attendance', 'attendance_edit', 'notes', 'homework', 'quiz', 'test'], true)) {
-        tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel);
+        $render_panel = $panel === 'attendance_edit' ? 'attendance' : $panel;
+        tfp_facilitator_student_render_panel_overlay(
+            $student_id,
+            $week,
+            $render_panel,
+            $panel === 'attendance_edit'
+        );
     }
 
     return ob_get_clean();
@@ -1188,11 +1194,11 @@ function tfp_facilitator_student_render_activity_overlay($student_id, $activitie
     <?php
 }
 
-function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel) {
+function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel, $force_edit = false) {
     $close = tfp_facilitator_student_close_url(['tfp_student_week' => $week->ID]);
     $notes = tfp_facilitator_student_notes($student_id, $week->ID);
     $attendance = tfp_facilitator_student_attendance($student_id, $week->ID);
-    $edit_attendance = $panel === 'attendance_edit' || (isset($_GET['tfp_student_attendance_edit']) && absint($_GET['tfp_student_attendance_edit']) === 1);
+    $edit_attendance = $force_edit || (isset($_GET['tfp_student_attendance_edit']) && absint($_GET['tfp_student_attendance_edit']) === 1);
     ?>
     <div class="tfp-student-overlay" data-student-overlay data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>" data-panel="<?php echo esc_attr($panel); ?>">
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
