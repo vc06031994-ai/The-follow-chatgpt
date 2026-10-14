@@ -1719,22 +1719,12 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-attendance-header__title {
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1.2;
-    color: #111827;
+  
     margin: 0 0 6px 0;
-    letter-spacing: -0.02em;
-    font-family: var(--tfp-dash-font);
+  
 }
 
-.tfp-attendance-header__subtitle {
-    font-size: 14px;
-    color: #4B5563;
-    margin: 0;
-    line-height: 1.5;
-    font-family: var(--tfp-dash-font-alt, sans-serif);
-}
+
 
 .tfp-attendance-accent-divider {
     height: 2px;
@@ -1797,24 +1787,9 @@ table tbody>tr:nth-child(odd)>th {
     margin-bottom: 24px;
 }
 
-.tfp-attendance-metric-card {
-    padding: 16px 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 6px;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-}
 
-.tfp-attendance-metric-card--grey1 {
-    background: #ECECEC;
-}
 
-.tfp-attendance-metric-card--grey2 {
-    background: #DCE1E1;
-}
+
 
 .tfp-attendance-metric-card__label {
     font-size: 11px;
@@ -1833,14 +1808,7 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-attendance-metric-card__value--red {
-    color: #991B1B !important;
-}
-
-.tfp-attendance-metric-card__sub {
-    font-size: 12px;
-    color: #6B7280;
-    font-weight: 500;
-    font-family: var(--tfp-dash-font-alt, sans-serif);
+    color: #AF1E2D !important;
 }
 
 .tfp-red-text {
@@ -1861,11 +1829,7 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-attendance-banner-card__title {
-    font-size: 17px;
-    font-weight: 700;
-    color: #111827;
     margin: 0 0 3px 0;
-    font-family: var(--tfp-dash-font);
 }
 
 .tfp-attendance-banner-card__subtitle {
@@ -1875,24 +1839,7 @@ table tbody>tr:nth-child(odd)>th {
     font-family: var(--tfp-dash-font-alt, sans-serif);
 }
 
-.tfp-attendance-export-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 18px;
-    border-radius: 8px;
-    background: #00666E;
-    color: #FFFFFF !important;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.15s ease;
-}
 
-.tfp-attendance-export-btn:hover {
-    background: #004D53;
-    color: #FFFFFF !important;
-}
 
 .tfp-export-icon {
     flex-shrink: 0;
@@ -2007,24 +1954,6 @@ table tbody>tr:nth-child(odd)>th {
     width: 90px;
 }
 
-.tfp-attendance-btn-view {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 76px;
-    height: 30px;
-    border-radius: 6px;
-    background: #00666E;
-    color: #FFFFFF !important;
-    font-size: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.15s ease;
-}
-
-.tfp-attendance-btn-view:hover {
-    background: #004D53;
-}
 
 .tfp-attendance-pagination {
     display: flex;

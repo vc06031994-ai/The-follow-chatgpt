@@ -547,7 +547,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
 
         <!-- Page Header -->
         <header class="tfp-attendance-header">
-            <h1 class="tfp-attendance-header__title"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h1>
+            <h2 class="tfp-attendance-header__title"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h2>
             <p class="tfp-attendance-header__subtitle">
                 <?php esc_html_e('Monitor engagement and consistency across all active cohorts.', 'tfp-dashboard'); ?>
             </p>
@@ -594,21 +594,21 @@ function tfp_dashboard_render_facilitator_attendance_content()
         <!-- KPI Metrics (4 Cards) -->
         <section class="tfp-attendance-metrics" aria-label="<?php esc_attr_e('Attendance metrics', 'tfp-dashboard'); ?>">
             <!-- Card 1 -->
-            <div class="tfp-attendance-metric-card tfp-attendance-metric-card--grey1">
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Avg Attendance', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($avg_attendance); ?>%</strong>
                 <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('All Courses Avg Attendance', 'tfp-dashboard'); ?></small>
             </div>
 
             <!-- Card 2 -->
-            <div class="tfp-attendance-metric-card tfp-attendance-metric-card--grey2">
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Total Disciples', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($total_disciples); ?></strong>
                 <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Across All Course', 'tfp-dashboard'); ?></small>
             </div>
 
             <!-- Card 3 -->
-            <div class="tfp-attendance-metric-card tfp-attendance-metric-card--grey2">
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Pastoral Flags (Stalled • Blocked)', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value tfp-attendance-metric-card__value--red"><?php echo esc_html($total_flags); ?></strong>
                 <small class="tfp-attendance-metric-card__sub">
@@ -618,7 +618,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
             </div>
 
             <!-- Card 4 -->
-            <div class="tfp-attendance-metric-card tfp-attendance-metric-card--grey2">
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Active Cohorts', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($active_cohorts_count); ?></strong>
                 <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Currently Assigned', 'tfp-dashboard'); ?></small>
@@ -628,11 +628,11 @@ function tfp_dashboard_render_facilitator_attendance_content()
         <!-- All Active Cohorts Header Banner Card -->
         <section class="tfp-attendance-banner-card">
             <div class="tfp-attendance-banner-card__info">
-                <h2 class="tfp-attendance-banner-card__title"><?php esc_html_e('All Active Cohorts', 'tfp-dashboard'); ?></h2>
+                <h5 class="tfp-attendance-banner-card__title"><?php esc_html_e('All Active Cohorts', 'tfp-dashboard'); ?></h5>
                 <span class="tfp-attendance-banner-card__subtitle"><?php esc_html_e('Attendance Health Rank', 'tfp-dashboard'); ?></span>
             </div>
             <div class="tfp-attendance-banner-card__action">
-                <a href="<?php echo esc_url($export_url); ?>" class="tfp-attendance-export-btn" download="attendance-report.csv">
+                <a href="<?php echo esc_url($export_url); ?>" class="tfp-attendance-export-btn tfp-dash-btn-second tfp-dash-btn--primary" download="attendance-report.csv">
                     <svg class="tfp-export-icon" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9 1H3C1.89543 1 1 1.89543 1 3V15C1 16.1046 1.89543 17 3 17H13C14.1046 17 15 16.1046 15 15V7L9 1Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M9 1V7H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -645,7 +645,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
 
         <!-- Upcoming Submissions Card -->
         <section class="tfp-attendance-card-panel">
-            <h2 class="tfp-attendance-panel-title"><?php esc_html_e('Upcoming Submissions', 'tfp-dashboard'); ?></h2>
+            <h5 class="tfp-attendance-panel-title"><?php esc_html_e('Upcoming Submissions', 'tfp-dashboard'); ?></h5>
             <div class="tfp-attendance-table-responsive">
                 <table class="tfp-attendance-table">
                     <thead>
@@ -665,7 +665,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
                                 <td class="tfp-td-normal"><?php echo esc_html($upcoming['section_module']); ?></td>
                                 <td class="tfp-td-date"><?php echo esc_html($upcoming['meeting_date']); ?></td>
                                 <td class="tfp-col-action">
-                                    <a href="<?php echo esc_url($upcoming['action_url']); ?>" class="tfp-attendance-btn-view">
+                                    <a href="<?php echo esc_url($upcoming['action_url']); ?>" class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
                                         <?php esc_html_e('View', 'tfp-dashboard'); ?>
                                     </a>
                                 </td>
@@ -679,7 +679,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
         <!-- Submission Logs Card -->
         <section class="tfp-attendance-card-panel">
             <div class="tfp-attendance-panel-head-row">
-                <h2 class="tfp-attendance-panel-title"><?php esc_html_e('Submission Logs', 'tfp-dashboard'); ?></h2>
+                <h5 class="tfp-attendance-panel-title"><?php esc_html_e('Submission Logs', 'tfp-dashboard'); ?></h5>
                 <a href="<?php echo esc_url($roster_url); ?>" class="tfp-attendance-view-all-link">
                     <?php esc_html_e('View All', 'tfp-dashboard'); ?>
                 </a>
@@ -704,7 +704,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
                                 <td class="tfp-td-date"><?php echo esc_html($log['submitted_on']); ?></td>
                                 <td class="tfp-td-breakdown"><?php echo wp_kses_post($log['breakdown']); ?></td>
                                 <td class="tfp-col-action">
-                                    <a href="<?php echo esc_url($log['action_url']); ?>" class="tfp-attendance-btn-view">
+                                    <a href="<?php echo esc_url($log['action_url']); ?>" class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
                                         <?php esc_html_e('View', 'tfp-dashboard'); ?>
                                     </a>
                                 </td>
