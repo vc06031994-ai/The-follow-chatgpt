@@ -1173,8 +1173,12 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-activity-list {
-
+    height: 112px;
+    max-height: 112px;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 6px;
+    scrollbar-width: thin;
 }
 
 .tfp-student-activity-list::-webkit-scrollbar {
@@ -1428,11 +1432,25 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-activity-scroll {
-    height: calc(100% - 75px);
-    overflow: auto;
-    padding-right: 6px
+    height: auto;
+    max-height: 560px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    scrollbar-width: thin
 }
 
+
+.tfp-student-activity-list::-webkit-scrollbar,
+.tfp-student-activity-scroll::-webkit-scrollbar { width: 5px; }
+.tfp-student-activity-list::-webkit-scrollbar-thumb,
+.tfp-student-activity-scroll::-webkit-scrollbar-thumb { background: #8F9697; border-radius: 8px; }
+.tfp-student-activity-list::-webkit-scrollbar-track,
+.tfp-student-activity-scroll::-webkit-scrollbar-track { background: #E4E8E8; border-radius: 8px; }
+@media (max-width: 767px) {
+    .tfp-student-activity-list { height: 150px; max-height: 150px; }
+    .tfp-student-activity-scroll { max-height: calc(94vh - 120px); }
+}
 .tfp-student-activity-row--large {
     padding: 11px 10px;
 }
