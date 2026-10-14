@@ -1042,7 +1042,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
     $attendance = tfp_facilitator_student_attendance($student_id, $week->ID);
     $edit_attendance = isset($_GET['tfp_student_attendance_edit']) && absint($_GET['tfp_student_attendance_edit']) === 1;
     ?>
-    <div class="tfp-student-overlay">
+    <div class="tfp-student-overlay" data-student-overlay data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>" data-panel="<?php echo esc_attr($panel); ?>">
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
             <div class="tfp-student-overlay-head">
                 <div><h5><?php echo esc_html($panel === 'attendance' ? 'Weekly Attendance' : ($panel === 'notes' ? 'Weekly Notes' : ucfirst($panel) . ' Review')); ?></h5><p><?php echo esc_html($panel === 'attendance' ? 'Use this area to record this students weekly attendance, for the selected week.' : ($panel === 'notes' ? 'Use this space to record your weekly notes, for this student.' : 'Review the student’s submitted work for this week.')); ?></p></div>
