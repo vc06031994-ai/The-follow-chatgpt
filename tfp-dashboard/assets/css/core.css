@@ -89,3 +89,7 @@ table tbody>tr:nth-child(odd)>th{
 .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
     transform: translate(-50%, -50%) rotate(180deg) !important;
 }
+
+.select2-container--default .select2-selection--single .select2-selection__arrow{
+    right: 5px !important;
+}
