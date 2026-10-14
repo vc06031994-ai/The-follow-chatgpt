@@ -10,7 +10,7 @@
 if (!defined('ABSPATH'))
     exit;
 
-define('TFP_DASH_VERSION', '1.2.36');
+define('TFP_DASH_VERSION', '1.2.37');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
@@ -215,16 +215,6 @@ add_action('wp_enqueue_scripts', function () {
                 true
             );
             $facilitator_deps[] = 'tfp-dashboard-selectwoo';
-        }
-
-        if ($template === 'tfp-dashboard-facilitator-student') {
-            wp_enqueue_style(
-                'tfp-dashboard-week',
-                TFP_DASH_URL . 'assets/css/week.css',
-                ['tfp-dashboard-components'],
-                TFP_DASH_VERSION
-            );
-            $facilitator_deps[] = 'tfp-dashboard-week';
         }
 
         wp_enqueue_style(
