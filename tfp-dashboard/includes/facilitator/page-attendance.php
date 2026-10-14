@@ -2,8 +2,10 @@
 if (!defined('ABSPATH')) exit;
 
 /**
- * Facilitator Attendance Dashboard
- * Matches the layout and data hierarchy of the Facilitator Attendance overview.
+ * Facilitator Attendance Dashboard.
+ *
+ * The page keeps the existing Figma-oriented markup, but all report values are
+ * derived from the real facilitator attendance records saved against students.
  */
 
 function tfp_facilitator_attendance_get_courses()
@@ -15,64 +17,405 @@ function tfp_facilitator_attendance_get_courses()
         'orderby'        => 'title',
         'order'          => 'ASC',
     ]);
+
     return is_array($courses) ? $courses : [];
 }
 
 function tfp_facilitator_attendance_get_cohorts($user_id = 0, $selected_course_id = 0)
 {
-    if (function_exists('tfp_facilitator_current_cohorts')) {
-        $cohorts = tfp_facilitator_current_cohorts($user_id);
-    } else {
-        $cohorts = get_posts([
+    $cohorts = function_exists('tfp_facilitator_current_cohorts')
+        ? tfp_facilitator_current_cohorts($user_id)
+        : get_posts([
             'post_type'      => 'tfp_cohort',
             'post_status'    => 'publish',
             'posts_per_page' => -1,
             'orderby'        => 'title',
             'order'          => 'ASC',
         ]);
-    }
 
     if ($selected_course_id > 0) {
-        $cohorts = array_filter($cohorts, function ($c) use ($selected_course_id) {
-            $related = (int) get_post_meta($c->ID, '_related_course', true);
-            return $related === (int) $selected_course_id;
+        $cohorts = array_filter($cohorts, static function ($cohort) use ($selected_course_id) {
+            return (int) get_post_meta($cohort->ID, '_related_course', true) === (int) $selected_course_id;
         });
     }
 
     return array_values($cohorts);
 }
 
+function tfp_facilitator_attendance_get_weeks($course_id)
+{
+    $course_id = absint($course_id);
+
+    if (!$course_id) {
+        return [];
+    }
+
+    $weeks = function_exists('tfp_ld_get_weeks') ? tfp_ld_get_weeks($course_id) : [];
+
+    if (!$weeks && function_exists('learndash_course_get_steps_by_type')) {
+        $ids = learndash_course_get_steps_by_type($course_id, 'sfwd-lessons');
+        $weeks = [];
+        foreach ((array) $ids as $id) {
+            $post = get_post($id);
+            if ($post instanceof WP_Post) {
+                $weeks[] = $post;
+            }
+        }
+    }
+
+    if (!$weeks) {
+        $weeks = get_posts([
+            'post_type'      => 'sfwd-lessons',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'meta_key'       => 'course_id',
+            'meta_value'     => $course_id,
+            'orderby'        => 'menu_order',
+            'order'          => 'ASC',
+        ]);
+    }
+
+    $normalised = [];
+    foreach ((array) $weeks as $week) {
+        if (is_numeric($week)) {
+            $week = get_post((int) $week);
+        }
+
+        if ($week instanceof WP_Post && $week->post_type === 'sfwd-lessons') {
+            $normalised[] = $week;
+        }
+    }
+
+    return $normalised;
+}
+
+function tfp_facilitator_attendance_get_record($student_id, $lesson_id)
+{
+    if (function_exists('tfp_facilitator_student_attendance')) {
+        return tfp_facilitator_student_attendance($student_id, $lesson_id);
+    }
+
+    $key = 'tfp_facilitator_student_attendance_' . absint($lesson_id);
+    $value = get_user_meta((int) $student_id, $key, true);
+
+    return is_array($value) ? wp_parse_args($value, [
+        'status'     => '',
+        'note'       => '',
+        'updated_at' => '',
+        'author_id'  => 0,
+    ]) : [
+        'status'     => '',
+        'note'       => '',
+        'updated_at' => '',
+        'author_id'  => 0,
+    ];
+}
+
 /**
- * Handle CSV Export for Attendance
+ * Build the real attendance report once. The returned logs are grouped by
+ * cohort + week, while the student stats are used for health metrics.
+ */
+function tfp_facilitator_attendance_report($cohorts)
+{
+    static $cache = [];
+
+    $cohort_ids = array_map(static function ($cohort) {
+        return (int) $cohort->ID;
+    }, (array) $cohorts);
+
+    sort($cohort_ids);
+    $cache_key = implode(',', $cohort_ids);
+
+    if (isset($cache[$cache_key])) {
+        return $cache[$cache_key];
+    }
+
+    $logs = [];
+    $student_stats = [];
+    $weeks_by_cohort = [];
+
+    foreach ((array) $cohorts as $cohort) {
+        $cohort_id = (int) $cohort->ID;
+        $course_id = (int) get_post_meta($cohort_id, '_related_course', true);
+        $weeks_by_cohort[$cohort_id] = tfp_facilitator_attendance_get_weeks($course_id);
+
+        $student_ids = function_exists('tfp_facilitator_cohort_students')
+            ? tfp_facilitator_cohort_students($cohort_id)
+            : [];
+
+        foreach ($student_ids as $student_id) {
+            $student_id = (int) $student_id;
+            $student_stats[$student_id] = [
+                'cohort_id' => $cohort_id,
+                'present'   => 0,
+                'recorded'  => 0,
+            ];
+
+            $user_meta = get_user_meta($student_id);
+
+            foreach ($user_meta as $meta_key => $meta_values) {
+                if (!preg_match('/^tfp_facilitator_student_attendance_(\d+)$/', (string) $meta_key, $matches)) {
+                    continue;
+                }
+
+                $lesson_id = (int) $matches[1];
+                $record = isset($meta_values[0]) ? maybe_unserialize($meta_values[0]) : [];
+
+                if (!is_array($record) || empty($record['status'])) {
+                    continue;
+                }
+
+                if (function_exists('learndash_get_course_id')) {
+                    $lesson_course_id = (int) learndash_get_course_id($lesson_id);
+                    if ($course_id && $lesson_course_id && $lesson_course_id !== $course_id) {
+                        continue;
+                    }
+                }
+
+                $status = strtoupper((string) $record['status']);
+                if (!in_array($status, ['P', 'EA', 'UA'], true)) {
+                    continue;
+                }
+
+                $student_stats[$student_id]['recorded']++;
+                if ($status === 'P') {
+                    $student_stats[$student_id]['present']++;
+                }
+
+                $lesson = get_post($lesson_id);
+                $week_title = $lesson instanceof WP_Post ? $lesson->post_title : __('Attendance', 'tfp-dashboard');
+                $group_key = $cohort_id . ':' . $lesson_id;
+
+                if (!isset($logs[$group_key])) {
+                    $logs[$group_key] = [
+                        'cohort_name'     => $cohort->post_title,
+                        'cohort_id'       => $cohort_id,
+                        'course_id'       => $course_id,
+                        'course'          => $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard'),
+                        'section_module'  => $week_title,
+                        'lesson_id'       => $lesson_id,
+                        'student_ids'     => [],
+                        'present'         => 0,
+                        'excused'         => 0,
+                        'unexcused'       => 0,
+                        'latest_timestamp'=> 0,
+                    ];
+                }
+
+                $logs[$group_key]['student_ids'][$student_id] = true;
+
+                if ($status === 'P') {
+                    $logs[$group_key]['present']++;
+                } elseif ($status === 'EA') {
+                    $logs[$group_key]['excused']++;
+                } else {
+                    $logs[$group_key]['unexcused']++;
+                }
+
+                $timestamp = !empty($record['updated_at']) ? strtotime($record['updated_at']) : 0;
+                if ($timestamp && $timestamp > $logs[$group_key]['latest_timestamp']) {
+                    $logs[$group_key]['latest_timestamp'] = $timestamp;
+                }
+            }
+        }
+    }
+
+    $log_rows = array_values($logs);
+
+    foreach ($log_rows as &$log) {
+        $total = $log['present'] + $log['excused'] + $log['unexcused'];
+        $log['total'] = $total;
+        $log['meeting_date'] = $log['latest_timestamp']
+            ? wp_date('M j, Y, g:i A T', $log['latest_timestamp'])
+            : '—';
+        $log['breakdown'] = sprintf(
+            '%d PRE • %d EA • %d UA',
+            $log['present'],
+            $log['excused'],
+            $log['unexcused']
+        );
+        $log['action_url'] = '';
+    }
+    unset($log);
+
+    usort($log_rows, static function ($a, $b) {
+        return ($b['latest_timestamp'] ?? 0) <=> ($a['latest_timestamp'] ?? 0);
+    });
+
+    $course_ids = [];
+    $recorded_present = 0;
+    $recorded_total = 0;
+
+    foreach ($log_rows as $log) {
+        $course_ids[(int) $log['course_id']] = true;
+        $recorded_present += (int) $log['present'];
+        $recorded_total += (int) $log['total'];
+    }
+
+    $stalled_count = 0;
+    $blocked_count = 0;
+
+    foreach ($student_stats as $stats) {
+        $recorded = (int) $stats['recorded'];
+        if ($recorded < 2) {
+            continue;
+        }
+
+        $rate = ((int) $stats['present'] / $recorded) * 100;
+        if ((int) $stats['present'] === 0) {
+            $blocked_count++;
+        } elseif ($rate < 70) {
+            $stalled_count++;
+        }
+    }
+
+    $cache[$cache_key] = [
+        'logs' => $log_rows,
+        'students' => count($student_stats),
+        'courses' => count(array_filter(array_keys($course_ids))),
+        'avg_attendance' => $recorded_total > 0
+            ? round(($recorded_present / $recorded_total) * 100)
+            : 0,
+        'stalled' => $stalled_count,
+        'blocked' => $blocked_count,
+        'weeks_by_cohort' => $weeks_by_cohort,
+    ];
+
+    return $cache[$cache_key];
+}
+
+function tfp_facilitator_attendance_upcoming_submissions($cohorts, $report)
+{
+    $rows = [];
+
+    foreach ((array) $cohorts as $cohort) {
+        $cohort_id = (int) $cohort->ID;
+        $course_id = (int) get_post_meta($cohort_id, '_related_course', true);
+        $weeks = isset($report['weeks_by_cohort'][$cohort_id]) ? $report['weeks_by_cohort'][$cohort_id] : [];
+
+        if (!$weeks) {
+            continue;
+        }
+
+        $student_ids = function_exists('tfp_facilitator_cohort_students')
+            ? tfp_facilitator_cohort_students($cohort_id)
+            : [];
+
+        $student_count = count($student_ids);
+        if ($student_count < 1) {
+            continue;
+        }
+
+        $current_week = function_exists('tfp_facilitator_cohort_week')
+            ? max(1, (int) tfp_facilitator_cohort_week($cohort_id, $course_id))
+            : 1;
+
+        $candidate_indexes = range(min($current_week - 1, count($weeks) - 1), count($weeks) - 1);
+
+        foreach ($candidate_indexes as $index) {
+            $lesson = $weeks[$index];
+            $key = $cohort_id . ':' . (int) $lesson->ID;
+            $submitted = isset($report['logs']) ? array_values(array_filter($report['logs'], static function ($log) use ($key, $cohort_id, $lesson) {
+                return (int) $log['cohort_id'] === $cohort_id && (int) $log['lesson_id'] === (int) $lesson->ID;
+            })) : [];
+
+            $submitted_count = !empty($submitted) ? count($submitted[0]['student_ids']) : 0;
+
+            if ($submitted_count >= $student_count) {
+                continue;
+            }
+
+            $start = get_post_meta($cohort_id, '_start_date', true);
+            $meeting_timestamp = $start && strtotime($start)
+                ? strtotime($start) + ($index * WEEK_IN_SECONDS)
+                : 0;
+
+            $meeting_date = $meeting_timestamp
+                ? wp_date('M j, Y, g:i A T', $meeting_timestamp)
+                : __('Date to be scheduled', 'tfp-dashboard');
+
+            $rows[] = [
+                'course' => $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard'),
+                'cohort' => $cohort->post_title,
+                'section_module' => $lesson->post_title,
+                'meeting_date' => $meeting_date,
+                'action_url' => '',
+            ];
+
+            break;
+        }
+    }
+
+    usort($rows, static function ($a, $b) {
+        return strcmp((string) $a['meeting_date'], (string) $b['meeting_date']);
+    });
+
+    return $rows;
+}
+
+function tfp_facilitator_attendance_format_breakdown($log)
+{
+    return sprintf(
+        '%d PRE • %d EA • %d UA',
+        (int) $log['present'],
+        (int) $log['excused'],
+        (int) $log['unexcused']
+    );
+}
+
+/**
+ * Handle CSV export using the same live report data shown on the page.
  */
 add_action('init', function () {
-    if (!isset($_GET['tfp_export']) || $_GET['tfp_export'] !== 'attendance_csv') {
+    if (($_GET['tfp_export'] ?? '') !== 'attendance_csv' || !is_user_logged_in()) {
         return;
     }
-    if (!is_user_logged_in()) {
-        return;
-    }
+
     if (!function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) {
         return;
     }
 
-    $filename = 'attendance-report-' . date('Y-m-d') . '.csv';
+    $current_user_id = get_current_user_id();
+    $course_id = absint($_GET['course_id'] ?? 0);
+    $cohort_id = absint($_GET['cohort_id'] ?? 0);
+
+    $cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $course_id);
+    if ($cohort_id) {
+        $cohorts = array_values(array_filter($cohorts, static function ($cohort) use ($cohort_id) {
+            return (int) $cohort->ID === $cohort_id;
+        }));
+    }
+
+    $report = tfp_facilitator_attendance_report($cohorts);
+
+    nocache_headers();
+    $filename = 'attendance-report-' . wp_date('Y-m-d') . '.csv';
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=' . $filename);
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
 
     $output = fopen('php://output', 'w');
-    fputcsv($output, ['Cohort', 'Section Module', 'Meeting Date / Submitted On', 'Present (PRE)', 'Excused (EA)', 'Unexcused (UA)', 'Total']);
+    fputcsv($output, [
+        'Course',
+        'Cohort',
+        'Section Module',
+        'Meeting Date / Submitted On',
+        'Present (PRE)',
+        'Excused (EA)',
+        'Unexcused (UA)',
+        'Total',
+    ]);
 
-    // Sample/Live rows export
-    $sample_rows = [
-        ['Sin - The Beginning', 'Sin - The Beginning', 'Mon, Feb 3, 2025 3:52:00 AM UTC', '14', '3', '1', '18'],
-        ['Sin - The Beginning', 'Sin - The Beginning', 'Mon, Feb 3, 2025 3:52:00 AM UTC', '14', '3', '1', '18'],
-        ['Sin - The Beginning', 'Sin - The Beginning', 'Mon, Feb 3, 2025 3:52:00 AM UTC', '12', '3', '0', '15'],
-        ['Sin - The Beginning', 'Sin - The Beginning', 'Mon, Feb 3, 2025 3:52:00 AM UTC', '17', '0', '0', '17'],
-    ];
-
-    foreach ($sample_rows as $row) {
-        fputcsv($output, $row);
+    foreach ($report['logs'] as $log) {
+        fputcsv($output, [
+            $log['course'],
+            $log['cohort_name'],
+            $log['section_module'],
+            $log['meeting_date'],
+            $log['present'],
+            $log['excused'],
+            $log['unexcused'],
+            $log['total'],
+        ]);
     }
 
     fclose($output);
@@ -96,86 +439,66 @@ function tfp_dashboard_render_facilitator_attendance_content()
     $all_courses = tfp_facilitator_attendance_get_courses();
     $all_cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $filter_course);
 
-    // Metric Calculations (with dynamic fallbacks matching design)
-    $active_cohorts_count = count($all_cohorts) > 0 ? count($all_cohorts) : 4;
+    $all_courses = tfp_facilitator_attendance_get_courses();
+    $filter_course = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
+    $filter_cohort = isset($_GET['cohort_id']) ? absint($_GET['cohort_id']) : 0;
 
-    $total_disciples = 0;
-    if (function_exists('tfp_facilitator_metric_counts')) {
-        $metrics = tfp_facilitator_metric_counts($all_cohorts);
-        $total_disciples = !empty($metrics['students']) ? (int) $metrics['students'] : 58;
-    } else {
-        $total_disciples = 58;
-    }
-    if ($total_disciples <= 0) {
-        $total_disciples = 58;
+    $all_cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $filter_course);
+    if ($filter_cohort) {
+        $all_cohorts = array_values(array_filter($all_cohorts, static function ($cohort) use ($filter_cohort) {
+            return (int) $cohort->ID === $filter_cohort;
+        }));
     }
 
-    $avg_attendance = 70; // Target from Figma design
-    $stalled_count = 4;
-    $blocked_count = 1;
+    $report = tfp_facilitator_attendance_report($all_cohorts);
+    $active_cohorts_count = count($all_cohorts);
+    $total_disciples = (int) $report['students'];
+    $avg_attendance = (int) $report['avg_attendance'];
+    $stalled_count = (int) $report['stalled'];
+    $blocked_count = (int) $report['blocked'];
     $total_flags = $stalled_count + $blocked_count;
 
-    // Build Export URL
-    $export_url = add_query_arg(['tfp_export' => 'attendance_csv']);
+    $export_url = add_query_arg([
+        'tfp_export' => 'attendance_csv',
+        'course_id'  => $filter_course,
+        'cohort_id'  => $filter_cohort,
+    ]);
 
-    // Build sample/live rows for Upcoming Submissions
-    $upcoming_submissions = [
-        [
-            'course'         => '58 Week Discipleship',
-            'cohort'         => 'Sin - The Beginning',
-            'section_module' => 'Sin - The Beginning',
-            'meeting_date'   => 'Mon, Febr 3, 2025 3:52:00 AM UTC',
-            'action_url'     => $roster_url,
-        ],
-    ];
+    $upcoming_submissions = tfp_facilitator_attendance_upcoming_submissions($all_cohorts, $report);
 
-    // Build sample/live rows for Submission Logs
-    $submission_logs = [
-        [
-            'cohort_name'    => 'Cohort Name',
-            'section_module' => 'Sin - The Beginning',
-            'submitted_on'   => 'Mon, Febr 3, 2025 3:52:00 AM UTC',
-            'breakdown'      => '14 PRE • 3 EA • <span class="tfp-ua-badge">1 UA</span>',
-            'action_url'     => $roster_url,
-        ],
-        [
-            'cohort_name'    => 'Cohort Name',
-            'section_module' => 'Sin - The Beginning',
-            'submitted_on'   => 'Mon, Febr 3, 2025 3:52:00 AM UTC',
-            'breakdown'      => '14 PRE • 3 EA • <span class="tfp-ua-badge">1 UA</span>',
-            'action_url'     => $roster_url,
-        ],
-        [
-            'cohort_name'    => 'Cohort Name',
-            'section_module' => 'Sin - The Beginning',
-            'submitted_on'   => 'Mon, Febr 3, 2025 3:52:00 AM UTC',
-            'breakdown'      => '12 PRE • 3 EA',
-            'action_url'     => $roster_url,
-        ],
-        [
-            'cohort_name'    => 'Cohort Name',
-            'section_module' => 'Sin - The Beginning',
-            'submitted_on'   => 'Mon, Febr 3, 2025 3:52:00 AM UTC',
-            'breakdown'      => '17 PRE',
-            'action_url'     => $roster_url,
-        ],
-    ];
-
-    // If real cohorts exist, we can contextualize names
-    if (!empty($all_cohorts)) {
-        $first_cohort = $all_cohorts[0];
-        $upcoming_submissions[0]['cohort'] = $first_cohort->post_title;
-        $upcoming_submissions[0]['action_url'] = add_query_arg(['cohort_id' => $first_cohort->ID], $roster_url);
-
-        foreach ($submission_logs as $idx => &$s_log) {
-            $assigned_c = isset($all_cohorts[$idx % count($all_cohorts)]) ? $all_cohorts[$idx % count($all_cohorts)] : $first_cohort;
-            $s_log['cohort_name'] = $assigned_c->post_title;
-            $s_log['action_url'] = add_query_arg(['cohort_id' => $assigned_c->ID], $roster_url);
+    foreach ($upcoming_submissions as &$upcoming) {
+        $params = ['cohort_id' => 0];
+        foreach ($all_cohorts as $cohort) {
+            if ((string) $cohort->post_title === (string) $upcoming['cohort']) {
+                $params['cohort_id'] = (int) $cohort->ID;
+                break;
+            }
         }
-        unset($s_log);
+        $upcoming['action_url'] = add_query_arg($params, $roster_url);
     }
-    ?>
+    unset($upcoming);
 
+    $submission_logs = [];
+    foreach ($report['logs'] as $log) {
+        $submission_logs[] = [
+            'cohort_name'    => $log['cohort_name'],
+            'section_module' => $log['section_module'],
+            'submitted_on'   => $log['meeting_date'],
+            'breakdown'      => tfp_facilitator_attendance_format_breakdown($log),
+            'action_url'     => add_query_arg(['cohort_id' => $log['cohort_id']], $roster_url),
+        ];
+    }
+
+    $attendance_per_page = 4;
+    $attendance_page = max(1, absint($_GET['attendance_page'] ?? 1));
+    $attendance_total = count($submission_logs);
+    $attendance_pages = max(1, (int) ceil($attendance_total / $attendance_per_page));
+    $attendance_page = min($attendance_page, $attendance_pages);
+    $submission_logs_page = array_slice(
+        $submission_logs,
+        ($attendance_page - 1) * $attendance_per_page,
+        $attendance_per_page
+    );
     <div class="tfp-attendance-page-wrap">
         <!-- Top Breadcrumbs -->
         <nav class="tfp-attendance-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
@@ -340,7 +663,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($submission_logs as $log) : ?>
+                        <?php foreach ($submission_logs_page as $log) : ?>
                             <tr>
                                 <td class="tfp-td-bold"><?php echo esc_html($log['cohort_name']); ?></td>
                                 <td class="tfp-td-normal"><?php echo esc_html($log['section_module']); ?></td>
@@ -358,22 +681,50 @@ function tfp_dashboard_render_facilitator_attendance_content()
             </div>
 
             <!-- Pagination Bar -->
-            <footer class="tfp-attendance-pagination">
-                <div class="tfp-attendance-pagination__count">
-                    <?php esc_html_e('1 - 8 of 104 items', 'tfp-dashboard'); ?>
-                </div>
-                <div class="tfp-attendance-pagination__controls">
-                    <span class="tfp-attendance-pagination__prev is-disabled">
-                        <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
-                    </span>
-                    <a href="#next" class="tfp-attendance-pagination__next" onclick="return false;">
-                        <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
-                        <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-            </footer>
-        </section>
+            <?php if ($attendance_total > 0): ?>
+                <?php
+                $range_start = (($attendance_page - 1) * $attendance_per_page) + 1;
+                $range_end = min($attendance_page * $attendance_per_page, $attendance_total);
+                $pagination_args = [
+                    'course_id' => $filter_course,
+                    'cohort_id' => $filter_cohort,
+                ];
+                ?>
+                <footer class="tfp-attendance-pagination">
+                    <div class="tfp-attendance-pagination__count">
+                        <?php printf(esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), $range_start, $range_end, $attendance_total); ?>
+                    </div>
+                    <div class="tfp-attendance-pagination__controls">
+                        <?php if ($attendance_page > 1): ?>
+                            <a
+                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['attendance_page' => $attendance_page - 1]))); ?>"
+                                class="tfp-attendance-pagination__prev">
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
+                            </a>
+                        <?php else: ?>
+                            <span class="tfp-attendance-pagination__prev is-disabled">
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
+                            </span>
+                        <?php endif; ?>
+
+                        <?php if ($attendance_page < $attendance_pages): ?>
+                            <a
+                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['attendance_page' => $attendance_page + 1]))); ?>"
+                                class="tfp-attendance-pagination__next">
+                                <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                        <?php else: ?>
+                            <span class="tfp-attendance-pagination__next is-disabled">
+                                <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                </footer>
+            <?php endif; ?>        </section>
     </div>
     <?php
 }
