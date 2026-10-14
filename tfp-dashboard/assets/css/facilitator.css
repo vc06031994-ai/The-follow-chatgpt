@@ -2708,3 +2708,7 @@ table tbody>tr:nth-child(odd)>th {
     line-height: 130%;
     font-family: var(--tfp-dash-font, sans-serif);
 }
+
+.tfp-student-attendance-form{
+    margin-top:30px;
+}

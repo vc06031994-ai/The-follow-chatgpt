@@ -1240,7 +1240,7 @@ function tfp_facilitator_student_render_panel_overlay($student_id, $week, $panel
                             <label><input type="radio" name="attendance_status" value="P" <?php checked($attendance['status'],'P'); ?>> Present</label>
                             <label><input type="radio" name="attendance_status" value="EA" <?php checked($attendance['status'],'EA'); ?>> Excused Absence</label>
                             <label><input type="radio" name="attendance_status" value="UA" <?php checked($attendance['status'],'UA'); ?>> Unexcused Absence</label>
-                            <h3>Optional Notes</h3>
+                            <h6>Optional Notes</h6>
                             <textarea name="attendance_note" placeholder="Type your answer here..."><?php echo esc_textarea($attendance['note']); ?></textarea>
                             <button class="tfp-dash-btn tfp-dash-btn--primary tfp-student-attendance-save" type="submit">Save Attendance</button>
                         </form>
