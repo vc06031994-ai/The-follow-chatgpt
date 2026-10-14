@@ -2614,3 +2614,82 @@ table tbody>tr:nth-child(odd)>th {
     }
 }
 
+
+
+/* Facilitator reading review */
+.tfp-facilitator-reading-layout {
+    min-height: 0;
+}
+
+.tfp-facilitator-reading-main {
+    min-width: 0;
+    max-height: 520px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    scrollbar-width: thin;
+}
+
+.tfp-facilitator-reading-panel {
+    min-width: 0;
+}
+
+.tfp-facilitator-reading-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tfp-facilitator-reading-status span {
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--tfp-dash-teal);
+    font-size: 13px;
+}
+
+.tfp-facilitator-reading-status.is-pending span {
+    background: #C92424;
+}
+
+.tfp-facilitator-reading-status.is-pending strong {
+    color: #C92424;
+}
+
+.tfp-facilitator-reading-content {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #D4D4D4;
+    background: #FAFAFA;
+    padding: 18px 20px;
+    font-family: var(--tfp-dash-font-alt);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.tfp-facilitator-reading-content > :first-child {
+    margin-top: 0;
+}
+
+.tfp-facilitator-reading-content > :last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+    .tfp-facilitator-reading-main {
+        max-height: calc(100vh - 230px);
+        padding-right: 4px;
+    }
+
+    .tfp-facilitator-reading-content {
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+}
