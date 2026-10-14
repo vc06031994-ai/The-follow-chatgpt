@@ -115,7 +115,7 @@
 
         var index = String(button.getAttribute('data-review-question'));
         var buttons = layout.querySelectorAll('[data-review-question]');
-        var items = layout.querySelectorAll('[data-review-panel-question]');
+        var items = layout.querySelectorAll('[data-review-panel]');
 
         buttons.forEach(function (item) {
             var active = String(item.getAttribute('data-review-question')) === index;
@@ -124,9 +124,14 @@
         });
 
         items.forEach(function (item) {
-            var active = String(item.getAttribute('data-review-panel-question')) === index;
+            var active = String(item.getAttribute('data-review-panel')) === index;
             item.classList.toggle('is-active', active);
             item.hidden = !active;
+            if (active) {
+                item.removeAttribute('style');
+            } else {
+                item.style.display = 'none';
+            }
         });
     }
 
