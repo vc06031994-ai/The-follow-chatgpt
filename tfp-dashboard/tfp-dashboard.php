@@ -230,6 +230,10 @@ add_action('wp_enqueue_scripts', function () {
             TFP_DASH_VERSION,
             true
         );
+        wp_localize_script('tfp-dashboard-facilitator', 'tfpFacilitatorStudent', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce'   => wp_create_nonce('tfp_facilitator_student_ajax'),
+        ]);
 
 
     }
