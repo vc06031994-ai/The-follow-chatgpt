@@ -383,7 +383,7 @@ function tfp_facilitator_student_render_reading_body($student_id, $week) {
     $completed_ids = is_array($completed_ids) ? array_map('absint', $completed_ids) : [];
 
     ?>
-    <div class="tfp-student-overlay tfp-student-overlay--ajax" data-student-overlay data-panel="reading">
+    <div class="tfp-student-overlay tfp-student-overlay--ajax" data-student-overlay data-panel="reading" data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>">
         <div class="tfp-student-overlay-card tfp-student-overlay-card--panel">
             <div class="tfp-student-overlay-head">
                 <div>
@@ -996,7 +996,7 @@ function tfp_facilitator_student_render_week_view($student_id, $course_id, $coho
         <section class="tfp-dash-panel tfp-student-panel tfp-student-recent">
             <div class="tfp-student-panel-head"><div><h5>Recent Course Activity</h5><p>Use the dropdown above to view a specific week · Scroll for full history</p></div><a href="<?php echo esc_url(add_query_arg(['tfp_student_id'=>$student_id,'tfp_student_activity'=>'all'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>">View All</a></div>
             <div class="tfp-student-activity-list">
-                <?php foreach (array_slice($week_activity,0,6) as $item): ?><div class="tfp-student-activity-row"><strong><?php echo esc_html($item['type']); ?></strong><div><b><?php echo esc_html($item['title']); ?></b><small><?php echo esc_html($item['date'].' · '.$item['time']); ?></small></div><?php tfp_facilitator_student_status_badge($item['status'],$item['tone']); ?></div><?php endforeach; ?>
+                <?php foreach (array_slice($week_activity,0,6) as $item): ?><div class="tfp-student-activity-row" data-student-review="<?php echo esc_attr(strtolower($item['type'])); ?>" data-student-id="<?php echo esc_attr($student_id); ?>" data-lesson-id="<?php echo esc_attr($week->ID); ?>"><strong><?php echo esc_html($item['type']); ?></strong><div><b><?php echo esc_html($item['title']); ?></b><small><?php echo esc_html($item['date'].' · '.$item['time']); ?></small></div><?php tfp_facilitator_student_status_badge($item['status'],$item['tone']); ?></div><?php endforeach; ?>
                 <?php if (!$week_activity): ?><div class="tfp-student-empty-state">No activity recorded for this week yet.</div><?php endif; ?>
             </div>
         </section>
@@ -1019,7 +1019,15 @@ function tfp_facilitator_student_render_activity_overlay($student_id, $activitie
             </div>
             <div class="tfp-student-activity-scroll">
                 <?php foreach ($activities as $item): ?>
-                    <div class="tfp-student-activity-row tfp-student-activity-row--large"><strong><?php echo esc_html($item['type']); ?></strong><div><b><?php echo esc_html($item['title']); ?></b><small><?php echo esc_html($item['date'].' · '.$item['time']); ?></small></div><?php tfp_facilitator_student_status_badge($item['status'],$item['tone']); ?></div>
+                    <?php
+                    $activity_week_index = max(1, (int) ($item['week'] ?? 1));
+                    $activity_week_post = $weeks[$activity_week_index - 1] ?? null;
+                    ?>
+                    <div class="tfp-student-activity-row tfp-student-activity-row--large"
+                        data-student-review="<?php echo esc_attr(strtolower($item['type'])); ?>"
+                        data-student-id="<?php echo esc_attr($student_id); ?>"
+                        data-lesson-id="<?php echo esc_attr($activity_week_post ? $activity_week_post->ID : 0); ?>">
+                        <strong><?php echo esc_html($item['type']); ?></strong><div><b><?php echo esc_html($item['title']); ?></b><small><?php echo esc_html($item['date'].' · '.$item['time']); ?></small></div><?php tfp_facilitator_student_status_badge($item['status'],$item['tone']); ?></div>
                 <?php endforeach; ?>
                 <?php if (!$activities): ?><div class="tfp-student-empty-state">No course activity recorded yet.</div><?php endif; ?>
             </div>
@@ -1091,41 +1099,113 @@ function tfp_facilitator_student_render_review_body($student_id, $week, $panel) 
         $questions = function_exists('tfp_week_get_homework_questions') ? tfp_week_get_homework_questions($week->ID, false) : [];
         $answers = function_exists('tfp_week_get_homework_answers') ? tfp_week_get_homework_answers($student_id, $week->ID) : [];
     } elseif ($panel === 'quiz') {
-        $result = function_exists('tfp_week_get_quiz_result') ? tfp_week_get_quiz_result($student_id,$week->ID) : null;
-        $questions = $result['results'] ?? [];
+        $result = function_exists('tfp_week_get_quiz_result') ? tfp_week_get_quiz_result($student_id, $week->ID) : null;
+        $questions = is_array($result) && !empty($result['results']) ? $result['results'] : [];
         $answers = [];
     } else {
-        $result = function_exists('tfp_week_get_test_result') ? tfp_week_get_test_result($student_id,$week->ID) : null;
-        $questions = $result['results'] ?? [];
+        $result = function_exists('tfp_week_get_test_result') ? tfp_week_get_test_result($student_id, $week->ID) : null;
+        $questions = is_array($result) && !empty($result['results']) ? $result['results'] : [];
         $answers = [];
     }
-    $reviewed = tfp_facilitator_student_reviewed($panel,$week->ID);
+
+    $reviewed = tfp_facilitator_student_reviewed($panel, $week->ID);
     ?>
-    <div class="tfp-student-review-body tfp-student-review-body--questions">
-        <div class="tfp-student-review-scroll">
-            <?php if ($questions): foreach($questions as $index=>$q):
-                $answer = isset($answers[$q['id']]) ? $answers[$q['id']] : [];
-                $selected = isset($answer['selected_index']) ? (int)$answer['selected_index'] : (isset($q['selected_index']) ? (int)$q['selected_index'] : -1);
-                $options = isset($q['options']) && is_array($q['options']) ? $q['options'] : [];
-                $correct = isset($q['correct_index']) ? (int)$q['correct_index'] : -1;
-                $is_correct = isset($q['is_correct']) ? (bool)$q['is_correct'] : ($selected >= 0 && $correct >= 0 && $selected === $correct);
-                ?>
-                <article class="tfp-student-review-question"><span class="tfp-student-review-number"><?php echo esc_html($index+1); ?></span><div><strong>Q<?php echo esc_html($index+1); ?>. <?php echo esc_html($q['prompt'] ?? ''); ?></strong>
-                    <?php if($options): ?><p class="tfp-student-answer-line">Your Answer: <?php echo esc_html($selected >= 0 && isset($options[$selected]) ? $options[$selected] : '—'); ?><?php if($panel!=='homework'): ?> <em class="<?php echo $is_correct?'is-correct':'is-incorrect'; ?>"><?php echo $is_correct?'Correct':'Incorrect'; ?></em><?php endif; ?></p><?php endif; ?>
-                    <?php if($panel!=='homework' && !$is_correct && $correct>=0): ?><p class="tfp-student-correct-answer">Correct Answer: <?php echo esc_html(isset($options[$correct]) ? $options[$correct] : ''); ?></p><?php endif; ?>
-                    <?php if(!empty($q['explanation'])): ?><h3>Explanation:</h3><p><?php echo esc_html($q['explanation']); ?></p><?php endif; ?>
-                </div></article>
-            <?php endforeach; else: ?><div class="tfp-student-empty-state">No submitted review data is available for this week.</div><?php endif; ?>
-        </div>
+    <div class="tfp-student-review-body tfp-student-review-body--questions" data-review-type="<?php echo esc_attr($panel); ?>">
         <?php if ($questions): ?>
+            <div class="tfp-student-review-layout">
+                <nav class="tfp-student-review-nav" aria-label="<?php esc_attr_e('Review questions', 'tfp-dashboard'); ?>">
+                    <?php foreach ($questions as $index => $q): ?>
+                        <button type="button"
+                            class="tfp-student-review-nav__item<?php echo $index === 0 ? ' is-active' : ''; ?>"
+                            data-review-question="<?php echo esc_attr($index); ?>"
+                            aria-controls="tfp-review-question-<?php echo esc_attr($panel . '-' . $index); ?>"
+                            aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>">
+                            <?php echo esc_html($index + 1); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </nav>
+
+                <div class="tfp-student-review-question-stack">
+                    <?php foreach ($questions as $index => $q):
+                        $answer = (isset($q['id'], $answers[$q['id']]) && is_array($answers[$q['id']])) ? $answers[$q['id']] : [];
+                        $selected = isset($answer['selected_index'])
+                            ? (int) $answer['selected_index']
+                            : (isset($q['selected_index']) && $q['selected_index'] !== null ? (int) $q['selected_index'] : -1);
+                        $options = isset($q['options']) && is_array($q['options']) ? $q['options'] : [];
+                        $correct = isset($q['correct_index']) && $q['correct_index'] !== null ? (int) $q['correct_index'] : -1;
+                        $is_correct = isset($q['is_correct'])
+                            ? (bool) $q['is_correct']
+                            : ($selected >= 0 && $correct >= 0 && $selected === $correct);
+
+                        $homework_type = (string) ($q['type'] ?? '');
+                        if ($panel === 'homework') {
+                            if ($homework_type === 'written') {
+                                $answer_text = trim((string) ($answer['text'] ?? ''));
+                            } elseif ($homework_type === 'both') {
+                                $yes_no = isset($answer['yes_no']) ? ucfirst((string) $answer['yes_no']) : '';
+                                $answer_text = trim((string) ($answer['text'] ?? ''));
+                                $answer_text = $yes_no && $answer_text ? $yes_no . ' — ' . $answer_text : ($yes_no ?: $answer_text);
+                            } elseif ($selected >= 0 && isset($options[$selected])) {
+                                $answer_text = (string) $options[$selected];
+                            } else {
+                                $answer_text = trim((string) ($answer['text'] ?? ''));
+                            }
+                        } else {
+                            $answer_text = ($selected >= 0 && isset($options[$selected])) ? (string) $options[$selected] : '—';
+                        }
+                        ?>
+                        <article
+                            id="tfp-review-question-<?php echo esc_attr($panel . '-' . $index); ?>"
+                            class="tfp-student-review-question tfp-student-review-question--panel<?php echo $index === 0 ? ' is-active' : ''; ?>"
+                            data-review-panel-question="<?php echo esc_attr($index); ?>"
+                            <?php echo $index === 0 ? '' : 'hidden'; ?>>
+                            <div class="tfp-student-review-question__header">
+                                <span class="tfp-student-review-question__eyebrow">Q<?php echo esc_html($index + 1); ?></span>
+                                <strong><?php echo esc_html($q['prompt'] ?? ''); ?></strong>
+                            </div>
+
+                            <?php if ($answer_text !== ''): ?>
+                                <p class="tfp-student-answer-line">
+                                    <?php echo esc_html($panel === 'homework' ? 'Your Answer: ' : 'Your Answer: '); ?>
+                                    <?php echo esc_html($answer_text); ?>
+                                    <?php if ($panel !== 'homework'): ?>
+                                        <em class="<?php echo $is_correct ? 'is-correct' : 'is-incorrect'; ?>">
+                                            <?php echo esc_html($is_correct ? 'Correct' : 'Incorrect'); ?>
+                                        </em>
+                                    <?php endif; ?>
+                                </p>
+                            <?php endif; ?>
+
+                            <?php if ($panel !== 'homework' && !$is_correct && $correct >= 0 && isset($options[$correct])): ?>
+                                <p class="tfp-student-correct-answer">Correct Answer: <?php echo esc_html($options[$correct]); ?></p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($q['explanation'])): ?>
+                                <h3>Explanation:</h3>
+                                <p><?php echo esc_html($q['explanation']); ?></p>
+                            <?php endif; ?>
+
+                            <?php if ($panel === 'homework' && empty($q['explanation']) && !empty($q['correct_answer_text'])): ?>
+                                <h3>Explanation:</h3>
+                                <p><?php echo esc_html($q['correct_answer_text']); ?></p>
+                            <?php endif; ?>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
             <form method="post" class="tfp-student-review-complete-form">
-                <?php wp_nonce_field('tfp_student_detail','tfp_student_nonce'); ?>
+                <?php wp_nonce_field('tfp_student_detail', 'tfp_student_nonce'); ?>
                 <input type="hidden" name="tfp_student_action" value="complete_review">
                 <input type="hidden" name="tfp_student_id" value="<?php echo esc_attr($student_id); ?>">
                 <input type="hidden" name="tfp_student_lesson_id" value="<?php echo esc_attr($week->ID); ?>">
                 <input type="hidden" name="review_type" value="<?php echo esc_attr($panel); ?>">
-                <button class="tfp-dash-btn tfp-dash-btn--primary" type="submit">✓ <?php echo esc_html($reviewed ? ucfirst($panel) . ' Review Complete' : ucfirst($panel) . ' Review Complete'); ?></button>
+                <button class="tfp-dash-btn tfp-dash-btn--primary" type="button" data-complete-student-review>
+                    ✓ <?php echo esc_html(ucfirst($panel) . ' Review Complete'); ?>
+                </button>
             </form>
+        <?php else: ?>
+            <div class="tfp-student-empty-state"><?php esc_html_e('No submitted review data is available for this week.', 'tfp-dashboard'); ?></div>
         <?php endif; ?>
     </div>
     <?php
