@@ -952,3 +952,18 @@ line-height: 130% !important;
         padding: 10px 12px;
     }
 }
+.tfp-attendance-pagination__next:hover {
+    background: #004D53;
+}
+
+.tfp-attendance-pagination__prev.is-disabled,
+.tfp-attendance-pagination__next.is-disabled {
+    opacity: .55;
+    pointer-events: none;
+    cursor: default;
+}
+
+.tfp-attendance-pagination__next.is-disabled {
+    background: #00666E;
+    color: #FFFFFF !important;
+}
