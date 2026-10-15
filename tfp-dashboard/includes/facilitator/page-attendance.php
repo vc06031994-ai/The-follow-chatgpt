@@ -685,8 +685,8 @@ function tfp_dashboard_render_facilitator_attendance_content()
                 </a>
             </div>
 
-            <div class="tfp-attendance-table-responsive">
-                <table class="tfp-attendance-table">
+            <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
+                <table class="tfp-dash-table tfp-attendance-table">
                     <thead>
                         <tr>
                             <th scope="col"><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th>
