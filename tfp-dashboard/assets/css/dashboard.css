@@ -872,3 +872,83 @@ font-weight: 500 !important;
 line-height: 130% !important;
 }
 
+
+
+/* =========================================================================
+   Global dashboard tables
+   Shared by facilitator and student dashboard table views.
+   ========================================================================= */
+
+.tfp-dash-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tfp-dash-table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse !important;
+    border-spacing: 0;
+    text-align: left;
+    background: #fff;
+}
+
+.tfp-dash-table th,
+.tfp-dash-table td {
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid #E2E5E6 !important;
+    vertical-align: middle;
+}
+
+.tfp-dash-table th {
+    padding: 12px 14px;
+    background: #DFE3E4;
+    color: var(--tfp-dash-text);
+    font: 700 13px/130% var(--tfp-dash-font);
+    white-space: nowrap;
+}
+
+.tfp-dash-table td {
+    padding: 12px 14px;
+    color: var(--tfp-dash-text);
+    font: 500 11px/140% var(--tfp-dash-font-alt);
+}
+
+.tfp-dash-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+.tfp-dash-table tbody tr:nth-child(odd) td,
+.tfp-dash-table tbody tr:nth-child(even) td {
+    background: transparent !important;
+}
+
+.tfp-dash-table a {
+    color: inherit;
+}
+
+.tfp-dash-table .tfp-dash-table__primary {
+    font: 700 13px/140% var(--tfp-dash-font);
+}
+
+.tfp-dash-table .tfp-dash-table__muted {
+    color: var(--tfp-dash-muted);
+    font: 400 10px/140% var(--tfp-dash-font-alt);
+}
+
+@media (max-width: 767px) {
+    .tfp-dash-table {
+        min-width: 640px;
+    }
+
+    .tfp-dash-table th {
+        padding: 10px 12px;
+    }
+
+    .tfp-dash-table td {
+        padding: 10px 12px;
+    }
+}
