@@ -1639,6 +1639,26 @@ table tbody>tr:nth-child(odd)>th {
     font-weight: 700;
 }
 
+.tfp-attendance-mobile-toggle {
+    display: none !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--tfp-dash-maroon) !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 0 12px 0 !important;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+.tfp-attendance-mobile-toggle:hover,
+.tfp-attendance-mobile-toggle:focus {
+    background: var(--tfp-dash-bg-soft) !important;
+    border-radius: 6px !important;
+}
+
 .tfp-attendance-header {
     margin-bottom: 14px;
 }
@@ -1878,6 +1898,12 @@ table tbody>tr:nth-child(odd)>th {
     cursor: pointer;
 }
 
+
+@media(max-width: 991px) {
+    .tfp-attendance-mobile-toggle {
+        display: inline-flex !important;
+    }
+}
 
 @media(max-width: 991px) {
     .tfp-attendance-metrics {
