@@ -522,8 +522,8 @@ function tfp_dashboard_render_facilitator_attendance_content()
         ];
     }
 
-    $attendance_per_page = 4;
-    $attendance_page = max(1, absint($_GET['attendance_page'] ?? 1));
+    $attendance_per_page = 8;
+    $attendance_page = max(1, absint($_GET['tfp_attendance_page'] ?? 1));
     $attendance_total = count($submission_logs);
     $attendance_pages = max(1, (int) ceil($attendance_total / $attendance_per_page));
     $attendance_page = min($attendance_page, $attendance_pages);
@@ -717,45 +717,55 @@ function tfp_dashboard_render_facilitator_attendance_content()
             </div>
 
             <!-- Pagination Bar -->
-            <?php if ($attendance_total > 0): ?>
+            <?php if ($attendance_total > $attendance_per_page): ?>
                 <?php
                 $range_start = (($attendance_page - 1) * $attendance_per_page) + 1;
                 $range_end = min($attendance_page * $attendance_per_page, $attendance_total);
-                $pagination_args = [
-                    'course_id' => $filter_course,
-                    'cohort_id' => $filter_cohort,
-                ];
+                $pagination_base = remove_query_arg(
+                    'tfp_attendance_page',
+                    function_exists('tfp_dashboard_get_url')
+                        ? tfp_dashboard_get_url('tfp-dashboard-facilitator-attendance')
+                        : get_permalink()
+                );
+                $pagination_args = array_filter([
+                    'course_id'  => $filter_course,
+                    'cohort_id'  => $filter_cohort,
+                ], static function ($value) {
+                    return $value !== null && $value !== '' && $value !== 0;
+                });
                 ?>
-                <footer class="tfp-attendance-pagination">
+                <footer class="tfp-attendance-pagination" aria-label="<?php esc_attr_e('Attendance pagination', 'tfp-dashboard'); ?>">
                     <div class="tfp-attendance-pagination__count">
                         <?php printf(esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), $range_start, $range_end, $attendance_total); ?>
                     </div>
                     <div class="tfp-attendance-pagination__controls">
                         <?php if ($attendance_page > 1): ?>
                             <a
-                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['attendance_page' => $attendance_page - 1]))); ?>"
-                                class="tfp-attendance-pagination__prev">
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['tfp_attendance_page' => $attendance_page - 1]), $pagination_base)); ?>"
+                                class="tfp-attendance-pagination__prev"
+                                rel="prev">
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
                             </a>
                         <?php else: ?>
-                            <span class="tfp-attendance-pagination__prev is-disabled">
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span class="tfp-attendance-pagination__prev is-disabled" aria-disabled="true">
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
                             </span>
                         <?php endif; ?>
 
                         <?php if ($attendance_page < $attendance_pages): ?>
                             <a
-                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['attendance_page' => $attendance_page + 1]))); ?>"
-                                class="tfp-attendance-pagination__next tfp-dash-btn-small tfp-dash-btn--primary">
+                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['tfp_attendance_page' => $attendance_page + 1]), $pagination_base)); ?>"
+                                class="tfp-attendance-pagination__next"
+                                rel="next">
                                 <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </a>
                         <?php else: ?>
-                            <span class="tfp-attendance-pagination__next tfp-dash-btn-small tfp-dash-btn--primary is-disabled">
+                            <span class="tfp-attendance-pagination__next is-disabled" aria-disabled="true">
                                 <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </span>
                         <?php endif; ?>
                     </div>
