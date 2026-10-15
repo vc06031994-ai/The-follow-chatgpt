@@ -1773,8 +1773,8 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-attendance-card-panel {
     background: #FFFFFF;
     border: 1px solid #E5E7EB;
+    padding: 22px 0px;
     border-radius: 12px;
-    padding: 22px 24px;
     margin-bottom: 24px;
 }
 
@@ -1854,7 +1854,7 @@ table tbody>tr:nth-child(odd)>th {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding-top: 18px;
+    padding:18px 24px 0px 24px;
     margin-top: 6px;
     border-top: 1px solid #E5E7EB;
     font-size: 12px;
@@ -1875,25 +1875,9 @@ table tbody>tr:nth-child(odd)>th {
     color: #9CA3AF;
     cursor: default;
     font-weight: 500;
+    cursor: pointer;
 }
 
-.tfp-attendance-pagination__next {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: 6px;
-    background: #00666E;
-    color: #FFFFFF !important;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 12px;
-    transition: background 0.15s ease;
-}
-
-.tfp-attendance-pagination__next:hover {
-    background: #004D53;
-}
 
 @media(max-width: 991px) {
     .tfp-attendance-metrics {
@@ -2534,4 +2518,8 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-student-attendance-form{
     margin-top:30px;
+}
+
+.tfp-attendance-panel-head-row{
+    padding: 0px 24px;
 }

@@ -645,8 +645,10 @@ function tfp_dashboard_render_facilitator_attendance_content()
 
         <!-- Upcoming Submissions Card -->
         <section class="tfp-attendance-card-panel">
-            <h5 class="tfp-attendance-panel-title"><?php esc_html_e('Upcoming Submissions', 'tfp-dashboard'); ?></h5>
-            <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
+            <div class="tfp-attendance-panel-head-row">
+                <h5 class="tfp-attendance-panel-title"><?php esc_html_e('Upcoming Submissions', 'tfp-dashboard'); ?></h5>
+            </div>
+                <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
                 <table class="tfp-dash-table tfp-attendance-table">
                     <thead>
                         <tr>
@@ -746,12 +748,12 @@ function tfp_dashboard_render_facilitator_attendance_content()
                         <?php if ($attendance_page < $attendance_pages): ?>
                             <a
                                 href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['attendance_page' => $attendance_page + 1]))); ?>"
-                                class="tfp-attendance-pagination__next">
+                                class="tfp-attendance-pagination__next tfp-dash-btn-small tfp-dash-btn--primary">
                                 <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
                                 <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </a>
                         <?php else: ?>
-                            <span class="tfp-attendance-pagination__next is-disabled">
+                            <span class="tfp-attendance-pagination__next tfp-dash-btn-small tfp-dash-btn--primary is-disabled">
                                 <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
                                 <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </span>
