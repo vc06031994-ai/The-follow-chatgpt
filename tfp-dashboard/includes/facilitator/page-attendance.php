@@ -309,10 +309,94 @@ function tfp_facilitator_attendance_report($cohorts)
             : 0,
         'stalled' => $stalled_count,
         'blocked' => $blocked_count,
+        'student_stats' => $student_stats,
         'weeks_by_cohort' => $weeks_by_cohort,
     ];
 
     return $cache[$cache_key];
+}
+
+function tfp_facilitator_attendance_cohort_health($cohorts, $report)
+{
+    $rows = [];
+
+    foreach ((array) $cohorts as $cohort) {
+        $cohort_id = (int) $cohort->ID;
+        $course_id = (int) get_post_meta($cohort_id, '_related_course', true);
+        $weeks = $report['weeks_by_cohort'][$cohort_id] ?? [];
+        $student_ids = function_exists('tfp_facilitator_cohort_students')
+            ? array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id))
+            : [];
+
+        $present = 0;
+        $recorded = 0;
+        $latest_timestamp = 0;
+        $latest_log = null;
+
+        foreach ((array) ($report['logs'] ?? []) as $log) {
+            if ((int) $log['cohort_id'] !== $cohort_id) {
+                continue;
+            }
+
+            $present += (int) ($log['present'] ?? 0);
+            $recorded += (int) ($log['total'] ?? 0);
+
+            if (($log['latest_timestamp'] ?? 0) > $latest_timestamp) {
+                $latest_timestamp = (int) $log['latest_timestamp'];
+                $latest_log = $log;
+            }
+        }
+
+        $stalled = 0;
+        $blocked = 0;
+        foreach ((array) ($report['student_stats'] ?? []) as $student_id => $stats) {
+            if ((int) ($stats['cohort_id'] ?? 0) !== $cohort_id) {
+                continue;
+            }
+
+            $student_recorded = (int) ($stats['recorded'] ?? 0);
+            if ($student_recorded < 2) {
+                continue;
+            }
+
+            $student_present = (int) ($stats['present'] ?? 0);
+            if ($student_present === 0) {
+                $blocked++;
+            } elseif (($student_present / $student_recorded) * 100 < 70) {
+                $stalled++;
+            }
+        }
+
+        $avg = $recorded > 0 ? round(($present / $recorded) * 100) : 0;
+        $current_week = $course_id && function_exists('tfp_facilitator_cohort_week')
+            ? max(1, (int) tfp_facilitator_cohort_week($cohort_id, $course_id))
+            : 1;
+        $current_index = min(max(0, $current_week - 1), max(0, count($weeks) - 1));
+        $current_module = !empty($weeks[$current_index])
+            ? $weeks[$current_index]->post_title
+            : __('Not started', 'tfp-dashboard');
+
+        $rows[] = [
+            'cohort_id'      => $cohort_id,
+            'cohort_name'    => $cohort->post_title,
+            'student_count'  => count($student_ids),
+            'avg'            => $avg,
+            'stalled'        => $stalled,
+            'blocked'        => $blocked,
+            'flags'          => $stalled + $blocked,
+            'current_module' => $current_module,
+            'latest_log'     => $latest_log,
+            'latest_date'    => $latest_timestamp
+                ? wp_date('M j, Y, g:i A T', $latest_timestamp)
+                : '—',
+        ];
+    }
+
+    usort($rows, static function ($a, $b) {
+        return [$b['flags'], $a['cohort_name']] <=> [$a['flags'], $b['cohort_name']];
+    });
+
+    return $rows;
 }
 
 function tfp_facilitator_attendance_upcoming_submissions($cohorts, $report)
@@ -490,6 +574,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
     $stalled_count = (int) $report['stalled'];
     $blocked_count = (int) $report['blocked'];
     $total_flags = $stalled_count + $blocked_count;
+    $cohort_health = tfp_facilitator_attendance_cohort_health($all_cohorts, $report);
 
     $export_url = add_query_arg([
         'tfp_export' => 'attendance_csv',
@@ -625,21 +710,79 @@ function tfp_dashboard_render_facilitator_attendance_content()
             </div>
         </section>
 
-        <!-- All Active Cohorts Header Banner Card -->
-        <section class="tfp-attendance-banner-card">
-            <div class="tfp-attendance-banner-card__info">
-                <h5 class="tfp-attendance-banner-card__title"><?php esc_html_e('All Active Cohorts', 'tfp-dashboard'); ?></h5>
-                <span class="tfp-attendance-banner-card__subtitle"><?php esc_html_e('Attendance Health Rank', 'tfp-dashboard'); ?></span>
-            </div>
-            <div class="tfp-attendance-banner-card__action">
+        <!-- All Active Cohorts / Attendance Health -->
+        <section class="tfp-attendance-card-panel tfp-attendance-health-panel">
+            <div class="tfp-attendance-panel-head-row tfp-attendance-health-head">
+                <div>
+                    <h5 class="tfp-attendance-panel-title"><?php esc_html_e('All Active Cohorts', 'tfp-dashboard'); ?></h5>
+                    <span class="tfp-attendance-banner-card__subtitle"><?php esc_html_e('Attendance Health Rank', 'tfp-dashboard'); ?></span>
+                </div>
                 <a href="<?php echo esc_url($export_url); ?>" class="tfp-attendance-export-btn tfp-dash-btn-second tfp-dash-btn--primary" download="attendance-report.csv">
-                    <svg class="tfp-export-icon" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="tfp-export-icon" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M9 1H3C1.89543 1 1 1.89543 1 3V15C1 16.1046 1.89543 17 3 17H13C14.1046 17 15 16.1046 15 15V7L9 1Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M9 1V7H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M8 10V14M8 14L6 12M8 14L10 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <span><?php esc_html_e('Export Report', 'tfp-dashboard'); ?></span>
                 </a>
+            </div>
+
+            <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
+                <table class="tfp-dash-table tfp-attendance-table tfp-attendance-health-table">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Current Module', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Students', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Pastoral Flags', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Last Submission', 'tfp-dashboard'); ?></th>
+                            <th scope="col" class="tfp-col-action"><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($cohort_health): ?>
+                            <?php foreach ($cohort_health as $health): ?>
+                                <tr>
+                                    <td class="tfp-td-bold"><?php echo esc_html($health['cohort_name']); ?></td>
+                                    <td class="tfp-td-normal"><?php echo esc_html($health['current_module']); ?></td>
+                                    <td><?php echo esc_html($health['student_count']); ?></td>
+                                    <td>
+                                        <span class="tfp-attendance-health-rate"><?php echo esc_html($health['avg']); ?>%</span>
+                                    </td>
+                                    <td>
+                                        <?php if ($health['flags'] > 0): ?>
+                                            <span class="tfp-attendance-health-flags">
+                                                <?php echo esc_html($health['stalled']); ?> <?php esc_html_e('Stalled', 'tfp-dashboard'); ?>
+                                                •
+                                                <?php echo esc_html($health['blocked']); ?> <?php esc_html_e('Blocked', 'tfp-dashboard'); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="tfp-attendance-health-flags is-clear"><?php esc_html_e('No Flags', 'tfp-dashboard'); ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="tfp-td-date"><?php echo esc_html($health['latest_date']); ?></td>
+                                    <td class="tfp-col-action">
+                                        <a
+                                            href="<?php echo esc_url(add_query_arg([
+                                                'tfp_roster_course' => $filter_course,
+                                                'tfp_roster_cohort' => $health['cohort_id'],
+                                            ], $roster_url)); ?>"
+                                            class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
+                                            <?php esc_html_e('View', 'tfp-dashboard'); ?>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7">
+                                    <div class="tfp-facilitator-empty"><?php esc_html_e('No active cohorts match the selected filters.', 'tfp-dashboard'); ?></div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         </section>
 
