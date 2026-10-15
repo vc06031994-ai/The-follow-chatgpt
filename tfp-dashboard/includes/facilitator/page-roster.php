@@ -319,8 +319,8 @@ function tfp_dashboard_render_facilitator_roster_content()
             </div>
         </div>
 
-        <div class="tfp-roster-table-wrap">
-            <table class="tfp-roster-table">
+        <div class="tfp-dash-table-wrap tfp-roster-table-wrap">
+            <table class="tfp-dash-table tfp-roster-table">
                 <thead>
                     <tr>
                         <th><?php esc_html_e('Disciples', 'tfp-dashboard'); ?></th>
