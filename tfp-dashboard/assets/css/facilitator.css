@@ -553,51 +553,15 @@
 
 .tfp-roster-table-wrap {
     width: 100%;
-    overflow-x: auto
+    overflow-x: auto;
 }
 
 .tfp-roster-table {
-    width: 100%;
     min-width: 820px;
-    border-collapse: collapse;
-    text-align: left
-}
-
-.tfp-roster-table th {
-    padding: 13px 20px;
-    background: #FAFAFA;
-    border-bottom: 1px solid #E5E7EB;
-    color: var(--tfp-dash-text);
-    font: 700 14px/130% var(--tfp-dash-font)
-}
-
-.tfp-roster-table td {
-    padding: 10px 20px;
-    border-bottom: 1px solid #E5E7EB;
-    color: var(--tfp-dash-text);
-    font: 500 10px/130% var(--tfp-dash-font-alt);
-    vertical-align: middle
-}
-
-.tfp-roster-table tbody tr:last-child td {
-    border-bottom: 0
 }
 
 .tfp-roster-table td:first-child {
-    min-width: 165px
-}
-
-.tfp-roster-table td:first-child strong {
-    display: block;
-    font: 700 14px/140% var(--tfp-dash-font)
-}
-
-.tfp-roster-table td:first-child small {
-    display: block;
-    margin-top: 2px;
-    color: var(--tfp-dash-muted);
-    font: 400 10px/140% var(--tfp-dash-font-alt);
-    white-space: nowrap
+    min-width: 165px;
 }
 
 .tfp-roster-status {
@@ -1009,50 +973,11 @@ table tbody>tr:nth-child(odd)>th {
     overflow-x: auto;
     margin-left: -18px;
     margin-right: -18px;
-    width: calc(100% + 36px)
+    width: calc(100% + 36px);
 }
 
 .tfp-student-performance-table {
-    width: 100%;
     min-width: 650px;
-    border-collapse: collapse !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
-    border-top: 0 !important;
-    border-bottom: 0 !important
-}
-
-.tfp-student-performance-table th {
-    padding: 9px 10px;
-    background: #dfe3e4;
-    text-align: left;
-    border-top: 0 !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
-    border-bottom: 1px solid #cfd4d5 !important;
-    font-size: 14px;
-    font-weight: 700;
-    color: #000000;
-    line-height: 130%;
-}
-
-.tfp-student-performance-table td {
-    padding: 8px 10px;
-    border-top: 0 !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
-    border-bottom: 1px solid #e2e5e6 !important;
-    font-size: 10px;
-    vertical-align: middle
-}
-
-.tfp-student-performance-table tr {
-    border-left: 0 !important;
-    border-right: 0 !important
-}
-
-.tfp-student-performance-table tbody tr:last-child td {
-    border-bottom: 0 !important
 }
 
 .tfp-student-performance-table td:first-child a {
@@ -1887,37 +1812,6 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-attendance-table-responsive {
     width: 100%;
     overflow-x: auto;
-}
-
-.tfp-attendance-table {
-    width: 100%;
-    min-width: 680px;
-    border-collapse: collapse;
-    text-align: left;
-}
-
-.tfp-attendance-table th {
-    padding: 12px 14px;
-    background: #FAFAFA;
-    border-bottom: 1px solid #E5E7EB;
-    font-size: 13px;
-    font-weight: 700;
-    color: #111827;
-    white-space: nowrap;
-    font-family: var(--tfp-dash-font);
-}
-
-.tfp-attendance-table td {
-    padding: 14px 14px;
-    border-bottom: 1px solid #F3F4F6;
-    font-size: 12.5px;
-    color: #374151;
-    vertical-align: middle;
-    font-family: var(--tfp-dash-font-alt, sans-serif);
-}
-
-.tfp-attendance-table tbody tr:last-child td {
-    border-bottom: none;
 }
 
 .tfp-td-bold {
