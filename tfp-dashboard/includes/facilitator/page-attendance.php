@@ -646,7 +646,7 @@ function tfp_dashboard_render_facilitator_attendance_content()
         <!-- Upcoming Submissions Card -->
         <section class="tfp-attendance-card-panel">
             <h5 class="tfp-attendance-panel-title"><?php esc_html_e('Upcoming Submissions', 'tfp-dashboard'); ?></h5>
-            <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
+            <div class="tfp-dash-table-wrap tfp-dash-table-wrap--edge tfp-attendance-table-responsive">
                 <table class="tfp-dash-table tfp-attendance-table">
                     <thead>
                         <tr>
