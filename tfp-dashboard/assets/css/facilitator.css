@@ -2523,3 +2523,38 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-attendance-panel-head-row{
     padding: 0px 24px;
 }
+
+.tfp-attendance-health-panel {
+    padding: 22px 0;
+}
+
+.tfp-attendance-health-head {
+    padding: 0 24px;
+    margin-bottom: 16px;
+}
+
+.tfp-attendance-health-head > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tfp-attendance-health-table {
+    min-width: 980px;
+}
+
+.tfp-attendance-health-rate {
+    font-weight: 800;
+    color: var(--tfp-dash-teal);
+}
+
+.tfp-attendance-health-flags {
+    color: #AF1E2D;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tfp-attendance-health-flags.is-clear {
+    color: var(--tfp-dash-teal);
+}
+
