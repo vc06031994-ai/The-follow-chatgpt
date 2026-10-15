@@ -874,20 +874,6 @@ line-height: 130% !important;
 
 
 
-.tfp-dash-table-wrap--edge {
-    margin-left: -24px;
-    margin-right: -24px;
-    width: calc(100% + 48px);
-}
-
-@media (max-width: 767px) {
-    .tfp-dash-table-wrap--edge {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
-    }
-}
-
 /* =========================================================================
    Global dashboard tables
    Shared by facilitator and student dashboard table views.
