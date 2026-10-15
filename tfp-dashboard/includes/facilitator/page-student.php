@@ -957,8 +957,8 @@ function tfp_facilitator_student_render_overview($student_id, $course_id, $cohor
 
                 <section class="tfp-dash-panel tfp-student-panel tfp-student-performance">
                     <h5><?php esc_html_e('Current Performance Reports', 'tfp-dashboard'); ?></h5>
-                    <div class="tfp-student-table-wrap">
-                        <table class="tfp-student-performance-table">
+                    <div class="tfp-dash-table-wrap tfp-student-table-wrap">
+                        <table class="tfp-dash-table tfp-student-performance-table">
                             <thead><tr><th>Week</th><th>Reading</th><th>Homework</th><th>Quiz</th><th>Tests</th><th>Attend.</th></tr></thead>
                             <tbody>
                             <?php foreach (array_slice($weeks, 0, 7) as $index => $week):
