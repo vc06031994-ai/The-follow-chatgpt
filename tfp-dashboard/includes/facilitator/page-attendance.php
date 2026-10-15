@@ -619,6 +619,14 @@ function tfp_dashboard_render_facilitator_attendance_content()
     );
     ?>
     <div class="tfp-attendance-page-wrap">
+        <button
+            type="button"
+            class="tfp-attendance-mobile-toggle"
+            data-tfp-sidebar-toggle
+            aria-label="<?php esc_attr_e('Open dashboard navigation', 'tfp-dashboard'); ?>">
+            <?php echo tfp_dashboard_icon('toggle'); ?>
+        </button>
+
         <!-- Top Breadcrumbs -->
         <nav class="tfp-attendance-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
             <a href="<?php echo esc_url($facilitator_home_url); ?>" class="tfp-attendance-breadcrumb__parent">
