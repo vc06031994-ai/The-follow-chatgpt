@@ -2936,9 +2936,19 @@ table tbody>tr:nth-child(odd)>th {
     border: 1px solid #C4C4C4;
     background: #fff;
     color: var(--tfp-dash-text);
+    transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 
+.tfp-attendance-section-btn--outline:hover {
+    background: #F7F7F7;
+    border-color: #B8B8B8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+}
 
+.tfp-attendance-section-btn--outline:focus-visible {
+    outline: 2px solid rgba(0, 102, 110, .16);
+    outline-offset: 2px;
+}
 
 .tfp-attendance-section-btn.is-disabled {
     opacity: .45;
