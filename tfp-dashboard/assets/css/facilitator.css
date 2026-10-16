@@ -1606,7 +1606,6 @@ table tbody>tr:nth-child(odd)>th {
    ========================================================================== */
 .tfp-attendance-page-wrap {
     width: 100%;
-    max-width: 1057px;
     margin: 0 0 0 21px;
     padding: 6px 0 32px 0;
 }
@@ -2593,7 +2592,6 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-attendance-page-wrap {
     width: 100%;
-    max-width: 1057px;
     margin: 0 auto;
 }
 
