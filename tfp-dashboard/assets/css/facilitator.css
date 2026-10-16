@@ -3215,3 +3215,135 @@ table tbody>tr:nth-child(odd)>th {
         padding-right: 16px;
     }
 }
+
+
+/* Facilitator Attendance main landing screen */
+.tfp-attendance-banner-card {
+    min-height: 72px;
+    margin-bottom: 22px;
+    padding: 16px 20px;
+    border: 1px solid #69AEB2;
+    border-radius: 10px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    box-sizing: border-box;
+}
+
+.tfp-attendance-banner-card h3 {
+    margin: 0 0 3px;
+    font: 700 17px/130% var(--tfp-dash-font);
+    color: var(--tfp-dash-text);
+}
+
+.tfp-attendance-banner-card p {
+    margin: 0;
+    font: 500 11px/140% var(--tfp-dash-font-alt);
+    color: var(--tfp-dash-muted);
+}
+
+.tfp-attendance-export-btn {
+    min-width: 138px;
+    min-height: 44px;
+    padding: 10px 14px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.tfp-attendance-upcoming-card,
+.tfp-attendance-logs-card {
+    margin-bottom: 22px;
+}
+
+.tfp-attendance-upcoming-card {
+    min-height: 158px;
+}
+
+.tfp-attendance-logs-card {
+    min-height: 300px;
+}
+
+.tfp-attendance-submission-card__head {
+    min-height: 72px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+.tfp-attendance-submission-card__head h3 {
+    margin: 0;
+    font: 700 17px/130% var(--tfp-dash-font);
+    color: var(--tfp-dash-text);
+}
+
+.tfp-attendance-view-all {
+    font: 500 10px/130% var(--tfp-dash-font);
+    color: #475467;
+    text-decoration: none;
+}
+
+.tfp-attendance-view-all:hover {
+    color: var(--tfp-dash-teal);
+    text-decoration: underline;
+}
+
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table,
+.tfp-attendance-logs-card .tfp-attendance-submission-table {
+    min-width: 100%;
+}
+
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th,
+.tfp-attendance-logs-card .tfp-attendance-submission-table th {
+    padding: 11px 14px;
+}
+
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table td,
+.tfp-attendance-logs-card .tfp-attendance-submission-table td {
+    padding: 12px 14px;
+}
+
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(1) { width: 24%; }
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(2) { width: 20%; }
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(3) { width: 25%; }
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(4) { width: 22%; }
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(5) { width: 9%; }
+
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(1) { width: 24%; }
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(2) { width: 24%; }
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(3) { width: 22%; }
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(4) { width: 21%; }
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(5) { width: 9%; }
+
+.tfp-attendance-logs-card .tfp-attendance-submission-table-wrap {
+    overflow-x: auto;
+}
+
+@media (max-width: 991px) {
+    .tfp-attendance-banner-card {
+        min-height: auto;
+    }
+
+    .tfp-attendance-upcoming-card .tfp-attendance-submission-table,
+    .tfp-attendance-logs-card .tfp-attendance-submission-table {
+        min-width: 900px;
+    }
+}
+
+@media (max-width: 580px) {
+    .tfp-attendance-banner-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tfp-attendance-export-btn {
+        width: 100%;
+    }
+}
