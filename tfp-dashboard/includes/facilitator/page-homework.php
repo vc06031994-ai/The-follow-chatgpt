@@ -119,28 +119,12 @@ function tfp_facilitator_homework_question_scripture($question) {
 }
 
 function tfp_facilitator_homework_is_graded($student_id, $lesson_id) {
-    $questions = function_exists('tfp_week_get_homework_questions')
-        ? tfp_week_get_homework_questions($lesson_id, false)
-        : [];
-
-    if (!$questions) {
-        return false;
-    }
-
     $review = tfp_facilitator_homework_review_data($student_id, $lesson_id);
 
-    if (!empty($review['completed_at'])) {
-        return true;
-    }
-
-    foreach ($questions as $question) {
-        $question_id = (string) ($question['id'] ?? '');
-        if (!$question_id || empty($review['questions'][$question_id]['decision'])) {
-            return false;
-        }
-    }
-
-    return true;
+    // "Graded" is a submission-level state. It is reached only after the
+    // facilitator explicitly completes the review; saved drafts remain
+    // "Submitted" even when individual questions already have decisions.
+    return !empty($review['completed_at']);
 }
 
 function tfp_facilitator_homework_grade_letter($student_id, $lesson_id) {
