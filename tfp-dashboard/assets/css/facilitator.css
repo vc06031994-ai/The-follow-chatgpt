@@ -1751,13 +1751,6 @@ table tbody>tr:nth-child(odd)>th {
 
 
 
-.tfp-attendance-accent-divider {
-    height: 2px;
-    background: #7F1D1D;
-    margin: 16px 0 20px 0;
-    width: 100%;
-}
-
 .tfp-attendance-filters-bar {
     margin-bottom: 20px;
 }

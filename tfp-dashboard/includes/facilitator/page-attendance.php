@@ -1189,7 +1189,6 @@ function tfp_dashboard_render_facilitator_attendance_content()
             </p>
         </header>
 
-        <div class="tfp-attendance-accent-divider" aria-hidden="true"></div>
 
         <section class="tfp-attendance-course-filters">
             <form method="get" class="tfp-attendance-filters-form tfp-facilitator-filters">
