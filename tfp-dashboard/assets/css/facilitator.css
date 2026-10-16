@@ -3097,3 +3097,41 @@ table tbody>tr:nth-child(odd)>th {
         gap: 10px;
     }
 }
+
+
+/* Facilitator Attendance main screen — use the same full-width page header
+   treatment as the shared dashboard screens. */
+.tfp-attendance-page-wrap:not(.tfp-attendance-page-wrap--cohort) {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0 0 32px;
+}
+
+.tfp-attendance-main-pageheader {
+    width: calc(100% + 72px);
+    margin-left: -36px;
+    padding: 0 36px 18px;
+    margin-bottom: 24px;
+}
+
+.tfp-attendance-main-breadcrumb {
+    margin-bottom: 10px;
+}
+
+.tfp-attendance-main-pageheader .tfp-dash-pageheader__title {
+    margin-bottom: 8px !important;
+}
+
+.tfp-attendance-main-pageheader .tfp-dash-pageheader__subtitle {
+    margin: 0;
+}
+
+@media (max-width: 991px) {
+    .tfp-attendance-main-pageheader {
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
