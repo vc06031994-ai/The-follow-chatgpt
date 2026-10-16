@@ -793,6 +793,26 @@ table tbody>tr:nth-child(odd)>th {
     border-left: 0 !important;
 }
 
+/* Global facilitator student breadcrumb alignment */
+.tfp-student-breadcrumb {
+    width: calc(100% + 72px);
+    margin-left: -36px;
+    margin-right: -36px;
+    padding-left: 36px;
+    padding-right: 36px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 991px) {
+    .tfp-student-breadcrumb {
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
 /* Facilitator Student Profile */
 .tfp-student-profile {
     width: 100%;
