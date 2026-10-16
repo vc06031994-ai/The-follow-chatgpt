@@ -22,6 +22,14 @@
     --tfp-dash-status-success: #00666E;
     --tfp-dash-status-success-bg: #E4F1F2;
     --tfp-dash-status-success-border: #00666E;
+    --tfp-dash-attendance-present-bg: #E1F4F2;
+    --tfp-dash-attendance-present-border: #00666E;
+    --tfp-dash-attendance-excused-bg: #F3E4C7;
+    --tfp-dash-attendance-excused-border: #BD9817;
+    --tfp-dash-attendance-unexcused-bg: #FBEAEA;
+    --tfp-dash-attendance-unexcused-border: #570506;
+    --tfp-dash-attendance-na-bg: #E3E7E8;
+    --tfp-dash-attendance-na-border: #151411;
     --tfp-dash-border: rgba(0, 0, 0, .08);
     --tfp-dash-bg: #FFFFFF;
     --tfp-dash-bg-soft: #EFEFEF;
