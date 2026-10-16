@@ -3383,7 +3383,6 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-review-page-wrap {
     width: 100%;
-    max-width: 1075px;
     margin: 0 auto;
     padding: 6px 0 40px;
 }
@@ -3394,7 +3393,6 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-review-tabs {
     width: 100%;
-    max-width: 1121px;
     display: flex;
     align-items: stretch;
     margin: 0 auto 18px;
@@ -3427,7 +3425,6 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-filters {
     width: 100%;
-    max-width: 1075px;
     margin: 0 auto 28px;
     display: flex;
     align-items: center;
