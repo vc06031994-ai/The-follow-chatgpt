@@ -996,3 +996,24 @@ line-height: 130% !important;
         padding-right: 16px;
     }
 }
+
+/* Global dashboard breadcrumb edge alignment */
+.tfp-dash-pageheader__crumb {
+    width: calc(100% + 72px);
+    margin-left: -36px;
+    margin-right: -36px;
+    padding-left: 36px;
+    padding-right: 36px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 991px) {
+    .tfp-dash-pageheader__crumb {
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
