@@ -1027,12 +1027,21 @@ function tfp_dashboard_render_facilitator_attendance_content()
         ? tfp_dashboard_get_url('tfp-dashboard-facilitator-attendance')
         : get_permalink();
 
+    $home_url = function_exists('tfp_dashboard_get_url')
+        ? tfp_dashboard_get_url('tfp-dashboard-facilitator-home')
+        : $attendance_url;
+
     $filter_course = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
     $filter_cohort = isset($_GET['cohort_id']) ? absint($_GET['cohort_id']) : 0;
 
     $all_courses = tfp_facilitator_attendance_get_courses($current_user_id);
     $all_cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $filter_course);
 
+    /*
+     * A cohort is selected only when the user has explicitly selected one.
+     * The attendance navigation itself must always open the course-level
+     * landing screen first.
+     */
     if ($filter_cohort) {
         $selected_cohort = null;
 
@@ -1081,84 +1090,117 @@ function tfp_dashboard_render_facilitator_attendance_content()
         'cohort_id'  => 0,
     ], $attendance_url);
 
+    $upcoming_submissions = tfp_facilitator_attendance_upcoming_submissions($report_cohorts, $report);
+
+    /*
+     * Submission logs are live and paginated. Eight is the working page size;
+     * pagination stays hidden when fewer than eight records exist.
+     */
     $log_rows = [];
 
     foreach ((array) ($report['logs'] ?? []) as $log) {
-        $student_total = (int) ($log['student_total'] ?? 0);
-        $submitted_count = count((array) ($log['student_ids'] ?? []));
-        $complete = $student_total > 0 && $submitted_count >= $student_total;
-
         $course_weeks = $report['weeks_by_cohort'][(int) $log['cohort_id']] ?? [];
         $week_index = array_search(
             (int) $log['lesson_id'],
             wp_list_pluck($course_weeks, 'ID'),
             true
         );
+
         $week_number = $week_index === false ? 0 : ((int) $week_index + 1);
+        $student_total = (int) ($log['student_total'] ?? 0);
+        $submitted_count = count((array) ($log['student_ids'] ?? []));
+        $complete = $student_total > 0 && $submitted_count >= $student_total;
 
         $log_rows[] = [
-            'cohort_name' => $log['cohort_name'],
-            'cohort_id' => (int) $log['cohort_id'],
-            'section_module' => $week_number
-                ? 'Week ' . $week_number . ': ' . $log['section_module']
+            'cohort_name'   => $log['cohort_name'],
+            'cohort_id'     => (int) $log['cohort_id'],
+            'section_module'=> $week_number
+                ? sprintf('Week %d: %s', $week_number, $log['section_module'])
                 : $log['section_module'],
-            'status' => $complete ? 'completed' : 'in_progress',
-            'submitted_on' => $complete && !empty($log['latest_timestamp'])
+            'submitted_on'  => !empty($log['latest_timestamp'])
                 ? wp_date('D, M j, Y g:i A T', $log['latest_timestamp'])
-                : '',
-            'breakdown' => $complete
-                ? tfp_facilitator_attendance_format_breakdown($log)
                 : '—',
+            'breakdown'     => tfp_facilitator_attendance_format_breakdown($log),
+            'status'        => $complete ? 'completed' : 'in_progress',
         ];
     }
 
     usort($log_rows, static function ($a, $b) {
-        return strcmp((string) $b['submitted_on'], (string) $a['submitted_on'])
-            ?: strcmp((string) $b['cohort_name'], (string) $a['cohort_name']);
+        return strcmp((string) $b['submitted_on'], (string) $a['submitted_on']);
     });
 
-    $log_rows = array_slice($log_rows, 0, 4);
+    $log_per_page = 8;
+    $log_page = max(1, absint($_GET['tfp_attendance_log_page'] ?? 1));
+    $log_total = count($log_rows);
+    $log_pages = max(1, (int) ceil($log_total / $log_per_page));
+    $log_page = min($log_page, $log_pages);
+
+    $log_rows_page = array_slice(
+        $log_rows,
+        ($log_page - 1) * $log_per_page,
+        $log_per_page
+    );
+
+    $range_start = $log_total ? (($log_page - 1) * $log_per_page) + 1 : 0;
+    $range_end = min($log_page * $log_per_page, $log_total);
 
     $selected_course = $filter_course ? get_post($filter_course) : null;
-    $course_short = __('All Courses', 'tfp-dashboard');
+    $selected_course_label = $selected_course instanceof WP_Post
+        ? $selected_course->post_title
+        : __('All Courses', 'tfp-dashboard');
 
-    if ($selected_course instanceof WP_Post) {
-        $course_short = preg_match('/(\d+)\s*[-–]\s*Week/i', $selected_course->post_title, $matches)
-            ? $matches[1] . '-Week'
-            : $selected_course->post_title;
+    $pagination_args = [];
+    if ($filter_course) {
+        $pagination_args['course_id'] = $filter_course;
     }
+
+    $prev_log_url = add_query_arg(
+        array_merge($pagination_args, ['tfp_attendance_log_page' => max(1, $log_page - 1)]),
+        $attendance_url
+    );
+
+    $next_log_url = add_query_arg(
+        array_merge($pagination_args, ['tfp_attendance_log_page' => min($log_pages, $log_page + 1)]),
+        $attendance_url
+    );
     ?>
     <div class="tfp-attendance-page-wrap">
-        <button type="button" class="tfp-attendance-mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open dashboard navigation', 'tfp-dashboard'); ?>">
+        <button
+            type="button"
+            class="tfp-attendance-mobile-toggle"
+            data-tfp-sidebar-toggle
+            aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>">
             <?php echo tfp_dashboard_icon('toggle'); ?>
         </button>
 
         <header class="tfp-dash-pageheader tfp-attendance-main-pageheader">
             <div class="tfp-dash-pageheader__crumb tfp-facilitator-breadcrumb tfp-attendance-main-breadcrumb">
-                <a href="<?php echo esc_url(function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-facilitator-home') : $attendance_url); ?>">
+                <a href="<?php echo esc_url($home_url); ?>">
                     <?php esc_html_e('Facilitator', 'tfp-dashboard'); ?>
                 </a>
                 <span aria-hidden="true">/</span>
                 <strong><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></strong>
             </div>
-            <button
-                type="button"
-                class="tfp-dash-pageheader__mobile-toggle"
-                data-tfp-sidebar-toggle
-                aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>">
-                <?php echo tfp_dashboard_icon('toggle'); ?>
-            </button>
+
             <h1 class="tfp-dash-pageheader__title"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h1>
+
             <p class="tfp-dash-pageheader__subtitle">
-                <?php esc_html_e('Weekly Cohorts Attendance & Notes Reporting.', 'tfp-dashboard'); ?>
+                <?php esc_html_e('Monitor engagement and consistency across all active cohorts.', 'tfp-dashboard'); ?>
             </p>
         </header>
 
+        <div class="tfp-attendance-accent-divider" aria-hidden="true"></div>
+
         <section class="tfp-attendance-course-filters">
-            <form method="get" class="tfp-attendance-filters-form">
+            <form method="get" class="tfp-attendance-filters-form tfp-facilitator-filters">
                 <div class="tfp-attendance-filter-item">
                     <label for="tfp_filter_course" class="screen-reader-text"><?php esc_html_e('Select course', 'tfp-dashboard'); ?></label>
-                    <select name="course_id" id="tfp_filter_course" class="tfp-attendance-select" aria-label="<?php esc_attr_e('Select course', 'tfp-dashboard'); ?>" onchange="this.form.submit();">
+                    <select
+                        name="course_id"
+                        id="tfp_filter_course"
+                        class="tfp-attendance-select"
+                        aria-label="<?php esc_attr_e('Select course', 'tfp-dashboard'); ?>"
+                        onchange="this.form.submit();">
                         <option value="0"><?php esc_html_e('All Courses', 'tfp-dashboard'); ?></option>
                         <?php foreach ($all_courses as $course): ?>
                             <option value="<?php echo esc_attr($course->ID); ?>" <?php selected($filter_course, $course->ID); ?>>
@@ -1166,12 +1208,16 @@ function tfp_dashboard_render_facilitator_attendance_content()
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <span class="tfp-select-chevron" aria-hidden="true">⌄</span>
                 </div>
 
                 <div class="tfp-attendance-filter-item">
                     <label for="tfp_filter_cohort" class="screen-reader-text"><?php esc_html_e('Select cohort', 'tfp-dashboard'); ?></label>
-                    <select name="cohort_id" id="tfp_filter_cohort" class="tfp-attendance-select" aria-label="<?php esc_attr_e('Select cohort', 'tfp-dashboard'); ?>" onchange="this.form.submit();">
+                    <select
+                        name="cohort_id"
+                        id="tfp_filter_cohort"
+                        class="tfp-attendance-select"
+                        aria-label="<?php esc_attr_e('Select cohort', 'tfp-dashboard'); ?>"
+                        onchange="this.form.submit();">
                         <option value="0"><?php esc_html_e('All Cohorts', 'tfp-dashboard'); ?></option>
                         <?php foreach ($all_cohorts as $cohort): ?>
                             <option value="<?php echo esc_attr($cohort->ID); ?>" <?php selected($filter_cohort, $cohort->ID); ?>>
@@ -1179,7 +1225,6 @@ function tfp_dashboard_render_facilitator_attendance_content()
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <span class="tfp-select-chevron" aria-hidden="true">⌄</span>
                 </div>
             </form>
         </section>
@@ -1188,13 +1233,17 @@ function tfp_dashboard_render_facilitator_attendance_content()
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Avg Attendance', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($avg_attendance); ?>%</strong>
-                <small class="tfp-attendance-metric-card__sub"><?php echo esc_html($filter_course ? $course_short . ' Avg Attendance' : 'All Courses Avg Attendance'); ?></small>
+                <small class="tfp-attendance-metric-card__sub">
+                    <?php echo esc_html($filter_course ? $selected_course_label . ' Avg Attendance' : 'All Courses Avg Attendance'); ?>
+                </small>
             </div>
 
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Total Disciples', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($total_disciples); ?></strong>
-                <small class="tfp-attendance-metric-card__sub"><?php echo esc_html($filter_course ? 'Across Active ' . $course_short . ' Track' : 'Across Active Courses'); ?></small>
+                <small class="tfp-attendance-metric-card__sub">
+                    <?php echo esc_html($filter_course ? 'Across Active ' . $selected_course_label : 'Across Active Courses'); ?>
+                </small>
             </div>
 
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
@@ -1209,24 +1258,86 @@ function tfp_dashboard_render_facilitator_attendance_content()
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Active Cohorts', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($active_cohorts_count); ?></strong>
-                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Current in Journey', 'tfp-dashboard'); ?></small>
+                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Currently Assigned', 'tfp-dashboard'); ?></small>
             </div>
         </section>
 
-        <section class="tfp-attendance-submission-card">
-            <header class="tfp-attendance-submission-card__head">
-                <h3>
-                    <?php
-                    printf(
-                        esc_html__('%s Submission Logs', 'tfp-dashboard'),
-                        esc_html($course_short)
-                    );
-                    ?>
-                </h3>
+        <section class="tfp-attendance-banner-card">
+            <div>
+                <h3><?php esc_html_e('All Active Cohorts', 'tfp-dashboard'); ?></h3>
+                <p><?php esc_html_e('Attendance Health Rank', 'tfp-dashboard'); ?></p>
+            </div>
 
-                <a href="<?php echo esc_url($export_url); ?>" class="tfp-dash-btn-second tfp-dash-btn--primary" download="attendance-report.csv">
-                    <?php echo tfp_dashboard_icon('doc'); ?>
-                    <?php esc_html_e('Export Report', 'tfp-dashboard'); ?>
+            <a href="<?php echo esc_url($export_url); ?>" class="tfp-attendance-export-btn tfp-dash-btn tfp-dash-btn--primary" download="attendance-report.csv">
+                <?php echo tfp_dashboard_icon('doc'); ?>
+                <?php esc_html_e('Export Report', 'tfp-dashboard'); ?>
+            </a>
+        </section>
+
+        <section class="tfp-attendance-submission-card tfp-attendance-upcoming-card">
+            <header class="tfp-attendance-submission-card__head">
+                <h3><?php esc_html_e('Upcoming Submissions', 'tfp-dashboard'); ?></h3>
+            </header>
+
+            <div class="tfp-dash-table-wrap tfp-attendance-submission-table-wrap">
+                <table class="tfp-dash-table tfp-attendance-submission-table">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?php esc_html_e('Course', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Section Module', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Meeting Date', 'tfp-dashboard'); ?></th>
+                            <th scope="col" class="tfp-col-action"><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($upcoming_submissions): ?>
+                            <?php foreach ($upcoming_submissions as $upcoming): ?>
+                                <?php
+                                $upcoming_cohort = null;
+                                foreach ($report_cohorts as $cohort) {
+                                    if ((string) $cohort->post_title === (string) ($upcoming['cohort'] ?? '')) {
+                                        $upcoming_cohort = $cohort;
+                                        break;
+                                    }
+                                }
+
+                                $view_url = $upcoming_cohort
+                                    ? add_query_arg([
+                                        'course_id' => (int) get_post_meta($upcoming_cohort->ID, '_related_course', true),
+                                        'cohort_id' => (int) $upcoming_cohort->ID,
+                                    ], $attendance_url)
+                                    : $attendance_url;
+                                ?>
+                                <tr>
+                                    <td class="tfp-td-bold"><?php echo esc_html($upcoming['course']); ?></td>
+                                    <td class="tfp-td-normal"><?php echo esc_html($upcoming['cohort']); ?></td>
+                                    <td class="tfp-td-normal"><?php echo esc_html($upcoming['section_module']); ?></td>
+                                    <td class="tfp-td-date"><?php echo esc_html($upcoming['meeting_date']); ?></td>
+                                    <td class="tfp-col-action">
+                                        <a href="<?php echo esc_url($view_url); ?>" class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
+                                            <?php esc_html_e('View', 'tfp-dashboard'); ?>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5">
+                                    <div class="tfp-facilitator-empty"><?php esc_html_e('No upcoming attendance submissions found.', 'tfp-dashboard'); ?></div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="tfp-attendance-submission-card tfp-attendance-logs-card">
+            <header class="tfp-attendance-submission-card__head">
+                <h3><?php esc_html_e('Submission Logs', 'tfp-dashboard'); ?></h3>
+                <a href="<?php echo esc_url($attendance_url); ?>" class="tfp-attendance-view-all">
+                    <?php esc_html_e('View All', 'tfp-dashboard'); ?>
                 </a>
             </header>
 
@@ -1235,15 +1346,15 @@ function tfp_dashboard_render_facilitator_attendance_content()
                     <thead>
                         <tr>
                             <th scope="col"><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Week: Section Module', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Section Module', 'tfp-dashboard'); ?></th>
                             <th scope="col"><?php esc_html_e('Submitted On', 'tfp-dashboard'); ?></th>
                             <th scope="col"><?php esc_html_e('Breakdown', 'tfp-dashboard'); ?></th>
                             <th scope="col" class="tfp-col-action"><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($log_rows): ?>
-                            <?php foreach ($log_rows as $row): ?>
+                        <?php if ($log_rows_page): ?>
+                            <?php foreach ($log_rows_page as $row): ?>
                                 <?php
                                 $row_view_url = add_query_arg([
                                     'course_id' => $row['cohort_id'] ? (int) get_post_meta($row['cohort_id'], '_related_course', true) : $filter_course,
@@ -1273,13 +1384,43 @@ function tfp_dashboard_render_facilitator_attendance_content()
                         <?php else: ?>
                             <tr>
                                 <td colspan="5">
-                                    <div class="tfp-facilitator-empty"><?php esc_html_e('No attendance submissions have been recorded yet.', 'tfp-dashboard'); ?></div>
+                                    <div class="tfp-facilitator-empty"><?php esc_html_e('No attendance submission logs found.', 'tfp-dashboard'); ?></div>
                                 </td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
+
+            <?php if ($log_total > $log_per_page): ?>
+                <footer class="tfp-attendance-pagination">
+                    <div class="tfp-attendance-pagination__count">
+                        <?php printf(
+                            esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'),
+                            $range_start,
+                            $range_end,
+                            $log_total
+                        ); ?>
+                    </div>
+                    <div class="tfp-attendance-pagination__controls">
+                        <?php if ($log_page > 1): ?>
+                            <a href="<?php echo esc_url($prev_log_url); ?>" class="tfp-attendance-pagination__prev" rel="prev">
+                                ‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
+                            </a>
+                        <?php else: ?>
+                            <span class="tfp-attendance-pagination__prev is-disabled">‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?></span>
+                        <?php endif; ?>
+
+                        <?php if ($log_page < $log_pages): ?>
+                            <a href="<?php echo esc_url($next_log_url); ?>" class="tfp-attendance-pagination__next" rel="next">
+                                <?php esc_html_e('Next', 'tfp-dashboard'); ?> ›
+                            </a>
+                        <?php else: ?>
+                            <span class="tfp-attendance-pagination__next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span>
+                        <?php endif; ?>
+                    </div>
+                </footer>
+            <?php endif; ?>
         </section>
     </div>
     <?php
