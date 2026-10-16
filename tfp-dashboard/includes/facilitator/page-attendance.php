@@ -849,7 +849,9 @@ function tfp_dashboard_render_facilitator_attendance_cohort_content($course, $co
             <a
                 href="<?php echo esc_url($cohort_dashboard_url); ?>"
                 class="tfp-dash-btn tfp-dash-btn--primary tfp-attendance-cohort-dashboard-button">
-                <?php echo tfp_dashboard_icon('program'); ?>
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M7 5L3 9L7 13M3 9H16C18.7614 9 21 11.2386 21 14C21 16.7614 18.7614 19 16 19H11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg></span>
                 <?php esc_html_e('Cohort Dashboard', 'tfp-dashboard'); ?>
             </a>
         </header>
@@ -907,9 +909,11 @@ function tfp_dashboard_render_facilitator_attendance_cohort_content($course, $co
 
             <a
                 href="<?php echo esc_url($join_url); ?>"
-                class="tfp-dash-btn tfp-dash-btn--primary"
+                class="tfp-dash-btn-second tfp-dash-btn--primary"
                 <?php echo $detail['meeting_url'] ? ' target="_blank" rel="noopener"' : ''; ?>>
-                <?php echo tfp_dashboard_icon('program'); ?>
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M17 20C17 18.3431 14.7614 17 12 17C9.23858 17 7 18.3431 7 20M21 17.0004C21 15.7702 19.7659 14.7129 18 14.25M3 17.0004C3 15.7702 4.2341 14.7129 6 14.25M18 10.2361C18.6137 9.68679 19 8.8885 19 8C19 6.34315 17.6569 5 16 5C15.2316 5 14.5308 5.28885 14 5.76389M6 10.2361C5.38625 9.68679 5 8.8885 5 8C5 6.34315 6.34315 5 8 5C8.76835 5 9.46924 5.28885 10 5.76389M12 14C10.3431 14 9 12.6569 9 11C9 9.34315 10.3431 8 12 8C13.6569 8 15 9.34315 15 11C15 12.6569 13.6569 14 12 14Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
                 <?php esc_html_e('Join Meeting', 'tfp-dashboard'); ?>
             </a>
         </section>
@@ -926,18 +930,26 @@ function tfp_dashboard_render_facilitator_attendance_cohort_content($course, $co
 
                 <div class="tfp-attendance-history-panel__section-actions">
                     <?php if ($week_start > 1): ?>
-                        <a href="<?php echo esc_url($prev_week_url); ?>" class="tfp-attendance-section-btn tfp-attendance-section-btn--outline">
-                            <span aria-hidden="true">‹</span>
+                        <a href="<?php echo esc_url($prev_week_url); ?>" class="tfp-attendance-section-btn tfp-dash-btn-second tfp-attendance-section-btn--outline">
+                            <span aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" fill="none">
+<path d="M15 7H1M7 1L1 7L7 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            </span>
                             <?php esc_html_e('Prev Section', 'tfp-dashboard'); ?>
                         </a>
                     <?php else: ?>
-                        <span class="tfp-attendance-section-btn tfp-attendance-section-btn--outline is-disabled">‹ <?php esc_html_e('Prev Section', 'tfp-dashboard'); ?></span>
+                        <span class="tfp-attendance-section-btn tfp-dash-btn-second tfp-attendance-section-btn--outline is-disabled">‹ <?php esc_html_e('Prev Section', 'tfp-dashboard'); ?></span>
                     <?php endif; ?>
 
                     <?php if ($week_end < $detail['total_weeks']): ?>
-                        <a href="<?php echo esc_url($next_week_url); ?>" class="tfp-attendance-section-btn tfp-attendance-section-btn--primary">
+                        <a href="<?php echo esc_url($next_week_url); ?>" class="tfp-attendance-section-btn tfp-dash-btn-second tfp-dash-btn--primary">
                             <?php esc_html_e('Next Section', 'tfp-dashboard'); ?>
-                            <span aria-hidden="true">›</span>
+                            <span aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" fill="none">
+<path d="M1 7H15M9 13L15 7L9 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            </span>
                         </a>
                     <?php else: ?>
                         <span class="tfp-attendance-section-btn tfp-attendance-section-btn--primary is-disabled"><?php esc_html_e('Next Section', 'tfp-dashboard'); ?> ›</span>

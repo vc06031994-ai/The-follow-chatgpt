@@ -448,6 +448,10 @@
     font-family: var(--tfp-dash-font) !important;
     line-height: 130% !important;
 }
+
+.tfp-dash-btn-second span{
+    display: inline-flex !important;
+}
 .tfp-dash-btn-small{
      display: inline-flex !important;
     align-items: center !important;

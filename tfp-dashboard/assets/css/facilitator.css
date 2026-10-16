@@ -2931,18 +2931,6 @@ table tbody>tr:nth-child(odd)>th {
     flex: 0 0 auto;
 }
 
-.tfp-attendance-section-btn {
-    min-height: 48px;
-    padding: 12px;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font: 500 14px/130% var(--tfp-dash-font);
-    text-decoration: none;
-    box-sizing: border-box;
-}
 
 .tfp-attendance-section-btn--outline {
     border: 1px solid #C4C4C4;
@@ -2950,11 +2938,7 @@ table tbody>tr:nth-child(odd)>th {
     color: var(--tfp-dash-text);
 }
 
-.tfp-attendance-section-btn--primary {
-    border: 1px solid var(--tfp-dash-teal);
-    background: var(--tfp-dash-teal);
-    color: #fff;
-}
+
 
 .tfp-attendance-section-btn.is-disabled {
     opacity: .45;
