@@ -971,3 +971,30 @@ line-height: 130% !important;
     background: #00666E;
     color: #FFFFFF !important;
 }
+
+/* Global dashboard page header edge alignment */
+.tfp-dash-main > .tfp-dash-pageheader,
+.tfp-dash-main .tfp-dash-pageheader:first-child {
+    width: calc(100% + 72px);
+    margin-left: -36px;
+    margin-right: -36px;
+    padding-left: 36px;
+    padding-right: 36px;
+}
+
+/* Keep the maroon divider physically connected to the sidebar divider. */
+.tfp-dash-main > .tfp-dash-pageheader,
+.tfp-dash-main .tfp-dash-pageheader:first-child {
+    border-bottom-color: var(--tfp-dash-maroon);
+}
+
+@media (max-width: 991px) {
+    .tfp-dash-main > .tfp-dash-pageheader,
+    .tfp-dash-main .tfp-dash-pageheader:first-child {
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
