@@ -846,22 +846,12 @@ function tfp_dashboard_render_facilitator_attendance_cohort_content($course, $co
                 </p>
             </div>
 
-            <div class="tfp-attendance-detail-header__actions">
-                <a
-                    href="<?php echo esc_url($cohort_dashboard_url); ?>"
-                    class="tfp-dash-btn tfp-dash-btn--secondary tfp-attendance-back-cohort">
-                    <span aria-hidden="true">←</span>
-                    <?php esc_html_e('Back to Cohort Dashboard', 'tfp-dashboard'); ?>
-                </a>
-
-                <a
-                    href="<?php echo esc_url($join_url); ?>"
-                    class="tfp-dash-btn tfp-dash-btn--primary tfp-attendance-join-button"
-                    <?php echo $detail['meeting_url'] ? ' target="_blank" rel="noopener"' : ''; ?>>
-                    <?php echo tfp_dashboard_icon('program'); ?>
-                    <?php esc_html_e('Join Meeting', 'tfp-dashboard'); ?>
-                </a>
-            </div>
+            <a
+                href="<?php echo esc_url($cohort_dashboard_url); ?>"
+                class="tfp-dash-btn tfp-dash-btn--primary tfp-attendance-cohort-dashboard-button">
+                <?php echo tfp_dashboard_icon('program'); ?>
+                <?php esc_html_e('Cohort Dashboard', 'tfp-dashboard'); ?>
+            </a>
         </header>
 
         <section class="tfp-attendance-metrics tfp-attendance-metrics--detail">
