@@ -1133,12 +1133,26 @@ function tfp_dashboard_render_facilitator_attendance_content()
             <?php echo tfp_dashboard_icon('toggle'); ?>
         </button>
 
-        <header class="tfp-attendance-course-header">
-            <h2><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h2>
-            <p><?php esc_html_e('Weekly Cohorts Attendance & Notes Reporting.', 'tfp-dashboard'); ?></p>
+        <header class="tfp-dash-pageheader tfp-attendance-main-pageheader">
+            <div class="tfp-dash-pageheader__crumb tfp-facilitator-breadcrumb tfp-attendance-main-breadcrumb">
+                <a href="<?php echo esc_url(function_exists('tfp_dashboard_get_url') ? tfp_dashboard_get_url('tfp-dashboard-facilitator-home') : $attendance_url); ?>">
+                    <?php esc_html_e('Facilitator', 'tfp-dashboard'); ?>
+                </a>
+                <span aria-hidden="true">/</span>
+                <strong><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></strong>
+            </div>
+            <button
+                type="button"
+                class="tfp-dash-pageheader__mobile-toggle"
+                data-tfp-sidebar-toggle
+                aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>">
+                <?php echo tfp_dashboard_icon('toggle'); ?>
+            </button>
+            <h1 class="tfp-dash-pageheader__title"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h1>
+            <p class="tfp-dash-pageheader__subtitle">
+                <?php esc_html_e('Weekly Cohorts Attendance & Notes Reporting.', 'tfp-dashboard'); ?>
+            </p>
         </header>
-
-        <div class="tfp-attendance-accent-divider" aria-hidden="true"></div>
 
         <section class="tfp-attendance-course-filters">
             <form method="get" class="tfp-attendance-filters-form">
