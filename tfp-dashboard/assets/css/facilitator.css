@@ -2942,6 +2942,7 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-attendance-section-btn--outline:hover {
     background: #F7F7F7;
     border-color: #B8B8B8;
+    color: var(--tfp-dash-text);
     box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
 }
 
