@@ -501,67 +501,54 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
     $lesson_id = (int) $item['lesson_id'];
     $cohort_id = (int) $item['cohort_id'];
     $student = get_userdata($student_id);
+
     $questions = function_exists('tfp_week_get_homework_questions')
         ? tfp_week_get_homework_questions($lesson_id, false)
         : [];
+
     $answers = function_exists('tfp_week_get_homework_answers')
         ? tfp_week_get_homework_answers($student_id, $lesson_id)
         : [];
-    $review = tfp_facilitator_homework_review_data($student_id, $lesson_id);
 
-    $question_index = max(0, absint($_GET['tfp_homework_question'] ?? 0));
-    if ($question_index >= count($questions)) {
-        $question_index = 0;
+    $review = tfp_facilitator_homework_review_data($student_id, $lesson_id);
+    $back_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-homework');
+    $course = get_post($item['course_id']);
+    $week_number = (int) $item['week'];
+    $question_count = count($questions);
+
+    $active_index = max(0, absint($_GET['tfp_homework_question'] ?? 0));
+    if ($active_index >= $question_count) {
+        $active_index = 0;
     }
 
-    $question = $questions[$question_index] ?? [];
-    $question_id = (string) ($question['id'] ?? '');
-    $answer = ($question_id && isset($answers[$question_id]) && is_array($answers[$question_id]))
-        ? $answers[$question_id]
-        : [];
-    $review_item = ($question_id && isset($review['questions'][$question_id]) && is_array($review['questions'][$question_id]))
-        ? $review['questions'][$question_id]
-        : [];
-
-    $user_answer = tfp_facilitator_homework_question_answer($question, $answer);
-    $correct_answer = tfp_facilitator_homework_correct_answer($question);
-    $explanation = tfp_facilitator_homework_question_explanation($question);
-    $scripture = tfp_facilitator_homework_question_scripture($question);
-
-    $review_url = tfp_facilitator_homework_build_review_url($item, $question_index);
-    $back_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-homework');
-
-    $completed_count = 0;
+    $reviewed_count = 0;
     foreach ($questions as $q) {
         $qid = (string) ($q['id'] ?? '');
         if ($qid && !empty($review['questions'][$qid]['decision'])) {
-            $completed_count++;
+            $reviewed_count++;
         }
     }
 
-    $prev_url = $question_index > 0
-        ? tfp_facilitator_homework_build_review_url($item, $question_index - 1)
-        : $review_url;
+    $last_active = get_user_meta($student_id, 'last_login', true);
+    $last_active_timestamp = is_numeric($last_active)
+        ? (int) $last_active
+        : ($last_active && strtotime((string) $last_active) ? strtotime((string) $last_active) : 0);
 
-    $next_url = $question_index < count($questions) - 1
-        ? tfp_facilitator_homework_build_review_url($item, $question_index + 1)
-        : $review_url;
-
-    $student_context = function_exists('tfp_facilitator_student_course_context')
-        ? tfp_facilitator_student_course_context($student_id)
-        : ['course_id' => $item['course_id'], 'cohort_id' => $cohort_id];
-
-    $course = get_post($item['course_id']);
-    $week_number = (int) $item['week'];
+    if (!$last_active_timestamp) {
+        $last_active_timestamp = !empty($item['submitted_at'])
+            ? (int) $item['submitted_at']
+            : current_time('timestamp');
+    }
     ?>
-    <div class="tfp-homework-review-page"
+    <div
+        class="tfp-homework-review-page"
         data-homework-review-page
         data-student-id="<?php echo esc_attr($student_id); ?>"
         data-lesson-id="<?php echo esc_attr($lesson_id); ?>"
         data-cohort-id="<?php echo esc_attr($cohort_id); ?>"
-        data-question-index="<?php echo esc_attr($question_index); ?>"
-        data-question-count="<?php echo esc_attr(count($questions)); ?>"
-        data-completed-count="<?php echo esc_attr($completed_count); ?>">
+        data-question-index="<?php echo esc_attr($active_index); ?>"
+        data-question-count="<?php echo esc_attr($question_count); ?>"
+        data-completed-count="<?php echo esc_attr($reviewed_count); ?>">
 
         <nav class="tfp-homework-detail-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
             <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
@@ -587,7 +574,12 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                         <?php
                         printf(
                             esc_html__('Last Active: %s', 'tfp-dashboard'),
-                            esc_html($student ? human_time_diff(strtotime($student->user_registered), current_time('timestamp')) . ' ' . __('ago', 'tfp-dashboard') : '—')
+                            esc_html(
+                                wp_date(
+                                    'M j, Y g:i A T',
+                                    $last_active_timestamp
+                                )
+                            )
                         );
                         ?>
                     </small>
@@ -603,162 +595,201 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
         <section class="tfp-homework-review-surface">
             <div class="tfp-homework-review-columns">
                 <div class="tfp-homework-submission-panel">
-                    <div class="tfp-homework-review-question-meta">
-                        <strong>
-                            <?php
-                            printf(
-                                esc_html__('Section Name: %s', 'tfp-dashboard'),
-                                esc_html($item['module'])
-                            );
-                            ?>
-                        </strong>
-                        <div class="tfp-homework-question-progress">
-                            <span><?php esc_html_e('Questions', 'tfp-dashboard'); ?></span>
-                            <b><?php echo esc_html($question_index + 1); ?></b>
-                            <span>/</span>
-                            <b><?php echo esc_html(count($questions)); ?></b>
-                        </div>
-                    </div>
+                    <?php foreach ($questions as $index => $question): ?>
+                        <?php
+                        $question_id = (string) ($question['id'] ?? '');
+                        $answer = ($question_id && isset($answers[$question_id]) && is_array($answers[$question_id]))
+                            ? $answers[$question_id]
+                            : [];
+                        $review_item = ($question_id && isset($review['questions'][$question_id]) && is_array($review['questions'][$question_id]))
+                            ? $review['questions'][$question_id]
+                            : [];
 
-                    <h1 class="tfp-homework-question-title">
-                        <?php printf(esc_html__('Q%d. %s', 'tfp-dashboard'), $question_index + 1, $question['prompt'] ?? ''); ?>
-                    </h1>
+                        $user_answer = tfp_facilitator_homework_question_answer($question, $answer);
+                        $correct_answer = tfp_facilitator_homework_correct_answer($question);
+                        $explanation = tfp_facilitator_homework_question_explanation($question);
+                        $scripture = tfp_facilitator_homework_question_scripture($question);
+                        $decision = (string) ($review_item['decision'] ?? '');
+                        $saved_mastery = isset($review_item['mastery']) && is_array($review_item['mastery'])
+                            ? $review_item['mastery']
+                            : [];
+                        ?>
+                        <article
+                            class="tfp-homework-question-panel<?php echo $index === $active_index ? ' is-active' : ''; ?>"
+                            data-homework-question-panel="<?php echo esc_attr($index); ?>"
+                            data-question-id="<?php echo esc_attr($question_id); ?>"
+                            <?php echo $index === $active_index ? '' : 'hidden'; ?>>
 
-                    <div class="tfp-homework-answer-section">
-                        <div class="tfp-homework-answer-heading<?php echo ($review_item['decision'] ?? '') === 'incorrect' ? ' is-incorrect' : ''; ?>">
-                            <span><?php echo ($review_item['decision'] ?? '') === 'incorrect' ? '!' : '✓'; ?></span>
-                            <?php esc_html_e('Your Answer', 'tfp-dashboard'); ?>
-                        </div>
-
-                        <div class="tfp-homework-answer-box">
-                            <?php echo nl2br(esc_html($user_answer)); ?>
-                        </div>
-                    </div>
-
-                    <div class="tfp-homework-feedback-section">
-                        <label for="tfp-homework-feedback"><?php esc_html_e('Feedback', 'tfp-dashboard'); ?></label>
-                        <textarea
-                            id="tfp-homework-feedback"
-                            name="feedback"
-                            placeholder="<?php esc_attr_e('Add Facilitator feedback here...', 'tfp-dashboard'); ?>"
-                            data-homework-feedback><?php echo esc_textarea($review_item['feedback'] ?? ''); ?></textarea>
-                    </div>
-
-                    <div class="tfp-homework-mastery-card">
-                        <div class="tfp-homework-mastery-head">
-                            <strong><?php esc_html_e('Mastery', 'tfp-dashboard'); ?></strong>
-                            <div class="tfp-homework-master-correctness">
-                                <label>
-                                    <input type="radio" name="decision" value="correct" data-homework-decision <?php checked(($review_item['decision'] ?? ''), 'correct'); ?>>
-                                    <?php esc_html_e('Correct', 'tfp-dashboard'); ?>
-                                </label>
-                                <label>
-                                    <input type="radio" name="decision" value="incorrect" data-homework-decision <?php checked(($review_item['decision'] ?? ''), 'incorrect'); ?>>
-                                    <?php esc_html_e('Incorrect', 'tfp-dashboard'); ?>
-                                </label>
+                            <div class="tfp-homework-review-question-meta">
+                                <strong>
+                                    <?php
+                                    printf(
+                                        esc_html__('Section Name: %s', 'tfp-dashboard'),
+                                        esc_html($item['module'])
+                                    );
+                                    ?>
+                                </strong>
+                                <div class="tfp-homework-question-progress">
+                                    <span><?php esc_html_e('Questions', 'tfp-dashboard'); ?></span>
+                                    <b data-homework-current-question><?php echo esc_html($index + 1); ?></b>
+                                    <span>/</span>
+                                    <b><?php echo esc_html($question_count); ?></b>
+                                </div>
                             </div>
-                        </div>
 
-                        <p><?php esc_html_e('Identify Underlining Depth/Issue:', 'tfp-dashboard'); ?></p>
-
-                        <div class="tfp-homework-mastery-options">
-                            <?php
-                            $mastery_options = [
-                                'misunderstood-concept' => __('Misunderstood Concept', 'tfp-dashboard'),
-                                'confused-needs-help' => __('Confused / Needs Help', 'tfp-dashboard'),
-                                'surface-level' => __('Surface Level', 'tfp-dashboard'),
-                                'needs-discussion' => __('Needs Discussion', 'tfp-dashboard'),
-                            ];
-                            $saved_mastery = isset($review_item['mastery']) && is_array($review_item['mastery'])
-                                ? $review_item['mastery']
-                                : [];
-                            foreach ($mastery_options as $key => $label):
+                            <h1 class="tfp-homework-question-title">
+                                <?php
+                                printf(
+                                    esc_html__('Q%d. %s', 'tfp-dashboard'),
+                                    $index + 1,
+                                    $question['prompt'] ?? ''
+                                );
                                 ?>
-                                <label class="tfp-homework-mastery-option">
-                                    <input type="checkbox" value="<?php echo esc_attr($key); ?>" data-homework-mastery <?php checked(in_array($key, $saved_mastery, true), true); ?>>
-                                    <span><?php echo esc_html($label); ?></span>
+                            </h1>
+
+                            <div class="tfp-homework-answer-section">
+                                <div class="tfp-homework-answer-heading<?php echo $decision === 'incorrect' ? ' is-incorrect' : ''; ?>">
+                                    <span><?php echo $decision === 'incorrect' ? '!' : '✓'; ?></span>
+                                    <?php esc_html_e('Your Answer', 'tfp-dashboard'); ?>
+                                </div>
+                                <div class="tfp-homework-answer-box">
+                                    <?php echo nl2br(esc_html($user_answer)); ?>
+                                </div>
+                            </div>
+
+                            <div class="tfp-homework-feedback-section">
+                                <label for="<?php echo esc_attr('tfp-homework-feedback-' . $index); ?>">
+                                    <?php esc_html_e('Feedback', 'tfp-dashboard'); ?>
                                 </label>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
+                                <textarea
+                                    id="<?php echo esc_attr('tfp-homework-feedback-' . $index); ?>"
+                                    data-homework-feedback
+                                    placeholder="<?php esc_attr_e('Add Facilitator feedback here...', 'tfp-dashboard'); ?>"><?php echo esc_textarea($review_item['feedback'] ?? ''); ?></textarea>
+                            </div>
 
-                <aside class="tfp-homework-curriculum-panel">
-                    <h3><?php esc_html_e('Curriculum Reference', 'tfp-dashboard'); ?></h3>
+                            <div class="tfp-homework-mastery-card">
+                                <div class="tfp-homework-mastery-head">
+                                    <strong><?php esc_html_e('Mastery', 'tfp-dashboard'); ?></strong>
+                                    <div class="tfp-homework-master-correctness">
+                                        <label>
+                                            <input type="radio" name="<?php echo esc_attr('decision-' . $index); ?>" value="correct" data-homework-decision <?php checked($decision, 'correct'); ?>>
+                                            <?php esc_html_e('Correct', 'tfp-dashboard'); ?>
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="<?php echo esc_attr('decision-' . $index); ?>" value="incorrect" data-homework-decision <?php checked($decision, 'incorrect'); ?>>
+                                            <?php esc_html_e('Incorrect', 'tfp-dashboard'); ?>
+                                        </label>
+                                    </div>
+                                </div>
 
-                    <h4><?php esc_html_e('Correct Answer', 'tfp-dashboard'); ?></h4>
-                    <div class="tfp-homework-reference-copy">
-                        <?php echo wp_kses_post(wpautop($correct_answer ?: __('No reference answer was provided for this question.', 'tfp-dashboard'))); ?>
-                    </div>
+                                <p><?php esc_html_e('Identify Underlining Depth/Issue:', 'tfp-dashboard'); ?></p>
 
-                    <h4><?php esc_html_e('Explanation:', 'tfp-dashboard'); ?></h4>
-                    <div class="tfp-homework-reference-copy tfp-homework-explanation-copy">
-                        <?php echo wp_kses_post(wpautop($explanation)); ?>
-                    </div>
+                                <div class="tfp-homework-mastery-options">
+                                    <?php
+                                    $mastery_options = [
+                                        'misunderstood-concept' => __('Misunderstood Concept', 'tfp-dashboard'),
+                                        'confused-needs-help' => __('Confused / Needs Help', 'tfp-dashboard'),
+                                        'surface-level' => __('Surface Level', 'tfp-dashboard'),
+                                        'needs-discussion' => __('Needs Discussion', 'tfp-dashboard'),
+                                    ];
+                                    foreach ($mastery_options as $key => $label):
+                                        ?>
+                                        <label class="tfp-homework-mastery-option">
+                                            <input
+                                                type="checkbox"
+                                                value="<?php echo esc_attr($key); ?>"
+                                                data-homework-mastery
+                                                <?php checked(in_array($key, $saved_mastery, true), true); ?>>
+                                            <span><?php echo esc_html($label); ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
 
-                    <?php if ($scripture): ?>
-                        <h4><?php esc_html_e('Scripture:', 'tfp-dashboard'); ?></h4>
-                        <div class="tfp-homework-scripture">
-                            <?php echo wp_kses_post(wpautop($scripture)); ?>
+                            <aside class="tfp-homework-curriculum-panel">
+                                <h3><?php esc_html_e('Curriculum Reference', 'tfp-dashboard'); ?></h3>
+
+                                <h4><?php esc_html_e('Correct Answer', 'tfp-dashboard'); ?></h4>
+                                <div class="tfp-homework-reference-copy">
+                                    <?php echo wp_kses_post(wpautop($correct_answer ?: __('No reference answer was provided for this question.', 'tfp-dashboard'))); ?>
+                                </div>
+
+                                <h4><?php esc_html_e('Explanation:', 'tfp-dashboard'); ?></h4>
+                                <div class="tfp-homework-reference-copy tfp-homework-explanation-copy">
+                                    <?php echo wp_kses_post(wpautop($explanation)); ?>
+                                </div>
+
+                                <?php if ($scripture): ?>
+                                    <h4><?php esc_html_e('Scripture:', 'tfp-dashboard'); ?></h4>
+                                    <div class="tfp-homework-scripture">
+                                        <?php echo wp_kses_post(wpautop($scripture)); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <small>
+                                    <?php
+                                    $reviewed_by = !empty($review_item['reviewer_id'])
+                                        ? get_userdata((int) $review_item['reviewer_id'])
+                                        : null;
+
+                                    if ($reviewed_by && !empty($review_item['updated_at'])) {
+                                        printf(
+                                            esc_html__('Saved %s by %s', 'tfp-dashboard'),
+                                            esc_html(date_i18n('m/d/Y', strtotime($review_item['updated_at']))),
+                                            esc_html($reviewed_by->display_name)
+                                        );
+                                    }
+                                    ?>
+                                </small>
+                            </aside>
+                        </article>
+                    <?php endforeach; ?>
+
+                    <?php if (!$questions): ?>
+                        <div class="tfp-facilitator-empty-state">
+                            <?php esc_html_e('No homework questions are available for this submission.', 'tfp-dashboard'); ?>
                         </div>
                     <?php endif; ?>
-
-                    <small>
-                        <?php
-                        $reviewed_by = !empty($review_item['reviewer_id'])
-                            ? get_userdata((int) $review_item['reviewer_id'])
-                            : null;
-                        if ($reviewed_by && !empty($review_item['updated_at'])) {
-                            printf(
-                                esc_html__('Saved %s by %s', 'tfp-dashboard'),
-                                esc_html(date_i18n('m/d/Y', strtotime($review_item['updated_at']))),
-                                esc_html($reviewed_by->display_name)
-                            );
-                        }
-                        ?>
-                    </small>
-                </aside>
+                </div>
             </div>
 
-            <footer class="tfp-homework-review-footer">
-                <div class="tfp-homework-review-footer__left">
-                    <?php if ($question_index > 0): ?>
-                        <a href="<?php echo esc_url($prev_url); ?>" class="tfp-homework-question-nav tfp-homework-question-nav--previous" data-homework-question-nav="previous">
+            <?php if ($questions): ?>
+                <footer class="tfp-homework-review-footer">
+                    <div class="tfp-homework-review-footer__left">
+                        <button
+                            type="button"
+                            class="tfp-homework-question-nav tfp-homework-question-nav--previous<?php echo $active_index === 0 ? ' is-disabled' : ''; ?>"
+                            data-homework-prev-question>
                             <span aria-hidden="true">←</span>
                             <?php esc_html_e('Previous Question', 'tfp-dashboard'); ?>
-                        </a>
-                    <?php else: ?>
-                        <span class="tfp-homework-question-nav is-disabled"><span aria-hidden="true">←</span> <?php esc_html_e('Previous Question', 'tfp-dashboard'); ?></span>
-                    <?php endif; ?>
-                </div>
-
-                <div class="tfp-homework-question-picker">
-                    <?php foreach ($questions as $index => $q): ?>
-                        <a
-                            href="<?php echo esc_url(tfp_facilitator_homework_build_review_url($item, $index)); ?>"
-                            class="tfp-homework-question-number<?php echo $index === $question_index ? ' is-active' : ''; ?><?php echo !empty($review['questions'][(string) ($q['id'] ?? '')]['decision']) ? ' is-reviewed' : ''; ?>"
-                            data-homework-question="<?php echo esc_attr($index); ?>">
-                            <?php echo esc_html($index + 1); ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-
-                <div class="tfp-homework-review-footer__right">
-                    <button type="button" class="tfp-dash-btn tfp-dash-btn--secondary tfp-homework-save-draft" data-homework-save-draft>
-                        <?php esc_html_e('Save Draft', 'tfp-dashboard'); ?>
-                    </button>
-
-                    <?php if ($question_index < count($questions) - 1): ?>
-                        <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-homework-submit-next" data-homework-submit-next>
-                            <?php esc_html_e('Submit & Next Question', 'tfp-dashboard'); ?>
                         </button>
-                    <?php else: ?>
-                        <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-homework-submit-next" data-homework-submit-next>
-                            <?php esc_html_e('Submit & Finish Review', 'tfp-dashboard'); ?>
+                    </div>
+
+                    <div class="tfp-homework-question-picker" aria-label="<?php esc_attr_e('Homework questions', 'tfp-dashboard'); ?>">
+                        <?php foreach ($questions as $index => $q): ?>
+                            <?php $qid = (string) ($q['id'] ?? ''); ?>
+                            <button
+                                type="button"
+                                class="tfp-homework-question-number<?php echo $index === $active_index ? ' is-active' : ''; ?><?php echo $qid && !empty($review['questions'][$qid]['decision']) ? ' is-reviewed' : ''; ?>"
+                                data-homework-question="<?php echo esc_attr($index); ?>">
+                                <?php echo esc_html($index + 1); ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="tfp-homework-review-footer__right">
+                        <button type="button" class="tfp-dash-btn tfp-dash-btn--secondary tfp-homework-save-draft" data-homework-save-draft>
+                            <?php esc_html_e('Save Draft', 'tfp-dashboard'); ?>
                         </button>
-                    <?php endif; ?>
-                </div>
-            </footer>
+
+                        <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-homework-submit-next" data-homework-submit-next>
+                            <?php echo $active_index < $question_count - 1
+                                ? esc_html__('Submit & Next Question', 'tfp-dashboard')
+                                : esc_html__('Submit & Finish Review', 'tfp-dashboard'); ?>
+                        </button>
+                    </div>
+                </footer>
+            <?php endif; ?>
         </section>
     </div>
     <?php
