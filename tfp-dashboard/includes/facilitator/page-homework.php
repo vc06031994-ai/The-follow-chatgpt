@@ -406,11 +406,13 @@ function tfp_facilitator_homework_save_question_review($student_id, $lesson_id, 
     $student_id = absint($student_id);
     $lesson_id = absint($lesson_id);
     $question_id = sanitize_key($question_id);
-    $decision = $decision === 'correct' ? 'correct' : ($decision === 'incorrect' ? 'incorrect' : '');
+    $decision = in_array($decision, ['correct', 'incorrect'], true) ? $decision : '';
     $mastery = is_array($mastery) ? array_values(array_filter(array_map('sanitize_key', $mastery))) : [];
     $feedback = sanitize_textarea_field($feedback);
 
-    if (!$student_id || !$lesson_id || !$question_id || !$decision) {
+    // Drafts may contain feedback/mastery without a final Correct/Incorrect
+    // decision. Completion is still blocked until every question is decided.
+    if (!$student_id || !$lesson_id || !$question_id) {
         return false;
     }
 
@@ -1044,6 +1046,7 @@ function tfp_facilitator_homework_ajax_save_review() {
     $mastery = isset($_POST['mastery'])
         ? (array) $_POST['mastery']
         : [];
+    $finalize = !empty($_POST['finalize']);
 
     $context = tfp_facilitator_homework_validate_context($student_id, $lesson_id, $cohort_id);
     if (!$context) {
@@ -1052,6 +1055,10 @@ function tfp_facilitator_homework_ajax_save_review() {
 
     if (!function_exists('tfp_week_get_homework_answers') || !tfp_week_get_homework_answers($student_id, $lesson_id)) {
         wp_send_json_error(['message' => __('No submitted homework answers were found.', 'tfp-dashboard')], 400);
+    }
+
+    if ($finalize && !in_array($decision, ['correct', 'incorrect'], true)) {
+        wp_send_json_error(['message' => __('Select Correct or Incorrect before submitting this question.', 'tfp-dashboard')], 400);
     }
 
     if (!tfp_facilitator_homework_save_question_review(
