@@ -341,7 +341,7 @@
             return;
         }
 
-        window.jQuery('.tfp-facilitator-filters select').each(function () {
+        window.jQuery('.tfp-facilitator-filters select, .tfp-attendance-course-filters select').each(function () {
             var $select = window.jQuery(this);
 
             if ($select.hasClass('select2-hidden-accessible')) {
@@ -351,7 +351,10 @@
             $select.selectWoo({
                 width: '100%',
                 minimumResultsForSearch: Infinity,
-                dropdownAutoWidth: false
+                dropdownAutoWidth: false,
+                escapeMarkup: function (markup) {
+                    return markup;
+                }
             });
         });
     });
