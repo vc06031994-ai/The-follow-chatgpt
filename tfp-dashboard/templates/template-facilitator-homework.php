@@ -1,21 +1,13 @@
 <?php
-/**
- * Loaded via template_include for pages using "TFP Dashboard — Facilitator Homework Review".
- */
 if (!defined('ABSPATH')) exit;
 
 tfp_dashboard_require_login();
 
+if (!function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) {
+    wp_safe_redirect(tfp_dashboard_get_url('tfp-dashboard-facilitator-home'));
+    exit;
+}
+
 tfp_dashboard_shell_start('facilitator-homework');
-?>
-<div class="tfp-facilitator-page">
-    <div class="tfp-dash-header">
-        <h1 class="tfp-dash-title"><?php esc_html_e('Homework Review', 'tfp-dashboard'); ?></h1>
-    </div>
-    <div class="tfp-dash-card" style="padding: 32px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 24px;">
-        <h2 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0 0 12px 0;"><?php esc_html_e('Homework Submissions', 'tfp-dashboard'); ?></h2>
-        <p style="color: #64748b; font-size: 15px; margin: 0; line-height: 1.6;"><?php esc_html_e('Review, comment, and approve student homework submissions across all active modules.', 'tfp-dashboard'); ?></p>
-    </div>
-</div>
-<?php
+tfp_dashboard_render_facilitator_homework_content();
 tfp_dashboard_shell_end();
