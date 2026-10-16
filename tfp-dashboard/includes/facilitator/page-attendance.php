@@ -226,6 +226,7 @@ function tfp_facilitator_attendance_report($cohorts)
                         'section_module'  => $week_title,
                         'lesson_id'       => $lesson_id,
                         'student_ids'     => [],
+                        'student_total'   => 0,
                         'present'         => 0,
                         'excused'         => 0,
                         'unexcused'       => 0,
@@ -234,6 +235,10 @@ function tfp_facilitator_attendance_report($cohorts)
                 }
 
                 $logs[$group_key]['student_ids'][$student_id] = true;
+                $logs[$group_key]['student_total'] = max(
+                    (int) $logs[$group_key]['student_total'],
+                    count((array) $student_ids)
+                );
 
                 if ($status === 'P') {
                     $logs[$group_key]['present']++;
@@ -544,239 +549,708 @@ add_action('init', function () {
     exit;
 });
 
+function tfp_facilitator_attendance_status_badge($status)
+{
+    $status = strtoupper((string) $status);
+
+    $map = [
+        'P'  => ['label' => 'PRE', 'class' => 'present'],
+        'EA' => ['label' => 'EA',  'class' => 'excused'],
+        'UA' => ['label' => 'UEA', 'class' => 'unexcused'],
+        ''   => ['label' => '—',   'class' => 'na'],
+    ];
+
+    $item = $map[$status] ?? $map[''];
+
+    return sprintf(
+        '<span class="tfp-attendance-status-badge tfp-attendance-status-badge--%1$s">%2$s</span>',
+        esc_attr($item['class']),
+        esc_html($item['label'])
+    );
+}
+
+function tfp_facilitator_attendance_cohort_week_rate($weeks, $week_index, $student_ids)
+{
+    if (!$weeks || !$student_ids || !isset($weeks[$week_index])) {
+        return null;
+    }
+
+    $present = 0;
+    $recorded = 0;
+    $lesson_id = (int) $weeks[$week_index]->ID;
+
+    foreach ($student_ids as $student_id) {
+        $record = tfp_facilitator_attendance_get_record($student_id, $lesson_id);
+        $status = strtoupper((string) ($record['status'] ?? ''));
+
+        if (!in_array($status, ['P', 'EA', 'UA'], true)) {
+            continue;
+        }
+
+        $recorded++;
+        if ($status === 'P') {
+            $present++;
+        }
+    }
+
+    return $recorded > 0 ? round(($present / $recorded) * 100) : null;
+}
+
+function tfp_facilitator_attendance_cohort_detail_report($cohort, $course_id)
+{
+    $cohort_id = (int) $cohort->ID;
+    $course_id = (int) $course_id;
+
+    $weeks = tfp_facilitator_attendance_get_weeks($course_id);
+    $student_ids = function_exists('tfp_facilitator_cohort_students')
+        ? array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id))
+        : [];
+
+    usort($student_ids, static function ($a, $b) {
+        $user_a = get_userdata($a);
+        $user_b = get_userdata($b);
+        return strcasecmp(
+            $user_a ? $user_a->display_name : '',
+            $user_b ? $user_b->display_name : ''
+        );
+    });
+
+    $present = 0;
+    $recorded = 0;
+    $student_stats = [];
+
+    foreach ($student_ids as $student_id) {
+        $student_stats[$student_id] = [
+            'present' => 0,
+            'recorded' => 0,
+            'ua' => 0,
+        ];
+
+        foreach ($weeks as $week) {
+            $record = tfp_facilitator_attendance_get_record($student_id, $week->ID);
+            $status = strtoupper((string) ($record['status'] ?? ''));
+
+            if (!in_array($status, ['P', 'EA', 'UA'], true)) {
+                continue;
+            }
+
+            $recorded++;
+            $student_stats[$student_id]['recorded']++;
+
+            if ($status === 'P') {
+                $present++;
+                $student_stats[$student_id]['present']++;
+            }
+
+            if ($status === 'UA') {
+                $student_stats[$student_id]['ua']++;
+            }
+        }
+    }
+
+    $stalled = 0;
+    $absence_limit = 0;
+
+    foreach ($student_stats as $stats) {
+        if ($stats['recorded'] >= 2) {
+            $rate = ($stats['present'] / $stats['recorded']) * 100;
+            if ($stats['present'] === 0 || $rate < 70) {
+                $stalled++;
+            }
+        }
+
+        if ($stats['ua'] >= 2) {
+            $absence_limit++;
+        }
+    }
+
+    $current_week = $course_id && function_exists('tfp_facilitator_cohort_week')
+        ? max(1, (int) tfp_facilitator_cohort_week($cohort_id, $course_id))
+        : 1;
+
+    $total_weeks = count($weeks);
+    $current_index = $total_weeks > 0 ? min($total_weeks - 1, $current_week - 1) : 0;
+
+    $current_rate = tfp_facilitator_attendance_cohort_week_rate(
+        $weeks,
+        $current_index,
+        $student_ids
+    );
+
+    $previous_rate = $current_index > 0
+        ? tfp_facilitator_attendance_cohort_week_rate($weeks, $current_index - 1, $student_ids)
+        : null;
+
+    $attendance_average = $recorded > 0 ? round(($present / $recorded) * 100) : 0;
+    $delta = ($current_rate !== null && $previous_rate !== null)
+        ? ($current_rate - $previous_rate)
+        : null;
+
+    if ($attendance_average >= 90) {
+        $health_label = __('Healthy', 'tfp-dashboard');
+    } elseif ($attendance_average >= 70) {
+        $health_label = __('Watch', 'tfp-dashboard');
+    } elseif ($recorded > 0) {
+        $health_label = __('Needs Attention', 'tfp-dashboard');
+    } else {
+        $health_label = __('No Data Yet', 'tfp-dashboard');
+    }
+
+    $module = !empty($weeks[$current_index])
+        ? $weeks[$current_index]->post_title
+        : __('Not started', 'tfp-dashboard');
+
+    $facilitator_id = (int) get_post_meta($cohort_id, '_facilitator_user_id', true);
+    $facilitator = $facilitator_id ? get_userdata($facilitator_id) : null;
+    $meeting_url = get_post_meta($cohort_id, '_meeting_url', true);
+    $schedule = get_post_meta($cohort_id, '_schedule_text', true);
+    $start_date = get_post_meta($cohort_id, '_start_date', true);
+
+    $next_meeting_timestamp = ($start_date && strtotime($start_date))
+        ? strtotime($start_date) + ($current_index * WEEK_IN_SECONDS)
+        : 0;
+
+    return [
+        'weeks' => $weeks,
+        'student_ids' => $student_ids,
+        'attendance_average' => $attendance_average,
+        'health_label' => $health_label,
+        'delta' => $delta,
+        'stalled' => $stalled,
+        'absence_limit' => $absence_limit,
+        'current_week' => $current_week,
+        'total_weeks' => $total_weeks,
+        'current_index' => $current_index,
+        'module' => $module,
+        'facilitator' => $facilitator ? $facilitator->display_name : '',
+        'meeting_url' => $meeting_url,
+        'schedule' => $schedule,
+        'next_meeting_timestamp' => $next_meeting_timestamp,
+    ];
+}
+
+function tfp_dashboard_render_facilitator_attendance_cohort_content($course, $cohort, $back_url)
+{
+    $course_id = (int) $course->ID;
+    $cohort_id = (int) $cohort->ID;
+    $detail = tfp_facilitator_attendance_cohort_detail_report($cohort, $course_id);
+
+    $total_students = count($detail['student_ids']);
+    $week_count = $detail['total_weeks'];
+
+    $requested_start = absint($_GET['tfp_attendance_week_start'] ?? 0);
+
+    if ($week_count > 7) {
+        $default_start = max(1, min($week_count - 6, $detail['current_week'] - 1));
+        $week_start = $requested_start > 0 ? $requested_start : $default_start;
+        $week_start = max(1, min($week_start, $week_count - 6));
+    } else {
+        $week_start = 1;
+    }
+
+    $visible_weeks = $week_count
+        ? array_slice($detail['weeks'], $week_start - 1, 7)
+        : [];
+
+    $week_end = $visible_weeks
+        ? $week_start + count($visible_weeks) - 1
+        : $week_start;
+
+    $student_per_page = 17;
+    $student_page = max(1, absint($_GET['tfp_attendance_student_page'] ?? 1));
+    $student_total = count($detail['student_ids']);
+    $student_pages = max(1, (int) ceil($student_total / $student_per_page));
+    $student_page = min($student_page, $student_pages);
+
+    $visible_students = array_slice(
+        $detail['student_ids'],
+        ($student_page - 1) * $student_per_page,
+        $student_per_page
+    );
+
+    $prev_week_url = add_query_arg([
+        'course_id' => $course_id,
+        'cohort_id' => $cohort_id,
+        'tfp_attendance_week_start' => max(1, $week_start - 7),
+        'tfp_attendance_student_page' => $student_page,
+    ], $back_url);
+
+    $next_week_url = add_query_arg([
+        'course_id' => $course_id,
+        'cohort_id' => $cohort_id,
+        'tfp_attendance_week_start' => min(max(1, $week_count - 6), $week_start + 7),
+        'tfp_attendance_student_page' => $student_page,
+    ], $back_url);
+
+    $prev_student_url = add_query_arg([
+        'course_id' => $course_id,
+        'cohort_id' => $cohort_id,
+        'tfp_attendance_week_start' => $week_start,
+        'tfp_attendance_student_page' => max(1, $student_page - 1),
+    ], $back_url);
+
+    $next_student_url = add_query_arg([
+        'course_id' => $course_id,
+        'cohort_id' => $cohort_id,
+        'tfp_attendance_week_start' => $week_start,
+        'tfp_attendance_student_page' => min($student_pages, $student_page + 1),
+    ], $back_url);
+
+    $student_start = $student_total ? (($student_page - 1) * $student_per_page) + 1 : 0;
+    $student_end = min($student_page * $student_per_page, $student_total);
+
+    $meeting_date = $detail['next_meeting_timestamp']
+        ? wp_date('l, M j', $detail['next_meeting_timestamp'])
+        : __('Next Upcoming Meeting', 'tfp-dashboard');
+
+    $meeting_label = $meeting_date;
+    if ($detail['schedule']) {
+        $meeting_label .= ' • ' . $detail['schedule'];
+    }
+
+    $meetings_url = function_exists('tfp_dashboard_get_url')
+        ? tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings')
+        : $back_url;
+
+    $join_url = $detail['meeting_url'] ?: $meetings_url;
+    ?>
+    <div class="tfp-attendance-page-wrap tfp-attendance-page-wrap--cohort">
+        <button type="button" class="tfp-attendance-mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open dashboard navigation', 'tfp-dashboard'); ?>">
+            <?php echo tfp_dashboard_icon('toggle'); ?>
+        </button>
+
+        <nav class="tfp-attendance-detail-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
+            <a href="<?php echo esc_url($facilitator_home_url ?? $back_url); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
+            <span>/</span>
+            <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
+            <span>/</span>
+            <span><?php echo esc_html($course->post_title); ?></span>
+            <span>/</span>
+            <strong><?php echo esc_html($cohort->post_title); ?></strong>
+        </nav>
+
+        <header class="tfp-attendance-detail-header">
+            <div>
+                <h2><?php echo esc_html($cohort->post_title); ?></h2>
+                <p>
+                    <?php printf(
+                        esc_html__('Current Module: %1$s • %2$s • %3$s', 'tfp-dashboard'),
+                        $detail['module'],
+                        $detail['schedule'] ?: __('Schedule not set', 'tfp-dashboard'),
+                        $detail['facilitator'] ?: __('Facilitator not assigned', 'tfp-dashboard')
+                    ); ?>
+                </p>
+            </div>
+
+            <a
+                href="<?php echo esc_url($join_url); ?>"
+                class="tfp-dash-btn tfp-dash-btn--primary tfp-attendance-join-button"
+                <?php echo $detail['meeting_url'] ? ' target="_blank" rel="noopener"' : ''; ?>>
+                <?php echo tfp_dashboard_icon('program'); ?>
+                <?php esc_html_e('Join Meeting', 'tfp-dashboard'); ?>
+            </a>
+        </header>
+
+        <section class="tfp-attendance-metrics tfp-attendance-metrics--detail">
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
+                <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Cohort Attendance', 'tfp-dashboard'); ?></span>
+                <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($detail['attendance_average']); ?>%</strong>
+                <small class="tfp-attendance-metric-card__sub">
+                    <?php echo esc_html($detail['health_label']); ?>
+                    <?php if ($detail['delta'] !== null): ?>
+                        • <?php echo esc_html(($detail['delta'] >= 0 ? '+' : '') . $detail['delta']); ?>% <?php esc_html_e('from last wk', 'tfp-dashboard'); ?>
+                    <?php endif; ?>
+                </small>
+            </div>
+
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
+                <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Total Disciples', 'tfp-dashboard'); ?></span>
+                <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($total_students); ?></strong>
+                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Active in Program Track', 'tfp-dashboard'); ?></small>
+            </div>
+
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
+                <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Pastoral Flags (Stalled • Blocked)', 'tfp-dashboard'); ?></span>
+                <strong class="tfp-attendance-metric-card__value tfp-attendance-metric-card__value--red"><?php echo esc_html($detail['stalled'] + $detail['absence_limit']); ?></strong>
+                <small class="tfp-attendance-metric-card__sub">
+                    <?php echo esc_html($detail['stalled']); ?> <?php esc_html_e('Stalled', 'tfp-dashboard'); ?>
+                    • <span class="tfp-red-text"><?php echo esc_html($detail['absence_limit']); ?> <?php esc_html_e('Absence Limit', 'tfp-dashboard'); ?></span>
+                </small>
+            </div>
+
+            <div class="tfp-attendance-metric-card tfp-facilitator-metric">
+                <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Journey Progress', 'tfp-dashboard'); ?></span>
+                <strong class="tfp-attendance-metric-card__value"><?php echo esc_html('Wk ' . $detail['current_week'] . '/' . max(1, $detail['total_weeks'])); ?></strong>
+                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Current in Journey', 'tfp-dashboard'); ?></small>
+            </div>
+        </section>
+
+        <section class="tfp-attendance-next-meeting">
+            <div class="tfp-attendance-next-meeting__date" aria-hidden="true">
+                <?php if ($detail['next_meeting_timestamp']): ?>
+                    <strong><?php echo esc_html(strtoupper(wp_date('M', $detail['next_meeting_timestamp']))); ?></strong>
+                    <span><?php echo esc_html(wp_date('j', $detail['next_meeting_timestamp'])); ?></span>
+                <?php else: ?>
+                    <strong>—</strong>
+                    <span>—</span>
+                <?php endif; ?>
+            </div>
+
+            <div class="tfp-attendance-next-meeting__info">
+                <span><?php esc_html_e('Next Upcoming Meeting', 'tfp-dashboard'); ?></span>
+                <strong><?php echo esc_html('Purpose — Week ' . $detail['current_week']); ?></strong>
+                <small><?php echo esc_html($meeting_label); ?></small>
+            </div>
+
+            <a
+                href="<?php echo esc_url($join_url); ?>"
+                class="tfp-dash-btn tfp-dash-btn--primary"
+                <?php echo $detail['meeting_url'] ? ' target="_blank" rel="noopener"' : ''; ?>>
+                <?php echo tfp_dashboard_icon('program'); ?>
+                <?php esc_html_e('Join Meeting', 'tfp-dashboard'); ?>
+            </a>
+        </section>
+
+        <section class="tfp-attendance-history-panel">
+            <header class="tfp-attendance-history-panel__head">
+                <h3>
+                    <?php printf(
+                        esc_html__('Attendance History: Weeks %1$d–%2$d', 'tfp-dashboard'),
+                        $week_start,
+                        $week_end
+                    ); ?>
+                </h3>
+
+                <div class="tfp-attendance-history-panel__section-actions">
+                    <?php if ($week_start > 1): ?>
+                        <a href="<?php echo esc_url($prev_week_url); ?>" class="tfp-attendance-section-btn tfp-attendance-section-btn--outline">
+                            <span aria-hidden="true">‹</span>
+                            <?php esc_html_e('Prev Section', 'tfp-dashboard'); ?>
+                        </a>
+                    <?php else: ?>
+                        <span class="tfp-attendance-section-btn tfp-attendance-section-btn--outline is-disabled">‹ <?php esc_html_e('Prev Section', 'tfp-dashboard'); ?></span>
+                    <?php endif; ?>
+
+                    <?php if ($week_end < $detail['total_weeks']): ?>
+                        <a href="<?php echo esc_url($next_week_url); ?>" class="tfp-attendance-section-btn tfp-attendance-section-btn--primary">
+                            <?php esc_html_e('Next Section', 'tfp-dashboard'); ?>
+                            <span aria-hidden="true">›</span>
+                        </a>
+                    <?php else: ?>
+                        <span class="tfp-attendance-section-btn tfp-attendance-section-btn--primary is-disabled"><?php esc_html_e('Next Section', 'tfp-dashboard'); ?> ›</span>
+                    <?php endif; ?>
+                </div>
+            </header>
+
+            <div class="tfp-dash-table-wrap tfp-attendance-history-table-wrap">
+                <table class="tfp-dash-table tfp-attendance-history-table">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?php esc_html_e('Disciple', 'tfp-dashboard'); ?></th>
+                            <?php foreach ($visible_weeks as $week): ?>
+                                <?php
+                                $week_index = array_search(
+                                    (int) $week->ID,
+                                    wp_list_pluck($detail['weeks'], 'ID'),
+                                    true
+                                );
+                                $week_number = $week_index === false ? '' : ((int) $week_index + 1);
+                                ?>
+                                <th scope="col"><?php echo esc_html('WK ' . $week_number); ?></th>
+                            <?php endforeach; ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($visible_students): ?>
+                            <?php foreach ($visible_students as $student_id): ?>
+                                <?php $student = get_userdata($student_id); ?>
+                                <tr>
+                                    <td class="tfp-attendance-history-student">
+                                        <?php echo esc_html($student ? $student->display_name : __('Unknown Student', 'tfp-dashboard')); ?>
+                                    </td>
+                                    <?php foreach ($visible_weeks as $week): ?>
+                                        <?php
+                                        $record = tfp_facilitator_attendance_get_record($student_id, $week->ID);
+                                        $status = strtoupper((string) ($record['status'] ?? ''));
+                                        ?>
+                                        <td class="tfp-attendance-history-status">
+                                            <?php echo tfp_facilitator_attendance_status_badge($status); ?>
+                                        </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="<?php echo esc_attr(1 + count($visible_weeks)); ?>">
+                                    <div class="tfp-facilitator-empty"><?php esc_html_e('No disciples are assigned to this cohort.', 'tfp-dashboard'); ?></div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <footer class="tfp-attendance-student-pagination">
+                <span>
+                    <?php printf(
+                        esc_html__('%1$d - %2$d of %3$d Disciples', 'tfp-dashboard'),
+                        $student_start,
+                        $student_end,
+                        $student_total
+                    ); ?>
+                </span>
+
+                <div class="tfp-attendance-student-pagination__actions">
+                    <?php if ($student_page > 1): ?>
+                        <a href="<?php echo esc_url($prev_student_url); ?>" class="tfp-attendance-student-pagination__prev">‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?></a>
+                    <?php else: ?>
+                        <span class="tfp-attendance-student-pagination__prev is-disabled">‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?></span>
+                    <?php endif; ?>
+
+                    <?php if ($student_page < $student_pages): ?>
+                        <a href="<?php echo esc_url($next_student_url); ?>" class="tfp-attendance-student-pagination__next"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</a>
+                    <?php else: ?>
+                        <span class="tfp-attendance-student-pagination__next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span>
+                    <?php endif; ?>
+                </div>
+            </footer>
+        </section>
+    </div>
+    <?php
+}
+
 function tfp_dashboard_render_facilitator_attendance_content()
 {
     $current_user_id = get_current_user_id();
-    $facilitator_home_url = function_exists('tfp_dashboard_get_url')
-        ? tfp_dashboard_get_url('tfp-dashboard-facilitator-home')
-        : home_url('/facilitator-console/');
-    $roster_url = function_exists('tfp_dashboard_get_url')
-        ? tfp_dashboard_get_url('tfp-dashboard-facilitator-roster')
-        : home_url('/facilitator-roster/');
 
-    // Filter values
+    $attendance_url = function_exists('tfp_dashboard_get_url')
+        ? tfp_dashboard_get_url('tfp-dashboard-facilitator-attendance')
+        : get_permalink();
+
     $filter_course = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
     $filter_cohort = isset($_GET['cohort_id']) ? absint($_GET['cohort_id']) : 0;
 
     $all_courses = tfp_facilitator_attendance_get_courses($current_user_id);
-
     $all_cohorts = tfp_facilitator_attendance_get_cohorts($current_user_id, $filter_course);
+
     if ($filter_cohort) {
-        $all_cohorts = array_values(array_filter($all_cohorts, static function ($cohort) use ($filter_cohort) {
-            return (int) $cohort->ID === $filter_cohort;
-        }));
+        $selected_cohort = null;
+
+        foreach ($all_cohorts as $cohort) {
+            if ((int) $cohort->ID === $filter_cohort) {
+                $selected_cohort = $cohort;
+                break;
+            }
+        }
+
+        if (!$selected_cohort) {
+            return;
+        }
+
+        $selected_course_id = (int) get_post_meta($selected_cohort->ID, '_related_course', true);
+        $selected_course = $selected_course_id ? get_post($selected_course_id) : null;
+
+        if (!$selected_course instanceof WP_Post) {
+            return;
+        }
+
+        tfp_dashboard_render_facilitator_attendance_cohort_content(
+            $selected_course,
+            $selected_cohort,
+            $attendance_url
+        );
+
+        return;
     }
 
-    $report = tfp_facilitator_attendance_report($all_cohorts);
-    $active_cohorts_count = count($all_cohorts);
-    $total_disciples = (int) $report['students'];
+    $report_cohorts = $filter_course
+        ? $all_cohorts
+        : tfp_facilitator_attendance_get_cohorts($current_user_id, 0);
+
+    $report = tfp_facilitator_attendance_report($report_cohorts);
+
     $avg_attendance = (int) $report['avg_attendance'];
+    $total_disciples = (int) $report['students'];
     $stalled_count = (int) $report['stalled'];
     $blocked_count = (int) $report['blocked'];
-    $total_flags = $stalled_count + $blocked_count;
-    $cohort_health = tfp_facilitator_attendance_cohort_health($all_cohorts, $report);
+    $active_cohorts_count = count($report_cohorts);
 
     $export_url = add_query_arg([
         'tfp_export' => 'attendance_csv',
         'course_id'  => $filter_course,
-        'cohort_id'  => $filter_cohort,
-    ]);
+        'cohort_id'  => 0,
+    ], $attendance_url);
 
-    $upcoming_submissions = tfp_facilitator_attendance_upcoming_submissions($all_cohorts, $report);
+    $log_rows = [];
 
-    foreach ($upcoming_submissions as &$upcoming) {
-        $params = ['cohort_id' => 0];
-        foreach ($all_cohorts as $cohort) {
-            if ((string) $cohort->post_title === (string) $upcoming['cohort']) {
-                $params['cohort_id'] = (int) $cohort->ID;
-                break;
-            }
-        }
-        $upcoming['action_url'] = add_query_arg($params, $roster_url);
-    }
-    unset($upcoming);
+    foreach ((array) ($report['logs'] ?? []) as $log) {
+        $student_total = (int) ($log['student_total'] ?? 0);
+        $submitted_count = count((array) ($log['student_ids'] ?? []));
+        $complete = $student_total > 0 && $submitted_count >= $student_total;
 
-    $submission_logs = [];
-    foreach ($report['logs'] as $log) {
-        $submission_logs[] = [
-            'cohort_name'    => $log['cohort_name'],
-            'section_module' => $log['section_module'],
-            'submitted_on'   => $log['meeting_date'],
-            'breakdown'      => tfp_facilitator_attendance_format_breakdown($log),
-            'action_url'     => add_query_arg(['cohort_id' => $log['cohort_id']], $roster_url),
+        $course_weeks = $report['weeks_by_cohort'][(int) $log['cohort_id']] ?? [];
+        $week_index = array_search(
+            (int) $log['lesson_id'],
+            wp_list_pluck($course_weeks, 'ID'),
+            true
+        );
+        $week_number = $week_index === false ? 0 : ((int) $week_index + 1);
+
+        $log_rows[] = [
+            'cohort_name' => $log['cohort_name'],
+            'cohort_id' => (int) $log['cohort_id'],
+            'section_module' => $week_number
+                ? 'Week ' . $week_number . ': ' . $log['section_module']
+                : $log['section_module'],
+            'status' => $complete ? 'completed' : 'in_progress',
+            'submitted_on' => $complete && !empty($log['latest_timestamp'])
+                ? wp_date('D, M j, Y g:i A T', $log['latest_timestamp'])
+                : '',
+            'breakdown' => $complete
+                ? tfp_facilitator_attendance_format_breakdown($log)
+                : '—',
         ];
     }
 
-    $attendance_per_page = 8;
-    $attendance_page = max(1, absint($_GET['tfp_attendance_page'] ?? 1));
-    $attendance_total = count($submission_logs);
-    $attendance_pages = max(1, (int) ceil($attendance_total / $attendance_per_page));
-    $attendance_page = min($attendance_page, $attendance_pages);
-    $submission_logs_page = array_slice(
-        $submission_logs,
-        ($attendance_page - 1) * $attendance_per_page,
-        $attendance_per_page
-    );
+    usort($log_rows, static function ($a, $b) {
+        return strcmp((string) $b['submitted_on'], (string) $a['submitted_on'])
+            ?: strcmp((string) $b['cohort_name'], (string) $a['cohort_name']);
+    });
+
+    $log_rows = array_slice($log_rows, 0, 4);
+
+    $selected_course = $filter_course ? get_post($filter_course) : null;
+    $course_short = __('All Courses', 'tfp-dashboard');
+
+    if ($selected_course instanceof WP_Post) {
+        $course_short = preg_match('/(\d+)\s*[-–]\s*Week/i', $selected_course->post_title, $matches)
+            ? $matches[1] . '-Week'
+            : $selected_course->post_title;
+    }
     ?>
     <div class="tfp-attendance-page-wrap">
-        <button
-            type="button"
-            class="tfp-attendance-mobile-toggle"
-            data-tfp-sidebar-toggle
-            aria-label="<?php esc_attr_e('Open dashboard navigation', 'tfp-dashboard'); ?>">
+        <button type="button" class="tfp-attendance-mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open dashboard navigation', 'tfp-dashboard'); ?>">
             <?php echo tfp_dashboard_icon('toggle'); ?>
         </button>
 
-        <!-- Top Breadcrumbs -->
-        <nav class="tfp-attendance-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
-            <a href="<?php echo esc_url($facilitator_home_url); ?>" class="tfp-attendance-breadcrumb__parent">
-                <?php esc_html_e('Facilitator', 'tfp-dashboard'); ?>
-            </a>
-            <span class="tfp-attendance-breadcrumb__sep" aria-hidden="true">/</span>
-            <span class="tfp-attendance-breadcrumb__current">
-                <?php esc_html_e('Attendance', 'tfp-dashboard'); ?>
-            </span>
-        </nav>
-
-        <!-- Page Header -->
-        <header class="tfp-attendance-header">
-            <h2 class="tfp-attendance-header__title"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h2>
-            <p class="tfp-attendance-header__subtitle">
-                <?php esc_html_e('Monitor engagement and consistency across all active cohorts.', 'tfp-dashboard'); ?>
-            </p>
+        <header class="tfp-attendance-course-header">
+            <h2><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h2>
+            <p><?php esc_html_e('Weekly Cohorts Attendance & Notes Reporting.', 'tfp-dashboard'); ?></p>
         </header>
 
-        <!-- Thin Accent Divider Line -->
         <div class="tfp-attendance-accent-divider" aria-hidden="true"></div>
 
-        <!-- Filters Bar (All Courses / All Cohorts) -->
-        <section class="tfp-attendance-filters-bar" aria-label="<?php esc_attr_e('Attendance filters', 'tfp-dashboard'); ?>">
-            <form method="get" class="tfp-attendance-filters-form" id="tfpAttendanceFilterForm">
+        <section class="tfp-attendance-course-filters">
+            <form method="get" class="tfp-attendance-filters-form">
                 <div class="tfp-attendance-filter-item">
-                    <label for="tfp_filter_course" class="screen-reader-text"><?php esc_html_e('Filter by Course', 'tfp-dashboard'); ?></label>
-                    <select name="course_id" id="tfp_filter_course" class="tfp-attendance-select" onchange="document.getElementById('tfpAttendanceFilterForm').submit();">
+                    <label for="tfp_filter_course" class="screen-reader-text"><?php esc_html_e('Select course', 'tfp-dashboard'); ?></label>
+                    <select name="course_id" id="tfp_filter_course" class="tfp-attendance-select" aria-label="<?php esc_attr_e('Select course', 'tfp-dashboard'); ?>" onchange="this.form.submit();">
                         <option value="0"><?php esc_html_e('All Courses', 'tfp-dashboard'); ?></option>
-                        <?php foreach ($all_courses as $c) : ?>
-                            <option value="<?php echo esc_attr($c->ID); ?>" <?php selected($filter_course, $c->ID); ?>>
-                                <?php echo esc_html($c->post_title); ?>
+                        <?php foreach ($all_courses as $course): ?>
+                            <option value="<?php echo esc_attr($course->ID); ?>" <?php selected($filter_course, $course->ID); ?>>
+                                <?php echo esc_html($course->post_title); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <span class="tfp-select-chevron" aria-hidden="true">
-                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="#00666E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </span>
+                    <span class="tfp-select-chevron" aria-hidden="true">⌄</span>
                 </div>
 
                 <div class="tfp-attendance-filter-item">
-                    <label for="tfp_filter_cohort" class="screen-reader-text"><?php esc_html_e('Filter by Cohort', 'tfp-dashboard'); ?></label>
-                    <select name="cohort_id" id="tfp_filter_cohort" class="tfp-attendance-select" onchange="document.getElementById('tfpAttendanceFilterForm').submit();">
+                    <label for="tfp_filter_cohort" class="screen-reader-text"><?php esc_html_e('Select cohort', 'tfp-dashboard'); ?></label>
+                    <select name="cohort_id" id="tfp_filter_cohort" class="tfp-attendance-select" aria-label="<?php esc_attr_e('Select cohort', 'tfp-dashboard'); ?>" onchange="this.form.submit();">
                         <option value="0"><?php esc_html_e('All Cohorts', 'tfp-dashboard'); ?></option>
-                        <?php foreach ($all_cohorts as $ch) : ?>
-                            <option value="<?php echo esc_attr($ch->ID); ?>" <?php selected($filter_cohort, $ch->ID); ?>>
-                                <?php echo esc_html($ch->post_title); ?>
+                        <?php foreach ($all_cohorts as $cohort): ?>
+                            <option value="<?php echo esc_attr($cohort->ID); ?>" <?php selected($filter_cohort, $cohort->ID); ?>>
+                                <?php echo esc_html($cohort->post_title); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <span class="tfp-select-chevron" aria-hidden="true">
-                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="#00666E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </span>
+                    <span class="tfp-select-chevron" aria-hidden="true">⌄</span>
                 </div>
             </form>
         </section>
 
-        <!-- KPI Metrics (4 Cards) -->
-        <section class="tfp-attendance-metrics" aria-label="<?php esc_attr_e('Attendance metrics', 'tfp-dashboard'); ?>">
-            <!-- Card 1 -->
+        <section class="tfp-attendance-metrics">
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Avg Attendance', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($avg_attendance); ?>%</strong>
-                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('All Courses Avg Attendance', 'tfp-dashboard'); ?></small>
+                <small class="tfp-attendance-metric-card__sub"><?php echo esc_html($filter_course ? $course_short . ' Avg Attendance' : 'All Courses Avg Attendance'); ?></small>
             </div>
 
-            <!-- Card 2 -->
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Total Disciples', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($total_disciples); ?></strong>
-                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Across All Course', 'tfp-dashboard'); ?></small>
+                <small class="tfp-attendance-metric-card__sub"><?php echo esc_html($filter_course ? 'Across Active ' . $course_short . ' Track' : 'Across Active Courses'); ?></small>
             </div>
 
-            <!-- Card 3 -->
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Pastoral Flags (Stalled • Blocked)', 'tfp-dashboard'); ?></span>
-                <strong class="tfp-attendance-metric-card__value tfp-attendance-metric-card__value--red"><?php echo esc_html($total_flags); ?></strong>
+                <strong class="tfp-attendance-metric-card__value tfp-attendance-metric-card__value--red"><?php echo esc_html($stalled_count + $blocked_count); ?></strong>
                 <small class="tfp-attendance-metric-card__sub">
-                    <?php printf(esc_html__('%d Stalled • ', 'tfp-dashboard'), $stalled_count); ?>
-                    <span class="tfp-red-text"><?php printf(esc_html__('%d Blocked', 'tfp-dashboard'), $blocked_count); ?></span>
+                    <?php echo esc_html($stalled_count); ?> <?php esc_html_e('Stalled', 'tfp-dashboard'); ?>
+                    • <span class="tfp-red-text"><?php echo esc_html($blocked_count); ?> <?php esc_html_e('Blocked', 'tfp-dashboard'); ?></span>
                 </small>
             </div>
 
-            <!-- Card 4 -->
             <div class="tfp-attendance-metric-card tfp-facilitator-metric">
                 <span class="tfp-attendance-metric-card__label"><?php esc_html_e('Active Cohorts', 'tfp-dashboard'); ?></span>
                 <strong class="tfp-attendance-metric-card__value"><?php echo esc_html($active_cohorts_count); ?></strong>
-                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Currently Assigned', 'tfp-dashboard'); ?></small>
+                <small class="tfp-attendance-metric-card__sub"><?php esc_html_e('Current in Journey', 'tfp-dashboard'); ?></small>
             </div>
         </section>
 
-        <!-- All Active Cohorts / Attendance Health -->
-        <section class="tfp-attendance-card-panel tfp-attendance-health-panel">
-            <div class="tfp-attendance-panel-head-row tfp-attendance-health-head">
-                <div>
-                    <h5 class="tfp-attendance-panel-title"><?php esc_html_e('All Active Cohorts', 'tfp-dashboard'); ?></h5>
-                    <span class="tfp-attendance-banner-card__subtitle"><?php esc_html_e('Attendance Health Rank', 'tfp-dashboard'); ?></span>
-                </div>
-                <a href="<?php echo esc_url($export_url); ?>" class="tfp-attendance-export-btn tfp-dash-btn-second tfp-dash-btn--primary" download="attendance-report.csv">
-                    <svg class="tfp-export-icon" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M9 1H3C1.89543 1 1 1.89543 1 3V15C1 16.1046 1.89543 17 3 17H13C14.1046 17 15 16.1046 15 15V7L9 1Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M9 1V7H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8 10V14M8 14L6 12M8 14L10 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span><?php esc_html_e('Export Report', 'tfp-dashboard'); ?></span>
-                </a>
-            </div>
+        <section class="tfp-attendance-submission-card">
+            <header class="tfp-attendance-submission-card__head">
+                <h3>
+                    <?php
+                    printf(
+                        esc_html__('%s Submission Logs', 'tfp-dashboard'),
+                        esc_html($course_short)
+                    );
+                    ?>
+                </h3>
 
-            <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
-                <table class="tfp-dash-table tfp-attendance-table tfp-attendance-health-table">
+                <a href="<?php echo esc_url($export_url); ?>" class="tfp-dash-btn-second tfp-dash-btn--primary" download="attendance-report.csv">
+                    <?php echo tfp_dashboard_icon('doc'); ?>
+                    <?php esc_html_e('Export Report', 'tfp-dashboard'); ?>
+                </a>
+            </header>
+
+            <div class="tfp-dash-table-wrap tfp-attendance-submission-table-wrap">
+                <table class="tfp-dash-table tfp-attendance-submission-table">
                     <thead>
                         <tr>
-                            <th scope="col"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Current Module', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Students', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Pastoral Flags', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Last Submission', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Week: Section Module', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Submitted On', 'tfp-dashboard'); ?></th>
+                            <th scope="col"><?php esc_html_e('Breakdown', 'tfp-dashboard'); ?></th>
                             <th scope="col" class="tfp-col-action"><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($cohort_health): ?>
-                            <?php foreach ($cohort_health as $health): ?>
+                        <?php if ($log_rows): ?>
+                            <?php foreach ($log_rows as $row): ?>
+                                <?php
+                                $row_view_url = add_query_arg([
+                                    'course_id' => $row['cohort_id'] ? (int) get_post_meta($row['cohort_id'], '_related_course', true) : $filter_course,
+                                    'cohort_id' => $row['cohort_id'],
+                                    'tfp_attendance_week_start' => 1,
+                                    'tfp_attendance_student_page' => 1,
+                                ], $attendance_url);
+                                ?>
                                 <tr>
-                                    <td class="tfp-td-bold"><?php echo esc_html($health['cohort_name']); ?></td>
-                                    <td class="tfp-td-normal"><?php echo esc_html($health['current_module']); ?></td>
-                                    <td><?php echo esc_html($health['student_count']); ?></td>
+                                    <td class="tfp-td-bold"><?php echo esc_html($row['cohort_name']); ?></td>
+                                    <td class="tfp-td-normal"><?php echo esc_html($row['section_module']); ?></td>
                                     <td>
-                                        <span class="tfp-attendance-health-rate"><?php echo esc_html($health['avg']); ?>%</span>
-                                    </td>
-                                    <td>
-                                        <?php if ($health['flags'] > 0): ?>
-                                            <span class="tfp-attendance-health-flags">
-                                                <?php echo esc_html($health['stalled']); ?> <?php esc_html_e('Stalled', 'tfp-dashboard'); ?>
-                                                •
-                                                <?php echo esc_html($health['blocked']); ?> <?php esc_html_e('Blocked', 'tfp-dashboard'); ?>
-                                            </span>
+                                        <?php if ($row['status'] === 'in_progress'): ?>
+                                            <span class="tfp-attendance-log-status tfp-attendance-log-status--progress"><?php esc_html_e('In Progress', 'tfp-dashboard'); ?></span>
                                         <?php else: ?>
-                                            <span class="tfp-attendance-health-flags is-clear"><?php esc_html_e('No Flags', 'tfp-dashboard'); ?></span>
+                                            <span class="tfp-attendance-log-date"><?php echo esc_html($row['submitted_on']); ?></span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="tfp-td-date"><?php echo esc_html($health['latest_date']); ?></td>
+                                    <td class="tfp-td-breakdown"><?php echo wp_kses_post($row['breakdown']); ?></td>
                                     <td class="tfp-col-action">
-                                        <a
-                                            href="<?php echo esc_url(add_query_arg([
-                                                'tfp_roster_course' => $filter_course,
-                                                'tfp_roster_cohort' => $health['cohort_id'],
-                                            ], $roster_url)); ?>"
-                                            class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
+                                        <a href="<?php echo esc_url($row_view_url); ?>" class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
                                             <?php esc_html_e('View', 'tfp-dashboard'); ?>
                                         </a>
                                     </td>
@@ -784,8 +1258,8 @@ function tfp_dashboard_render_facilitator_attendance_content()
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7">
-                                    <div class="tfp-facilitator-empty"><?php esc_html_e('No active cohorts match the selected filters.', 'tfp-dashboard'); ?></div>
+                                <td colspan="5">
+                                    <div class="tfp-facilitator-empty"><?php esc_html_e('No attendance submissions have been recorded yet.', 'tfp-dashboard'); ?></div>
                                 </td>
                             </tr>
                         <?php endif; ?>
@@ -793,135 +1267,6 @@ function tfp_dashboard_render_facilitator_attendance_content()
                 </table>
             </div>
         </section>
-
-        <!-- Upcoming Submissions Card -->
-        <section class="tfp-attendance-card-panel">
-            <div class="tfp-attendance-panel-head-row">
-                <h5 class="tfp-attendance-panel-title"><?php esc_html_e('Upcoming Submissions', 'tfp-dashboard'); ?></h5>
-            </div>
-                <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
-                <table class="tfp-dash-table tfp-attendance-table">
-                    <thead>
-                        <tr>
-                            <th scope="col"><?php esc_html_e('Course', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Section Module', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Meeting Date', 'tfp-dashboard'); ?></th>
-                            <th scope="col" class="tfp-col-action"><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($upcoming_submissions as $upcoming) : ?>
-                            <tr>
-                                <td class="tfp-td-bold"><?php echo esc_html($upcoming['course']); ?></td>
-                                <td class="tfp-td-normal"><?php echo esc_html($upcoming['cohort']); ?></td>
-                                <td class="tfp-td-normal"><?php echo esc_html($upcoming['section_module']); ?></td>
-                                <td class="tfp-td-date"><?php echo esc_html($upcoming['meeting_date']); ?></td>
-                                <td class="tfp-col-action">
-                                    <a href="<?php echo esc_url($upcoming['action_url']); ?>" class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
-                                        <?php esc_html_e('View', 'tfp-dashboard'); ?>
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Submission Logs Card -->
-        <section class="tfp-attendance-card-panel">
-            <div class="tfp-attendance-panel-head-row">
-                <h5 class="tfp-attendance-panel-title"><?php esc_html_e('Submission Logs', 'tfp-dashboard'); ?></h5>
-                <a href="<?php echo esc_url($roster_url); ?>" class="tfp-attendance-view-all-link">
-                    <?php esc_html_e('View All', 'tfp-dashboard'); ?>
-                </a>
-            </div>
-
-            <div class="tfp-dash-table-wrap tfp-attendance-table-responsive">
-                <table class="tfp-dash-table tfp-attendance-table">
-                    <thead>
-                        <tr>
-                            <th scope="col"><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Section Module', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Submitted On', 'tfp-dashboard'); ?></th>
-                            <th scope="col"><?php esc_html_e('Breakdown', 'tfp-dashboard'); ?></th>
-                            <th scope="col" class="tfp-col-action"><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($submission_logs_page as $log) : ?>
-                            <tr>
-                                <td class="tfp-td-bold"><?php echo esc_html($log['cohort_name']); ?></td>
-                                <td class="tfp-td-normal"><?php echo esc_html($log['section_module']); ?></td>
-                                <td class="tfp-td-date"><?php echo esc_html($log['submitted_on']); ?></td>
-                                <td class="tfp-td-breakdown"><?php echo wp_kses_post($log['breakdown']); ?></td>
-                                <td class="tfp-col-action">
-                                    <a href="<?php echo esc_url($log['action_url']); ?>" class="tfp-attendance-btn-view tfp-dash-btn-small tfp-dash-btn--primary">
-                                        <?php esc_html_e('View', 'tfp-dashboard'); ?>
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination Bar -->
-            <?php if ($attendance_total > $attendance_per_page): ?>
-                <?php
-                $range_start = (($attendance_page - 1) * $attendance_per_page) + 1;
-                $range_end = min($attendance_page * $attendance_per_page, $attendance_total);
-                $pagination_base = remove_query_arg(
-                    'tfp_attendance_page',
-                    function_exists('tfp_dashboard_get_url')
-                        ? tfp_dashboard_get_url('tfp-dashboard-facilitator-attendance')
-                        : get_permalink()
-                );
-                $pagination_args = array_filter([
-                    'course_id'  => $filter_course,
-                    'cohort_id'  => $filter_cohort,
-                ], static function ($value) {
-                    return $value !== null && $value !== '' && $value !== 0;
-                });
-                ?>
-                <footer class="tfp-attendance-pagination" aria-label="<?php esc_attr_e('Attendance pagination', 'tfp-dashboard'); ?>">
-                    <div class="tfp-attendance-pagination__count">
-                        <?php printf(esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), $range_start, $range_end, $attendance_total); ?>
-                    </div>
-                    <div class="tfp-attendance-pagination__controls">
-                        <?php if ($attendance_page > 1): ?>
-                            <a
-                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['tfp_attendance_page' => $attendance_page - 1]), $pagination_base)); ?>"
-                                class="tfp-attendance-pagination__prev"
-                                rel="prev">
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
-                            </a>
-                        <?php else: ?>
-                            <span class="tfp-attendance-pagination__prev is-disabled" aria-disabled="true">
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 1L2 5L6 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
-                            </span>
-                        <?php endif; ?>
-
-                        <?php if ($attendance_page < $attendance_pages): ?>
-                            <a
-                                href="<?php echo esc_url(add_query_arg(array_merge($pagination_args, ['tfp_attendance_page' => $attendance_page + 1]), $pagination_base)); ?>"
-                                class="tfp-attendance-pagination__next"
-                                rel="next">
-                                <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </a>
-                        <?php else: ?>
-                            <span class="tfp-attendance-pagination__next is-disabled" aria-disabled="true">
-                                <span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span>
-                                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </footer>
-            <?php endif; ?>        </section>
     </div>
     <?php
 }
