@@ -244,7 +244,7 @@ add_action('init', function () {
     ]);
 
     if ($new_id && !is_wp_error($new_id)) {
-        update_post_meta($new_id->ID ?? $new_id, '_wp_page_template', 'tfp-dashboard-facilitator-homework');
+        update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-homework');
         if (function_exists('flush_rewrite_rules')) {
             flush_rewrite_rules(false);
         }
