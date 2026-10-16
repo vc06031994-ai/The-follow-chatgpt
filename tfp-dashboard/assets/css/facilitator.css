@@ -1605,8 +1605,9 @@ table tbody>tr:nth-child(odd)>th {
    Facilitator Attendance Dashboard (Pixel-perfect match to Figma design)
    ========================================================================== */
 .tfp-attendance-page-wrap {
-    /* max-width: 1200px; */
-    margin: 0 auto;
+    width: 100%;
+    max-width: 1057px;
+    margin: 0 0 0 21px;
     padding: 6px 0 32px 0;
 }
 
@@ -2715,8 +2716,8 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-attendance-detail-breadcrumb {
-    width: calc(100% + 72px);
-    margin-left: -36px;
+    width: calc(100% + 112px);
+    margin-left: -56px;
     min-height: 60px;
     padding: 20px 58px;
     background: #EBEBEB;
@@ -2741,8 +2742,8 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-attendance-detail-header {
-    width: calc(100% + 72px);
-    margin-left: -36px;
+    width: calc(100% + 112px);
+    margin-left: -56px;
     min-height: 155px;
     padding: 24px 58px 16px;
     display: flex;
@@ -3004,6 +3005,7 @@ table tbody>tr:nth-child(odd)>th {
 @media (max-width: 991px) {
     .tfp-attendance-page-wrap {
         max-width: none;
+        margin-left: 0;
     }
 
     .tfp-attendance-course-header {
