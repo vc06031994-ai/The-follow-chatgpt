@@ -336,7 +336,294 @@
         }
     });
 
+
+    function homeworkReviewPage() {
+        return document.querySelector('[data-homework-review-page]');
+    }
+
+    function getHomeworkQuestion(page, index) {
+        return page ? page.querySelector('[data-homework-question-panel="' + index + '"]') : null;
+    }
+
+    function switchHomeworkQuestion(page, index) {
+        if (!page) {
+            return;
+        }
+
+        var count = parseInt(page.getAttribute('data-question-count'), 10) || 0;
+        if (!count) {
+            return;
+        }
+
+        index = Math.max(0, Math.min(index, count - 1));
+        page.setAttribute('data-question-index', String(index));
+
+        page.querySelectorAll('[data-homework-question-panel]').forEach(function (panel) {
+            var active = String(panel.getAttribute('data-homework-question-panel')) === String(index);
+            panel.classList.toggle('is-active', active);
+            panel.hidden = !active;
+        });
+
+        page.querySelectorAll('[data-homework-curriculum-panel]').forEach(function (panel) {
+            var active = String(panel.getAttribute('data-homework-curriculum-panel')) === String(index);
+            panel.classList.toggle('is-active', active);
+            panel.hidden = !active;
+        });
+
+        page.querySelectorAll('[data-homework-question]').forEach(function (button) {
+            var active = String(button.getAttribute('data-homework-question')) === String(index);
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-current', active ? 'step' : 'false');
+        });
+
+        var previous = page.querySelector('[data-homework-prev-question]');
+        if (previous) {
+            previous.classList.toggle('is-disabled', index <= 0);
+            previous.disabled = index <= 0;
+        }
+    }
+
+    function homeworkReviewState(page) {
+        var index = parseInt(page.getAttribute('data-question-index'), 10) || 0;
+        var panel = getHomeworkQuestion(page, index);
+
+        if (!panel) {
+            return null;
+        }
+
+        var decisionInput = panel.querySelector('[data-homework-decision]:checked');
+        var mastery = Array.prototype.map.call(
+            panel.querySelectorAll('[data-homework-mastery]:checked'),
+            function (input) {
+                return input.value;
+            }
+        );
+
+        return {
+            index: index,
+            panel: panel,
+            questionId: panel.getAttribute('data-question-id') || '',
+            decision: decisionInput ? decisionInput.value : '',
+            mastery: mastery,
+            feedback: (panel.querySelector('[data-homework-feedback]') || {}).value || ''
+        };
+    }
+
+    function setHomeworkButtonBusy(button, busy) {
+        if (!button) {
+            return;
+        }
+
+        button.disabled = !!busy;
+        button.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    function homeworkAjaxSave(page, finalize, onSuccess) {
+        var settings = getSettings();
+        var state = homeworkReviewState(page);
+
+        if (!settings || !settings.ajaxUrl || !settings.nonce || !state || !state.questionId) {
+            return;
+        }
+
+        if (finalize && !state.decision) {
+            window.alert('Select Correct or Incorrect before submitting this question.');
+            return;
+        }
+
+        var button = finalize
+            ? page.querySelector('[data-homework-submit-next]')
+            : page.querySelector('[data-homework-save-draft]');
+
+        setHomeworkButtonBusy(button, true);
+
+        var formData = new FormData();
+        formData.append('action', 'tfp_facilitator_homework_save_review');
+        formData.append('nonce', settings.nonce);
+        formData.append('student_id', page.getAttribute('data-student-id') || '0');
+        formData.append('lesson_id', page.getAttribute('data-lesson-id') || '0');
+        formData.append('cohort_id', page.getAttribute('data-cohort-id') || '0');
+        formData.append('question_id', state.questionId);
+        formData.append('decision', state.decision);
+        formData.append('feedback', state.feedback);
+        formData.append('finalize', finalize ? '1' : '0');
+
+        state.mastery.forEach(function (value) {
+            formData.append('mastery[]', value);
+        });
+
+        fetch(settings.ajaxUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (response) {
+            if (!response || !response.success) {
+                throw new Error(
+                    response && response.data && response.data.message
+                        ? response.data.message
+                        : 'Unable to save this review.'
+                );
+            }
+
+            page.setAttribute('data-current-status', response.data.status || 'submitted');
+            if (response.data.grade) {
+                page.setAttribute('data-grade', response.data.grade);
+            }
+
+            page.querySelectorAll('[data-homework-question="' + state.index + '"]').forEach(function (questionButton) {
+                questionButton.classList.toggle('is-reviewed', !!state.decision);
+            });
+
+            if (typeof onSuccess === 'function') {
+                onSuccess(response.data || {});
+            }
+        })
+        .catch(function (error) {
+            window.alert(error && error.message ? error.message : 'Unable to save this review.');
+        })
+        .finally(function () {
+            setHomeworkButtonBusy(button, false);
+        });
+    }
+
+    function homeworkCompleteReview(page) {
+        var settings = getSettings();
+        if (!settings || !settings.ajaxUrl || !settings.nonce) {
+            return;
+        }
+
+        var button = page.querySelector('[data-homework-submit-next]');
+        setHomeworkButtonBusy(button, true);
+
+        var formData = new FormData();
+        formData.append('action', 'tfp_facilitator_homework_complete_review');
+        formData.append('nonce', settings.nonce);
+        formData.append('student_id', page.getAttribute('data-student-id') || '0');
+        formData.append('lesson_id', page.getAttribute('data-lesson-id') || '0');
+        formData.append('cohort_id', page.getAttribute('data-cohort-id') || '0');
+
+        fetch(settings.ajaxUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (response) {
+            if (!response || !response.success) {
+                throw new Error(
+                    response && response.data && response.data.message
+                        ? response.data.message
+                        : 'Unable to complete this review.'
+                );
+            }
+
+            var redirect = response.data && response.data.redirect
+                ? response.data.redirect
+                : window.location.href;
+
+            window.location.href = redirect;
+        })
+        .catch(function (error) {
+            window.alert(error && error.message ? error.message : 'Unable to complete this review.');
+            setHomeworkButtonBusy(button, false);
+        });
+    }
+
+    function initHomeworkReview() {
+        var page = homeworkReviewPage();
+
+        if (!page || page.getAttribute('data-homework-review-bound') === '1') {
+            return;
+        }
+
+        page.setAttribute('data-homework-review-bound', '1');
+
+        switchHomeworkQuestion(
+            page,
+            parseInt(page.getAttribute('data-question-index'), 10) || 0
+        );
+
+        page.querySelectorAll('[data-homework-question]').forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                switchHomeworkQuestion(
+                    page,
+                    parseInt(button.getAttribute('data-homework-question'), 10) || 0
+                );
+            });
+        });
+
+        var previous = page.querySelector('[data-homework-prev-question]');
+        if (previous) {
+            previous.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var index = parseInt(page.getAttribute('data-question-index'), 10) || 0;
+                if (index > 0) {
+                    switchHomeworkQuestion(page, index - 1);
+                }
+            });
+        }
+
+        var saveDraft = page.querySelector('[data-homework-save-draft]');
+        if (saveDraft) {
+            saveDraft.addEventListener('click', function (event) {
+                event.preventDefault();
+                homeworkAjaxSave(page, false);
+            });
+        }
+
+        var submitNext = page.querySelector('[data-homework-submit-next]');
+        if (submitNext) {
+            submitNext.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                homeworkAjaxSave(page, true, function () {
+                    var index = parseInt(page.getAttribute('data-question-index'), 10) || 0;
+                    var count = parseInt(page.getAttribute('data-question-count'), 10) || 0;
+
+                    if (index < count - 1) {
+                        switchHomeworkQuestion(page, index + 1);
+                        return;
+                    }
+
+                    homeworkCompleteReview(page);
+                });
+            });
+        }
+
+        page.querySelectorAll('[data-homework-decision]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var panel = input.closest('[data-homework-question-panel]');
+                if (!panel) {
+                    return;
+                }
+
+                var selected = panel.querySelector('[data-homework-decision]:checked');
+                var incorrect = selected && selected.value === 'incorrect';
+                var heading = panel.querySelector('.tfp-homework-answer-heading');
+
+                if (heading) {
+                    heading.classList.toggle('is-incorrect', !!incorrect);
+
+                    var icon = heading.querySelector('span');
+                    if (icon) {
+                        icon.textContent = incorrect ? '!' : '✓';
+                    }
+                }
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        initHomeworkReview();
+
         if (!window.jQuery || !window.jQuery.fn || !window.jQuery.fn.selectWoo) {
             return;
         }
