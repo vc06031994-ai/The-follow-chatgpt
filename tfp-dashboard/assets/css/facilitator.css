@@ -4394,3 +4394,39 @@ table tbody>tr:nth-child(odd)>th {
         padding-left: 0;
     }
 }
+
+
+/* Homework review SelectWoo chevron — keep the arrow clear of the selected text. */
+.tfp-homework-context-filters .select2-container--default .select2-selection--single {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.tfp-homework-context-filters .select2-container--default .select2-selection--single .select2-selection__rendered {
+    display: block !important;
+    width: calc(100% - 42px) !important;
+    max-width: calc(100% - 42px) !important;
+    margin-right: 42px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.tfp-homework-context-filters .select2-container--default .select2-selection--single .select2-selection__arrow {
+    width: 24px !important;
+    height: 36px !important;
+    right: 7px !important;
+    top: 1px !important;
+    margin: 0 !important;
+    z-index: 2 !important;
+    background: #fff !important;
+}
+
+.tfp-homework-context-filters .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    left: 50% !important;
+    top: 50% !important;
+    margin-left: -4px !important;
+    margin-top: -2px !important;
+}
