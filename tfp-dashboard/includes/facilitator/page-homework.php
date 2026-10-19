@@ -1022,13 +1022,11 @@ function tfp_dashboard_render_facilitator_homework_content() {
                             href="<?php echo esc_url($prev_url); ?>"
                             rel="prev"
                             aria-label="<?php esc_attr_e('Previous page', 'tfp-dashboard'); ?>">
-                            <span aria-hidden="true">‹</span>
-                            <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
+                            <span aria-hidden="true">‹</span><?php esc_html_e('Previous', 'tfp-dashboard'); ?>
                         </a>
                     <?php else: ?>
                         <span class="is-disabled" aria-disabled="true">
-                            <span aria-hidden="true">‹</span>
-                            <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
+                            <span aria-hidden="true">‹</span><?php esc_html_e('Previous', 'tfp-dashboard'); ?>
                         </span>
                     <?php endif; ?>
 
@@ -1038,13 +1036,11 @@ function tfp_dashboard_render_facilitator_homework_content() {
                             href="<?php echo esc_url($next_url); ?>"
                             rel="next"
                             aria-label="<?php esc_attr_e('Next page', 'tfp-dashboard'); ?>">
-                            <?php esc_html_e('Next', 'tfp-dashboard'); ?>
-                            <span aria-hidden="true">›</span>
+                            <?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span>
                         </a>
                     <?php else: ?>
                         <span class="is-disabled" aria-disabled="true">
-                            <?php esc_html_e('Next', 'tfp-dashboard'); ?>
-                            <span aria-hidden="true">›</span>
+                            <?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span>
                         </span>
                     <?php endif; ?>
                 </div>
