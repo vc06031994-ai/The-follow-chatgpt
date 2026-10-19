@@ -3423,61 +3423,7 @@ table tbody>tr:nth-child(odd)>th {
     border-bottom-color: var(--tfp-dash-teal);
 }
 
-.tfp-homework-filters {
-    width: 100%;
-    margin: 0 auto 28px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.tfp-homework-filter-item {
-    flex: 0 0 auto;
-}
-
-.tfp-homework-filter-item .select2-container {
-    width: 162px !important;
-}
-
-.tfp-homework-filter-search {
-    width: 162px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 8px;
-    border: 1px solid #D1D5DB;
-    border-radius: 8px;
-    background: #fff;
-    box-sizing: border-box;
-}
-
-.tfp-homework-filter-search > span {
-    flex: 0 0 24px;
-    font-size: 22px;
-    line-height: 1;
-    color: var(--tfp-dash-text);
-    text-align: center;
-}
-
-.tfp-homework-filter-search input {
-    width: 100%;
-    min-width: 0;
-    height: 36px;
-    padding: 0;
-    border: 0 !important;
-    outline: 0 !important;
-    background: transparent;
-    box-shadow: none !important;
-    font: 500 14px/130% var(--tfp-dash-font);
-    color: var(--tfp-dash-text);
-}
-
-.tfp-homework-filter-search:focus-within {
-    border-color: var(--tfp-dash-teal);
-    box-shadow: 0 0 0 2px rgba(0,102,110,.08);
-}
+/* Homework Review uses the shared facilitator filter/search components so it matches Roster exactly. */
 
 .tfp-homework-list-card {
     width: 100%;
