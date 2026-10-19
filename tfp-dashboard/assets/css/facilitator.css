@@ -3771,35 +3771,27 @@ table tbody>tr:nth-child(odd)>th {
     align-items: center;
     gap: 8px;
 }
-
-.tfp-homework-context-filters select {
-    height: 38px;
-    padding: 8px;
-    border: .5px solid #C4C4C4;
-    border-radius: 8px;
-    background: #fff;
-    box-sizing: border-box;
-    font: 500 14px/130% var(--tfp-dash-font);
-    color: #151411;
-    opacity: 1;
-    -webkit-text-fill-color: #151411;
+.tfp-homework-context-filters .select2-container {
+    flex: 0 0 auto;
+}
+.tfp-homework-context-filters .select2-container:nth-of-type(1) {
+    width: 199px !important;
+}
+.tfp-homework-context-filters .select2-container:nth-of-type(2) {
+    width: 213px !important;
+}
+.tfp-homework-context-filters .select2-container:nth-of-type(3) {
+    width: 133px !important;
+}
+.tfp-homework-context-filters .select2-container--default .select2-selection--single {
+    height: 38px !important;
+    min-height: 38px !important;
+}
+.tfp-homework-context-filters .select2-container--default .select2-selection--single .select2-selection__rendered {
+    min-height: 36px !important;
+    font-size: 14px !important;
 }
 
-.tfp-homework-context-filters select:nth-of-type(1) {
-    width: 199px;
-}
-
-.tfp-homework-context-filters select:nth-of-type(2) {
-    width: 213px;
-}
-
-.tfp-homework-context-filters select:nth-of-type(3) {
-    width: 133px;
-}
-
-.tfp-homework-context-filters select:disabled {
-    cursor: default;
-}
 
 .tfp-homework-review-surface {
     width: 1080px;
