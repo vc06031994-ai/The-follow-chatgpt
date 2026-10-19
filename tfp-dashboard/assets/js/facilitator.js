@@ -683,7 +683,7 @@
             return;
         }
 
-        window.jQuery('.tfp-facilitator-filters select, .tfp-attendance-course-filters select').each(function () {
+        window.jQuery('.tfp-facilitator-filters select, .tfp-attendance-course-filters select, .tfp-homework-context-filters select').each(function () {
             var $select = window.jQuery(this);
 
             if ($select.hasClass('select2-hidden-accessible')) {
