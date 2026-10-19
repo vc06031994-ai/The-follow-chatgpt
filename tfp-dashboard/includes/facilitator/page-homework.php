@@ -934,7 +934,7 @@ function tfp_dashboard_render_facilitator_homework_content() {
 
         <section class="tfp-homework-list-card">
             <div class="tfp-homework-list-card__head">
-                <h2><?php esc_html_e('All Homework', 'tfp-dashboard'); ?></h2>
+                <h5><?php esc_html_e('All Homework', 'tfp-dashboard'); ?></h5>
             </div>
 
             <div class="tfp-dash-table-wrap tfp-homework-table-wrap">

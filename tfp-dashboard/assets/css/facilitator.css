@@ -3446,8 +3446,6 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-list-card__head h2 {
     margin: 0;
-    font: 700 18px/130% var(--tfp-dash-font);
-    color: var(--tfp-dash-text);
 }
 
 .tfp-homework-table-wrap {
@@ -3478,6 +3476,7 @@ table tbody>tr:nth-child(odd)>th {
     font-weight: 700;
     color: #151411;
     text-align: left;
+    font-size: 14px;
 }
 
 .tfp-homework-review-table th:first-child,
