@@ -900,38 +900,36 @@ function tfp_dashboard_render_facilitator_homework_content() {
             </a>
         </nav>
 
-        <form method="get" class="tfp-facilitator-filters tfp-homework-filters">
+        <form class="tfp-facilitator-filters tfp-homework-filters" method="get" action="<?php echo esc_url(get_permalink()); ?>">
             <input type="hidden" name="tfp_homework_status" value="<?php echo esc_attr($status); ?>">
             <input type="hidden" name="tfp_homework_page" value="1">
 
-            <div class="tfp-homework-filter-item">
-                <label for="tfp_homework_course" class="screen-reader-text"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
-                <select name="tfp_homework_course" id="tfp_homework_course" aria-label="<?php esc_attr_e('Course', 'tfp-dashboard'); ?>">
-                    <option value="0"><?php esc_html_e('All Courses', 'tfp-dashboard'); ?></option>
-                    <?php foreach ($courses as $course): ?>
-                        <option value="<?php echo esc_attr($course->ID); ?>" <?php selected($course_filter, $course->ID); ?>>
-                            <?php echo esc_html($course->post_title); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+            <select name="tfp_homework_course" aria-label="<?php esc_attr_e('Course', 'tfp-dashboard'); ?>" onchange="this.form.submit()">
+                <option value="0"><?php esc_html_e('All Courses', 'tfp-dashboard'); ?></option>
+                <?php foreach ($courses as $course): ?>
+                    <option value="<?php echo esc_attr($course->ID); ?>" <?php selected($course_filter, $course->ID); ?>><?php echo esc_html($course->post_title); ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <select name="tfp_homework_cohort_filter" aria-label="<?php esc_attr_e('Cohort', 'tfp-dashboard'); ?>" onchange="this.form.submit()">
+                <option value="0"><?php esc_html_e('All Cohorts', 'tfp-dashboard'); ?></option>
+                <?php foreach ($cohorts as $cohort): ?>
+                    <option value="<?php echo esc_attr($cohort->ID); ?>" <?php selected($cohort_filter, $cohort->ID); ?>><?php echo esc_html($cohort->post_title); ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <div class="tfp-dash-search tfp-facilitator-search">
+                <span class="tfp-dash-search__icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M16 16L13 13M7.0002 17H4.19692C3.07901 17 2.5192 17 2.0918 16.7822C1.71547 16.5905 1.40973 16.2842 1.21799 15.9079C1 15.4801 1 14.9203 1 13.8002V4.2002C1 3.08009 1 2.51962 1.21799 2.0918C1.40973 1.71547 1.71547 1.40973 2.0918 1.21799C2.51962 1 3.08009 1 4.2002 1H13.8002C14.9203 1 15.4796 1 15.9074 1.21799C16.2837 1.40973 16.5905 1.71547 16.7822 2.0918C17 2.5192 17 3.07899 17 4.19691V7.0002M10.5 14C8.567 14 7 12.433 7 10.5C7 8.567 8.567 7 10.5 7C12.433 7 14 8.567 14 10.5C14 12.433 12.433 14 10.5 14Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </span>
+                <input type="search" name="tfp_homework_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>" aria-label="<?php esc_attr_e('Search students', 'tfp-dashboard'); ?>">
             </div>
 
-            <div class="tfp-homework-filter-item">
-                <label for="tfp_homework_cohort_filter" class="screen-reader-text"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></label>
-                <select name="tfp_homework_cohort_filter" id="tfp_homework_cohort_filter" aria-label="<?php esc_attr_e('Cohort', 'tfp-dashboard'); ?>">
-                    <option value="0"><?php esc_html_e('All Cohorts', 'tfp-dashboard'); ?></option>
-                    <?php foreach ($cohorts as $cohort): ?>
-                        <option value="<?php echo esc_attr($cohort->ID); ?>" <?php selected($cohort_filter, $cohort->ID); ?>>
-                            <?php echo esc_html($cohort->post_title); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="tfp-homework-filter-search">
-                <span aria-hidden="true">⌕</span>
-                <input type="search" name="tfp_homework_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>">
-            </div>
+            <?php if ($course_filter || $cohort_filter || $search): ?>
+                <a class="tfp-facilitator-clear-filter" href="<?php echo esc_url(remove_query_arg(['tfp_homework_course', 'tfp_homework_cohort_filter', 'tfp_homework_search', 'tfp_homework_page'])); ?>"><?php esc_html_e('Clear Filters', 'tfp-dashboard'); ?></a>
+            <?php endif; ?>
         </form>
 
         <section class="tfp-homework-list-card">
