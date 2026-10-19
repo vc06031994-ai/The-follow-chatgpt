@@ -535,6 +535,50 @@
         });
     }
 
+    function initHomeworkFilters() {
+        var form = document.querySelector('.tfp-homework-filters');
+
+        if (!form || form.getAttribute('data-homework-filters-bound') === '1') {
+            return;
+        }
+
+        form.setAttribute('data-homework-filters-bound', '1');
+
+        var pageInput = form.querySelector('input[name="tfp_homework_page"]');
+        var searchInput = form.querySelector('input[name="tfp_homework_search"]');
+        var searchTimer = null;
+
+        function submitFilters() {
+            if (pageInput) {
+                pageInput.value = '1';
+            }
+
+            form.submit();
+        }
+
+        form.querySelectorAll('select[name="tfp_homework_course"], select[name="tfp_homework_cohort_filter"]').forEach(function (select) {
+            select.addEventListener('change', submitFilters);
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    submitFilters();
+                }
+            });
+
+            searchInput.addEventListener('search', submitFilters);
+
+            searchInput.addEventListener('input', function () {
+                window.clearTimeout(searchTimer);
+                searchTimer = window.setTimeout(function () {
+                    submitFilters();
+                }, 500);
+            });
+        }
+    }
+
     function initHomeworkReview() {
         var page = homeworkReviewPage();
 
@@ -622,6 +666,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        initHomeworkFilters();
         initHomeworkReview();
 
         if (!window.jQuery || !window.jQuery.fn || !window.jQuery.fn.selectWoo) {
