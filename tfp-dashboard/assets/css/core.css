@@ -1,3 +1,45 @@
+/* Global SelectWoo single-select styling */
+.select2-container--default .select2-selection--single {
+    min-height: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    border: 1px solid #d6d6d6 !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    min-height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 34px 0 12px !important;
+    color: #151411 !important;
+    font: 500 13px/130% var(--tfp-dash-font) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 34px !important;
+    width: 30px !important;
+    right: 0 !important;
+    top: 1px !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: var(--tfp-dash-teal) !important;
+    box-shadow: 0 0 0 2px rgba(0, 102, 110, .08) !important;
+}
+
+.select2-container--default .select2-results__option {
+    font: 500 13px/130% var(--tfp-dash-font) !important;
+    padding: 8px 12px !important;
+}
 /* =========================================================================
    TFP Dashboard — Core tokens and base normalization
    ========================================================================= */
