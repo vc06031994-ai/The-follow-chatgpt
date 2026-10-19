@@ -3482,6 +3482,8 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-homework-list-card {
     width: 100%;
     min-height: 1054px;
+    display: flex;
+    flex-direction: column;
     background: #fff;
     border: 1px solid #C4C4C4;
     border-radius: 10px;
@@ -3504,6 +3506,7 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-table-wrap {
     width: 100%;
+    min-height: 895px;
     overflow-x: auto;
 }
 
@@ -3622,46 +3625,55 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-pagination {
     min-height: 62px;
-    padding: 11px 22px;
+    margin-top: auto;
+    padding: 12px 24px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
     border-top: 1px solid #EAECF0;
     box-sizing: border-box;
-    font: 500 12px/130% var(--tfp-dash-font);
-    color: #344054;
+    font: 500 14px/20px var(--tfp-dash-font-alt);
+    color: #3E4142;
 }
 
-.tfp-homework-pagination > div {
+.tfp-homework-pagination__details {
+    white-space: nowrap;
+}
+
+.tfp-homework-pagination__actions {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
 .tfp-homework-pagination a,
-.tfp-homework-pagination span {
-    text-decoration: none;
-}
-
-.tfp-homework-pagination a {
+.tfp-homework-pagination .is-disabled {
     min-height: 36px;
-    padding: 8px 18px;
+    padding: 8px 20px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     border-radius: 8px;
-    color: #344054;
+    box-sizing: border-box;
+    font: 500 18px/130% var(--tfp-dash-font);
+    text-decoration: none;
+    white-space: nowrap;
 }
 
-.tfp-homework-pagination a:last-child {
-    color: #fff;
+.tfp-homework-pagination a {
+    color: #3E4142;
+}
+
+.tfp-homework-pagination__next {
+    color: #fff !important;
     background: var(--tfp-dash-teal);
 }
 
 .tfp-homework-pagination .is-disabled {
     color: #98A2B3;
+    pointer-events: none;
 }
 
 /* Single student review */
