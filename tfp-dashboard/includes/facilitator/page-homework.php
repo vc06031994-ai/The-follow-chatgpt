@@ -1032,14 +1032,14 @@ function tfp_dashboard_render_facilitator_homework_content() {
 
                     <?php if ($page < $pages): ?>
                         <a
-                            class="tfp-homework-pagination__next"
+                            class="tfp-homework-pagination__next tfp-dash-btn-small tfp-dash-btn--primary"
                             href="<?php echo esc_url($next_url); ?>"
                             rel="next"
                             aria-label="<?php esc_attr_e('Next page', 'tfp-dashboard'); ?>">
                             <?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span>
                         </a>
                     <?php else: ?>
-                        <span class="is-disabled" aria-disabled="true">
+                        <span class="tfp-homework-pagination__next tfp-dash-btn-small tfp-dash-btn--primary is-disabled" aria-disabled="true">
                             <?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span>
                         </span>
                     <?php endif; ?>
