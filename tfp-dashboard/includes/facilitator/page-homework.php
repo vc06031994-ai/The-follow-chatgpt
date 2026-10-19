@@ -588,42 +588,50 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
             </a>
         </header>
 
-        <div class="tfp-homework-context-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
-            <label class="screen-reader-text" for="tfp_homework_review_course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
-            <select id="tfp_homework_review_course" disabled>
-                <?php foreach ($context_courses as $context_course): ?>
-                    <option value="<?php echo esc_attr($context_course->ID); ?>" <?php selected((int) $item['course_id'], (int) $context_course->ID); ?>>
-                        <?php echo esc_html($context_course->post_title); ?>
-                    </option>
-                <?php endforeach; ?>
-                <?php if (!$context_courses): ?>
-                    <option><?php echo esc_html($course ? $course->post_title : __('Course', 'tfp-dashboard')); ?></option>
-                <?php endif; ?>
-            </select>
+        <div class="tfp-attendance-course-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
+            <div class="tfp-attendance-filters-form">
+                <div class="tfp-attendance-filter-item">
+                    <label class="screen-reader-text" for="tfp_homework_review_course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
+                    <select id="tfp_homework_review_course" class="tfp-attendance-select" disabled>
+                        <?php foreach ($context_courses as $context_course): ?>
+                            <option value="<?php echo esc_attr($context_course->ID); ?>" <?php selected((int) $item['course_id'], (int) $context_course->ID); ?>>
+                                <?php echo esc_html($context_course->post_title); ?>
+                            </option>
+                        <?php endforeach; ?>
+                        <?php if (!$context_courses): ?>
+                            <option><?php echo esc_html($course ? $course->post_title : __('Course', 'tfp-dashboard')); ?></option>
+                        <?php endif; ?>
+                    </select>
+                </div>
 
-            <label class="screen-reader-text" for="tfp_homework_review_cohort"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></label>
-            <select id="tfp_homework_review_cohort" disabled>
-                <?php foreach ($context_cohorts as $context_cohort): ?>
-                    <option value="<?php echo esc_attr($context_cohort->ID); ?>" <?php selected((int) $cohort_id, (int) $context_cohort->ID); ?>>
-                        <?php echo esc_html($context_cohort->post_title); ?>
-                    </option>
-                <?php endforeach; ?>
-                <?php if (!$context_cohorts): ?>
-                    <option><?php echo esc_html(get_the_title($cohort_id)); ?></option>
-                <?php endif; ?>
-            </select>
+                <div class="tfp-attendance-filter-item">
+                    <label class="screen-reader-text" for="tfp_homework_review_cohort"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></label>
+                    <select id="tfp_homework_review_cohort" class="tfp-attendance-select" disabled>
+                        <?php foreach ($context_cohorts as $context_cohort): ?>
+                            <option value="<?php echo esc_attr($context_cohort->ID); ?>" <?php selected((int) $cohort_id, (int) $context_cohort->ID); ?>>
+                                <?php echo esc_html($context_cohort->post_title); ?>
+                            </option>
+                        <?php endforeach; ?>
+                        <?php if (!$context_cohorts): ?>
+                            <option><?php echo esc_html(get_the_title($cohort_id)); ?></option>
+                        <?php endif; ?>
+                    </select>
+                </div>
 
-            <label class="screen-reader-text" for="tfp_homework_review_week"><?php esc_html_e('Week', 'tfp-dashboard'); ?></label>
-            <select id="tfp_homework_review_week" disabled>
-                <?php foreach ($context_weeks as $context_index => $context_week): ?>
-                    <option value="<?php echo esc_attr($context_week->ID); ?>" <?php selected((int) $lesson_id, (int) $context_week->ID); ?>>
-                        <?php echo esc_html('Week ' . ((int) $context_index + 1)); ?>
-                    </option>
-                <?php endforeach; ?>
-                <?php if (!$context_weeks): ?>
-                    <option><?php echo esc_html('Week ' . $week_number); ?></option>
-                <?php endif; ?>
-            </select>
+                <div class="tfp-attendance-filter-item">
+                    <label class="screen-reader-text" for="tfp_homework_review_week"><?php esc_html_e('Week', 'tfp-dashboard'); ?></label>
+                    <select id="tfp_homework_review_week" class="tfp-attendance-select" disabled>
+                        <?php foreach ($context_weeks as $context_index => $context_week): ?>
+                            <option value="<?php echo esc_attr($context_week->ID); ?>" <?php selected((int) $lesson_id, (int) $context_week->ID); ?>>
+                                <?php echo esc_html('Week ' . ((int) $context_index + 1)); ?>
+                            </option>
+                        <?php endforeach; ?>
+                        <?php if (!$context_weeks): ?>
+                            <option><?php echo esc_html('Week ' . $week_number); ?></option>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <section class="tfp-homework-review-surface">
