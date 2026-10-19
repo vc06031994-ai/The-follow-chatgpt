@@ -955,7 +955,7 @@ function tfp_dashboard_render_facilitator_homework_content() {
                             <?php foreach ($paged_items as $item): ?>
                                 <tr>
                                     <td class="tfp-homework-student-cell"><?php echo esc_html($item['student_name']); ?></td>
-                                    <td><?php echo esc_html($item['course_name']); ?></td>
+                                    <td class="tfp-homework-course-cell"><span><?php echo esc_html($item['course_name']); ?></span></td>
                                     <td>
                                         <span class="tfp-homework-module-name"><?php echo esc_html($item['module']); ?></span>
                                         <small><?php echo esc_html('Week ' . $item['week']); ?></small>
@@ -965,12 +965,14 @@ function tfp_dashboard_render_facilitator_homework_content() {
                                             <?php echo esc_html($item['status'] === 'graded' ? 'Graded' : 'Submitted'); ?>
                                         </span>
                                     </td>
-                                    <td>
-                                        <?php
-                                        echo $item['submitted_at']
-                                            ? esc_html(wp_date('D, M j, Y g:i A T', $item['submitted_at']))
-                                            : '—';
-                                        ?>
+                                    <td class="tfp-homework-submitted-cell">
+                                        <span>
+                                            <?php
+                                            echo $item['submitted_at']
+                                                ? esc_html(wp_date('D, M j, Y g:i A T', $item['submitted_at']))
+                                                : '—';
+                                            ?>
+                                        </span>
                                     </td>
                                     <td><?php echo esc_html($item['grade'] ?: '—'); ?></td>
                                     <td class="tfp-homework-action-cell">
