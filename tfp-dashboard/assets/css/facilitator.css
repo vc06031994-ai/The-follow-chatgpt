@@ -3570,17 +3570,17 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-homework-pagination {
-    min-height: 62px;
+    min-height: 57px;
     margin-top: auto;
     padding: 12px 24px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 14px;
+    gap: 16px;
     border-top: 1px solid #EAECF0;
     box-sizing: border-box;
-    font: 500 14px/20px var(--tfp-dash-font-alt);
-    color: #3E4142;
+    font: 500 14px/20px var(--tfp-dash-font);
+    color: #344054;
 }
 
 .tfp-homework-pagination__details {
@@ -3593,33 +3593,49 @@ table tbody>tr:nth-child(odd)>th {
     gap: 12px;
 }
 
-.tfp-homework-pagination a,
+.tfp-homework-pagination__prev,
+.tfp-homework-pagination__next,
 .tfp-homework-pagination .is-disabled {
     min-height: 36px;
     padding: 8px 20px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     border-radius: 8px;
     box-sizing: border-box;
-    font: 500 18px/130% var(--tfp-dash-font);
+    font: 500 14px/130% var(--tfp-dash-font);
     text-decoration: none;
     white-space: nowrap;
 }
 
-.tfp-homework-pagination a {
-    color: #3E4142;
+.tfp-homework-pagination__prev {
+    color: #344054;
 }
 
 .tfp-homework-pagination__next {
-    color: #fff !important;
+    color: #fff;
     background: var(--tfp-dash-teal);
 }
 
-.tfp-homework-pagination .is-disabled {
+.tfp-homework-pagination__prev.is-disabled {
     color: #98A2B3;
     pointer-events: none;
+}
+
+.tfp-homework-pagination__next.is-disabled {
+    opacity: .45;
+    pointer-events: none;
+    background: var(--tfp-dash-teal);
+}
+
+.tfp-homework-pagination__prev:hover:not(.is-disabled) {
+    color: var(--tfp-dash-teal);
+}
+
+.tfp-homework-pagination__next:hover:not(.is-disabled) {
+    color: #fff;
+    background: var(--tfp-dash-teal-dark);
 }
 
 /* Single student review */
