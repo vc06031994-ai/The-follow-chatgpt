@@ -823,6 +823,24 @@ function tfp_dashboard_render_facilitator_homework_content() {
 
     $courses = tfp_facilitator_homework_courses($current_user_id);
     $cohorts = tfp_facilitator_homework_cohorts($current_user_id, $course_filter);
+
+    // Keep the cohort filter in sync with the selected course. A previously
+    // selected cohort must not leave the list empty when that cohort belongs
+    // to a different course.
+    if ($cohort_filter) {
+        $cohort_available = false;
+        foreach ($cohorts as $cohort) {
+            if ((int) $cohort->ID === (int) $cohort_filter) {
+                $cohort_available = true;
+                break;
+            }
+        }
+
+        if (!$cohort_available) {
+            $cohort_filter = 0;
+        }
+    }
+
     $items = tfp_facilitator_homework_row_items($current_user_id, $course_filter, $cohort_filter, $search);
 
     if ($status !== 'all') {
@@ -883,6 +901,9 @@ function tfp_dashboard_render_facilitator_homework_content() {
         </nav>
 
         <form method="get" class="tfp-facilitator-filters tfp-homework-filters">
+            <input type="hidden" name="tfp_homework_status" value="<?php echo esc_attr($status); ?>">
+            <input type="hidden" name="tfp_homework_page" value="1">
+
             <div class="tfp-homework-filter-item">
                 <label for="tfp_homework_course" class="screen-reader-text"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
                 <select name="tfp_homework_course" id="tfp_homework_course" aria-label="<?php esc_attr_e('Course', 'tfp-dashboard'); ?>">
@@ -982,30 +1003,54 @@ function tfp_dashboard_render_facilitator_homework_content() {
                 </table>
             </div>
 
-            <?php if ($total > $per_page): ?>
-                <footer class="tfp-homework-pagination">
-                    <span>
+            <footer class="tfp-homework-pagination">
+                <span class="tfp-homework-pagination__details">
+                    <?php if ($total): ?>
                         <?php printf(
-                            esc_html__('%1$d - %2$d items', 'tfp-dashboard'),
+                            esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'),
                             $range_start,
-                            $range_end
+                            $range_end,
+                            $total
                         ); ?>
-                    </span>
-                    <div>
-                        <?php if ($page > 1): ?>
-                            <a href="<?php echo esc_url($prev_url); ?>" rel="prev">‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?></a>
-                        <?php else: ?>
-                            <span class="is-disabled">‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?></span>
-                        <?php endif; ?>
+                    <?php else: ?>
+                        <?php esc_html_e('0 of 0 items', 'tfp-dashboard'); ?>
+                    <?php endif; ?>
+                </span>
 
-                        <?php if ($page < $pages): ?>
-                            <a href="<?php echo esc_url($next_url); ?>" rel="next"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</a>
-                        <?php else: ?>
-                            <span class="is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span>
-                        <?php endif; ?>
-                    </div>
-                </footer>
-            <?php endif; ?>
+                <div class="tfp-homework-pagination__actions">
+                    <?php if ($page > 1): ?>
+                        <a
+                            class="tfp-homework-pagination__prev"
+                            href="<?php echo esc_url($prev_url); ?>"
+                            rel="prev"
+                            aria-label="<?php esc_attr_e('Previous page', 'tfp-dashboard'); ?>">
+                            <span aria-hidden="true">‹</span>
+                            <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
+                        </a>
+                    <?php else: ?>
+                        <span class="is-disabled" aria-disabled="true">
+                            <span aria-hidden="true">‹</span>
+                            <?php esc_html_e('Previous', 'tfp-dashboard'); ?>
+                        </span>
+                    <?php endif; ?>
+
+                    <?php if ($page < $pages): ?>
+                        <a
+                            class="tfp-homework-pagination__next"
+                            href="<?php echo esc_url($next_url); ?>"
+                            rel="next"
+                            aria-label="<?php esc_attr_e('Next page', 'tfp-dashboard'); ?>">
+                            <?php esc_html_e('Next', 'tfp-dashboard'); ?>
+                            <span aria-hidden="true">›</span>
+                        </a>
+                    <?php else: ?>
+                        <span class="is-disabled" aria-disabled="true">
+                            <?php esc_html_e('Next', 'tfp-dashboard'); ?>
+                            <span aria-hidden="true">›</span>
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </footer>
         </section>
     </div>
     <?php
