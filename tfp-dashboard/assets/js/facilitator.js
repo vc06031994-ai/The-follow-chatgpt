@@ -376,6 +376,16 @@
             button.setAttribute('aria-current', active ? 'step' : 'false');
         });
 
+        var currentQuestion = page.querySelector('[data-homework-current-question]');
+        if (currentQuestion) {
+            currentQuestion.textContent = String(index + 1);
+        }
+
+        page.querySelectorAll('.tfp-homework-progress-bars span').forEach(function (bar, barIndex) {
+            bar.classList.toggle('is-complete', barIndex <= index);
+            bar.classList.toggle('is-current', barIndex === count - 1);
+        });
+
         var previous = page.querySelector('[data-homework-prev-question]');
         if (previous) {
             previous.classList.toggle('is-disabled', index <= 0);
