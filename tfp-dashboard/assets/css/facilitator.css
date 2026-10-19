@@ -3517,7 +3517,24 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-homework-student-cell {
+    font-size: 14px !important;
     font-weight: 700 !important;
+    white-space: nowrap;
+}
+
+.tfp-homework-course-cell span,
+.tfp-homework-submitted-cell span {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tfp-homework-course-cell,
+.tfp-homework-submitted-cell {
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .tfp-homework-module-name {
