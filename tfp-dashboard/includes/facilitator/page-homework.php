@@ -691,16 +691,6 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                                     </div>
                                 </div>
 
-                                <div class="tfp-homework-feedback-section">
-                                    <label for="<?php echo esc_attr('tfp-homework-feedback-' . $index); ?>">
-                                        <?php esc_html_e('Feedback', 'tfp-dashboard'); ?>
-                                    </label>
-                                    <textarea
-                                        id="<?php echo esc_attr('tfp-homework-feedback-' . $index); ?>"
-                                        data-homework-feedback
-                                        placeholder="<?php esc_attr_e('Add Facilitator feedback here...', 'tfp-dashboard'); ?>"><?php echo esc_textarea($review_item['feedback'] ?? ''); ?></textarea>
-                                </div>
-
                                 <div class="tfp-homework-mastery-card">
                                     <div class="tfp-homework-mastery-head">
                                         <strong><?php esc_html_e('Mastery', 'tfp-dashboard'); ?></strong>
@@ -740,6 +730,16 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
+                                <div class="tfp-homework-feedback-section">
+                                    <label for="<?php echo esc_attr('tfp-homework-feedback-' . $index); ?>">
+                                        <?php esc_html_e('Feedback', 'tfp-dashboard'); ?>
+                                    </label>
+                                    <textarea
+                                        id="<?php echo esc_attr('tfp-homework-feedback-' . $index); ?>"
+                                        data-homework-feedback
+                                        placeholder="<?php esc_attr_e('Add Facilitator feedback here...', 'tfp-dashboard'); ?>"><?php echo esc_textarea($review_item['feedback'] ?? ''); ?></textarea>
+                                </div>
+
                             </article>
                         <?php endforeach; ?>
                     <?php else: ?>
