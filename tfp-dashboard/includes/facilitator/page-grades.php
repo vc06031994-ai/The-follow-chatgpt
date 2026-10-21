@@ -260,13 +260,36 @@ function tfp_dashboard_render_facilitator_grades_content() {
         <form class="tfp-facilitator-filters tfp-fg-filters tfp-fg-filters--global" method="get">
             <select name="tfp_fg_course" aria-label="All Courses"><option value="">All Courses</option><?php foreach($courses as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
             <select name="tfp_fg_cohort" aria-label="All Cohorts"><option value="">All Cohorts</option><?php foreach($cohort_opts as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
-            <label class="tfp-fg-search"><span>⌕</span><input type="search" name="tfp_fg_search" value="<?php echo esc_attr($state['search']); ?>" placeholder="Search" aria-label="Search grades"></label>
+            <div class="tfp-dash-search tfp-facilitator-search">
+                <span class="tfp-dash-search__icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M16 16L13 13M7.0002 17H4.19692C3.07901 17 2.5192 17 2.0918 16.7822C1.71547 16.5905 1.40973 16.2842 1.40973 16.2842C1.21799 15.9079 1 15.4805 1 13.8002V4.2002C1 3.08009 1 2.51962 1.21799 2.0918C1.40973 1.71547 1.71547 1 2.73341 1H13.8002C14.9203 1 15.4796 1 15.9074 1.21799C16.5905 1.40973 17 2.5192 17 4.19691V7.0002M10.5 14C8.567 14 7 12.433 7 10.5C7 8.567 8.567 7 10.5 7C12.433 7 14 8.567 14 10.5C14 12.433 12.433 14 10.5 14Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </span>
+                <input type="search" name="tfp_fg_search" value="<?php echo esc_attr($state['search']); ?>" placeholder="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>" aria-label="<?php esc_attr_e('Search grades', 'tfp-dashboard'); ?>">
+            </div>
         </form>
         <section class="tfp-fg-metrics">
-            <article><span>Total Enrollment</span><strong><?php echo esc_html(count($student_ids)); ?></strong><small>Total Active Disciples</small></article>
-            <article><span>Average Grade (Global)</span><strong><?php echo esc_html($global?:'—'); ?></strong><small>Across All Course</small></article>
-            <article class="is-danger"><span>Alerts (Stalled • Blocked)</span><strong><?php echo esc_html($stalled+$blocked); ?></strong><small><?php echo esc_html($stalled.' Stalled • '.$blocked.' Blocked'); ?></small></article>
-            <article><span>Homework Completion</span><strong><?php echo $global_completion!==null?esc_html($global_completion.'%'):'—'; ?></strong><small>Current Week Assigned</small></article>
+            <article class="tfp-fac-grades-metric">
+                <span>Total Enrollment</span>
+                <strong><?php echo esc_html(count($student_ids)); ?></strong>
+                <small>Total Active Disciples</small>
+            </article>
+            <article class="tfp-fac-grades-metric">
+                <span>Average Grade (Global)</span>
+                <strong><?php echo esc_html($global ?: '—'); ?></strong>
+                <small>Across All Course</small>
+            </article>
+            <article class="tfp-fac-grades-metric tfp-fac-grades-metric--danger">
+                <span>Alerts (Stalled • Blocked)</span>
+                <strong><?php echo esc_html($stalled + $blocked); ?></strong>
+                <small><?php echo esc_html($stalled . ' Stalled • ' . $blocked . ' Blocked'); ?></small>
+            </article>
+            <article class="tfp-fac-grades-metric">
+                <span>Homework Completion</span>
+                <strong><?php echo $global_completion !== null ? esc_html($global_completion . '%') : '—'; ?></strong>
+                <small>Current Week Assigned</small>
+            </article>
         </section>
         <section class="tfp-fg-card"><div class="tfp-fg-card-head"><h2>Cohort Performance Index</h2></div>
         <div class="tfp-fg-table-wrap"><table class="tfp-fg-table tfp-fg-table--global"><thead><tr><th>Cohort Name</th><th>Disciples</th><th>Avg. Grade</th><th>Alerts</th><th>Completion</th><th>Action</th></tr></thead><tbody>
