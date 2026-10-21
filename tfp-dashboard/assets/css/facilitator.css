@@ -3863,13 +3863,6 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-contact-icon {
     display: inline-flex;
-    width: 22px;
-    height: 22px;
-    align-items: center;
-    justify-content: center;
-    font-family: Arial, sans-serif;
-    font-size: 18px;
-    line-height: 1;
 }
 
 .tfp-homework-student-header p {

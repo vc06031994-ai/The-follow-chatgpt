@@ -564,11 +564,19 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                         <h2><?php echo esc_html($student ? $student->display_name : __('Student', 'tfp-dashboard')); ?></h2>
                         <div class="tfp-homework-student-contact">
                             <span>
-                                <span class="tfp-homework-contact-icon" aria-hidden="true">✉</span>
+                                <span class="tfp-homework-contact-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none">
+<path d="M1.83333 1.83333L6.92303 5.67689L6.92473 5.6783C7.48987 6.09274 7.77261 6.30008 8.0823 6.38018C8.35602 6.45098 8.64376 6.45098 8.91748 6.38018C9.22744 6.30001 9.511 6.09206 10.0771 5.67689C10.0771 5.67689 13.3417 3.17162 15.1667 1.83333M1 10.0002V3.66683C1 2.73341 1 2.26635 1.18166 1.90983C1.34144 1.59623 1.59623 1.34144 1.90983 1.18166C2.26635 1 2.73341 1 3.66683 1H13.3335C14.2669 1 14.733 1 15.0895 1.18166C15.4031 1.34144 15.6587 1.59623 15.8185 1.90983C16 2.266 16 2.7325 16 3.66409V10.003C16 10.9346 16 11.4004 15.8185 11.7566C15.6587 12.0702 15.4031 12.3254 15.0895 12.4852C14.7333 12.6667 14.2675 12.6667 13.3359 12.6667H3.66409C2.73249 12.6667 2.266 12.6667 1.90983 12.4852C1.59623 12.3254 1.34144 12.0702 1.18166 11.7566C1 11.4 1 10.9336 1 10.0002Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+                                </span>
                                 <?php echo esc_html($student ? $student->user_email : ''); ?>
                             </span>
                             <span>
-                                <span class="tfp-homework-contact-icon" aria-hidden="true">◌</span>
+                                <span class="tfp-homework-contact-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+<path d="M8.62808 11.1601L13.4742 6.31397M18.4316 3.35645L14.341 16.651C13.9744 17.8425 13.7909 18.4385 13.4748 18.636C13.2005 18.8074 12.8609 18.836 12.5623 18.7121C12.2178 18.5692 11.9383 18.0111 11.3807 16.8958L8.7897 11.7139C8.7012 11.5369 8.65691 11.4488 8.5978 11.3721C8.54535 11.304 8.48481 11.2427 8.41676 11.1903C8.34182 11.1325 8.25517 11.0892 8.08608 11.0046L2.89224 8.40772C1.77693 7.85006 1.21923 7.57098 1.07632 7.22656C0.95238 6.92787 0.980645 6.588 1.152 6.31375C1.34959 5.99751 1.94555 5.8138 3.13735 5.44709L16.4319 1.35645C17.3689 1.06815 17.8376 0.924119 18.154 1.0403C18.4297 1.1415 18.647 1.35861 18.7482 1.63428C18.8644 1.9506 18.7202 2.41904 18.4322 3.35506L18.4316 3.35645Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+                                </span>
                                 <?php echo esc_html($student ? $student->user_email : ''); ?>
                             </span>
                             <small>
