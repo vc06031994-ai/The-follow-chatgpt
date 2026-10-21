@@ -3885,6 +3885,45 @@ table tbody>tr:nth-child(odd)>th {
     box-sizing: border-box;
 }
 
+
+
+/* Homework review week empty state. */
+.tfp-homework-review-columns--empty {
+    min-height: 260px;
+}
+
+.tfp-homework-empty-state {
+    width: 100%;
+    min-height: 220px;
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.tfp-homework-empty-state h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #151411;
+}
+
+.tfp-homework-empty-state p {
+    max-width: 620px;
+    margin: 0 0 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+}
+
+.tfp-homework-empty-state p:last-child {
+    margin-bottom: 0;
+}
+
 .tfp-homework-review-surface {
     margin: 18px auto 0;
     background: #fff;
