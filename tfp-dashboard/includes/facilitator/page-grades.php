@@ -223,7 +223,7 @@ function tfp_dashboard_render_facilitator_grades_content() {
                 <select name="tfp_fg_cohort" aria-label="Cohort"><?php foreach($cohort_opts as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>" <?php selected($selected->ID,$id); ?>><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
                 <select name="tfp_fg_week" aria-label="Week"><option value="0">All Weeks</option><?php foreach($weeks as $i=>$w): ?><option value="<?php echo $i+1; ?>" <?php selected($state['week'],$i+1); ?>>Week <?php echo $i+1; ?></option><?php endforeach; ?></select>
             </form>
-            <section class="tfp-fg-metrics">
+            <section class="tfp-facilitator-metrics">
                 <?php if($state['week']): ?>
                     <article><span>Cohort Avg Grade</span><strong><?php echo esc_html($sum['avg']?:'—'); ?></strong><small>Current Week Assigned</small></article>
                     <article class="is-gold"><span>Alerts (Stalled • Blocked)</span><strong><?php echo esc_html($sum['alerts']['total']); ?></strong><small><?php echo esc_html($sum['alerts']['stalled'].' Stalled • '.$sum['alerts']['blocked'].' Blocked'); ?></small></article>
@@ -269,23 +269,23 @@ function tfp_dashboard_render_facilitator_grades_content() {
                 <input type="search" name="tfp_fg_search" value="<?php echo esc_attr($state['search']); ?>" placeholder="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>" aria-label="<?php esc_attr_e('Search grades', 'tfp-dashboard'); ?>">
             </div>
         </form>
-        <section class="tfp-fg-metrics">
-            <article class="tfp-fac-grades-metric">
+        <section class="tfp-facilitator-metrics">
+            <article class="tfp-facilitator-metric">
                 <span>Total Enrollment</span>
                 <strong><?php echo esc_html(count($student_ids)); ?></strong>
                 <small>Total Active Disciples</small>
             </article>
-            <article class="tfp-fac-grades-metric">
+            <article class="tfp-facilitator-metric">
                 <span>Average Grade (Global)</span>
                 <strong><?php echo esc_html($global ?: '—'); ?></strong>
                 <small>Across All Course</small>
             </article>
-            <article class="tfp-fac-grades-metric tfp-fac-grades-metric--danger">
+            <article class="tfp-facilitator-metric tfp-facilitator-metric--red">
                 <span>Alerts (Stalled • Blocked)</span>
                 <strong><?php echo esc_html($stalled + $blocked); ?></strong>
                 <small><?php echo esc_html($stalled . ' Stalled • ' . $blocked . ' Blocked'); ?></small>
             </article>
-            <article class="tfp-fac-grades-metric">
+            <article class="tfp-facilitator-metric">
                 <span>Homework Completion</span>
                 <strong><?php echo $global_completion !== null ? esc_html($global_completion . '%') : '—'; ?></strong>
                 <small>Current Week Assigned</small>
