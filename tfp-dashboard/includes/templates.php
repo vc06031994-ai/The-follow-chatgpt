@@ -301,6 +301,52 @@ add_action('init', function () {
     }
 });
 
+/**
+ * Ensure the Facilitator Grades page exists and uses our custom template.
+ */
+add_action('init', function () {
+    static $checked_facilitator_grades = false;
+    if ($checked_facilitator_grades) {
+        return;
+    }
+    $checked_facilitator_grades = true;
+
+    $pages = get_posts([
+        'post_type' => 'page',
+        'post_status' => ['publish', 'draft', 'pending'],
+        'meta_key' => '_wp_page_template',
+        'meta_value' => 'tfp-dashboard-facilitator-grades',
+        'numberposts' => 1,
+        'fields' => 'ids',
+    ]);
+
+    if (!empty($pages)) {
+        return;
+    }
+
+    $page = get_page_by_path('facilitator-grades');
+    if ($page) {
+        update_post_meta($page->ID, '_wp_page_template', 'tfp-dashboard-facilitator-grades');
+        return;
+    }
+
+    $new_id = wp_insert_post([
+        'post_title' => 'Facilitator Grades',
+        'post_name' => 'facilitator-grades',
+        'post_status' => 'publish',
+        'post_type' => 'page',
+        'comment_status' => 'closed',
+        'ping_status' => 'closed',
+    ]);
+
+    if ($new_id && !is_wp_error($new_id)) {
+        update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-grades');
+        if (function_exists('flush_rewrite_rules')) {
+            flush_rewrite_rules(false);
+        }
+    }
+});
+
 add_filter('theme_page_templates', function ($templates) {
     foreach (tfp_dashboard_template_map() as $slug => $data) {
         $templates[$slug] = $data['label'];
