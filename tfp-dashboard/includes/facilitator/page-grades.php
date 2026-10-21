@@ -218,7 +218,7 @@ function tfp_dashboard_render_facilitator_grades_content() {
         ?>
         <div class="tfp-facilitator-grades-page">
             <?php tfp_facilitator_grades_render_header($crumbs); ?>
-            <form class="tfp-facilitator-filters tfp-fg-filters" method="get">
+            <form class="tfp-facilitator-filters tfp-fg-filters" method="get" action="<?php echo esc_url(get_permalink()); ?>">
                 <select name="tfp_fg_course" aria-label="Course"><?php foreach($courses as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>" <?php selected($course,$id); ?>><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
                 <select name="tfp_fg_cohort" aria-label="Cohort"><?php foreach($cohort_opts as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>" <?php selected($selected->ID,$id); ?>><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
                 <select name="tfp_fg_week" aria-label="Week"><option value="0">All Weeks</option><?php foreach($weeks as $i=>$w): ?><option value="<?php echo $i+1; ?>" <?php selected($state['week'],$i+1); ?>>Week <?php echo $i+1; ?></option><?php endforeach; ?></select>
@@ -257,7 +257,7 @@ function tfp_dashboard_render_facilitator_grades_content() {
     ?>
     <div class="tfp-facilitator-grades-page">
         <?php tfp_facilitator_grades_render_header([['label'=>'Facilitator','url'=>tfp_dashboard_get_url('tfp-dashboard-facilitator-home')],['label'=>'Grades','url'=>null,'subtitle'=>'High-level performance tracking across all active cohorts.']]); ?>
-        <form class="tfp-facilitator-filters tfp-fg-filters tfp-fg-filters--global" method="get">
+        <form class="tfp-facilitator-filters tfp-fg-filters tfp-fg-filters--global" method="get" action="<?php echo esc_url(get_permalink()); ?>">
             <select name="tfp_fg_course" aria-label="All Courses"><option value="">All Courses</option><?php foreach($courses as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
             <select name="tfp_fg_cohort" aria-label="All Cohorts"><option value="">All Cohorts</option><?php foreach($cohort_opts as $id=>$title): ?><option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option><?php endforeach; ?></select>
             <div class="tfp-dash-search tfp-facilitator-search">
