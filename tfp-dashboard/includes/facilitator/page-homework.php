@@ -588,7 +588,7 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
             </a>
         </header>
 
-        <div class="tfp-attendance-course-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
+        <div class="tfp-student-filters tfp-facilitator-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
             <div class="tfp-attendance-filters-form">
                 <div class="tfp-attendance-filter-item">
                     <label class="screen-reader-text" for="tfp_homework_review_course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
