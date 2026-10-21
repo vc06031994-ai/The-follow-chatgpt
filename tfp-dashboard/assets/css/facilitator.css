@@ -4152,10 +4152,24 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-homework-curriculum-panel {
+    position: relative;
     min-width: 0;
     padding: 40px 28px;
-    border-left: 1px solid #C4C4C4;
+    border-left: 0;
     box-sizing: border-box;
+}
+
+@media (min-width: 1101px) {
+    .tfp-homework-curriculum-panel::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 60px;
+        width: 1px;
+        background: #C4C4C4;
+        pointer-events: none;
+    }
 }
 
 .tfp-homework-curriculum-panel__item[hidden] {
