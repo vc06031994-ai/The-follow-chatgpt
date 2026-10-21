@@ -753,8 +753,13 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                             </article>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <div class="tfp-facilitator-empty-state">
-                            <?php esc_html_e('No homework questions are available for this submission.', 'tfp-dashboard'); ?>
+                        <div class="tfp-homework-empty-state">
+                            <h3><?php esc_html_e('No homework content available', 'tfp-dashboard'); ?></h3>
+                            <p><?php printf(
+                                esc_html__('There are no homework questions configured for Week %d.', 'tfp-dashboard'),
+                                $week_number
+                            ); ?></p>
+                            <p><?php esc_html_e('Select another week from the dropdown above to continue reviewing homework.', 'tfp-dashboard'); ?></p>
                         </div>
                     <?php endif; ?>
                 </div>
