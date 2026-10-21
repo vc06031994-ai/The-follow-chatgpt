@@ -238,7 +238,7 @@ function tfp_dashboard_render_facilitator_grades_content() {
             </section>
             <section class="tfp-fg-card">
                 <div class="tfp-fg-card-head"><h2><?php echo esc_html($state['week']?('Week '.$state['week'].': '.($sum['lesson']?$sum['lesson']->post_title:'')):$selected->post_title.' Overall Performance Index'); ?></h2></div>
-                <div class="tfp-fg-table-wrap"><table class="tfp-fg-table"><thead><tr><th>Disciples</th><th>Attendance</th><th>Homework Grade</th><th>Quiz Grade</th><th>Test Grade</th><th>Action</th></tr></thead><tbody>
+                <div class="tfp-dash-table-wrap tfp-fg-table-wrap"><table class="tfp-dash-table tfp-fg-table"><thead><tr><th>Disciples</th><th>Attendance</th><th>Homework Grade</th><th>Quiz Grade</th><th>Test Grade</th><th>Action</th></tr></thead><tbody>
                 <?php foreach($rows as $r): $url=add_query_arg(['tfp_student_id'=>$r['id'],'tfp_student_course'=>$course,'tfp_student_cohort'=>$selected->ID,'tfp_student_week'=>$state['week']],tfp_dashboard_get_url('tfp-dashboard-facilitator-student')); ?>
                     <tr><td><?php echo esc_html($r['name']); ?></td><td><?php echo tfp_facilitator_grades_attendance_badge($r['attendance']); ?></td><td><?php echo tfp_facilitator_grades_badge($r['homework']); ?></td><td><?php echo tfp_facilitator_grades_badge($r['quiz']); ?></td><td><?php echo tfp_facilitator_grades_badge($r['test']); ?></td><td><a class="tfp-fg-action <?php echo $r['overall']===''?'is-add':''; ?>" href="<?php echo esc_url($url); ?>"><?php echo $r['overall']===''?'Add':'View'; ?></a></td></tr>
                 <?php endforeach; ?></tbody></table></div>
@@ -292,7 +292,7 @@ function tfp_dashboard_render_facilitator_grades_content() {
             </article>
         </section>
         <section class="tfp-fg-card"><div class="tfp-fg-card-head"><h2>Cohort Performance Index</h2></div>
-        <div class="tfp-fg-table-wrap"><table class="tfp-fg-table tfp-fg-table--global"><thead><tr><th>Cohort Name</th><th>Disciples</th><th>Avg. Grade</th><th>Alerts</th><th>Completion</th><th>Action</th></tr></thead><tbody>
+        <div class="tfp-dash-table-wrap tfp-fg-table-wrap"><table class="tfp-dash-table tfp-fg-table tfp-fg-table--global"><thead><tr><th>Cohort Name</th><th>Disciples</th><th>Avg. Grade</th><th>Alerts</th><th>Completion</th><th>Action</th></tr></thead><tbody>
         <?php foreach($visible as $c): $s=tfp_facilitator_grades_cohort_summary($c,0); $url=add_query_arg(['tfp_fg_course'=>$s['course'],'tfp_fg_cohort'=>$c->ID],tfp_dashboard_get_url('tfp-dashboard-facilitator-grades')); ?>
             <tr><td><?php echo esc_html($c->post_title); ?></td><td><?php echo esc_html($s['students']?count($s['students']):0); ?></td><td><?php echo tfp_facilitator_grades_badge($s['avg']); ?></td><td><span class="tfp-fg-alert-text"><?php echo esc_html($s['alerts']['stalled'].' Stalled'); ?> • <strong><?php echo esc_html($s['alerts']['blocked'].' Blocked'); ?></strong></span></td><td><strong><?php echo $s['stats']['homework']!==null?esc_html($s['stats']['homework'].'%'):'—'; ?></strong></td><td><a class="tfp-fg-action <?php echo $s['avg']===''?'is-add':''; ?>" href="<?php echo esc_url($url); ?>"><?php echo $s['avg']===''?'Add':'View'; ?></a></td></tr>
         <?php endforeach; ?></tbody></table></div></section>
