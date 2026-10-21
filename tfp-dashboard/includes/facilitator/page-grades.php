@@ -225,15 +225,15 @@ function tfp_dashboard_render_facilitator_grades_content() {
             </form>
             <section class="tfp-facilitator-metrics">
                 <?php if($state['week']): ?>
-                    <article><span>Cohort Avg Grade</span><strong><?php echo esc_html($sum['avg']?:'—'); ?></strong><small>Current Week Assigned</small></article>
-                    <article class="is-gold"><span>Alerts (Stalled • Blocked)</span><strong><?php echo esc_html($sum['alerts']['total']); ?></strong><small><?php echo esc_html($sum['alerts']['stalled'].' Stalled • '.$sum['alerts']['blocked'].' Blocked'); ?></small></article>
-                    <article><span>Homework Completion</span><strong><?php echo $sum['stats']['homework']!==null?esc_html($sum['stats']['homework'].'%'):'—'; ?></strong><small>Current Week Assigned</small></article>
-                    <article><span>Attendance Rate</span><strong><?php echo esc_html($sum['stats']['attendance_main']); ?></strong><small><?php echo esc_html($sum['stats']['attendance_sub']); ?></small></article>
+                    <article class="tfp-facilitator-metric"><span>Cohort Avg Grade</span><strong><?php echo esc_html($sum['avg']?:'—'); ?></strong><small>Current Week Assigned</small></article>
+                    <article class="tfp-facilitator-metric tfp-facilitator-metric--gold"><span>Alerts (Stalled • Blocked)</span><strong><?php echo esc_html($sum['alerts']['total']); ?></strong><small><?php echo esc_html($sum['alerts']['stalled'].' Stalled • '.$sum['alerts']['blocked'].' Blocked'); ?></small></article>
+                    <article class="tfp-facilitator-metric"><span>Homework Completion</span><strong><?php echo $sum['stats']['homework']!==null?esc_html($sum['stats']['homework'].'%'):'—'; ?></strong><small>Current Week Assigned</small></article>
+                    <article class="tfp-facilitator-metric"><span>Attendance Rate</span><strong><?php echo esc_html($sum['stats']['attendance_main']); ?></strong><small><?php echo esc_html($sum['stats']['attendance_sub']); ?></small></article>
                 <?php else: ?>
-                    <article><span>Cohort Avg Grade</span><strong><?php echo esc_html($sum['avg']?:'—'); ?></strong><small>Top 10% of all Cohorts</small></article>
-                    <article><span>Avg Test Grades</span><strong><?php echo $sum['stats']['test']!==null?esc_html($sum['stats']['test'].'%'):'—'; ?></strong><small>Across graded weeks</small></article>
-                    <article><span>Homework Completion</span><strong><?php echo $sum['stats']['homework']!==null?esc_html($sum['stats']['homework'].'%'):'—'; ?></strong><small>Current Week Assigned</small></article>
-                    <article><span>Attendance Rate</span><strong><?php echo esc_html($sum['stats']['attendance_main']); ?></strong><small><?php echo esc_html($sum['stats']['attendance_sub']); ?></small></article>
+                    <article class="tfp-facilitator-metric"><span>Cohort Avg Grade</span><strong><?php echo esc_html($sum['avg']?:'—'); ?></strong><small>Top 10% of all Cohorts</small></article>
+                    <article class="tfp-facilitator-metric"><span>Avg Test Grades</span><strong><?php echo $sum['stats']['test']!==null?esc_html($sum['stats']['test'].'%'):'—'; ?></strong><small>Across graded weeks</small></article>
+                    <article class="tfp-facilitator-metric"><span>Homework Completion</span><strong><?php echo $sum['stats']['homework']!==null?esc_html($sum['stats']['homework'].'%'):'—'; ?></strong><small>Current Week Assigned</small></article>
+                    <article class="tfp-facilitator-metric"><span>Attendance Rate</span><strong><?php echo esc_html($sum['stats']['attendance_main']); ?></strong><small><?php echo esc_html($sum['stats']['attendance_sub']); ?></small></article>
                 <?php endif; ?>
             </section>
             <section class="tfp-fg-card">
