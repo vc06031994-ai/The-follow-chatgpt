@@ -865,6 +865,64 @@ function tfp_dashboard_render_facilitator_homework_content() {
             }
         }
 
+        /*
+         * A review page can be reached from the week selector even when the
+         * selected week is not present in the submitted-homework list (for
+         * example, the student has not marked that homework step complete
+         * yet). The context validator has already confirmed that the lesson
+         * belongs to this cohort's course and contains homework questions, so
+         * build the review context directly instead of redirecting to a blank
+         * page.
+         */
+        $course_id = (int) $context['course_id'];
+        $week_number = 0;
+        $selected_week = null;
+        $weeks = function_exists('tfp_ld_get_weeks')
+            ? (array) tfp_ld_get_weeks($course_id)
+            : [];
+
+        foreach ($weeks as $index => $week) {
+            if ((int) $week->ID === $lesson_id) {
+                $selected_week = $week;
+                $week_number = (int) $index + 1;
+                break;
+            }
+        }
+
+        if ($selected_week) {
+            $answers = function_exists('tfp_week_get_homework_answers')
+                ? tfp_week_get_homework_answers($student_id, $lesson_id)
+                : [];
+
+            $submitted_at = 0;
+            foreach ((array) $answers as $answer) {
+                if (!empty($answer['submitted_at'])) {
+                    $submitted_at = max($submitted_at, strtotime((string) $answer['submitted_at']));
+                }
+            }
+
+            $item = [
+                'student_id' => $student_id,
+                'student_name' => get_the_author_meta('display_name', $student_id),
+                'course_id' => $course_id,
+                'course_name' => get_the_title($course_id),
+                'cohort_id' => $cohort_id,
+                'cohort_name' => get_the_title($cohort_id),
+                'lesson_id' => $lesson_id,
+                'week' => $week_number,
+                'module' => $selected_week->post_title,
+                'status' => tfp_facilitator_homework_is_graded($student_id, $lesson_id) ? 'graded' : 'submitted',
+                'submitted_at' => $submitted_at,
+                'grade' => tfp_facilitator_homework_is_graded($student_id, $lesson_id)
+                    ? tfp_facilitator_homework_grade_letter($student_id, $lesson_id)
+                    : '',
+                'question_count' => count((array) tfp_week_get_homework_questions($lesson_id, false)),
+            ];
+
+            tfp_dashboard_render_facilitator_homework_review_content($item);
+            return;
+        }
+
         wp_safe_redirect(tfp_dashboard_get_url('tfp-dashboard-facilitator-homework'));
         exit;
     }
