@@ -659,7 +659,8 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                 <?php endif; ?>
             </header>
 
-            <div class="tfp-homework-review-columns<?php echo $question_count > 0 ? '' : ' tfp-homework-review-columns--empty'; ?>">
+                        <?php if ($questions): ?>
+<div class="tfp-homework-review-columns">
                 <div class="tfp-homework-submission-panel">
                     <?php if ($questions): ?>
                         <?php foreach ($questions as $index => $question): ?>
@@ -752,16 +753,7 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
 
                             </article>
                         <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="tfp-homework-empty-state">
-                            <h3><?php esc_html_e('No homework content available', 'tfp-dashboard'); ?></h3>
-                            <p><?php printf(
-                                esc_html__('There are no homework questions configured for Week %d.', 'tfp-dashboard'),
-                                $week_number
-                            ); ?></p>
-                            <p><?php esc_html_e('Select another week from the dropdown above to continue reviewing homework.', 'tfp-dashboard'); ?></p>
-                        </div>
-                    <?php endif; ?>
+                                        <?php endif; ?>
                 </div>
 
                 <?php if ($questions): ?>
@@ -819,6 +811,16 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                     </aside>
                 <?php endif; ?>
             </div>
+            <?php else: ?>
+                <div class="tfp-homework-empty-state tfp-homework-empty-state--full">
+                    <h3><?php esc_html_e('No homework content available', 'tfp-dashboard'); ?></h3>
+                    <p><?php printf(
+                        esc_html__('There are no homework questions configured for Week %d.', 'tfp-dashboard'),
+                        $week_number
+                    ); ?></p>
+                    <p><?php esc_html_e('Select another week from the dropdown above to continue reviewing homework.', 'tfp-dashboard'); ?></p>
+                </div>
+            <?php endif; ?>
 
             <?php if ($questions): ?>
                 <footer class="tfp-homework-review-footer">
