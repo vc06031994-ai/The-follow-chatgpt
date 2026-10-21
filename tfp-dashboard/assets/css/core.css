@@ -1,9 +1,9 @@
 /* Global SelectWoo single-select styling */
 .select2-container--default .select2-selection--single {
+    position: relative !important;
+    display: block !important;
     min-height: 36px !important;
     height: 36px !important;
-    display: flex !important;
-    align-items: center !important;
     border: 1px solid #d6d6d6 !important;
     border-radius: 8px !important;
     background: #fff !important;
@@ -11,12 +11,16 @@
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 34px !important;
     min-height: 34px !important;
-    display: flex !important;
-    align-items: center !important;
-    padding: 0 34px 0 12px !important;
+    line-height: 34px !important;
+    padding: 0 36px 0 12px !important;
     color: #151411 !important;
-    font: 500 13px/130% var(--tfp-dash-font) !important;
+    font: 500 13px/34px var(--tfp-dash-font) !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -24,10 +28,15 @@
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
+    position: absolute !important;
     height: 34px !important;
-    width: 30px !important;
-    right: 0 !important;
-    top: 1px !important;
+    width: 28px !important;
+    right: 4px !important;
+    top: 0 !important;
+    pointer-events: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .select2-container--default.select2-container--focus .select2-selection--single,
@@ -138,8 +147,4 @@ table tbody>tr:nth-child(odd)>th{
 /* Dropdown open hone par smooth flip */
 .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
     transform: translate(-50%, -50%) rotate(180deg) !important;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__arrow{
-    right: 5px !important;
-}
+}

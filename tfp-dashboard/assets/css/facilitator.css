@@ -24,10 +24,13 @@
     border: 1px solid #d6d6d6;
     border-radius: 8px;
     background: #fff;
-    padding: 0 12px;
+    padding: 0 36px 0 10px;
     font-family: var(--tfp-dash-font);
     font-size: 13px;
-    color: var(--tfp-dash-text)
+    color: var(--tfp-dash-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .tfp-facilitator-filters select:focus {
@@ -387,64 +390,9 @@
     }
 }
 
-/* Homework review filters — use the shared facilitator SelectWoo styling, with the Figma layout. */
+/* Homework review filters — matches Home / Homework list filtration style */
 .tfp-homework-context-filters {
-    display: flex;
-    align-items: center;
-    gap: 8px;
     margin: 18px 0;
-    width: 100%;
-}
-
-.tfp-homework-context-filters .select2-container {
-    flex: 0 0 auto;
-    min-width: 0 !important;
-}
-
-.tfp-homework-context-filters .select2-container:nth-of-type(1) {
-    width: 148px !important;
-}
-
-.tfp-homework-context-filters .select2-container:nth-of-type(2) {
-    width: 158px !important;
-}
-
-.tfp-homework-context-filters .select2-container:nth-of-type(3) {
-    width: 68px !important;
-}
-
-.tfp-homework-context-filters .select2-container--default .select2-selection--single {
-    width: 100% !important;
-    overflow: hidden !important;
-}
-
-.tfp-homework-context-filters .select2-container--default .select2-selection--single .select2-selection__rendered {
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    box-sizing: border-box !important;
-}
-
-.tfp-homework-context-filters .select2-container--default .select2-selection--single .select2-selection__arrow {
-    width: 28px !important;
-    right: 0 !important;
-    top: 1px !important;
-    background: #fff !important;
-    z-index: 2 !important;
-}
-
-@media (max-width: 767px) {
-    .tfp-homework-context-filters {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .tfp-homework-context-filters .select2-container {
-        width: 100% !important;
-    }
 }
 
 /* Facilitator Attendance SelectWoo filters — same treatment as Home filters. */
@@ -454,6 +402,8 @@
 }
 
 .tfp-attendance-course-filters .select2-container--default .select2-selection--single {
+    position: relative !important;
+    display: block !important;
     height: 38px !important;
     min-height: 38px !important;
     border: 1px solid #d6d6d6 !important;
@@ -463,20 +413,31 @@
 }
 
 .tfp-attendance-course-filters .select2-container--default .select2-selection--single .select2-selection__rendered {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     height: 36px !important;
     line-height: 36px !important;
-    padding: 0 34px 0 13px !important;
+    padding: 0 36px 0 12px !important;
     font: 500 13px/36px var(--tfp-dash-font) !important;
     color: var(--tfp-dash-text) !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .tfp-attendance-course-filters .select2-container--default .select2-selection--single .select2-selection__arrow {
+    position: absolute !important;
     height: 36px !important;
-    right: 7px !important;
-    top: 1px !important;
+    width: 28px !important;
+    right: 4px !important;
+    top: 0 !important;
+    pointer-events: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .tfp-attendance-course-filters .select2-container--default .select2-selection--single .select2-selection__arrow b {
@@ -534,23 +495,41 @@
 }
 
 .tfp-facilitator-filters .select2-container--default .select2-selection--single {
+    position: relative !important;
+    display: block !important;
     height: 36px !important;
     border: 1px solid #d6d6d6 !important;
     border-radius: 8px !important;
-    background: #fff !important
+    background: #fff !important;
+    box-sizing: border-box !important;
 }
 
 .tfp-facilitator-filters .select2-container--default .select2-selection--single .select2-selection__rendered {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     height: 34px !important;
     line-height: 34px !important;
-    padding: 0 34px 0 7px !important;
+    padding: 0 36px 0 10px !important;
     font: 500 13px/34px var(--tfp-dash-font) !important;
-    color: var(--tfp-dash-text) !important
+    color: var(--tfp-dash-text) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .tfp-facilitator-filters .select2-container--default .select2-selection--single .select2-selection__arrow {
+    position: absolute !important;
     height: 34px !important;
-    right: 8px !important
+    width: 28px !important;
+    right: 4px !important;
+    top: 0 !important;
+    pointer-events: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .tfp-facilitator-filters .select2-container--default.select2-container--open .select2-selection--single {
@@ -653,8 +632,8 @@
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
-
-    border-color: var(--tfp-dash-teal) transparent transparent transparent !important;
+    border: none !important;
+    border-width: 0 !important;
 }
 
 .current-week {
@@ -1023,7 +1002,7 @@ table tbody>tr:nth-child(odd)>th {
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 12px;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
 }
 
 .tfp-student-panel-head a {
@@ -1294,7 +1273,7 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-student-activity-row:hover {
-    background: var( --tfp-dash-hover-square) ;
+    background: var(--tfp-dash-hover-square);
 }
 
 .tfp-student-activity-row:last-child {
@@ -1397,8 +1376,8 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-student-week-card strong {
     display: block;
     font-size: 16px;
-    font-weight:700;
-    line-height:130%;
+    font-weight: 700;
+    line-height: 130%;
 }
 
 .tfp-student-week-card small {
@@ -1411,7 +1390,7 @@ table tbody>tr:nth-child(odd)>th {
     color: #151411;
 }
 
-.tfp-student-week-card:hover{
+.tfp-student-week-card:hover {
     color: var(--tfp-dash-text) !important;
 }
 
@@ -1528,15 +1507,33 @@ table tbody>tr:nth-child(odd)>th {
 
 
 .tfp-student-activity-list::-webkit-scrollbar,
-.tfp-student-activity-scroll::-webkit-scrollbar { width: 5px; }
-.tfp-student-activity-list::-webkit-scrollbar-thumb,
-.tfp-student-activity-scroll::-webkit-scrollbar-thumb { background: #8F9697; border-radius: 8px; }
-.tfp-student-activity-list::-webkit-scrollbar-track,
-.tfp-student-activity-scroll::-webkit-scrollbar-track { background: #E4E8E8; border-radius: 8px; }
-@media (max-width: 767px) {
-    .tfp-student-activity-list { height: 150px; max-height: 150px; }
-    .tfp-student-activity-scroll { max-height: calc(94vh - 120px); }
+.tfp-student-activity-scroll::-webkit-scrollbar {
+    width: 5px;
 }
+
+.tfp-student-activity-list::-webkit-scrollbar-thumb,
+.tfp-student-activity-scroll::-webkit-scrollbar-thumb {
+    background: #8F9697;
+    border-radius: 8px;
+}
+
+.tfp-student-activity-list::-webkit-scrollbar-track,
+.tfp-student-activity-scroll::-webkit-scrollbar-track {
+    background: #E4E8E8;
+    border-radius: 8px;
+}
+
+@media (max-width: 767px) {
+    .tfp-student-activity-list {
+        height: 150px;
+        max-height: 150px;
+    }
+
+    .tfp-student-activity-scroll {
+        max-height: calc(94vh - 120px);
+    }
+}
+
 .tfp-student-activity-row--large {
     padding: 11px 10px;
 }
@@ -1824,9 +1821,9 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 .tfp-attendance-header__title {
-  
+
     margin: 0 0 6px 0;
-  
+
 }
 
 
@@ -2023,7 +2020,7 @@ table tbody>tr:nth-child(odd)>th {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding:18px 24px 0px 24px;
+    padding: 18px 24px 0px 24px;
     margin-top: 6px;
     border-top: 1px solid #E5E7EB;
     font-size: 12px;
@@ -2196,14 +2193,14 @@ table tbody>tr:nth-child(odd)>th {
 /* Prevent student overview panels from creating horizontal overflow on small screens. */
 .tfp-student-overview-grid,
 .tfp-student-overview-left,
-.tfp-student-overview-grid > *,
+.tfp-student-overview-grid>*,
 .tfp-student-panel {
     min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
 }
 
-.tfp-student-panel-head > div {
+.tfp-student-panel-head>div {
     min-width: 0;
     max-width: 100%;
 }
@@ -2226,6 +2223,7 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 @media (max-width: 767px) {
+
     .tfp-student-overview-grid,
     .tfp-student-overview-left {
         width: 100%;
@@ -2256,13 +2254,13 @@ table tbody>tr:nth-child(odd)>th {
         padding: 8px;
     }
 
-    .tfp-student-activity-row > strong,
-    .tfp-student-activity-row > div {
+    .tfp-student-activity-row>strong,
+    .tfp-student-activity-row>div {
         min-width: 0;
         max-width: 100%;
     }
 
-    .tfp-student-activity-row > strong {
+    .tfp-student-activity-row>strong {
         font-size: 11px;
         overflow-wrap: anywhere;
     }
@@ -2274,7 +2272,7 @@ table tbody>tr:nth-child(odd)>th {
         word-break: break-word;
     }
 
-    .tfp-student-activity-row > .tfp-student-status {
+    .tfp-student-activity-row>.tfp-student-status {
         justify-self: end;
         width: 68px !important;
         min-width: 68px !important;
@@ -2300,11 +2298,11 @@ table tbody>tr:nth-child(odd)>th {
         padding: 7px;
     }
 
-    .tfp-student-activity-row > strong {
+    .tfp-student-activity-row>strong {
         font-size: 10px;
     }
 
-    .tfp-student-activity-row > .tfp-student-status {
+    .tfp-student-activity-row>.tfp-student-status {
         width: 64px !important;
         min-width: 64px !important;
         max-width: 64px !important;
@@ -2523,14 +2521,14 @@ table tbody>tr:nth-child(odd)>th {
     font-style: normal;
 }
 
-.tfp-facilitator-review-explanation-box > h4 {
+.tfp-facilitator-review-explanation-box>h4 {
     margin: 0 0 8px !important;
     font-size: 16px !important;
     font-weight: 700 !important;
     color: var(--tfp-dash-text) !important;
 }
 
-.tfp-facilitator-review-explanation-box > p {
+.tfp-facilitator-review-explanation-box>p {
     margin: 0 0 12px;
     font-family: var(--tfp-dash-font-alt);
     font-size: 16px;
@@ -2664,11 +2662,11 @@ table tbody>tr:nth-child(odd)>th {
     line-height: 1.7;
 }
 
-.tfp-facilitator-reading-content > :first-child {
+.tfp-facilitator-reading-content> :first-child {
     margin-top: 0;
 }
 
-.tfp-facilitator-reading-content > :last-child {
+.tfp-facilitator-reading-content> :last-child {
     margin-bottom: 0;
 }
 
@@ -2684,18 +2682,18 @@ table tbody>tr:nth-child(odd)>th {
     }
 }
 
-.attendance-status{
+.attendance-status {
     font-size: 10px;
     font-weight: 500;
     line-height: 130%;
     font-family: var(--tfp-dash-font, sans-serif);
 }
 
-.tfp-student-attendance-form{
-    margin-top:30px;
+.tfp-student-attendance-form {
+    margin-top: 30px;
 }
 
-.tfp-attendance-panel-head-row{
+.tfp-attendance-panel-head-row {
     padding: 0px 24px;
 }
 
@@ -2708,7 +2706,7 @@ table tbody>tr:nth-child(odd)>th {
     margin-bottom: 16px;
 }
 
-.tfp-attendance-health-head > div:first-child {
+.tfp-attendance-health-head>div:first-child {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -2827,11 +2825,25 @@ table tbody>tr:nth-child(odd)>th {
     min-width: 1057px;
 }
 
-.tfp-attendance-submission-table th:nth-child(1) { width: 238px; }
-.tfp-attendance-submission-table th:nth-child(2) { width: 233px; }
-.tfp-attendance-submission-table th:nth-child(3) { width: 215px; }
-.tfp-attendance-submission-table th:nth-child(4) { width: 238px; }
-.tfp-attendance-submission-table th:nth-child(5) { width: 133px; }
+.tfp-attendance-submission-table th:nth-child(1) {
+    width: 238px;
+}
+
+.tfp-attendance-submission-table th:nth-child(2) {
+    width: 233px;
+}
+
+.tfp-attendance-submission-table th:nth-child(3) {
+    width: 215px;
+}
+
+.tfp-attendance-submission-table th:nth-child(4) {
+    width: 238px;
+}
+
+.tfp-attendance-submission-table th:nth-child(5) {
+    width: 133px;
+}
 
 .tfp-attendance-log-status {
     display: inline-flex;
@@ -2975,17 +2987,17 @@ table tbody>tr:nth-child(odd)>th {
     gap: 2px;
 }
 
-.tfp-attendance-next-meeting__info > span {
+.tfp-attendance-next-meeting__info>span {
     font: 500 10px/130% var(--tfp-dash-font);
     color: var(--tfp-dash-teal);
 }
 
-.tfp-attendance-next-meeting__info > strong {
+.tfp-attendance-next-meeting__info>strong {
     font: 700 20px/130% var(--tfp-dash-font);
     color: var(--tfp-dash-text);
 }
 
-.tfp-attendance-next-meeting__info > small {
+.tfp-attendance-next-meeting__info>small {
     font: 500 12px/180% var(--tfp-dash-font-alt);
     color: var(--tfp-dash-text);
 }
@@ -3210,6 +3222,7 @@ table tbody>tr:nth-child(odd)>th {
 }
 
 @media (max-width: 580px) {
+
     .tfp-attendance-course-filters .tfp-attendance-filter-item:first-child .tfp-attendance-select,
     .tfp-attendance-course-filters .tfp-attendance-filter-item:nth-child(2) .tfp-attendance-select {
         width: 100%;
@@ -3228,7 +3241,7 @@ table tbody>tr:nth-child(odd)>th {
         flex-basis: calc(100% - 84px);
     }
 
-    .tfp-attendance-next-meeting > .tfp-dash-btn {
+    .tfp-attendance-next-meeting>.tfp-dash-btn {
         width: 100%;
     }
 
@@ -3380,17 +3393,45 @@ table tbody>tr:nth-child(odd)>th {
     padding: 12px 14px;
 }
 
-.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(1) { width: 24%; }
-.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(2) { width: 20%; }
-.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(3) { width: 25%; }
-.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(4) { width: 22%; }
-.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(5) { width: 9%; }
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(1) {
+    width: 24%;
+}
 
-.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(1) { width: 24%; }
-.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(2) { width: 24%; }
-.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(3) { width: 22%; }
-.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(4) { width: 21%; }
-.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(5) { width: 9%; }
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(2) {
+    width: 20%;
+}
+
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(3) {
+    width: 25%;
+}
+
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(4) {
+    width: 22%;
+}
+
+.tfp-attendance-upcoming-card .tfp-attendance-submission-table th:nth-child(5) {
+    width: 9%;
+}
+
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(1) {
+    width: 24%;
+}
+
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(2) {
+    width: 24%;
+}
+
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(3) {
+    width: 22%;
+}
+
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(4) {
+    width: 21%;
+}
+
+.tfp-attendance-logs-card .tfp-attendance-submission-table th:nth-child(5) {
+    width: 9%;
+}
 
 .tfp-attendance-logs-card .tfp-attendance-submission-table-wrap {
     overflow-x: auto;
@@ -3703,38 +3744,72 @@ table tbody>tr:nth-child(odd)>th {
 .tfp-homework-pagination__next:hover:not(.is-disabled) {
     color: #fff;
 }
-/* Single student review */
-.tfp-homework-detail-breadcrumb {
-    width: 100%;
-    min-height: 60px;
-    margin: 0 0 0;
-    padding: 20px 0;
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    background: #EBEBEB;
-    box-sizing: border-box;
-    font: 400 16px/130% var(--tfp-dash-font);
+
+/* Single student review page header — edge-to-edge alignment connecting to sidebar red border */
+.tfp-homework-student-pageheader {
+    width: calc(100% + 72px) !important;
+    margin-left: -36px !important;
+    margin-right: -36px !important;
+    padding-left: 36px !important;
+    padding-right: 36px !important;
+    border-bottom: 3px solid var(--tfp-dash-maroon) !important;
+    padding-bottom: 18px !important;
+    margin-bottom: 24px !important;
+    box-sizing: border-box !important;
 }
 
-.tfp-homework-detail-breadcrumb a {
-    color: var(--tfp-dash-teal);
-    text-decoration: none;
+.tfp-homework-student-pageheader .tfp-dash-pageheader__crumb {
+    width: calc(100% + 72px) !important;
+    margin-left: -36px !important;
+    margin-right: -36px !important;
+    padding: 6px 36px !important;
+    box-sizing: border-box !important;
+    background: #EBEBEB !important;
+    margin-bottom: 14px !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
 }
 
-.tfp-homework-detail-breadcrumb strong {
-    font-weight: 700;
+.tfp-homework-student-pageheader .tfp-dash-pageheader__crumb a {
+    color: var(--tfp-dash-teal) !important;
+    text-decoration: none !important;
+}
+
+.tfp-homework-student-pageheader .tfp-dash-pageheader__crumb a:hover {
+    text-decoration: underline !important;
+}
+
+.tfp-homework-student-pageheader .tfp-dash-pageheader__crumb span {
+    margin: 0 6px !important;
 }
 
 .tfp-homework-student-header {
-    min-height: 155px;
-    padding: 18px 52px;
+    min-height: auto;
+    padding: 10px 0 0 !important;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    border-bottom: 3px solid var(--tfp-dash-maroon);
+    border-bottom: 0 !important;
     box-sizing: border-box;
+}
+
+@media (max-width: 991px) {
+    .tfp-homework-student-pageheader {
+        width: calc(100% + 32px) !important;
+        margin-left: -16px !important;
+        margin-right: -16px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .tfp-homework-student-pageheader .tfp-dash-pageheader__crumb {
+        width: calc(100% + 32px) !important;
+        margin-left: -16px !important;
+        margin-right: -16px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
 }
 
 .tfp-homework-student-header__person {
@@ -3773,7 +3848,7 @@ table tbody>tr:nth-child(odd)>th {
     flex-wrap: wrap;
 }
 
-.tfp-homework-student-contact > span {
+.tfp-homework-student-contact>span {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -3781,7 +3856,7 @@ table tbody>tr:nth-child(odd)>th {
     color: var(--tfp-dash-text);
 }
 
-.tfp-homework-student-contact > small {
+.tfp-homework-student-contact>small {
     font: 500 10px/130% var(--tfp-dash-font-alt);
     color: #C4C4C4;
 }
@@ -3921,7 +3996,7 @@ table tbody>tr:nth-child(odd)>th {
     font: 700 16px/130% var(--tfp-dash-font);
 }
 
-.tfp-homework-answer-heading > span {
+.tfp-homework-answer-heading>span {
     width: 22px;
     height: 22px;
     display: inline-flex;
@@ -3933,7 +4008,7 @@ table tbody>tr:nth-child(odd)>th {
     font-size: 13px;
 }
 
-.tfp-homework-answer-heading.is-incorrect > span {
+.tfp-homework-answer-heading.is-incorrect>span {
     background: #C92424;
 }
 
@@ -3995,7 +4070,7 @@ table tbody>tr:nth-child(odd)>th {
     margin-bottom: 6px;
 }
 
-.tfp-homework-mastery-head > strong {
+.tfp-homework-mastery-head>strong {
     font: 700 16px/130% var(--tfp-dash-font);
 }
 
@@ -4019,7 +4094,7 @@ table tbody>tr:nth-child(odd)>th {
     margin: 0;
     appearance: none;
     -webkit-appearance: none;
-    border: .5px solid rgba(0,0,0,.25);
+    border: .5px solid rgba(0, 0, 0, .25);
     border-radius: 2px;
     background: #fff;
     position: relative;
@@ -4039,7 +4114,7 @@ table tbody>tr:nth-child(odd)>th {
     font: 700 14px/18px Arial, sans-serif;
 }
 
-.tfp-homework-mastery-card > p {
+.tfp-homework-mastery-card>p {
     margin: 0 0 12px;
     font: 500 12px/180% var(--tfp-dash-font-alt);
 }
@@ -4153,16 +4228,16 @@ table tbody>tr:nth-child(odd)>th {
 
 .tfp-homework-question-nav {
     min-height: 54px;
-    padding: 15px 8px;
-    display: inline-flex;
+    padding: 15px 8px !important;
+    display: inline-flex !important;
     align-items: center;
     gap: 10px;
-    border: 0;
+    border: 0 !important;
     border-radius: 8px;
-    background: transparent;
-    color: #3E4142;
-    font: 500 14px/130% var(--tfp-dash-font);
-    cursor: pointer;
+    background: transparent !important;
+    color: #3E4142 !important;
+    font: 500 14px/130% var(--tfp-dash-font) !important;
+    cursor: pointer !important;
 }
 
 .tfp-homework-question-nav.is-disabled {
@@ -4301,11 +4376,11 @@ table tbody>tr:nth-child(odd)>th {
     }
 
     .tfp-homework-student-header {
-        padding-left: 24px;
-        padding-right: 24px;
+        padding-left: 0;
+        padding-right: 0;
     }
 
-    }
+}
 
 @media (max-width: 1100px) {
     .tfp-homework-review-columns {
@@ -4317,7 +4392,7 @@ table tbody>tr:nth-child(odd)>th {
         border-top: 1px solid #C4C4C4;
     }
 
-        .tfp-homework-review-footer__right {
+    .tfp-homework-review-footer__right {
         margin-left: 0;
     }
 }
@@ -4327,7 +4402,7 @@ table tbody>tr:nth-child(odd)>th {
         max-width: none;
     }
 
-        .tfp-homework-student-header {
+    .tfp-homework-student-header {
         align-items: flex-start;
         flex-direction: column;
         padding-left: 0;
@@ -4343,7 +4418,7 @@ table tbody>tr:nth-child(odd)>th {
         align-items: flex-start;
     }
 
-    .tfp-homework-student-contact > span {
+    .tfp-homework-student-contact>span {
         font-size: 14px;
     }
 

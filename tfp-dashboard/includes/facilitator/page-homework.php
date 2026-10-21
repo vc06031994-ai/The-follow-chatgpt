@@ -546,51 +546,52 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
         data-question-count="<?php echo esc_attr($question_count); ?>"
         data-completed-count="<?php echo esc_attr($reviewed_count); ?>">
 
-        <nav class="tfp-homework-detail-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
-            <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
-            <span>/</span>
-            <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
-            <span>/</span>
-            <strong><?php echo esc_html($student ? $student->display_name : __('Student', 'tfp-dashboard')); ?></strong>
-        </nav>
-
-        <header class="tfp-homework-student-header">
-            <div class="tfp-homework-student-header__person">
-                <div class="tfp-homework-student-avatar">
-                    <?php echo get_avatar($student_id, 80, '', '', ['class' => ['tfp-homework-avatar-image']]); ?>
-                </div>
-                <div>
-                    <h2><?php echo esc_html($student ? $student->display_name : __('Student', 'tfp-dashboard')); ?></h2>
-                    <div class="tfp-homework-student-contact">
-                        <span>
-                            <span class="tfp-homework-contact-icon" aria-hidden="true">✉</span>
-                            <?php echo esc_html($student ? $student->user_email : ''); ?>
-                        </span>
-                        <span>
-                            <span class="tfp-homework-contact-icon" aria-hidden="true">◌</span>
-                            <?php echo esc_html($student ? $student->user_email : ''); ?>
-                        </span>
-                        <small>
-                        <?php
-                        printf(
-                            esc_html__('Last Active: %s', 'tfp-dashboard'),
-                            esc_html(wp_date('M j, Y g:i A T', $last_active_timestamp))
-                        );
-                        ?>
-                        </small>
-                    </div>
-                </div>
+        <header class="tfp-dash-pageheader tfp-homework-student-pageheader">
+            <div class="tfp-dash-pageheader__crumb tfp-facilitator-breadcrumb tfp-homework-detail-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
+                <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home')); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
+                <span aria-hidden="true">/</span>
+                <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
+                <span aria-hidden="true">/</span>
+                <strong><?php echo esc_html($student ? $student->display_name : __('Student', 'tfp-dashboard')); ?></strong>
             </div>
 
-            <a href="<?php echo esc_url($back_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary tfp-homework-back-list">
-                <span aria-hidden="true">←</span>
-                <?php esc_html_e('Back to List', 'tfp-dashboard'); ?>
-            </a>
+            <div class="tfp-homework-student-header">
+                <div class="tfp-homework-student-header__person">
+                    <div class="tfp-homework-student-avatar">
+                        <?php echo get_avatar($student_id, 100, '', '', ['class' => ['tfp-homework-avatar-image']]); ?>
+                    </div>
+                    <div>
+                        <h2><?php echo esc_html($student ? $student->display_name : __('Student', 'tfp-dashboard')); ?></h2>
+                        <div class="tfp-homework-student-contact">
+                            <span>
+                                <span class="tfp-homework-contact-icon" aria-hidden="true">✉</span>
+                                <?php echo esc_html($student ? $student->user_email : ''); ?>
+                            </span>
+                            <span>
+                                <span class="tfp-homework-contact-icon" aria-hidden="true">◌</span>
+                                <?php echo esc_html($student ? $student->user_email : ''); ?>
+                            </span>
+                            <small>
+                            <?php
+                            printf(
+                                esc_html__('Last Active: %s', 'tfp-dashboard'),
+                                esc_html(wp_date('M j, Y g:i A T', $last_active_timestamp))
+                            );
+                            ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="<?php echo esc_url($back_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary tfp-homework-back-list">
+                    <span aria-hidden="true">←</span>
+                    <?php esc_html_e('Back to List', 'tfp-dashboard'); ?>
+                </a>
+            </div>
         </header>
 
-        <div class="tfp-homework-context-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
-            <label class="screen-reader-text" for="tfp_homework_review_course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
-            <select id="tfp_homework_review_course" disabled>
+        <div class="tfp-facilitator-filters tfp-homework-context-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
+            <select id="tfp_homework_review_course" name="tfp_homework_review_course" aria-label="<?php esc_attr_e('Course', 'tfp-dashboard'); ?>">
                 <?php foreach ($context_courses as $context_course): ?>
                     <option value="<?php echo esc_attr($context_course->ID); ?>" <?php selected((int) $item['course_id'], (int) $context_course->ID); ?>>
                         <?php echo esc_html($context_course->post_title); ?>
@@ -601,8 +602,7 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                 <?php endif; ?>
             </select>
 
-            <label class="screen-reader-text" for="tfp_homework_review_cohort"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></label>
-            <select id="tfp_homework_review_cohort" disabled>
+            <select id="tfp_homework_review_cohort" name="tfp_homework_review_cohort" aria-label="<?php esc_attr_e('Cohort', 'tfp-dashboard'); ?>">
                 <?php foreach ($context_cohorts as $context_cohort): ?>
                     <option value="<?php echo esc_attr($context_cohort->ID); ?>" <?php selected((int) $cohort_id, (int) $context_cohort->ID); ?>>
                         <?php echo esc_html($context_cohort->post_title); ?>
@@ -613,8 +613,7 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                 <?php endif; ?>
             </select>
 
-            <label class="screen-reader-text" for="tfp_homework_review_week"><?php esc_html_e('Week', 'tfp-dashboard'); ?></label>
-            <select id="tfp_homework_review_week" disabled>
+            <select id="tfp_homework_review_week" name="tfp_homework_review_week" aria-label="<?php esc_attr_e('Week', 'tfp-dashboard'); ?>">
                 <?php foreach ($context_weeks as $context_index => $context_week): ?>
                     <option value="<?php echo esc_attr($context_week->ID); ?>" <?php selected((int) $lesson_id, (int) $context_week->ID); ?>>
                         <?php echo esc_html('Week ' . ((int) $context_index + 1)); ?>

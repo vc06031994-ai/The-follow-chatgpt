@@ -699,5 +699,52 @@
                 }
             });
         });
+
+        var reviewCourseSelect = document.getElementById('tfp_homework_review_course');
+        var reviewCohortSelect = document.getElementById('tfp_homework_review_cohort');
+        var reviewWeekSelect = document.getElementById('tfp_homework_review_week');
+
+        if (reviewCourseSelect) {
+            window.jQuery(reviewCourseSelect).on('change', function () {
+                var courseId = this.value;
+                if (courseId) {
+                    var listUrl = new URL(window.location.href);
+                    listUrl.search = '';
+                    listUrl.searchParams.set('tfp_homework_course', courseId);
+                    window.location.href = listUrl.toString();
+                }
+            });
+        }
+
+        if (reviewCohortSelect) {
+            window.jQuery(reviewCohortSelect).on('change', function () {
+                var cohortId = this.value;
+                if (cohortId) {
+                    var listUrl = new URL(window.location.href);
+                    listUrl.search = '';
+                    listUrl.searchParams.set('tfp_homework_cohort_filter', cohortId);
+                    window.location.href = listUrl.toString();
+                }
+            });
+        }
+
+        if (reviewWeekSelect) {
+            window.jQuery(reviewWeekSelect).on('change', function () {
+                var lessonId = this.value;
+                if (lessonId) {
+                    var page = document.querySelector('[data-homework-review-page]');
+                    if (page) {
+                        var studentId = page.getAttribute('data-student-id');
+                        var cohortId = page.getAttribute('data-cohort-id');
+                        var nextUrl = new URL(window.location.href);
+                        nextUrl.searchParams.set('tfp_homework_student', studentId);
+                        nextUrl.searchParams.set('tfp_homework_cohort', cohortId);
+                        nextUrl.searchParams.set('tfp_homework_lesson', lessonId);
+                        nextUrl.searchParams.set('tfp_homework_question', '0');
+                        window.location.href = nextUrl.toString();
+                    }
+                }
+            });
+        }
     });
 })();
