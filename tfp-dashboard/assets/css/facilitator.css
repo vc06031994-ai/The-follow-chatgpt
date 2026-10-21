@@ -3888,10 +3888,6 @@ table tbody>tr:nth-child(odd)>th {
 
 
 /* Homework review week empty state. */
-.tfp-homework-review-columns--empty {
-    min-height: 260px;
-}
-
 .tfp-homework-empty-state {
     width: 100%;
     min-height: 220px;
@@ -3902,6 +3898,14 @@ table tbody>tr:nth-child(odd)>th {
     justify-content: center;
     text-align: center;
     box-sizing: border-box;
+}
+
+.tfp-homework-empty-state--full {
+    margin: 0;
+    min-height: 320px;
+    border: 1px solid #C4C4C4;
+    border-radius: 11px;
+    background: #fff;
 }
 
 .tfp-homework-empty-state h3 {
