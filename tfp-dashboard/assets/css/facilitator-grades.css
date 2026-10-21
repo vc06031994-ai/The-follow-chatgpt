@@ -141,6 +141,17 @@
 }
 
 
+.tfp-fg-action.is-add {
+    background: #FBEAEA !important;
+    color: #151411 !important;
+    border: 0.5px solid #AF1E2D !important;
+}
+
+.tfp-fg-action.is-add:hover {
+    background: #FBEAEA !important;
+    color: #151411 !important;
+}
+
 @media (max-width: 1100px) {
 
     .tfp-fg-filters {
