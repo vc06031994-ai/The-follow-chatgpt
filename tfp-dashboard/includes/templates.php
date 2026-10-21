@@ -36,6 +36,10 @@ function tfp_dashboard_template_map()
             'label' => __('TFP Facilitator Dashboard — Homework Review', 'tfp-dashboard'),
             'file' => 'templates/template-facilitator-homework.php',
         ],
+        'tfp-dashboard-facilitator-grades' => [
+            'label' => __('TFP Facilitator Dashboard — Grades', 'tfp-dashboard'),
+            'file' => 'templates/template-facilitator-grades.php',
+        ],
         'tfp-dashboard-facilitator-attendance' => [
             'label' => __('TFP Facilitator Dashboard — Attendance', 'tfp-dashboard'),
             'file' => 'templates/template-facilitator-attendance.php',
