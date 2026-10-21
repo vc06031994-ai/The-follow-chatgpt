@@ -75,7 +75,7 @@
 
 .tfp-fg-metrics {
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 250px)) !important;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 18px !important;
     margin: 0 0 42px !important;
     align-items: stretch !important;
@@ -108,7 +108,7 @@
     background: #EDEDED !important;
 }
 
-.tfp-fac-grades-metric > span {
+.tfp-fac-grades-metric>span {
     display: block !important;
     margin: 0 !important;
     font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
@@ -118,7 +118,7 @@
     color: #151411 !important;
 }
 
-.tfp-fac-grades-metric > strong {
+.tfp-fac-grades-metric>strong {
     display: block !important;
     margin: 0 !important;
     font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
@@ -128,11 +128,11 @@
     color: #00666E !important;
 }
 
-.tfp-fac-grades-metric--danger > strong {
+.tfp-fac-grades-metric--danger>strong {
     color: #AF1E2D !important;
 }
 
-.tfp-fac-grades-metric > small {
+.tfp-fac-grades-metric>small {
     display: block !important;
     margin: 0 !important;
     font-family: var(--tfp-dash-font-alt, "Lora", serif) !important;
@@ -326,7 +326,7 @@
 
 @media (max-width: 1100px) {
     .tfp-fg-metrics {
-        grid-template-columns: repeat(2, minmax(0, 250px)) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 
     .tfp-fg-filters {
