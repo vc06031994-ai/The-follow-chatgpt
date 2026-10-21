@@ -588,7 +588,7 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
             </a>
         </header>
 
-        <div class="tfp-homework-context-filters tfp-facilitator-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
+        <div class="tfp-homework-context-filters" aria-label="<?php esc_attr_e('Homework review context', 'tfp-dashboard'); ?>">
             <label class="screen-reader-text" for="tfp_homework_review_course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
             <select id="tfp_homework_review_course" disabled>
                 <?php foreach ($context_courses as $context_course): ?>
