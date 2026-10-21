@@ -370,14 +370,11 @@ function tfp_facilitator_homework_validate_context($student_id, $lesson_id, $coh
         return false;
     }
 
-    $questions = function_exists('tfp_week_get_homework_questions')
-        ? tfp_week_get_homework_questions($lesson_id, false)
-        : [];
-
-    if (!$questions) {
-        return false;
-    }
-
+    /*
+     * The selected lesson is a valid review context even when that week has
+     * no homework questions. The detail screen must remain usable and show a
+     * clear empty-state message instead of redirecting to a blank/list page.
+     */
     return [
         'student_id' => $student_id,
         'lesson_id' => $lesson_id,
@@ -641,22 +638,28 @@ function tfp_dashboard_render_facilitator_homework_review_content($item) {
                         esc_html($item['module'])
                     ); ?>
                 </div>
-                <div class="tfp-homework-section-progress">
-                    <div class="tfp-homework-section-progress__label">
-                        <strong><?php esc_html_e('Questions', 'tfp-dashboard'); ?></strong>
-                        <span data-homework-current-question><?php echo esc_html($active_index + 1); ?></span>
-                        <span>/</span>
-                        <span><?php echo esc_html($question_count); ?></span>
+                <?php if ($question_count > 0): ?>
+                    <div class="tfp-homework-section-progress">
+                        <div class="tfp-homework-section-progress__label">
+                            <strong><?php esc_html_e('Questions', 'tfp-dashboard'); ?></strong>
+                            <span data-homework-current-question><?php echo esc_html($active_index + 1); ?></span>
+                            <span>/</span>
+                            <span><?php echo esc_html($question_count); ?></span>
+                        </div>
+                        <div class="tfp-homework-progress-bars" aria-hidden="true">
+                            <?php for ($progress_index = 0; $progress_index < $question_count; $progress_index++): ?>
+                                <span class="<?php echo $progress_index <= $active_index ? 'is-complete' : ''; ?><?php echo $progress_index === $question_count - 1 ? ' is-current' : ''; ?>"></span>
+                            <?php endfor; ?>
+                        </div>
                     </div>
-                    <div class="tfp-homework-progress-bars" aria-hidden="true">
-                        <?php for ($progress_index = 0; $progress_index < $question_count; $progress_index++): ?>
-                            <span class="<?php echo $progress_index <= $active_index ? 'is-complete' : ''; ?><?php echo $progress_index === $question_count - 1 ? ' is-current' : ''; ?>"></span>
-                        <?php endfor; ?>
+                <?php else: ?>
+                    <div class="tfp-homework-section-empty-label">
+                        <?php esc_html_e('No homework questions available for this week.', 'tfp-dashboard'); ?>
                     </div>
-                </div>
+                <?php endif; ?>
             </header>
 
-            <div class="tfp-homework-review-columns">
+            <div class="tfp-homework-review-columns<?php echo $question_count > 0 ? '' : ' tfp-homework-review-columns--empty'; ?>">
                 <div class="tfp-homework-submission-panel">
                     <?php if ($questions): ?>
                         <?php foreach ($questions as $index => $question): ?>
