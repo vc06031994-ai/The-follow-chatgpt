@@ -40,6 +40,10 @@ function tfp_dashboard_template_map()
             'label' => __('TFP Facilitator Dashboard — Grades', 'tfp-dashboard'),
             'file' => 'templates/template-facilitator-grades.php',
         ],
+        'tfp-dashboard-facilitator-tests' => [
+            'label' => __('TFP Facilitator Dashboard — Quiz & Test Review', 'tfp-dashboard'),
+            'file' => 'templates/template-facilitator-tests.php',
+        ],
         'tfp-dashboard-facilitator-attendance' => [
             'label' => __('TFP Facilitator Dashboard — Attendance', 'tfp-dashboard'),
             'file' => 'templates/template-facilitator-attendance.php',
@@ -249,6 +253,52 @@ add_action('init', function () {
 
     if ($new_id && !is_wp_error($new_id)) {
         update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-homework');
+        if (function_exists('flush_rewrite_rules')) {
+            flush_rewrite_rules(false);
+        }
+    }
+});
+
+/**
+ * Ensure the Facilitator Quiz & Test Review page exists and uses our custom template.
+ */
+add_action('init', function () {
+    static $checked_facilitator_tests = false;
+    if ($checked_facilitator_tests) {
+        return;
+    }
+    $checked_facilitator_tests = true;
+
+    $pages = get_posts([
+        'post_type' => 'page',
+        'post_status' => ['publish', 'draft', 'pending'],
+        'meta_key' => '_wp_page_template',
+        'meta_value' => 'tfp-dashboard-facilitator-tests',
+        'numberposts' => 1,
+        'fields' => 'ids',
+    ]);
+
+    if (!empty($pages)) {
+        return;
+    }
+
+    $page = get_page_by_path('facilitator-tests');
+    if ($page) {
+        update_post_meta($page->ID, '_wp_page_template', 'tfp-dashboard-facilitator-tests');
+        return;
+    }
+
+    $new_id = wp_insert_post([
+        'post_title' => 'Facilitator Quiz & Test Review',
+        'post_name' => 'facilitator-tests',
+        'post_status' => 'publish',
+        'post_type' => 'page',
+        'comment_status' => 'closed',
+        'ping_status' => 'closed',
+    ]);
+
+    if ($new_id && !is_wp_error($new_id)) {
+        update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-tests');
         if (function_exists('flush_rewrite_rules')) {
             flush_rewrite_rules(false);
         }
