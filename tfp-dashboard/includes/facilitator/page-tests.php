@@ -225,7 +225,7 @@ function tfp_facilitator_tests_gap_summary($student_ids, $lesson_id)
 
     return [
         'critical_gap' => $lowest['label'] ?? '',
-        'critical_gap_rate' => isset($lowest['rate']) ? (int) round($lowest['rate']) : null,
+        'critical_gap_rate' => isset($lowest['rate']) ? (int) round(100 - $lowest['rate']) : null,
         'highest_mastery' => $highest['label'] ?? '',
         'highest_mastery_rate' => isset($highest['rate']) ? (int) round($highest['rate']) : null,
     ];
@@ -608,9 +608,8 @@ function tfp_dashboard_render_facilitator_tests_content()
                     <?php endforeach; ?>
                 </select>
                 <select name="tfp_qt_week" aria-label="<?php esc_attr_e('Week', 'tfp-dashboard'); ?>">
-                    <option value="0"><?php esc_html_e('Week 1', 'tfp-dashboard'); ?></option>
                     <?php foreach ($summary['weeks'] as $index => $week): ?>
-                        <option value="<?php echo esc_attr($index + 1); ?>" <?php selected($state['week'], $index + 1); ?>><?php printf(esc_html__('Week %d', 'tfp-dashboard'), $index + 1); ?></option>
+                        <option value="<?php echo esc_attr($index + 1); ?>" <?php selected($summary['selected_week'], $index + 1); ?>><?php printf(esc_html__('Week %d', 'tfp-dashboard'), $index + 1); ?></option>
                     <?php endforeach; ?>
                 </select>
             </form>
