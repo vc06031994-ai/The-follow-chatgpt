@@ -57,3 +57,18 @@
 @media(max-width:1100px){.tfp-qt-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tfp-qt-week-card{width:100%}}
 @media(max-width:767px){.tfp-qt-filters,.tfp-qt-filters--overview{grid-template-columns:1fr!important}.tfp-qt-filters .select2-container,.tfp-qt-filters .tfp-dash-search{width:100%!important;min-width:0!important}.tfp-qt-metrics{grid-template-columns:1fr 1fr!important}.tfp-qt-back-button{position:static;margin-top:12px}}
 @media(max-width:480px){.tfp-qt-metrics{grid-template-columns:1fr!important}.tfp-qt-week-progress{align-items:flex-start;flex-direction:column}.tfp-qt-week-progress__track{width:100%}}
+/* Figma metric emphasis for Quiz & Test Review. */
+.tfp-qt-metrics .tfp-facilitator-metric:nth-child(2) strong,
+.tfp-qt-metrics .tfp-facilitator-metric:nth-child(3) strong {
+    color: #151411 !important;
+}
+
+.tfp-qt-metrics .tfp-facilitator-metric:nth-child(4) strong {
+    color: #C59F16 !important;
+}
+
+.tfp-qt-metrics .tfp-facilitator-metric > strong {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
