@@ -375,6 +375,8 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
     $quiz_scores = [];
     $test_scores = [];
     $pending = 0;
+    $submitted = 0;
+    $eligible_students = 0;
     $gap_counter = [];
     $mastery_counter = [];
 
@@ -382,6 +384,7 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
         $summary = tfp_facilitator_tests_summary($cohort, 0);
 
         $student_ids = array_merge($student_ids, $summary['students']);
+        $eligible_students += count($summary['students']);
 
         if ($summary['quiz_avg'] !== null) {
             $quiz_scores[] = $summary['quiz_avg'];
@@ -392,6 +395,17 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
         }
 
         $pending += (int) $summary['pending_tests'];
+
+        if ($summary['lesson_id'] && $summary['students']) {
+            foreach ($summary['students'] as $student_id) {
+                $quiz_done = tfp_facilitator_tests_score('tfp_week_get_quiz_result', $student_id, $summary['lesson_id']) !== null;
+                $test_done = tfp_facilitator_tests_score('tfp_week_get_test_result', $student_id, $summary['lesson_id']) !== null;
+
+                if ($quiz_done || $test_done) {
+                    $submitted++;
+                }
+            }
+        }
 
         if ($summary['gap']['critical_gap'] !== '') {
             $gap_counter[$summary['gap']['critical_gap']] = ($gap_counter[$summary['gap']['critical_gap']] ?? 0) + 1;
@@ -419,6 +433,7 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
         'quiz_avg' => $highest_quiz,
         'test_avg' => $highest_test,
         'pending' => $pending,
+        'completion_pct' => $eligible_students > 0 ? (int) round(($submitted / $eligible_students) * 100) : null,
         'critical_gap' => $critical_gap,
         'highest_mastery' => $highest_mastery,
     ];
