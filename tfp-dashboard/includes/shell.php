@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Shared dashboard shell: collapsible/offcanvas sidebar + the wrapper
  * that every template opens with. One place to edit the nav for every
  * dashboard page.
  */
-
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 /**
  * Nav items shown in the sidebar. Filterable so future items (Programs,
@@ -15,30 +16,30 @@ function tfp_dashboard_nav_items()
 {
     if (function_exists('tfp_dashboard_is_facilitator_context') && tfp_dashboard_is_facilitator_context()) {
         return apply_filters('tfp_dashboard_facilitator_nav_items', [
-            ['id' => 'facilitator-home',       'label' => __('Home', 'tfp-dashboard'),              'icon' => 'home',     'template' => 'tfp-dashboard-facilitator-home'],
-            ['id' => 'facilitator-roster',     'label' => __('Roster', 'tfp-dashboard'),            'icon' => 'program',    'template' => 'tfp-dashboard-facilitator-roster'],
-            ['id' => 'facilitator-cohorts',    'label' => __('Cohorts', 'tfp-dashboard'),           'icon' => 'program',    'template' => 'tfp-dashboard-facilitator-cohorts'],
-            ['id' => 'facilitator-homework',   'label' => __('Homework Review', 'tfp-dashboard'),   'icon' => 'doc',      'template' => 'tfp-dashboard-facilitator-homework'],
-            ['id' => 'facilitator-tests',      'label' => __('Quiz & Test Review', 'tfp-dashboard'),'icon' => 'grades',   'template' => 'tfp-dashboard-facilitator-tests'],
-            ['id' => 'facilitator-attendance', 'label' => __('Attendance', 'tfp-dashboard'),         'icon' => 'calendar', 'template' => 'tfp-dashboard-facilitator-attendance'],
-            ['id' => 'facilitator-meetings',   'label' => __('Meetings', 'tfp-dashboard'),           'icon' => 'chat',     'template' => 'tfp-dashboard-facilitator-meetings'],
-            ['id' => 'facilitator-grades',     'label' => __('Grades', 'tfp-dashboard'),             'icon' => 'grades',   'template' => 'tfp-dashboard-facilitator-grades'],
-            ['id' => 'facilitator-communication','label' => __('Communication', 'tfp-dashboard'),    'icon' => 'chat',     'template' => 'tfp-dashboard-facilitator-communication'],
-            ['id' => 'facilitator-documents',  'label' => __('Documents', 'tfp-dashboard'),         'icon' => 'doc',      'template' => 'tfp-dashboard-facilitator-documents'],
-            ['id' => 'facilitator-calendar',   'label' => __('Calendar', 'tfp-dashboard'),           'icon' => 'calendar', 'template' => 'tfp-dashboard-facilitator-calendar'],
-            ['id' => 'facilitator-settings',   'label' => __('Settings', 'tfp-dashboard'),           'icon' => 'lock', 'template' => 'tfp-dashboard-facilitator-settings'],
-            ['id' => 'facilitator-profile',    'label' => __('Profile', 'tfp-dashboard'),            'icon' => 'user',     'template' => 'tfp-dashboard-facilitator-profile'],
+            ['id' => 'facilitator-home', 'label' => __('Home', 'tfp-dashboard'), 'icon' => 'home', 'template' => 'tfp-dashboard-facilitator-home'],
+            ['id' => 'facilitator-roster', 'label' => __('Roster', 'tfp-dashboard'), 'icon' => 'roster', 'template' => 'tfp-dashboard-facilitator-roster'],
+            ['id' => 'facilitator-cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'icon' => 'cohorts', 'template' => 'tfp-dashboard-facilitator-cohorts'],
+            ['id' => 'facilitator-homework', 'label' => __('Homework Review', 'tfp-dashboard'), 'icon' => 'file', 'template' => 'tfp-dashboard-facilitator-homework'],
+            ['id' => 'facilitator-tests', 'label' => __('Quiz & Test Review', 'tfp-dashboard'), 'icon' => 'quiz', 'template' => 'tfp-dashboard-facilitator-tests'],
+            ['id' => 'facilitator-attendance', 'label' => __('Attendance', 'tfp-dashboard'), 'icon' => 'attendance', 'template' => 'tfp-dashboard-facilitator-attendance'],
+            ['id' => 'facilitator-meetings', 'label' => __('Meetings', 'tfp-dashboard'), 'icon' => 'meeting', 'template' => 'tfp-dashboard-facilitator-meetings'],
+            ['id' => 'facilitator-grades', 'label' => __('Grades', 'tfp-dashboard'), 'icon' => 'grades', 'template' => 'tfp-dashboard-facilitator-grades'],
+            ['id' => 'facilitator-communication', 'label' => __('Communication', 'tfp-dashboard'), 'icon' => 'chat', 'template' => 'tfp-dashboard-facilitator-communication'],
+            ['id' => 'facilitator-documents', 'label' => __('Documents', 'tfp-dashboard'), 'icon' => 'doc', 'template' => 'tfp-dashboard-facilitator-documents'],
+            ['id' => 'facilitator-calendar', 'label' => __('Calendar', 'tfp-dashboard'), 'icon' => 'calendar', 'template' => 'tfp-dashboard-facilitator-calendar'],
+            ['id' => 'facilitator-settings', 'label' => __('Settings', 'tfp-dashboard'), 'icon' => 'setting', 'template' => 'tfp-dashboard-facilitator-settings'],
+            ['id' => 'facilitator-profile', 'label' => __('Profile', 'tfp-dashboard'), 'icon' => 'user', 'template' => 'tfp-dashboard-facilitator-profile'],
         ]);
     }
 
     $items = [
-        ['id' => 'home',          'label' => __('Home', 'tfp-dashboard'),          'icon' => 'home',     'template' => 'tfp-dashboard-home'],
-        ['id' => 'program',       'label' => __('Program', 'tfp-dashboard'),       'icon' => 'program',  'template' => 'tfp-dashboard-program'],
-        ['id' => 'grades',        'label' => __('Grades', 'tfp-dashboard'),        'icon' => 'grades',   'template' => 'tfp-dashboard-grades'],
-        ['id' => 'communication', 'label' => __('Communication', 'tfp-dashboard'), 'icon' => 'chat',     'template' => 'tfp-dashboard-communication'],
-        ['id' => 'documents',     'label' => __('Documents', 'tfp-dashboard'),     'icon' => 'doc',      'template' => 'tfp-dashboard-documents'],
-        ['id' => 'calendar',      'label' => __('Calendar', 'tfp-dashboard'),      'icon' => 'calendar', 'template' => 'tfp-dashboard-calendar'],
-        ['id' => 'profile',       'label' => __('Profile', 'tfp-dashboard'),       'icon' => 'user',     'template' => 'tfp-dashboard-profile'],
+        ['id' => 'home', 'label' => __('Home', 'tfp-dashboard'), 'icon' => 'home', 'template' => 'tfp-dashboard-home'],
+        ['id' => 'program', 'label' => __('Program', 'tfp-dashboard'), 'icon' => 'program', 'template' => 'tfp-dashboard-program'],
+        ['id' => 'grades', 'label' => __('Grades', 'tfp-dashboard'), 'icon' => 'grades', 'template' => 'tfp-dashboard-grades'],
+        ['id' => 'communication', 'label' => __('Communication', 'tfp-dashboard'), 'icon' => 'chat', 'template' => 'tfp-dashboard-communication'],
+        ['id' => 'documents', 'label' => __('Documents', 'tfp-dashboard'), 'icon' => 'doc', 'template' => 'tfp-dashboard-documents'],
+        ['id' => 'calendar', 'label' => __('Calendar', 'tfp-dashboard'), 'icon' => 'calendar', 'template' => 'tfp-dashboard-calendar'],
+        ['id' => 'profile', 'label' => __('Profile', 'tfp-dashboard'), 'icon' => 'user', 'template' => 'tfp-dashboard-profile'],
     ];
 
     return apply_filters('tfp_dashboard_nav_items', $items);
@@ -72,7 +73,7 @@ function tfp_dashboard_render_sidebar($active = '')
         </div>
 
         <nav class="tfp-dash-sidebar__nav" aria-label="<?php esc_attr_e('Dashboard navigation', 'tfp-dashboard'); ?>">
-            <?php foreach (tfp_dashboard_nav_items() as $item) : ?>
+            <?php foreach (tfp_dashboard_nav_items() as $item): ?>
                 <a
                     href="<?php echo esc_url(tfp_dashboard_get_url($item['template'])); ?>"
                     class="tfp-dash-sidebar__link<?php echo $active === $item['id'] ? ' is-active' : ''; ?>"
