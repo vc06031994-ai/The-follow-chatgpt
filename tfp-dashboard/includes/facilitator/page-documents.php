@@ -10,7 +10,6 @@ if (!defined('ABSPATH')) {
  * The data layer reuses the existing TFP Authentication document helpers
  * where available, while cohort membership comes from the facilitator dashboard.
  */
-
 function tfp_facilitator_documents_state()
 {
     $cohort = isset($_GET['tfp_fd_cohort']) ? absint($_GET['tfp_fd_cohort']) : 0;
@@ -71,8 +70,8 @@ function tfp_facilitator_documents_visible_cohorts($cohorts, $state)
                 : (int) get_post_meta($cohort_id, '_related_course', true);
 
             $haystack = strtolower(
-                $cohort->post_title . ' ' .
-                ($course_id ? get_the_title($course_id) : '')
+                $cohort->post_title . ' '
+                . ($course_id ? get_the_title($course_id) : '')
             );
 
             $student_match = false;
@@ -279,9 +278,9 @@ function tfp_facilitator_documents_row_matches_search($row, $user = null, $cohor
 
     $needle = strtolower($search);
     $haystack = strtolower(
-        ($row['title'] ?? '') . ' ' .
-        ($row['type'] ?? '') . ' ' .
-        ($cohort_name ?? '')
+        ($row['title'] ?? '') . ' '
+        . ($row['type'] ?? '') . ' '
+        . ($cohort_name ?? '')
     );
 
     if ($user instanceof WP_User) {
@@ -349,7 +348,7 @@ function tfp_dashboard_render_facilitator_documents_content()
             <div class="tfp-dash-search tfp-facilitator-search">
                 <span class="tfp-dash-search__icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                        <path d="M16 16L13 13M10.5 14C8.567 14 7 12.433 7 10.5C7 8.567 8.567 7 10.5 7C12.433 7 14 8.567 14 10.5 14 12.433 12.433 14 10.5 14Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 16L13 13M7.0002 17H4.19692C3.07901 17 2.5192 17 2.0918 16.7822C1.71547 16.5905 1.40973 16.2842 1.40973 16.2842C1.21799 15.9079 1 15.4805 1 13.8002V4.2002C1 3.08009 1 2.51962 1.21799 2.0918C1.40973 1.71547 1.71547 1 2.73341 1H13.8002C14.9203 1 15.4796 1 15.9074 1.21799C16.5905 1.40973 17 2.5192 17 4.19691V7.0002M10.5 14C8.567 14 7 12.433 7 10.5C7 8.567 8.567 7 10.5 7C12.433 7 14 8.567 14 10.5C14 12.433 12.433 14 10.5 14Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                 </span>
                 <input type="search" name="tfp_fd_search" value="<?php echo esc_attr($state['search']); ?>" placeholder="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>" aria-label="<?php esc_attr_e('Search documents', 'tfp-dashboard'); ?>">
