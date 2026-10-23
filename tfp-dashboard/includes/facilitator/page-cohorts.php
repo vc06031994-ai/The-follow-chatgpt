@@ -561,7 +561,7 @@ function tfp_facilitator_cohorts_render_queue($items)
                         ?>
                     </span>
                     <div class="tfp-cohort-queue__copy">
-                        <h3><?php echo esc_html($item['title']); ?><?php if (!empty($item['count']) && !empty($item['count_in_title'])): ?> <em>· <?php echo esc_html($item['count']); ?> <?php echo esc_html($item['count_label'] ?? __('Submissions', 'tfp-dashboard')); ?></em><?php endif; ?></h3>
+                        <h3><?php echo esc_html($item['title']); ?><?php if (!empty($item['count']) && ($item['count_in_title'] ?? true)): ?> <em>· <?php echo esc_html($item['count']); ?> <?php echo esc_html($item['count_label'] ?? __('Submissions', 'tfp-dashboard')); ?></em><?php endif; ?></h3>
                         <p><?php echo esc_html($item['desc']); ?></p>
                     </div>
                     <a class="tfp-dash-btn tfp-dash-btn--primary tfp-cohort-queue__button" href="<?php echo esc_url($item['url']); ?>">
