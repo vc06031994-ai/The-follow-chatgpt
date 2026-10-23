@@ -45,6 +45,30 @@ function tfp_dashboard_icon($key)
                 'setting' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path d="M10 18H21M3 18H6M6 18V20M6 18V16M20 12H21M3 12H16M16 12V14M16 12V10M14 6H21M3 6H10M10 6V8M10 6V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"/>
                 </svg>',
+                'action-meeting' => '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+                <circle cx="18" cy="18" r="18" fill="#EBEBEB" stroke="#9A9A9A"/>
+                <g transform="translate(9 9) scale(.75)">
+                    <path d="M9.33814 15.9905C12.4946 15.8151 15 13.2003 15 10C15 6.68629 12.3137 4 9 4C5.68629 4 3 6.68629 3 10C3 11.1807 3.34094 12.2817 3.92989 13.21L3.50586 14.482L3.50518 14.4839C3.34278 14.9711 3.26154 15.2149 3.31938 15.3771C3.36979 15.5184 3.48169 15.6299 3.62305 15.6803C3.78472 15.7379 4.02675 15.6579 4.51069 15.4959L4.51758 15.4939L5.79004 15.0698C6.7183 15.6588 7.81935 15.9998 9.00006 15.9998C9.11352 15.9998 9.22624 15.9967 9.33814 15.9905Z" fill="#151411"/>
+                    <path d="M6.68335 10.2315C5.69792 10.2315 4.88594 9.34128 4.88594 8.24802C4.88594 7.15476 5.68217 6.26456 6.68335 6.26456C7.69239 6.26456 8.49651 7.16258 8.48073 8.24802C8.48073 9.34128 7.68451 10.2315 6.68335 10.2315ZM13.329 10.2315C12.3435 10.2315 11.5316 9.34128 11.5316 8.24802C11.5316 7.15476 12.3278 6.26456 13.329 6.26456C14.338 6.26456 15.1421 7.16258 15.1264 8.24802C15.1264 9.34128 14.338 10.2315 13.329 10.2315Z" fill="#151411"/>
+                    <path d="M8.9 15.95C9.75 18.35 12.05 20 15 20C16.2 20 17.3 19.66 18.21 19.07L19.48 19.49C19.97 19.66 20.21 19.74 20.38 19.68C20.52 19.63 20.63 19.52 20.68 19.38C20.74 19.21 20.66 18.97 20.49 18.48L20.07 17.21C20.67 16.19 21 15.08 21 14C21 10.69 18.31 8 15 8L14.66 8.01" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                </svg>',
+                'action-warning' => '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+                <circle cx="18" cy="18" r="18" fill="#EBEBEB" stroke="#9A9A9A"/>
+                <g transform="translate(7 7)">
+                    <path d="M10.02 2.62L2.62 10.02C1.33 11.31 1.33 13.39 2.62 14.68L10.02 22.08C11.31 23.37 13.39 23.37 14.68 22.08L22.08 14.68C23.37 13.39 23.37 11.31 22.08 10.02L14.68 2.62C13.39 1.33 11.31 1.33 10.02 2.62Z" stroke="#151411" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M12.35 7.5V13.2" stroke="#151411" stroke-width="1.8" stroke-linecap="round"/>
+                    <circle cx="12.35" cy="17.1" r="1" fill="#151411"/>
+                </g>
+                </svg>',
+                'action-course' => '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+                <circle cx="18" cy="18" r="18" fill="#EBEBEB" stroke="#9A9A9A"/>
+                <g transform="translate(6 6)">
+                    <path d="M4 4H11.5C12.05 4 12.5 4.45 12.5 5V20H4V4Z" fill="#F6F6F6" stroke="#151411" stroke-width="1.5"/>
+                    <path d="M12.5 7H20C20.55 7 21 7.45 21 8V20H12.5V7Z" fill="#F6F6F6" stroke="#151411" stroke-width="1.5"/>
+                    <path d="M7 8H10M7 11H10M15 10H18M15 13H18" stroke="#151411" stroke-width="1.5" stroke-linecap="round"/>
+                </g>
+                </svg>',
         ];
 
         return $icons[$key] ?? '';
