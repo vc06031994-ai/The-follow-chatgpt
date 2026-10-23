@@ -54,7 +54,7 @@
 .tfp-cohort-queue {
     min-width: 0;
     padding: 20px !important;
-    margin: 0 !important;
+    margin: 0 0 32px 0 !important;
 }
 
 .tfp-cohort-panel-head {
@@ -98,11 +98,16 @@
     gap: 12px;
     min-height: 76px;
     padding: 10px 8px;
-    border: 1px solid #D6DADC;
+    border: 1px solid #c4c4c4;
     border-radius: 8px;
     margin-bottom: 8px;
-    background: #fff;
+    background: #FBFBFB;
     box-sizing: border-box;
+    cursor: pointer;
+}
+
+.tfp-cohort-queue__item:hover {
+    border-color: var(--tfp-dash-teal);
 }
 
 .tfp-cohort-queue__item:last-child {
@@ -146,6 +151,23 @@
     min-height: 40px !important;
     padding: 9px 14px !important;
     white-space: nowrap;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.tfp-cohort-queue__button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.tfp-cohort-queue__button-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
 }
 
 .tfp-cohort-table-card {
@@ -173,10 +195,18 @@
     min-width: 980px !important;
 }
 
+.tfp-cohort-table th {
+    background: #FCFCFD !important;
+}
+
 .tfp-cohort-table th,
 .tfp-cohort-table td {
     vertical-align: middle !important;
+    font-family: var(--tfp-dash-font) !important;
 }
+
+
+
 
 .tfp-cohort-table th:nth-child(1) {
     width: 25% !important
@@ -594,19 +624,21 @@
         width: 100%
     }
 }
-.tfp-cohort-queue__icon{
-    padding:0!important;
-    border:0!important;
-    background:transparent!important;
-    width:36px!important;
-    height:36px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
+
+.tfp-cohort-queue__icon {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
-.tfp-cohort-queue__icon > svg{
-    display:block;
-    width:36px;
-    height:36px;
-    flex:0 0 36px;
+
+.tfp-cohort-queue__icon>svg {
+    display: block;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
 }

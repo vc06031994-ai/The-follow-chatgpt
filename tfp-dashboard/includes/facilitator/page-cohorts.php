@@ -298,6 +298,7 @@ function tfp_facilitator_cohorts_action_items($cohorts, $selected_cohort = null)
             'count' => '',
             'desc' => __('Open the facilitator meeting area for the selected cohort.', 'tfp-dashboard'),
             'button' => __('Join Meeting', 'tfp-dashboard'),
+            'button_icon' => 'arrow',
             'url' => $meeting_url,
             'icon' => 'meeting',
             'tone' => 'teal',
@@ -309,6 +310,7 @@ function tfp_facilitator_cohorts_action_items($cohorts, $selected_cohort = null)
                 'count' => $blocked + $stalled,
                 'desc' => __('Students have incomplete or stalled test work requiring review.', 'tfp-dashboard'),
                 'button' => __('Unlock Test', 'tfp-dashboard'),
+                'button_icon' => 'unlock',
                 'url' => $tests_url,
                 'icon' => 'unlock',
                 'tone' => 'warning',
@@ -321,6 +323,7 @@ function tfp_facilitator_cohorts_action_items($cohorts, $selected_cohort = null)
                 'count' => $homework,
                 'desc' => __('Submitted assignments are waiting for facilitator review.', 'tfp-dashboard'),
                 'button' => __('Review All', 'tfp-dashboard'),
+                'button_icon' => 'arrow',
                 'url' => $homework_url,
                 'icon' => 'homework',
                 'tone' => 'teal',
@@ -333,6 +336,7 @@ function tfp_facilitator_cohorts_action_items($cohorts, $selected_cohort = null)
                 'count' => $falling,
                 'desc' => __('Students currently falling behind should be reviewed before the next meeting.', 'tfp-dashboard'),
                 'button' => __('View Gaps', 'tfp-dashboard'),
+                'button_icon' => 'arrow',
                 'url' => $grades_url,
                 'icon' => 'diagnostic',
                 'tone' => 'teal',
@@ -423,7 +427,10 @@ function tfp_facilitator_cohorts_render_queue($items)
                         <h3><?php echo esc_html($item['title']); ?><?php if ($item['count'] !== ''): ?> <em>· <?php echo esc_html($item['count']); ?> <?php echo $item['count'] === 1 ? esc_html__('Submission', 'tfp-dashboard') : esc_html__('Submissions', 'tfp-dashboard'); ?></em><?php endif; ?></h3>
                         <p><?php echo esc_html($item['desc']); ?></p>
                     </div>
-                    <a class="tfp-dash-btn tfp-dash-btn--primary tfp-cohort-queue__button" href="<?php echo esc_url($item['url']); ?>"><?php echo esc_html($item['button']); ?> <span aria-hidden="true">↗</span></a>
+                    <a class="tfp-dash-btn tfp-dash-btn--primary tfp-cohort-queue__button" href="<?php echo esc_url($item['url']); ?>">
+                        <span><?php echo esc_html($item['button']); ?></span>
+                        <span class="tfp-cohort-queue__button-icon" aria-hidden="true"><?php echo tfp_dashboard_icon($item['button_icon'] ?? 'arrow'); ?></span>
+                    </a>
                 </article>
             <?php endforeach;
             else: ?>
@@ -548,7 +555,7 @@ function tfp_facilitator_cohorts_render_all($cohorts)
                         $view_url = tfp_facilitator_cohorts_url(['tfp_cohort_id' => $cohort->ID, 'tfp_cohort_tab' => 'overview']);
                         ?>
                         <tr>
-                            <td><strong><?php echo esc_html($cohort->post_title); ?></strong></td>
+                            <td><?php echo esc_html($cohort->post_title); ?></td>
                             <td><?php echo esc_html(get_post_meta($cohort->ID, '_schedule_text', true) ?: '—'); ?></td>
                             <td><?php echo esc_html($lesson ? $lesson->post_title : '—'); ?></td>
                             <td><span class="tfp-cohort-grade"><?php echo esc_html(tfp_facilitator_cohorts_average_letter($grades) ?: '—'); ?></span></td>
@@ -663,7 +670,7 @@ function tfp_facilitator_cohorts_render_course_overview($cohort, $state, $metric
             <section class="tfp-dash-panel tfp-cohort-section-mastery">
                 <div class="tfp-cohort-panel-head">
                     <div>
-                        <h2><?php esc_html_e('Section Mastery', 'tfp-dashboard'); ?></h2>
+                        <h5><?php esc_html_e('Section Mastery', 'tfp-dashboard'); ?></h5>
                         <p><?php esc_html_e('Global Disciple progress by section.', 'tfp-dashboard'); ?></p>
                     </div>
                 </div>
