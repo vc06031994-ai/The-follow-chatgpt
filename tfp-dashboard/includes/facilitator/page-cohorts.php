@@ -286,7 +286,10 @@ function tfp_facilitator_cohorts_action_items($cohorts, $selected_cohort = null)
                 $stalled += (int) $summary['stalled'];
             }
 
-            $homework += count(array_slice(function_exists('tfp_facilitator_homework_items') ? tfp_facilitator_homework_items([$cohort]) : [], 0, 200));
+            $homework_items = function_exists('tfp_facilitator_homework_row_items')
+                ? tfp_facilitator_homework_row_items(get_current_user_id(), 0, (int) $cohort->ID)
+                : [];
+            $homework += count(array_slice((array) $homework_items, 0, 200));
             $falling += $lesson ? tfp_facilitator_cohorts_falling_behind(tfp_facilitator_cohort_students($cohort->ID), $lesson->ID) : 0;
         }
 
@@ -474,8 +477,12 @@ function tfp_facilitator_cohorts_render_all($cohorts)
             }
         }
 
-        $reviews += count(function_exists('tfp_facilitator_homework_items') ? tfp_facilitator_homework_items([$cohort]) : []);
-        $reviews += count(function_exists('tfp_facilitator_test_items') ? tfp_facilitator_test_items([$cohort]) : []);
+        $reviews += function_exists('tfp_facilitator_homework_row_items')
+            ? count((array) tfp_facilitator_homework_row_items(get_current_user_id(), 0, (int) $cohort->ID))
+            : 0;
+        $reviews += function_exists('tfp_facilitator_test_items')
+            ? count((array) tfp_facilitator_test_items([$cohort]))
+            : 0;
     }
 
     $student_ids = array_values(array_unique(array_map('absint', $student_ids)));
