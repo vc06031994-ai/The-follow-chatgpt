@@ -552,13 +552,16 @@ function tfp_facilitator_cohorts_render_queue($items)
                         $queue_icon = [
                             'meeting' => 'action-meeting',
                             'unlock' => 'action-warning',
+                            'warning' => 'action-warning',
+                            'homework' => 'action-warning',
                             'diagnostic' => 'action-course',
+                            'publish' => 'action-publish',
                         ][$item['icon']] ?? 'action-homework';
                         echo tfp_dashboard_icon($queue_icon);
                         ?>
                     </span>
                     <div class="tfp-cohort-queue__copy">
-                        <h3><?php echo esc_html($item['title']); ?><?php if ($item['count'] !== ''): ?> <em>· <?php echo esc_html($item['count']); ?> <?php echo $item['count'] === 1 ? esc_html__('Submission', 'tfp-dashboard') : esc_html__('Submissions', 'tfp-dashboard'); ?></em><?php endif; ?></h3>
+                        <h3><?php echo esc_html($item['title']); ?><?php if (!empty($item['count']) && !empty($item['count_in_title'])): ?> <em>· <?php echo esc_html($item['count']); ?> <?php echo esc_html($item['count_label'] ?? __('Submissions', 'tfp-dashboard')); ?></em><?php endif; ?></h3>
                         <p><?php echo esc_html($item['desc']); ?></p>
                     </div>
                     <a class="tfp-dash-btn tfp-dash-btn--primary tfp-cohort-queue__button" href="<?php echo esc_url($item['url']); ?>">
