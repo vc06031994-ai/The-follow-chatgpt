@@ -240,9 +240,16 @@ function tfp_facilitator_cohorts_section_progress($students, $group)
         }
     }
 
+    $avg_grade = '';
+    if ($grades && function_exists('tfp_grade_scale')) {
+        $rounded = (int) round(array_sum($grades) / count($grades));
+        $by_point = array_flip(tfp_grade_scale());
+        $avg_grade = $by_point[$rounded] ?? '';
+    }
+
     return [
         'percent' => (int) round(($done / $possible) * 100),
-        'avg_grade' => $grades ? (int) round(array_sum($grades) / count($grades)) : null,
+        'avg_grade' => $avg_grade,
     ];
 }
 
@@ -616,53 +623,43 @@ function tfp_facilitator_cohorts_render_selected($all_cohorts, $cohort, $state)
 
 function tfp_facilitator_cohorts_render_course_overview($cohort, $state, $metrics)
 {
-    $course_id = tfp_facilitator_cohort_course_id($cohort->ID);
     $weeks = $metrics['weeks'];
     $students = $metrics['students'];
-    tfp_facilitator_cohorts_render_queue(tfp_facilitator_cohorts_action_items([$cohort], $cohort));
     ?>
-    <div class="tfp-cohort-two-col">
+    <div class="tfp-cohort-two-col tfp-cohort-two-col--overview">
         <div>
-            <section class="tfp-dash-panel tfp-cohort-section-mastery">
-                <div class="tfp-cohort-panel-head"><div><h2><?php esc_html_e('Section Mastery', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Global Disciple progress by section.', 'tfp-dashboard'); ?></p></div></div>
-                <div class="tfp-cohort-section-mastery__list">
-                <?php foreach (tfp_facilitator_cohorts_section_groups($weeks) as $group):
-                    $progress = tfp_facilitator_cohorts_section_progress($students, $group);
-                    $current = false;
-                    $current_week = $metrics['week_number'];
-                    foreach ($group['weeks'] as $group_week) if ($group_week->ID === ($metrics['lesson']->ID ?? 0)) $current = true;
-                    ?>
-                    <article class="tfp-cohort-section-item">
-                        <div class="tfp-cohort-section-item__top">
-                            <strong><?php printf(esc_html__('Section %d: %s', 'tfp-dashboard'), $group['number'], $group['name']); ?></strong>
-                            <span class="tfp-cohort-status tfp-cohort-status--<?php echo $progress['percent'] >= 90 ? 'complete' : ($progress['percent'] > 0 ? 'progress' : 'not-started'); ?>"><?php echo $progress['percent'] >= 90 ? esc_html__('Completed', 'tfp-dashboard') : ($progress['percent'] > 0 ? esc_html__('In Progress', 'tfp-dashboard') : esc_html__('Not Started', 'tfp-dashboard')); ?></span>
-                        </div>
-                        <div class="tfp-cohort-progress"><span style="width:<?php echo esc_attr($progress['percent']); ?>%"></span></div>
-                        <small><?php echo $progress['avg_grade'] !== null ? esc_html__('Avg Score: ', 'tfp-dashboard') . esc_html($progress['avg_grade']) : esc_html__('No graded data yet', 'tfp-dashboard'); ?></small>
-                    </article>
-                <?php endforeach; ?>
-                </div>
-            </section>
+            <?php tfp_facilitator_cohorts_render_queue(tfp_facilitator_cohorts_action_items([$cohort], $cohort)); ?>
         </div>
         <div>
-            <section class="tfp-dash-panel tfp-cohort-info-card">
-                <h2><?php esc_html_e('Current Week', 'tfp-dashboard'); ?></h2>
-                <p><?php echo esc_html('Week ' . $metrics['week_number'] . ': ' . ($metrics['lesson']->post_title ?? '')); ?></p>
-                <?php foreach (['reading', 'homework', 'quiz', 'test'] as $step):
-                    $done = 0;
-                    foreach ($students as $student_id) if ($metrics['lesson'] && tfp_facilitator_cohorts_student_completion($student_id, $metrics['lesson']->ID, $step)) $done++;
-                    $label = $step === 'quiz' ? __("Quiz's", 'tfp-dashboard') : ucfirst($step);
-                    ?>
-                    <div class="tfp-cohort-step">
-                        <div><strong><?php echo esc_html($label); ?></strong><small><?php echo esc_html($done . '/' . count($students) . ' Students'); ?></small></div>
-                        <span class="tfp-cohort-step__bar"><i style="width:<?php echo count($students) ? esc_attr(($done / count($students)) * 100) : 0; ?>%"></i></span>
+            <section class="tfp-dash-panel tfp-cohort-section-mastery">
+                <div class="tfp-cohort-panel-head">
+                    <div>
+                        <h2><?php esc_html_e('Section Mastery', 'tfp-dashboard'); ?></h2>
+                        <p><?php esc_html_e('Global Disciple progress by section.', 'tfp-dashboard'); ?></p>
                     </div>
-                <?php endforeach; ?>
-            </section>
-            <section class="tfp-dash-panel tfp-cohort-info-card tfp-cohort-meeting-card">
-                <h2><?php esc_html_e('Weekly Meeting', 'tfp-dashboard'); ?></h2>
-                <p><?php echo esc_html(get_post_meta($cohort->ID, '_schedule_text', true) ?: __('Meeting schedule not configured.', 'tfp-dashboard')); ?></p>
-                <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings')); ?>"><?php esc_html_e('Go to Meeting', 'tfp-dashboard'); ?></a>
+                </div>
+                <div class="tfp-cohort-section-mastery__list">
+                    <?php foreach (tfp_facilitator_cohorts_section_groups($weeks) as $group):
+                        $progress = tfp_facilitator_cohorts_section_progress($students, $group);
+                        $status_class = $progress['percent'] >= 90 ? 'complete' : ($progress['percent'] > 0 ? 'progress' : 'not-started');
+                        $status_label = $progress['percent'] >= 90 ? __('Completed', 'tfp-dashboard') : ($progress['percent'] > 0 ? __('In Progress', 'tfp-dashboard') : __('Not Started', 'tfp-dashboard'));
+                        ?>
+                        <article class="tfp-cohort-section-item">
+                            <div class="tfp-cohort-section-item__top">
+                                <strong><?php printf(esc_html__('Section %d: %s', 'tfp-dashboard'), $group['number'], $group['name']); ?></strong>
+                                <span class="tfp-cohort-status tfp-cohort-status--<?php echo esc_attr($status_class); ?>"><?php echo esc_html($status_label); ?></span>
+                            </div>
+                            <div class="tfp-cohort-progress"><span style="width:<?php echo esc_attr($progress['percent']); ?>%"></span></div>
+                            <small>
+                                <?php
+                                echo $progress['avg_grade']
+                                    ? esc_html__('Avg Grade: ', 'tfp-dashboard') . esc_html($progress['avg_grade'])
+                                    : esc_html__('No graded data yet', 'tfp-dashboard');
+                                ?>
+                            </small>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
             </section>
         </div>
     </div>
@@ -673,28 +670,44 @@ function tfp_facilitator_cohorts_render_course_overview($cohort, $state, $metric
 function tfp_facilitator_cohorts_render_weekly($cohort, $state, $metrics)
 {
     $students = $metrics['students'];
-    tfp_facilitator_cohorts_render_queue(tfp_facilitator_cohorts_action_items([$cohort], $cohort));
+    $items = tfp_facilitator_cohorts_action_items([$cohort], $cohort);
+    $lesson = $metrics['lesson'];
+    $student_count = count($students);
+    $meeting_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings');
     ?>
-    <div class="tfp-cohort-two-col">
+    <div class="tfp-cohort-two-col tfp-cohort-two-col--weekly">
         <div>
-            <section class="tfp-dash-panel tfp-cohort-queue tfp-cohort-queue--weekly">
-                <div class="tfp-cohort-panel-head"><div><h2><?php esc_html_e('Action Fulfillment Queue', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Tasks that need your Attention, Actions and Submission.', 'tfp-dashboard'); ?></p></div></div>
-                <div class="tfp-cohort-queue__list"><?php foreach (tfp_facilitator_cohorts_action_items([$cohort], $cohort) as $item): ?>
-                    <article class="tfp-cohort-queue__item"><span class="tfp-cohort-queue__icon tfp-cohort-queue__icon--<?php echo esc_attr($item['tone']); ?>"><span>!</span></span><div class="tfp-cohort-queue__copy"><h3><?php echo esc_html($item['title']); ?><?php if ($item['count'] !== ''): ?> <em>· <?php echo esc_html($item['count']); ?></em><?php endif; ?></h3><p><?php echo esc_html($item['desc']); ?></p></div><a class="tfp-dash-btn tfp-dash-btn--primary tfp-cohort-queue__button" href="<?php echo esc_url($item['url']); ?>"><?php echo esc_html($item['button']); ?></a></article>
-                <?php endforeach; ?></div>
-            </section>
+            <?php tfp_facilitator_cohorts_render_queue($items); ?>
         </div>
         <div>
             <section class="tfp-dash-panel tfp-cohort-info-card">
                 <h2><?php esc_html_e('Current Week', 'tfp-dashboard'); ?></h2>
-                <p><?php echo esc_html('Week ' . $metrics['week_number'] . ': ' . ($metrics['lesson']->post_title ?? '')); ?></p>
-                <?php foreach (['reading','homework','quiz','test'] as $step):
-                    $done=0; foreach($students as $student_id) if($metrics['lesson'] && tfp_facilitator_cohorts_student_completion($student_id,$metrics['lesson']->ID,$step)) $done++;
+                <p><?php echo esc_html('Week ' . $metrics['week_number'] . ': ' . ($lesson ? $lesson->post_title : '')); ?></p>
+                <?php foreach (['reading', 'homework', 'quiz', 'test'] as $step):
+                    $done = 0;
+                    foreach ($students as $student_id) {
+                        if ($lesson && tfp_facilitator_cohorts_student_completion($student_id, $lesson->ID, $step)) {
+                            $done++;
+                        }
+                    }
+                    $percent = $student_count ? (int) round(($done / $student_count) * 100) : 0;
+                    $label = $step === 'quiz' ? __("Quiz's", 'tfp-dashboard') : ucfirst($step);
                     ?>
-                    <div class="tfp-cohort-step"><div><strong><?php echo esc_html($step==='quiz'?__("Quiz's",'tfp-dashboard'):ucfirst($step)); ?></strong><small><?php echo esc_html($done.'/'.$students_count = count($students).' Students'); ?></small></div><span class="tfp-cohort-step__bar"><i style="width:<?php echo $students_count ? esc_attr(($done/$students_count)*100) : 0; ?>%"></i></span></div>
+                    <div class="tfp-cohort-step">
+                        <div>
+                            <strong><?php echo esc_html($label); ?></strong>
+                            <small><?php echo esc_html($done . '/' . $student_count . ' Students'); ?></small>
+                        </div>
+                        <span class="tfp-cohort-step__bar"><i style="width:<?php echo esc_attr($percent); ?>%"></i></span>
+                    </div>
                 <?php endforeach; ?>
             </section>
-            <section class="tfp-dash-panel tfp-cohort-info-card tfp-cohort-meeting-card"><h2><?php esc_html_e('Weekly Meeting','tfp-dashboard'); ?></h2><p><?php echo esc_html(get_post_meta($cohort->ID,'_schedule_text',true) ?: __('Meeting schedule not configured.','tfp-dashboard')); ?></p><a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings')); ?>"><?php esc_html_e('Go to Meeting','tfp-dashboard'); ?></a></section>
+
+            <section class="tfp-dash-panel tfp-cohort-info-card tfp-cohort-meeting-card">
+                <h2><?php esc_html_e('Weekly Meeting', 'tfp-dashboard'); ?></h2>
+                <p><?php echo esc_html(get_post_meta($cohort->ID, '_schedule_text', true) ?: __('Meeting schedule not configured.', 'tfp-dashboard')); ?></p>
+                <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($meeting_url); ?>"><?php esc_html_e('Go to Meeting', 'tfp-dashboard'); ?></a>
+            </section>
         </div>
     </div>
     <?php
