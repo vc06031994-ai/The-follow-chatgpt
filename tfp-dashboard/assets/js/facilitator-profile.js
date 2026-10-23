@@ -69,9 +69,24 @@
 
                             if(key==='preferred_contact'||key==='notification_settings'){
                                 var selected=Array.isArray(value)?value:[];
-                                target.querySelectorAll('input[type="checkbox"]').forEach(function(input){
-                                    input.checked=selected.indexOf(input.value)!==-1;
+                                target.querySelectorAll('[data-option]').forEach(function(item){
+                                    var option=item.getAttribute('data-option');
+                                    var checked=selected.indexOf(option)!==-1;
+                                    var box=item.querySelector('.tfp-fac-profile-check__box');
+
+                                    if(!box) return;
+
+                                    box.classList.toggle('is-checked',checked);
+                                    box.textContent=checked?'✓':'';
                                 });
+
+                                /* Keep the edit-mode controls in sync as well. */
+                                var editForm=section?section.querySelector('.tfp-fac-profile-edit-form'):null;
+                                if(editForm){
+                                    editForm.querySelectorAll('input[name="'+(key==='preferred_contact'?'preferred_contact[]':'notification_settings[]')+'"]').forEach(function(input){
+                                        input.checked=selected.indexOf(input.value)!==-1;
+                                    });
+                                }
                                 return;
                             }
 
