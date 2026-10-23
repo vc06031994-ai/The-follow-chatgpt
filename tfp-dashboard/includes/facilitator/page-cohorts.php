@@ -264,84 +264,218 @@ function tfp_facilitator_cohorts_action_items($cohorts, $selected_cohort = null)
     $scope = $selected_cohort ? [$selected_cohort] : (array) $cohorts;
     $items = [];
 
-    if ($scope) {
-        $student_ids = [];
-        $blocked = 0;
-        $stalled = 0;
-        $homework = 0;
-        $falling = 0;
-        $meeting_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings');
-        $homework_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-homework');
-        $tests_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-tests');
-        $grades_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-grades');
+    if (!$scope) {
+        return $items;
+    }
 
-        foreach ($scope as $cohort) {
-            $student_ids = array_merge($student_ids, tfp_facilitator_cohort_students($cohort->ID));
-            $course_id = tfp_facilitator_cohort_course_id($cohort->ID);
-            $lesson = tfp_facilitator_cohorts_current_lesson($cohort->ID, $course_id);
+    /*
+     * Selected-cohort screens follow the Figma action queue exactly:
+     * 1) Test unlocks
+     * 2) Manual test unlocks
+     * 3) Grade homework
+     * 4) Publish weekly meeting notes
+     *
+     * Counts and destinations remain live and reuse the existing facilitator
+     * review systems. Zero-count alert rows are omitted; the regular meeting
+     * notes task remains available.
+     */
+    if ($selected_cohort) {
+        $cohort = $selected_cohort;
+        $cohort_id = (int) $cohort->ID;
+        $course_id = tfp_facilitator_cohort_course_id($cohort_id);
+        $weeks = function_exists('tfp_ld_get_weeks') ? (array) tfp_ld_get_weeks($course_id) : [];
+        $current_week = function_exists('tfp_facilitator_cohort_week')
+            ? (int) tfp_facilitator_cohort_week($cohort_id, $course_id)
+            : 1;
+        $current_week = $weeks
+            ? min(max(1, $current_week), count($weeks))
+            : max(1, $current_week);
+        $lesson = $weeks[$current_week - 1] ?? null;
 
-            if (function_exists('tfp_facilitator_tests_summary')) {
-                $summary = tfp_facilitator_tests_summary($cohort, 0);
-                $blocked += (int) $summary['blocked'];
-                $stalled += (int) $summary['stalled'];
-            }
+        $summary = function_exists('tfp_facilitator_tests_summary')
+            ? tfp_facilitator_tests_summary($cohort, 0)
+            : ['blocked' => 0, 'stalled' => 0];
 
-            $homework_items = function_exists('tfp_facilitator_homework_row_items')
-                ? tfp_facilitator_homework_row_items(get_current_user_id(), 0, (int) $cohort->ID)
-                : [];
-            $homework += count(array_slice((array) $homework_items, 0, 200));
-            $falling += $lesson ? tfp_facilitator_cohorts_falling_behind(tfp_facilitator_cohort_students($cohort->ID), $lesson->ID) : 0;
-        }
+        $blocked = (int) ($summary['blocked'] ?? 0);
+        $stalled = (int) ($summary['stalled'] ?? 0);
 
-        $items[] = [
-            'title' => __('Join Cohort Meeting', 'tfp-dashboard'),
-            'count' => '',
-            'desc' => __('Open the facilitator meeting area for the selected cohort.', 'tfp-dashboard'),
-            'button' => __('Join Meeting', 'tfp-dashboard'),
-            'button_icon' => 'arrow',
-            'url' => $meeting_url,
-            'icon' => 'meeting',
-            'tone' => 'teal',
-        ];
+        $homework_items = function_exists('tfp_facilitator_homework_items')
+            ? (array) tfp_facilitator_homework_items([$cohort])
+            : [];
+        $homework_count = count($homework_items);
 
-        if ($blocked + $stalled > 0) {
+        $tests_url = add_query_arg([
+            'tfp_qt_cohort' => $cohort_id,
+            'tfp_qt_week' => $current_week,
+        ], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'));
+
+        $documents_url = add_query_arg([
+            'tfp_fd_cohort' => $cohort_id,
+        ], tfp_dashboard_get_url('tfp-dashboard-facilitator-documents'));
+
+        $grades_url = add_query_arg([
+            'tfp_fg_cohort' => $cohort_id,
+            'tfp_fg_week' => $current_week,
+        ], tfp_dashboard_get_url('tfp-dashboard-facilitator-grades'));
+
+        $meeting_url = add_query_arg([
+            'tfp_meeting_cohort' => $cohort_id,
+            'tfp_meeting_week' => $current_week,
+        ], tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings'));
+
+        if ($blocked > 0) {
             $items[] = [
-                'title' => __('Manual Test Unlocks Required', 'tfp-dashboard'),
-                'count' => $blocked + $stalled,
-                'desc' => __('Students have incomplete or stalled test work requiring review.', 'tfp-dashboard'),
+                'title' => __('Test Unlocks Required', 'tfp-dashboard'),
+                'count' => $blocked,
+                'count_label' => __('Unlocks', 'tfp-dashboard'),
+                'desc' => sprintf(
+                    __('%1$s. Requires Pastoral Override.', 'tfp-dashboard'),
+                    $cohort->post_title
+                ),
                 'button' => __('Unlock Test', 'tfp-dashboard'),
                 'button_icon' => 'unlock',
                 'url' => $tests_url,
-                'icon' => 'unlock',
+                'icon' => 'warning',
                 'tone' => 'warning',
             ];
         }
 
-        if ($homework > 0) {
+        if ($stalled > 0) {
             $items[] = [
-                'title' => __('Homework & Field Report Queue', 'tfp-dashboard'),
-                'count' => $homework,
-                'desc' => __('Submitted assignments are waiting for facilitator review.', 'tfp-dashboard'),
-                'button' => __('Review All', 'tfp-dashboard'),
-                'button_icon' => 'arrow',
-                'url' => $homework_url,
-                'icon' => 'homework',
-                'tone' => 'teal',
+                'title' => __('Manual Test Unlocks Required', 'tfp-dashboard'),
+                'count' => $stalled,
+                'count_label' => __('Unlocks', 'tfp-dashboard'),
+                'desc' => sprintf(
+                    __('Students have stalled test work in %1$s. Requires Pastoral Override.', 'tfp-dashboard'),
+                    $cohort->post_title
+                ),
+                'button' => __('View Docs', 'tfp-dashboard'),
+                'button_icon' => 'unlock',
+                'url' => $documents_url,
+                'icon' => 'warning',
+                'tone' => 'warning',
             ];
         }
 
-        if ($falling > 0) {
+        if ($homework_count > 0) {
             $items[] = [
-                'title' => __('T-24h Diagnostic Review Required', 'tfp-dashboard'),
-                'count' => $falling,
-                'desc' => __('Students currently falling behind should be reviewed before the next meeting.', 'tfp-dashboard'),
-                'button' => __('View Gaps', 'tfp-dashboard'),
-                'button_icon' => 'arrow',
+                'title' => __('Grade Homework', 'tfp-dashboard'),
+                'count' => $homework_count,
+                'count_label' => __('Pending', 'tfp-dashboard'),
+                'count_in_title' => false,
+                'desc' => sprintf(
+                    __('%1$d Pending • Awaiting facilitator review for Week %2$d.', 'tfp-dashboard'),
+                    $homework_count,
+                    $current_week
+                ),
+                'button' => __('Open Grades', 'tfp-dashboard'),
+                'button_icon' => 'unlock',
                 'url' => $grades_url,
-                'icon' => 'diagnostic',
-                'tone' => 'teal',
+                'icon' => 'warning',
+                'tone' => 'warning',
             ];
         }
+
+        $items[] = [
+            'title' => __('Publish & Submit Weekly Meeting Notes', 'tfp-dashboard'),
+            'count' => '',
+            'count_label' => '',
+            'desc' => sprintf(
+                __('Week %1$d: Close Meeting Tasks to Post Official Grades.', 'tfp-dashboard'),
+                $current_week
+            ),
+            'button' => __('Publish', 'tfp-dashboard'),
+            'button_icon' => 'publish',
+            'url' => $meeting_url,
+            'icon' => 'publish',
+            'tone' => 'teal',
+        ];
+
+        return $items;
+    }
+
+    /*
+     * All-cohort dashboard keeps its existing queue semantics.
+     */
+    $blocked = 0;
+    $stalled = 0;
+    $homework = 0;
+    $falling = 0;
+    $meeting_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-meetings');
+    $homework_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-homework');
+    $tests_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-tests');
+    $grades_url = tfp_dashboard_get_url('tfp-dashboard-facilitator-grades');
+
+    foreach ($scope as $cohort) {
+        $course_id = tfp_facilitator_cohort_course_id($cohort->ID);
+        $lesson = tfp_facilitator_cohorts_current_lesson($cohort->ID, $course_id);
+
+        if (function_exists('tfp_facilitator_tests_summary')) {
+            $summary = tfp_facilitator_tests_summary($cohort, 0);
+            $blocked += (int) $summary['blocked'];
+            $stalled += (int) $summary['stalled'];
+        }
+
+        $homework_items = function_exists('tfp_facilitator_homework_row_items')
+            ? tfp_facilitator_homework_row_items(get_current_user_id(), 0, (int) $cohort->ID)
+            : [];
+        $homework += count(array_slice((array) $homework_items, 0, 200));
+        $falling += $lesson
+            ? tfp_facilitator_cohorts_falling_behind(tfp_facilitator_cohort_students($cohort->ID), $lesson->ID)
+            : 0;
+    }
+
+    $items[] = [
+        'title' => __('Join Cohort Meeting', 'tfp-dashboard'),
+        'count' => '',
+        'desc' => __('Open the facilitator meeting area for the selected cohort.', 'tfp-dashboard'),
+        'button' => __('Join Meeting', 'tfp-dashboard'),
+        'button_icon' => 'arrow',
+        'url' => $meeting_url,
+        'icon' => 'meeting',
+        'tone' => 'teal',
+    ];
+
+    if ($blocked + $stalled > 0) {
+        $items[] = [
+            'title' => __('Manual Test Unlocks Required', 'tfp-dashboard'),
+            'count' => $blocked + $stalled,
+            'count_label' => __('Submissions', 'tfp-dashboard'),
+            'desc' => __('Students have incomplete or stalled test work requiring review.', 'tfp-dashboard'),
+            'button' => __('Unlock Test', 'tfp-dashboard'),
+            'button_icon' => 'unlock',
+            'url' => $tests_url,
+            'icon' => 'unlock',
+            'tone' => 'warning',
+        ];
+    }
+
+    if ($homework > 0) {
+        $items[] = [
+            'title' => __('Homework & Field Report Queue', 'tfp-dashboard'),
+            'count' => $homework,
+            'count_label' => __('Submissions', 'tfp-dashboard'),
+            'desc' => __('Submitted assignments are waiting for facilitator review.', 'tfp-dashboard'),
+            'button' => __('Review All', 'tfp-dashboard'),
+            'button_icon' => 'arrow',
+            'url' => $homework_url,
+            'icon' => 'homework',
+            'tone' => 'teal',
+        ];
+    }
+
+    if ($falling > 0) {
+        $items[] = [
+            'title' => __('T-24h Diagnostic Review Required', 'tfp-dashboard'),
+            'count' => $falling,
+            'count_label' => __('Submissions', 'tfp-dashboard'),
+            'desc' => __('Students currently falling behind should be reviewed before the next meeting.', 'tfp-dashboard'),
+            'button' => __('View Gaps', 'tfp-dashboard'),
+            'button_icon' => 'arrow',
+            'url' => $grades_url,
+            'icon' => 'diagnostic',
+            'tone' => 'teal',
+        ];
     }
 
     return $items;
