@@ -387,7 +387,7 @@ function tfp_facilitator_cohorts_action_items($cohorts, $selected_cohort = null)
             'button' => __('Publish', 'tfp-dashboard'),
             'button_icon' => 'publish',
             'url' => $meeting_url,
-            'icon' => 'publish',
+            'icon' => 'warning',
             'tone' => 'teal',
         ];
 

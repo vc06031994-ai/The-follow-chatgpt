@@ -344,8 +344,10 @@
 }
 
 .tfp-cohort-section-item {
-    padding: 12px 0 14px;
-    border-bottom: 1px solid #E1E1E1;
+    padding: 10px;
+    background-color: #DEE2E2;
+    border-radius: 8px;
+    margin-bottom: 8px;
 }
 
 .tfp-cohort-section-item:last-child {
@@ -398,9 +400,8 @@
 .tfp-cohort-progress {
     height: 6px;
     border-radius: 6px;
-    background: #E5E5E5;
+    background: #fff;
     overflow: hidden;
-    margin-bottom: 8px;
 }
 
 .tfp-cohort-progress span {
@@ -411,8 +412,9 @@
 }
 
 .tfp-cohort-section-item small {
-    font: 500 10px/1.4 var(--tfp-dash-font-alt);
+    font: 500 10px/130% var(--tfp-dash-font-alt);
     color: #151411;
+    font-family: var(--tfp-dash-font);
 }
 
 .tfp-cohort-info-card {
