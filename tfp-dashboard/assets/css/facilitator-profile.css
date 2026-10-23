@@ -311,6 +311,31 @@
     white-space: nowrap !important;
 }
 
+.tfp-fac-profile-check--display {
+    cursor: default;
+    color: #151411 !important;
+}
+
+.tfp-fac-profile-check__box {
+    display: inline-flex;
+    flex: 0 0 18px;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0,0,0,.25);
+    border-radius: 2px;
+    background: #fff;
+    color: #fff;
+    box-sizing: border-box;
+    font: 700 12px/1 Arial, sans-serif;
+}
+
+.tfp-fac-profile-check__box.is-checked {
+    border-color: #00666E;
+    background: #00666E;
+}
+
 .tfp-fac-profile-checklist .tfp-fac-profile-check input {
     flex: 0 0 18px;
     width: 18px !important;
