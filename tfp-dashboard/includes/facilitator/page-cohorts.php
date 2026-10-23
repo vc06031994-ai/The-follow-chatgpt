@@ -407,7 +407,14 @@ function tfp_facilitator_cohorts_render_queue($items)
                 foreach ($items as $item): ?>
                 <article class="tfp-cohort-queue__item">
                     <span class="tfp-cohort-queue__icon tfp-cohort-queue__icon--<?php echo esc_attr($item['tone']); ?>" aria-hidden="true">
-                        <span><?php echo $item['icon'] === 'meeting' ? '◉' : ($item['icon'] === 'unlock' ? '▣' : ($item['icon'] === 'diagnostic' ? '▥' : '□')); ?></span>
+                        <?php
+                        $queue_icon = [
+                            'meeting' => 'action-meeting',
+                            'unlock' => 'action-warning',
+                            'diagnostic' => 'action-course',
+                        ][$item['icon']] ?? 'action-course';
+                        echo tfp_dashboard_icon($queue_icon);
+                        ?>
                     </span>
                     <div class="tfp-cohort-queue__copy">
                         <h3><?php echo esc_html($item['title']); ?><?php if ($item['count'] !== ''): ?> <em>· <?php echo esc_html($item['count']); ?> <?php echo $item['count'] === 1 ? esc_html__('Submission', 'tfp-dashboard') : esc_html__('Submissions', 'tfp-dashboard'); ?></em><?php endif; ?></h3>
