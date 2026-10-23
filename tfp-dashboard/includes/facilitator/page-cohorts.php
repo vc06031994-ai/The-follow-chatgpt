@@ -415,7 +415,7 @@ function tfp_facilitator_cohorts_render_queue($items)
                             'meeting' => 'action-meeting',
                             'unlock' => 'action-warning',
                             'diagnostic' => 'action-course',
-                        ][$item['icon']] ?? 'action-course';
+                        ][$item['icon']] ?? 'action-homework';
                         echo tfp_dashboard_icon($queue_icon);
                         ?>
                     </span>
