@@ -48,6 +48,10 @@ function tfp_dashboard_template_map()
             'label' => __('TFP Facilitator Dashboard — Documents', 'tfp-dashboard'),
             'file' => 'templates/template-facilitator-documents.php',
         ],
+        'tfp-dashboard-facilitator-profile' => [
+            'label' => __('TFP Facilitator Dashboard — Profile', 'tfp-dashboard'),
+            'file' => 'templates/template-facilitator-profile.php',
+        ],
         'tfp-dashboard-facilitator-attendance' => [
             'label' => __('TFP Facilitator Dashboard — Attendance', 'tfp-dashboard'),
             'file' => 'templates/template-facilitator-attendance.php',
@@ -257,6 +261,52 @@ add_action('init', function () {
 
     if ($new_id && !is_wp_error($new_id)) {
         update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-homework');
+        if (function_exists('flush_rewrite_rules')) {
+            flush_rewrite_rules(false);
+        }
+    }
+});
+
+/**
+ * Ensure the Facilitator Profile page exists and uses our custom template.
+ */
+add_action('init', function () {
+    static $checked_facilitator_profile = false;
+    if ($checked_facilitator_profile) {
+        return;
+    }
+    $checked_facilitator_profile = true;
+
+    $pages = get_posts([
+        'post_type' => 'page',
+        'post_status' => ['publish', 'draft', 'pending'],
+        'meta_key' => '_wp_page_template',
+        'meta_value' => 'tfp-dashboard-facilitator-profile',
+        'numberposts' => 1,
+        'fields' => 'ids',
+    ]);
+
+    if (!empty($pages)) {
+        return;
+    }
+
+    $page = get_page_by_path('facilitator-profile');
+    if ($page) {
+        update_post_meta($page->ID, '_wp_page_template', 'tfp-dashboard-facilitator-profile');
+        return;
+    }
+
+    $new_id = wp_insert_post([
+        'post_title' => 'Facilitator Profile',
+        'post_name' => 'facilitator-profile',
+        'post_status' => 'publish',
+        'post_type' => 'page',
+        'comment_status' => 'closed',
+        'ping_status' => 'closed',
+    ]);
+
+    if ($new_id && !is_wp_error($new_id)) {
+        update_post_meta($new_id, '_wp_page_template', 'tfp-dashboard-facilitator-profile');
         if (function_exists('flush_rewrite_rules')) {
             flush_rewrite_rules(false);
         }
