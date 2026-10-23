@@ -1,12 +1,12 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 /**
  * Facilitator Cohorts — all cohorts + selected cohort views.
  * Reuses the existing facilitator cohort, LearnDash, grades, homework, quiz,
  * test, meeting and student-detail data layers.
  */
-
 function tfp_facilitator_cohorts_state()
 {
     $cohort_id = isset($_GET['tfp_cohort_id']) ? absint($_GET['tfp_cohort_id']) : 0;
@@ -152,8 +152,10 @@ function tfp_facilitator_cohorts_all_weeks_report($student_id, $course_id, $week
         $hw = tfp_facilitator_cohorts_homework_percent($student_id, $week->ID);
         $test = tfp_facilitator_cohorts_test_score($student_id, $week->ID);
 
-        if ($hw !== null) $homework[] = $hw;
-        if ($test !== null) $tests[] = $test;
+        if ($hw !== null)
+            $homework[] = $hw;
+        if ($test !== null)
+            $tests[] = $test;
     }
 
     return [
@@ -173,9 +175,9 @@ function tfp_facilitator_cohorts_falling_behind($student_ids, $lesson_id)
         $homework = tfp_facilitator_cohorts_homework_percent($student_id, $lesson_id);
         $test = tfp_facilitator_cohorts_test_score($student_id, $lesson_id);
 
-        $behind = ($attendance !== '' && $attendance !== null && is_numeric($attendance) && (float) $attendance < 80)
-            || ($homework !== null && $homework < 70)
-            || ($test !== null && $test < 70);
+        $behind = ($attendance !== '' && $attendance !== null && is_numeric($attendance) && (float) $attendance < 80) ||
+            ($homework !== null && $homework < 70) ||
+            ($test !== null && $test < 70);
 
         if (!$behind && $lesson_id) {
             $quiz_done = function_exists('tfp_week_get_quiz_result') && tfp_week_get_quiz_result($student_id, $lesson_id) !== null;
@@ -186,7 +188,8 @@ function tfp_facilitator_cohorts_falling_behind($student_ids, $lesson_id)
             }
         }
 
-        if ($behind) $count++;
+        if ($behind)
+            $count++;
     }
 
     return $count;
@@ -195,7 +198,8 @@ function tfp_facilitator_cohorts_falling_behind($student_ids, $lesson_id)
 function tfp_facilitator_cohorts_section_groups($weeks)
 {
     $weeks = array_values((array) $weeks);
-    if (!$weeks) return [];
+    if (!$weeks)
+        return [];
 
     $group_count = min(4, count($weeks));
     $groups = [];
@@ -203,7 +207,8 @@ function tfp_facilitator_cohorts_section_groups($weeks)
 
     for ($i = 0; $i < $group_count; $i++) {
         $slice = array_slice($weeks, $i * $chunk, $chunk);
-        if (!$slice) continue;
+        if (!$slice)
+            continue;
 
         $first_title = trim((string) $slice[0]->post_title);
         $section_name = preg_split('/\s+(?:–|—|-|:)\s+/', $first_title)[0];
@@ -235,7 +240,8 @@ function tfp_facilitator_cohorts_section_progress($students, $group)
             if (function_exists('tfp_grade_get_week')) {
                 $letter = tfp_grade_get_week($student_id, $week->ID);
                 $point = tfp_facilitator_cohorts_grade_points($letter);
-                if ($point !== null) $grades[] = $point;
+                if ($point !== null)
+                    $grades[] = $point;
             }
         }
     }
@@ -391,13 +397,14 @@ function tfp_facilitator_cohorts_render_queue($items)
     <section class="tfp-dash-panel tfp-cohort-queue">
         <div class="tfp-cohort-panel-head">
             <div>
-                <h2><?php esc_html_e('Action Fulfillment Queue', 'tfp-dashboard'); ?></h2>
+                <h5><?php esc_html_e('Action Fulfillment Queue', 'tfp-dashboard'); ?></h5>
                 <p><?php esc_html_e('Tasks that need your Attention, Actions and Submission.', 'tfp-dashboard'); ?></p>
             </div>
             <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home')); ?>#tfp-facilitator-review-list"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
         </div>
         <div class="tfp-cohort-queue__list">
-            <?php if ($items): foreach ($items as $item): ?>
+            <?php if ($items):
+                foreach ($items as $item): ?>
                 <article class="tfp-cohort-queue__item">
                     <span class="tfp-cohort-queue__icon tfp-cohort-queue__icon--<?php echo esc_attr($item['tone']); ?>" aria-hidden="true">
                         <span><?php echo $item['icon'] === 'meeting' ? '◉' : ($item['icon'] === 'unlock' ? '▣' : ($item['icon'] === 'diagnostic' ? '▥' : '□')); ?></span>
@@ -408,7 +415,8 @@ function tfp_facilitator_cohorts_render_queue($items)
                     </div>
                     <a class="tfp-dash-btn tfp-dash-btn--primary tfp-cohort-queue__button" href="<?php echo esc_url($item['url']); ?>"><?php echo esc_html($item['button']); ?> <span aria-hidden="true">↗</span></a>
                 </article>
-            <?php endforeach; else: ?>
+            <?php endforeach;
+            else: ?>
                 <div class="tfp-facilitator-empty"><?php esc_html_e('No action items require attention right now.', 'tfp-dashboard'); ?></div>
             <?php endif; ?>
         </div>
@@ -448,11 +456,14 @@ function tfp_facilitator_cohorts_render_all($cohorts)
         $lesson = tfp_facilitator_cohorts_current_lesson($cohort->ID, $course_id);
 
         foreach ($students as $student_id) {
-            if ($lesson && function_exists('tfp_ld_is_week_complete') && tfp_ld_is_week_complete($student_id, $lesson->ID)) $completed++;
-            if ($lesson) $possible++;
+            if ($lesson && function_exists('tfp_ld_is_week_complete') && tfp_ld_is_week_complete($student_id, $lesson->ID))
+                $completed++;
+            if ($lesson)
+                $possible++;
             if ($course_id && function_exists('tfp_grade_overall')) {
                 $letter = tfp_grade_overall($student_id, $course_id);
-                if ($letter) $grades[] = $letter;
+                if ($letter)
+                    $grades[] = $letter;
             }
         }
 
@@ -501,14 +512,16 @@ function tfp_facilitator_cohorts_render_all($cohorts)
                         <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                     </tr></thead>
                     <tbody>
-                    <?php foreach ($cohorts as $cohort):
+                    <?php
+                    foreach ($cohorts as $cohort):
                         $course_id = tfp_facilitator_cohort_course_id($cohort->ID);
                         $students = tfp_facilitator_cohort_students($cohort->ID);
                         $grades = [];
                         foreach ($students as $student_id) {
                             if (function_exists('tfp_grade_overall')) {
                                 $g = tfp_grade_overall($student_id, $course_id);
-                                if ($g) $grades[] = $g;
+                                if ($g)
+                                    $grades[] = $g;
                             }
                         }
                         $lesson = tfp_facilitator_cohorts_current_lesson($cohort->ID, $course_id);
@@ -568,8 +581,10 @@ function tfp_facilitator_cohorts_metrics_for_selected($cohort, $week_number)
     foreach ($students as $student_id) {
         $hw = $lesson ? tfp_facilitator_cohorts_homework_percent($student_id, $lesson->ID) : null;
         $test = $lesson ? tfp_facilitator_cohorts_test_score($student_id, $lesson->ID) : null;
-        if ($hw !== null) $homework[] = $hw;
-        if ($test !== null) $tests[] = $test;
+        if ($hw !== null)
+            $homework[] = $hw;
+        if ($test !== null)
+            $tests[] = $test;
     }
 
     return [
@@ -639,7 +654,8 @@ function tfp_facilitator_cohorts_render_course_overview($cohort, $state, $metric
                     </div>
                 </div>
                 <div class="tfp-cohort-section-mastery__list">
-                    <?php foreach (tfp_facilitator_cohorts_section_groups($weeks) as $group):
+                    <?php
+                    foreach (tfp_facilitator_cohorts_section_groups($weeks) as $group):
                         $progress = tfp_facilitator_cohorts_section_progress($students, $group);
                         $status_class = $progress['percent'] >= 90 ? 'complete' : ($progress['percent'] > 0 ? 'progress' : 'not-started');
                         $status_label = $progress['percent'] >= 90 ? __('Completed', 'tfp-dashboard') : ($progress['percent'] > 0 ? __('In Progress', 'tfp-dashboard') : __('Not Started', 'tfp-dashboard'));
@@ -683,7 +699,8 @@ function tfp_facilitator_cohorts_render_weekly($cohort, $state, $metrics)
             <section class="tfp-dash-panel tfp-cohort-info-card">
                 <h2><?php esc_html_e('Current Week', 'tfp-dashboard'); ?></h2>
                 <p><?php echo esc_html('Week ' . $metrics['week_number'] . ': ' . ($lesson ? $lesson->post_title : '')); ?></p>
-                <?php foreach (['reading', 'homework', 'quiz', 'test'] as $step):
+                <?php
+                foreach (['reading', 'homework', 'quiz', 'test'] as $step):
                     $done = 0;
                     foreach ($students as $student_id) {
                         if ($lesson && tfp_facilitator_cohorts_student_completion($student_id, $lesson->ID, $step)) {
@@ -724,7 +741,8 @@ function tfp_facilitator_cohorts_render_performance_table($cohort, $state, $mode
 
     foreach ($students as $student_id) {
         $student = get_userdata($student_id);
-        if (!$student) continue;
+        if (!$student)
+            continue;
 
         $report = $report_week > 0
             ? tfp_facilitator_cohorts_week_report($student_id, $weeks[$report_week - 1]->ID)
@@ -742,13 +760,15 @@ function tfp_facilitator_cohorts_render_performance_table($cohort, $state, $mode
         ];
     }
 
-    usort($rows, static function($a,$b){return strcasecmp($a['name'],$b['name']);});
-    $page = max(1,$state['page']);
+    usort($rows, static function ($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+    });
+    $page = max(1, $state['page']);
     $per_page = 20;
     $total = count($rows);
-    $pages = max(1,(int)ceil($total/$per_page));
-    $page = min($page,$pages);
-    $paged = array_slice($rows,($page-1)*$per_page,$per_page);
+    $pages = max(1, (int) ceil($total / $per_page));
+    $page = min($page, $pages);
+    $paged = array_slice($rows, ($page - 1) * $per_page, $per_page);
     ?>
     <section class="tfp-dash-panel tfp-cohort-table-card tfp-cohort-performance">
         <div class="tfp-cohort-table-card__head">
@@ -757,41 +777,42 @@ function tfp_facilitator_cohorts_render_performance_table($cohort, $state, $mode
                 <input type="hidden" name="tfp_cohort_id" value="<?php echo esc_attr($cohort->ID); ?>">
                 <input type="hidden" name="tfp_cohort_tab" value="<?php echo esc_attr($state['tab']); ?>">
                 <select name="tfp_cohort_report_week" onchange="this.form.submit()">
-                    <option value="0" <?php selected($report_week,0); ?>><?php esc_html_e('All Weeks','tfp-dashboard'); ?></option>
-                    <?php foreach($weeks as $index=>$week): ?><option value="<?php echo esc_attr($index+1); ?>" <?php selected($report_week,$index+1); ?>><?php printf(esc_html__('Week %d','tfp-dashboard'),$index+1); ?></option><?php endforeach; ?>
+                    <option value="0" <?php selected($report_week, 0); ?>><?php esc_html_e('All Weeks', 'tfp-dashboard'); ?></option>
+                    <?php foreach ($weeks as $index => $week): ?><option value="<?php echo esc_attr($index + 1); ?>" <?php selected($report_week, $index + 1); ?>><?php printf(esc_html__('Week %d', 'tfp-dashboard'), $index + 1); ?></option><?php endforeach; ?>
                 </select>
             </form>
         </div>
         <div class="tfp-dash-table-wrap">
             <table class="tfp-dash-table tfp-cohort-table tfp-cohort-performance-table">
                 <thead><tr>
-                    <th><?php esc_html_e('Disciples','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Current Module','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Homework Avg.','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Test Avg.','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Attendance','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Overall Grade Avg.','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Action','tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Disciples', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Current Module', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Homework Avg.', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Test Avg.', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Overall Grade Avg.', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                 </tr></thead>
                 <tbody>
-                <?php foreach($paged as $row):
-                    $view=add_query_arg('tfp_student_id',$row['id'],tfp_dashboard_get_url('tfp-dashboard-facilitator-student'));
+                <?php
+                foreach ($paged as $row):
+                    $view = add_query_arg('tfp_student_id', $row['id'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'));
                     ?>
                     <tr>
                         <td><strong><?php echo esc_html($row['name']); ?></strong></td>
                         <td><?php echo esc_html($row['module']); ?></td>
-                        <td><span class="tfp-cohort-value"><?php echo $row['homework']!==null?esc_html($row['homework'].'%'):'—'; ?></span></td>
-                        <td><span class="tfp-cohort-value"><?php echo $row['test']!==null?esc_html($row['test'].'%'):'—'; ?></span></td>
-                        <td class="tfp-cohort-teal"><?php echo is_numeric($row['attendance'])?esc_html(round((float)$row['attendance']).'%'):'—'; ?></td>
-                        <td><span class="tfp-cohort-grade"><?php echo esc_html($row['grade']?:'—'); ?></span></td>
-                        <td><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url($view); ?>"><?php esc_html_e('View','tfp-dashboard'); ?></a></td>
+                        <td><span class="tfp-cohort-value"><?php echo $row['homework'] !== null ? esc_html($row['homework'] . '%') : '—'; ?></span></td>
+                        <td><span class="tfp-cohort-value"><?php echo $row['test'] !== null ? esc_html($row['test'] . '%') : '—'; ?></span></td>
+                        <td class="tfp-cohort-teal"><?php echo is_numeric($row['attendance']) ? esc_html(round((float) $row['attendance']) . '%') : '—'; ?></td>
+                        <td><span class="tfp-cohort-grade"><?php echo esc_html($row['grade'] ?: '—'); ?></span></td>
+                        <td><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url($view); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if(!$paged): ?><tr><td colspan="7"><div class="tfp-facilitator-empty"><?php esc_html_e('No disciples are available for this cohort.','tfp-dashboard'); ?></div></td></tr><?php endif; ?>
+                <?php if (!$paged): ?><tr><td colspan="7"><div class="tfp-facilitator-empty"><?php esc_html_e('No disciples are available for this cohort.', 'tfp-dashboard'); ?></div></td></tr><?php endif; ?>
                 </tbody>
             </table>
         </div>
-        <?php tfp_facilitator_cohorts_render_pagination($page,$pages,$total,$state); ?>
+        <?php tfp_facilitator_cohorts_render_pagination($page, $pages, $total, $state); ?>
     </section>
     <?php
 }
@@ -806,73 +827,80 @@ function tfp_facilitator_cohorts_render_roster($cohort, $state)
 
     foreach (tfp_facilitator_cohort_students($cohort->ID) as $student_id) {
         $student = get_userdata($student_id);
-        if (!$student) continue;
+        if (!$student)
+            continue;
 
         $id = $student->ID;
-        $homework = $quiz = $test = ['label'=>__('Not Started','tfp-dashboard'),'tone'=>'neutral'];
+        $homework = $quiz = $test = ['label' => __('Not Started', 'tfp-dashboard'), 'tone' => 'neutral'];
         if ($lesson) {
             $homework = tfp_facilitator_roster_work_status($id, $lesson->ID, 'homework');
             $quiz = tfp_facilitator_roster_work_status($id, $lesson->ID, 'quiz');
             $test = tfp_facilitator_roster_work_status($id, $lesson->ID, 'test');
         }
 
-        $grade = function_exists('tfp_grade_get_week') && $lesson ? tfp_grade_get_week($id,$lesson->ID) : '';
-        $rows[] = ['id'=>$id,'name'=>$student->display_name ?: $student->user_email,'module'=>$lesson ? $lesson->post_title : '—','homework'=>$homework,'quiz'=>$quiz,'test'=>$test,'grade'=>$grade];
+        $grade = function_exists('tfp_grade_get_week') && $lesson ? tfp_grade_get_week($id, $lesson->ID) : '';
+        $rows[] = ['id' => $id, 'name' => $student->display_name ?: $student->user_email, 'module' => $lesson ? $lesson->post_title : '—', 'homework' => $homework, 'quiz' => $quiz, 'test' => $test, 'grade' => $grade];
     }
 
-    usort($rows,static function($a,$b){return strcasecmp($a['name'],$b['name']);});
-    $page=max(1,$state['page']);$per_page=20;$total=count($rows);$pages=max(1,(int)ceil($total/$per_page));$page=min($page,$pages);
-    $paged=array_slice($rows,($page-1)*$per_page,$per_page);
+    usort($rows, static function ($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+    });
+    $page = max(1, $state['page']);
+    $per_page = 20;
+    $total = count($rows);
+    $pages = max(1, (int) ceil($total / $per_page));
+    $page = min($page, $pages);
+    $paged = array_slice($rows, ($page - 1) * $per_page, $per_page);
     ?>
     <section class="tfp-dash-panel tfp-cohort-table-card tfp-cohort-performance">
-        <div class="tfp-cohort-table-card__head"><h2><?php esc_html_e('Class Roster & Current Performance Reports','tfp-dashboard'); ?></h2>
+        <div class="tfp-cohort-table-card__head"><h2><?php esc_html_e('Class Roster & Current Performance Reports', 'tfp-dashboard'); ?></h2>
             <form method="get" class="tfp-cohort-week-filter">
                 <input type="hidden" name="tfp_cohort_id" value="<?php echo esc_attr($cohort->ID); ?>">
                 <input type="hidden" name="tfp_cohort_tab" value="roster">
                 <select name="tfp_cohort_report_week" onchange="this.form.submit()">
-                    <option value="0" <?php selected($report_week,0); ?>><?php esc_html_e('All Weeks','tfp-dashboard'); ?></option>
-                    <?php foreach($weeks as $index=>$week): ?><option value="<?php echo esc_attr($index+1); ?>" <?php selected($report_week,$index+1); ?>><?php printf(esc_html__('Week %d','tfp-dashboard'),$index+1); ?></option><?php endforeach; ?>
+                    <option value="0" <?php selected($report_week, 0); ?>><?php esc_html_e('All Weeks', 'tfp-dashboard'); ?></option>
+                    <?php foreach ($weeks as $index => $week): ?><option value="<?php echo esc_attr($index + 1); ?>" <?php selected($report_week, $index + 1); ?>><?php printf(esc_html__('Week %d', 'tfp-dashboard'), $index + 1); ?></option><?php endforeach; ?>
                 </select>
             </form>
         </div>
         <div class="tfp-dash-table-wrap">
             <table class="tfp-dash-table tfp-roster-table tfp-cohort-table">
                 <thead><tr>
-                    <th><?php esc_html_e('Disciples','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Current Module','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Homework','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Quiz','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Test','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Overall Grade','tfp-dashboard'); ?></th>
-                    <th><?php esc_html_e('Action','tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Disciples', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Current Module', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Homework', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Quiz', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Test', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Overall Grade', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                 </tr></thead>
-                <tbody><?php foreach($paged as $row): ?><tr>
+                <tbody><?php foreach ($paged as $row): ?><tr>
                     <td><strong><?php echo esc_html($row['name']); ?></strong></td>
                     <td><?php echo esc_html($row['module']); ?></td>
                     <td><span class="tfp-roster-status tfp-roster-status--<?php echo esc_attr($row['homework']['tone']); ?>"><?php echo esc_html($row['homework']['label']); ?></span></td>
                     <td><span class="tfp-roster-status tfp-roster-status--<?php echo esc_attr($row['quiz']['tone']); ?>"><?php echo esc_html($row['quiz']['label']); ?></span></td>
                     <td><span class="tfp-roster-status tfp-roster-status--<?php echo esc_attr($row['test']['tone']); ?>"><?php echo esc_html($row['test']['label']); ?></span></td>
                     <td><span class="tfp-cohort-grade"><?php echo esc_html($row['grade'] ?: '—'); ?></span></td>
-                    <td><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg('tfp_student_id',$row['id'],tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>"><?php esc_html_e('View','tfp-dashboard'); ?></a></td>
+                    <td><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg('tfp_student_id', $row['id'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'))); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                 </tr><?php endforeach; ?>
-                <?php if(!$paged): ?><tr><td colspan="7"><div class="tfp-facilitator-empty"><?php esc_html_e('No disciples are enrolled in this cohort.','tfp-dashboard'); ?></div></td></tr><?php endif; ?></tbody>
+                <?php if (!$paged): ?><tr><td colspan="7"><div class="tfp-facilitator-empty"><?php esc_html_e('No disciples are enrolled in this cohort.', 'tfp-dashboard'); ?></div></td></tr><?php endif; ?></tbody>
             </table>
         </div>
-        <?php tfp_facilitator_cohorts_render_pagination($page,$pages,$total,$state); ?>
+        <?php tfp_facilitator_cohorts_render_pagination($page, $pages, $total, $state); ?>
     </section>
     <?php
 }
 
-function tfp_facilitator_cohorts_render_pagination($page,$pages,$total,$state)
+function tfp_facilitator_cohorts_render_pagination($page, $pages, $total, $state)
 {
-    $from = $total ? (($page-1)*20)+1 : 0;
-    $to = min($page*20,$total);
+    $from = $total ? (($page - 1) * 20) + 1 : 0;
+    $to = min($page * 20, $total);
     ?>
     <div class="tfp-cohort-pagination">
         <span><?php echo esc_html($from . ' - ' . $to . ' of ' . $total . ' items'); ?></span>
         <div>
-            <?php if($page>1): ?><a href="<?php echo esc_url(tfp_facilitator_cohorts_url(['tfp_cohort_id'=>$state['cohort_id'],'tfp_cohort_tab'=>$state['tab'],'tfp_cohort_report_week'=>$state['report_week'],'tfp_cohort_page'=>$page-1])); ?>"><?php esc_html_e('Previous','tfp-dashboard'); ?></a><?php else: ?><a class="is-disabled" href="#" aria-disabled="true"><?php esc_html_e('Previous','tfp-dashboard'); ?></a><?php endif; ?>
-            <?php if($page<$pages): ?><a class="tfp-cohort-pagination__next" href="<?php echo esc_url(tfp_facilitator_cohorts_url(['tfp_cohort_id'=>$state['cohort_id'],'tfp_cohort_tab'=>$state['tab'],'tfp_cohort_report_week'=>$state['report_week'],'tfp_cohort_page'=>$page+1])); ?>"><?php esc_html_e('Next','tfp-dashboard'); ?> <span aria-hidden="true">›</span></a><?php endif; ?>
+            <?php if ($page > 1): ?><a href="<?php echo esc_url(tfp_facilitator_cohorts_url(['tfp_cohort_id' => $state['cohort_id'], 'tfp_cohort_tab' => $state['tab'], 'tfp_cohort_report_week' => $state['report_week'], 'tfp_cohort_page' => $page - 1])); ?>"><?php esc_html_e('Previous', 'tfp-dashboard'); ?></a><?php else: ?><a class="is-disabled" href="#" aria-disabled="true"><?php esc_html_e('Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
+            <?php if ($page < $pages): ?><a class="tfp-cohort-pagination__next" href="<?php echo esc_url(tfp_facilitator_cohorts_url(['tfp_cohort_id' => $state['cohort_id'], 'tfp_cohort_tab' => $state['tab'], 'tfp_cohort_report_week' => $state['report_week'], 'tfp_cohort_page' => $page + 1])); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> <span aria-hidden="true">›</span></a><?php endif; ?>
         </div>
     </div>
     <?php
