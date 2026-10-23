@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TFP Dashboard
  * Description: Custom-coded student dashboard (Home, Grades, Communication, Documents, Calendar, Profile) for The Follow Project. Reuses helper functions from the TFP Authentication plugin. Not built with Elementor — fully custom templates for app-like behaviour and pixel-perfect design control.
- * Version: 1.3.01
+ * Version: 1.3.02
  * Author: The Follow Project
  * Text Domain: tfp-dashboard
  */
@@ -10,7 +10,7 @@
 if (!defined('ABSPATH'))
     exit;
 
-define('TFP_DASH_VERSION', '1.3.01');
+define('TFP_DASH_VERSION', '1.3.02');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
@@ -40,6 +40,7 @@ require_once TFP_DASH_PATH . 'includes/shell.php';
 require_once TFP_DASH_PATH . 'includes/icons.php';
 require_once TFP_DASH_PATH . 'includes/page-home.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-home.php';
+require_once TFP_DASH_PATH . 'includes/facilitator/page-cohorts.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-roster.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-student.php';
 require_once TFP_DASH_PATH . 'includes/facilitator/page-attendance.php';
@@ -201,7 +202,7 @@ add_action('wp_enqueue_scripts', function () {
         ]);
     }
 
-    if (in_array($template, ['tfp-dashboard-facilitator-home', 'tfp-dashboard-facilitator-roster', 'tfp-dashboard-facilitator-student', 'tfp-dashboard-facilitator-attendance', 'tfp-dashboard-facilitator-homework', 'tfp-dashboard-facilitator-grades', 'tfp-dashboard-facilitator-tests', 'tfp-dashboard-facilitator-documents', 'tfp-dashboard-facilitator-profile'], true)) {
+    if (in_array($template, ['tfp-dashboard-facilitator-home', 'tfp-dashboard-facilitator-roster', 'tfp-dashboard-facilitator-student', 'tfp-dashboard-facilitator-attendance', 'tfp-dashboard-facilitator-homework', 'tfp-dashboard-facilitator-grades', 'tfp-dashboard-facilitator-tests', 'tfp-dashboard-facilitator-documents', 'tfp-dashboard-facilitator-profile', 'tfp-dashboard-facilitator-cohorts'], true)) {
         $facilitator_deps = ['tfp-dashboard-core', 'tfp-dashboard-components'];
 
         // Reuse WooCommerce's already-bundled SelectWoo/Select2 library instead
@@ -257,6 +258,11 @@ add_action('wp_enqueue_scripts', function () {
     if ($template === 'tfp-dashboard-facilitator-documents') {
         wp_enqueue_style('tfp-dashboard-facilitator-documents', TFP_DASH_URL . 'assets/css/facilitator-documents.css', ['tfp-dashboard-facilitator'], TFP_DASH_VERSION);
         wp_enqueue_script('tfp-dashboard-facilitator-documents', TFP_DASH_URL . 'assets/js/facilitator-documents.js', ['tfp-dashboard-facilitator'], TFP_DASH_VERSION, true);
+    }
+
+    if ($template === 'tfp-dashboard-facilitator-cohorts') {
+        wp_enqueue_style('tfp-dashboard-facilitator-cohorts', TFP_DASH_URL . 'assets/css/facilitator-cohorts.css', ['tfp-dashboard-facilitator'], TFP_DASH_VERSION);
+        wp_enqueue_script('tfp-dashboard-facilitator-cohorts', TFP_DASH_URL . 'assets/js/facilitator-cohorts.js', ['tfp-dashboard-facilitator'], TFP_DASH_VERSION, true);
     }
 
     if ($template === 'tfp-dashboard-facilitator-profile') {
