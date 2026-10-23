@@ -296,7 +296,7 @@ function tfp_dashboard_render_facilitator_profile_content()
                         <span><?php esc_html_e('Preferred Contact', 'tfp-dashboard'); ?></span>
                         <div data-field="preferred_contact" class="tfp-fac-profile-checklist">
                             <?php foreach ($contact_options as $key => $label): ?>
-                                <span class="tfp-fac-profile-check tfp-fac-profile-check--display">
+                                <span class="tfp-fac-profile-check tfp-fac-profile-check--display" data-option="<?php echo esc_attr($key); ?>">
                                     <span class="tfp-fac-profile-check__box <?php echo in_array($key, $preferred_contact, true) ? 'is-checked' : ''; ?>" aria-hidden="true">
                                         <?php echo in_array($key, $preferred_contact, true) ? '✓' : ''; ?>
                                     </span>
