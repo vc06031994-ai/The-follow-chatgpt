@@ -261,7 +261,7 @@
 .tfp-fac-profile-checkgroup {
     display: grid !important;
     grid-template-columns: 238px minmax(0, 1fr) !important;
-    align-items: center;
+    align-items: center !important;
     width: 100% !important;
     min-height: 44px;
     padding: 0 !important;
@@ -271,23 +271,27 @@
     box-sizing: border-box;
 }
 
-.tfp-fac-profile-checkgroup legend {
-    display: block;
-    grid-column: 1;
+.tfp-fac-profile-checkgroup__label {
+    display: flex !important;
+    align-items: center !important;
     width: 238px;
+    min-height: 44px;
     margin: 0;
     padding: 0 24px 0 0;
     box-sizing: border-box;
+    font: 600 12px/1.3 var(--tfp-dash-font) !important;
+    color: #151411;
+    white-space: nowrap;
 }
 
 .tfp-fac-profile-checkgroup .tfp-fac-profile-checklist {
-    grid-column: 2;
     display: flex !important;
     align-items: center !important;
     justify-content: flex-start !important;
     flex-wrap: nowrap !important;
     width: 100% !important;
     min-width: 0 !important;
+    min-height: 44px;
     padding: 0 !important;
     margin: 0 !important;
     gap: 24px !important;
@@ -490,10 +494,22 @@
         padding: 11px 0 !important;
     }
 
-    .tfp-fac-profile-checkgroup legend,
+    .tfp-fac-profile-checkgroup {
+        grid-template-columns: 1fr !important;
+        min-height: auto;
+        padding: 11px 0 !important;
+        row-gap: 7px;
+    }
+
+    .tfp-fac-profile-checkgroup__label,
     .tfp-fac-profile-checkgroup .tfp-fac-profile-checklist {
         grid-column: 1 !important;
         width: 100% !important;
+        min-height: auto;
+    }
+
+    .tfp-fac-profile-checkgroup__label {
+        padding: 0 !important;
     }
 
     .tfp-fac-profile-checkgroup .tfp-fac-profile-checklist {
