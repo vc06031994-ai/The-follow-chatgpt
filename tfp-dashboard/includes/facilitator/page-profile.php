@@ -329,8 +329,8 @@ function tfp_dashboard_render_facilitator_profile_content()
                         <input type="text" name="discord_username" value="<?php echo esc_attr($discord); ?>" placeholder="<?php esc_attr_e('e.g. yourname_1234', 'tfp-dashboard'); ?>">
                     </label>
 
-                    <fieldset class="tfp-fac-profile-checkgroup">
-                        <legend><?php esc_html_e('Preferred Contact', 'tfp-dashboard'); ?></legend>
+                    <div class="tfp-fac-profile-checkgroup">
+                        <span class="tfp-fac-profile-checkgroup__label"><?php esc_html_e('Preferred Contact', 'tfp-dashboard'); ?></span>
                         <div class="tfp-fac-profile-checklist">
                             <?php foreach ($contact_options as $key => $label): ?>
                                 <label class="tfp-fac-profile-check">
@@ -339,10 +339,10 @@ function tfp_dashboard_render_facilitator_profile_content()
                                 </label>
                             <?php endforeach; ?>
                         </div>
-                    </fieldset>
+                    </div>
 
-                    <fieldset class="tfp-fac-profile-checkgroup">
-                        <legend><?php esc_html_e('Notification Settings', 'tfp-dashboard'); ?></legend>
+                    <div class="tfp-fac-profile-checkgroup">
+                        <span class="tfp-fac-profile-checkgroup__label"><?php esc_html_e('Notification Settings', 'tfp-dashboard'); ?></span>
                         <div class="tfp-fac-profile-checklist">
                             <?php foreach ($notification_options as $key => $label): ?>
                                 <label class="tfp-fac-profile-check">
@@ -351,7 +351,7 @@ function tfp_dashboard_render_facilitator_profile_content()
                                 </label>
                             <?php endforeach; ?>
                         </div>
-                    </fieldset>
+                    </div>
 
                     <div class="tfp-fac-profile-edit-actions">
                         <button type="button" class="tfp-dash-btn tfp-fac-profile-cancel" data-tfp-edit-cancel>
