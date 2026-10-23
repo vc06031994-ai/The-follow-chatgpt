@@ -215,16 +215,17 @@
     width: 100%;
 }
 
-.tfp-fac-profile-form-grid > label,
+.tfp-fac-profile-form-grid>label,
 .tfp-fac-profile-field {
     display: grid !important;
     grid-template-columns: 238px minmax(0, 1fr);
     align-items: center;
     column-gap: 0;
     min-height: 44px;
-    padding: 0;
+    padding: 0 0 10px 0;
     border-bottom: 1px solid #EAECF0;
     box-sizing: border-box;
+
 }
 
 .tfp-fac-profile-form-grid__full {
@@ -237,8 +238,8 @@
     color: #151411;
 }
 
-.tfp-fac-profile-form-grid > label > input,
-.tfp-fac-profile-field > input {
+.tfp-fac-profile-form-grid>label>input,
+.tfp-fac-profile-field>input {
     width: 100%;
     min-width: 0;
     min-height: 36px;
@@ -485,7 +486,8 @@
 }
 
 @media(max-width:767px) {
-    .tfp-fac-profile-form-grid > label,
+
+    .tfp-fac-profile-form-grid>label,
     .tfp-fac-profile-field,
     .tfp-fac-profile-checkgroup {
         grid-template-columns: 1fr !important;

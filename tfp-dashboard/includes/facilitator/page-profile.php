@@ -10,7 +10,6 @@ if (!defined('ABSPATH')) {
  * shared facilitator dashboard shell. No separate profile persistence layer
  * is introduced.
  */
-
 function tfp_dashboard_render_facilitator_profile_content()
 {
     $user = wp_get_current_user();
@@ -324,7 +323,7 @@ function tfp_dashboard_render_facilitator_profile_content()
                       hidden>
                     <input type="hidden" name="section" value="connection">
 
-                    <label class="tfp-fac-profile-field">
+                    <label class="tfp-fac-profile-field tfp-dash-form__fields">
                         <?php esc_html_e('Discord Username', 'tfp-dashboard'); ?>
                         <input type="text" name="discord_username" value="<?php echo esc_attr($discord); ?>" placeholder="<?php esc_attr_e('e.g. yourname_1234', 'tfp-dashboard'); ?>">
                     </label>
