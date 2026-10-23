@@ -104,11 +104,15 @@
 }
 
 .tfp-fac-profile-main-grid{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    display:flex;
+    flex-direction:column;
     gap:20px;
-    align-items:start;
+    width:100%;
     margin-bottom:20px;
+}
+
+.tfp-fac-profile-main-grid .tfp-fac-profile-section{
+    width:100%;
 }
 
 .tfp-fac-profile-section{
@@ -398,7 +402,8 @@
 
 @media(max-width:991px){
     .tfp-fac-profile-main-grid{
-        grid-template-columns:1fr;
+        display:flex;
+        flex-direction:column;
     }
 }
 
