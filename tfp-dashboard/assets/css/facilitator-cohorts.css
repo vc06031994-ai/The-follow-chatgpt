@@ -594,3 +594,19 @@
         width: 100%
     }
 }
+.tfp-cohort-queue__icon{
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    width:36px!important;
+    height:36px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+}
+.tfp-cohort-queue__icon > svg{
+    display:block;
+    width:36px;
+    height:36px;
+    flex:0 0 36px;
+}
