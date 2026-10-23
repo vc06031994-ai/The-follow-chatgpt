@@ -1,0 +1,361 @@
+/* Facilitator Cohorts — builds on shared facilitator metrics, panels, tables and buttons. */
+.tfp-cohort-pageheader{margin-bottom:20px!important}
+.tfp-cohort-pageheader__main{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.tfp-cohort-pageheader__main>div{min-width:0}
+.tfp-cohort-pageheader__main .tfp-dash-pageheader__title{margin-bottom:10px!important}
+.tfp-cohort-back{
+    flex:0 0 auto;
+    min-height:42px;
+    padding:0 16px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    border-radius:8px;
+    background:var(--tfp-dash-teal);
+    color:#fff!important;
+    text-decoration:none!important;
+    font:500 13px/1.3 var(--tfp-dash-font);
+}
+.tfp-cohort-back:hover{background:var(--tfp-dash-teal-dark);color:#fff!important}
+
+.tfp-cohort-metrics{margin:0 0 32px!important}
+.tfp-cohort-all-page{width:100%;min-width:0}
+.tfp-cohort-metrics .tfp-facilitator-metric{min-height:86px}
+
+.tfp-cohort-queue{
+    min-width:0;
+    padding:20px!important;
+    margin:0!important;
+}
+.tfp-cohort-panel-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:14px;
+}
+.tfp-cohort-panel-head h2{
+    margin:0 0 5px!important;
+    font:700 17px/1.3 var(--tfp-dash-font)!important;
+}
+.tfp-cohort-panel-head p{
+    margin:0!important;
+    font:500 12px/1.45 var(--tfp-dash-font-alt)!important;
+}
+.tfp-cohort-panel-head>a{
+    font:500 10px/1.3 var(--tfp-dash-font);
+    color:var(--tfp-dash-text);
+    text-decoration:none;
+}
+.tfp-cohort-panel-head>a:hover{color:var(--tfp-dash-teal)}
+
+.tfp-cohort-queue__list{
+    max-height:330px;
+    overflow-y:auto;
+    padding-right:7px;
+    scrollbar-width:thin;
+}
+.tfp-cohort-queue__item{
+    display:grid;
+    grid-template-columns:36px minmax(0,1fr) auto;
+    align-items:center;
+    gap:12px;
+    min-height:76px;
+    padding:10px 8px;
+    border:1px solid #D6DADC;
+    border-radius:8px;
+    margin-bottom:8px;
+    background:#fff;
+    box-sizing:border-box;
+}
+.tfp-cohort-queue__item:last-child{margin-bottom:0}
+.tfp-cohort-queue__icon{
+    width:36px;height:36px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid #A2A2A2;
+    background:#E9E9E9;
+    color:#151411;
+    font:700 16px/1 Arial,sans-serif;
+}
+.tfp-cohort-queue__copy{min-width:0}
+.tfp-cohort-queue__copy h3{
+    margin:0 0 3px!important;
+    font:700 12px/1.35 var(--tfp-dash-font)!important;
+}
+.tfp-cohort-queue__copy h3 em{
+    color:var(--tfp-dash-red,#AF1E2D);
+    font-style:normal;
+}
+.tfp-cohort-queue__copy p{
+    margin:0!important;
+    font:500 10px/1.4 var(--tfp-dash-font-alt)!important;
+}
+.tfp-cohort-queue__button{
+    min-width:118px!important;
+    min-height:40px!important;
+    padding:9px 14px!important;
+    white-space:nowrap;
+}
+
+.tfp-cohort-table-card{
+    padding:0!important;
+    overflow:hidden!important;
+    margin:0 0 24px!important;
+}
+.tfp-cohort-table-card__head{
+    min-height:74px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:0 20px;
+    box-sizing:border-box;
+}
+.tfp-cohort-table-card__head h2{
+    margin:0!important;
+    font:700 18px/1.3 var(--tfp-dash-font)!important;
+}
+.tfp-cohort-table{
+    min-width:980px!important;
+}
+.tfp-cohort-table th,
+.tfp-cohort-table td{
+    vertical-align:middle!important;
+}
+.tfp-cohort-table th:nth-child(1){width:25%!important}
+.tfp-cohort-table th:nth-child(2){width:15%!important}
+.tfp-cohort-table th:nth-child(3){width:19%!important}
+.tfp-cohort-table th:nth-child(4){width:10%!important}
+.tfp-cohort-table th:nth-child(5){width:10%!important}
+.tfp-cohort-table th:nth-child(6){width:13%!important}
+.tfp-cohort-table th:nth-child(7){width:8%!important}
+.tfp-cohort-table td:first-child{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.tfp-cohort-table td:nth-child(2),
+.tfp-cohort-table td:nth-child(3){
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.tfp-cohort-grade{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:31px;height:26px;
+    border:1px solid #7FBBC0;
+    border-radius:18px;
+    font:500 10px/1 var(--tfp-dash-font);
+    box-sizing:border-box;
+    background:#fff;
+}
+.tfp-cohort-teal{color:var(--tfp-dash-teal)!important;font-weight:700}
+.tfp-cohort-alert{color:#151411!important}
+.tfp-cohort-alert strong{color:var(--tfp-dash-red,#AF1E2D)}
+.tfp-cohort-value{font-weight:500}
+
+.tfp-cohort-tabs{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+    margin:0 0 28px;
+    border-bottom:1px solid #C9C9C9;
+    overflow-x:auto;
+    scrollbar-width:none;
+}
+.tfp-cohort-tabs::-webkit-scrollbar{display:none}
+.tfp-cohort-tabs a{
+    position:relative;
+    padding:0 18px 11px;
+    margin-bottom:-1px;
+    color:#B7B7B7!important;
+    text-decoration:none!important;
+    font:700 16px/1.3 var(--tfp-dash-font)!important;
+    white-space:nowrap;
+}
+.tfp-cohort-tabs a.is-active{
+    color:#151411!important;
+}
+.tfp-cohort-tabs a.is-active:after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:0;
+    height:2px;
+    background:var(--tfp-dash-teal);
+}
+
+.tfp-cohort-two-col{
+    display:grid;
+    grid-template-columns:minmax(0,1.25fr) minmax(320px,.85fr);
+    gap:16px;
+    align-items:start;
+    margin-bottom:20px;
+}
+.tfp-cohort-two-col--overview>div:first-child>.tfp-cohort-queue,
+.tfp-cohort-two-col--weekly>div:first-child>.tfp-cohort-queue{height:100%;box-sizing:border-box}
+
+.tfp-cohort-section-mastery{
+    padding:20px!important;
+    min-width:0;
+    margin:0!important;
+}
+.tfp-cohort-section-mastery__list{
+    max-height:380px;
+    overflow-y:auto;
+    padding-right:6px;
+}
+.tfp-cohort-section-item{
+    padding:12px 0 14px;
+    border-bottom:1px solid #E1E1E1;
+}
+.tfp-cohort-section-item:last-child{border-bottom:0}
+.tfp-cohort-section-item__top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:10px;
+}
+.tfp-cohort-section-item__top strong{
+    font:700 12px/1.3 var(--tfp-dash-font);
+}
+.tfp-cohort-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:80px;height:26px;
+    padding:0 10px;
+    border-radius:18px;
+    border:1px solid #909090;
+    font:500 10px/1 var(--tfp-dash-font);
+    box-sizing:border-box;
+    white-space:nowrap;
+}
+.tfp-cohort-status--complete{border-color:#72B9BD;background:#E4F3F2;color:#00666E}
+.tfp-cohort-status--progress{border-color:#D4B861;background:#F7EAC9;color:#765F15}
+.tfp-cohort-status--not-started{background:#F1F1F1;color:#151411}
+.tfp-cohort-progress{
+    height:6px;
+    border-radius:6px;
+    background:#E5E5E5;
+    overflow:hidden;
+    margin-bottom:8px;
+}
+.tfp-cohort-progress span{
+    display:block;
+    height:100%;
+    border-radius:inherit;
+    background:var(--tfp-dash-teal);
+}
+.tfp-cohort-section-item small{
+    font:500 10px/1.4 var(--tfp-dash-font-alt);
+    color:#151411;
+}
+
+.tfp-cohort-info-card{
+    padding:18px!important;
+    margin:0 0 16px!important;
+}
+.tfp-cohort-info-card h2{
+    margin:0 0 7px!important;
+    font:700 17px/1.3 var(--tfp-dash-font)!important;
+}
+.tfp-cohort-info-card>p{
+    margin:0 0 18px!important;
+    font:400 12px/1.4 var(--tfp-dash-font-alt)!important;
+}
+.tfp-cohort-step{
+    padding:12px 0 13px;
+    border-bottom:1px solid #E0E0E0;
+}
+.tfp-cohort-step:last-child{border-bottom:0}
+.tfp-cohort-step>div{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:7px;
+}
+.tfp-cohort-step strong{font:700 12px/1.3 var(--tfp-dash-font)}
+.tfp-cohort-step small{font:500 10px/1.3 var(--tfp-dash-font-alt)}
+.tfp-cohort-step__bar{
+    display:block;height:6px;border-radius:5px;background:#E5E5E5;overflow:hidden;
+}
+.tfp-cohort-step__bar i{
+    display:block;height:100%;background:var(--tfp-dash-teal);border-radius:inherit;
+}
+.tfp-cohort-meeting-card .tfp-dash-btn{width:100%;margin-top:4px}
+
+.tfp-cohort-week-filter select{
+    width:90px;
+    height:36px;
+    padding:0 28px 0 10px;
+    border:1px solid #D6D6D6;
+    border-radius:8px;
+    background:#fff;
+    font:500 12px/1.3 var(--tfp-dash-font);
+    box-sizing:border-box;
+}
+.tfp-cohort-week-filter select:focus{outline:2px solid rgba(0,102,110,.15);outline-offset:1px;border-color:var(--tfp-dash-teal)}
+.tfp-cohort-performance-table th:nth-child(1){width:21%!important}
+.tfp-cohort-performance-table th:nth-child(2){width:18%!important}
+.tfp-cohort-performance-table th:nth-child(3),
+.tfp-cohort-performance-table th:nth-child(4){width:12%!important}
+.tfp-cohort-performance-table th:nth-child(5){width:11%!important}
+.tfp-cohort-performance-table th:nth-child(6){width:14%!important}
+.tfp-cohort-performance-table th:nth-child(7){width:12%!important}
+
+.tfp-cohort-pagination{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:14px 20px;
+    border-top:1px solid #E5E7EB;
+    font:500 11px/130% var(--tfp-dash-font);
+}
+.tfp-cohort-pagination>div{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+.tfp-cohort-pagination a{
+    color:var(--tfp-dash-text);
+    text-decoration:none;
+}
+.tfp-cohort-pagination a:hover{color:var(--tfp-dash-teal)}
+.tfp-cohort-pagination a.is-disabled{color:#98A2B3;pointer-events:none}
+.tfp-cohort-pagination__next{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 16px;
+    border-radius:8px;
+    background:var(--tfp-dash-teal);
+    color:#fff!important;
+}
+.tfp-cohort-pagination__next:hover{background:var(--tfp-dash-teal-dark);color:#fff!important}
+
+@media(max-width:1000px){
+    .tfp-cohort-two-col{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+    .tfp-cohort-table{min-width:900px!important}
+}
+@media(max-width:767px){
+    .tfp-cohort-pageheader__main{align-items:flex-start;flex-direction:column}
+    .tfp-cohort-back{width:100%}
+    .tfp-cohort-two-col{grid-template-columns:1fr}
+    .tfp-cohort-tabs a{padding-left:12px;padding-right:12px;font-size:14px!important}
+    .tfp-cohort-pagination{align-items:flex-start;flex-direction:column}
+    .tfp-cohort-queue__item{grid-template-columns:36px minmax(0,1fr)}
+    .tfp-cohort-queue__button{grid-column:2;width:max-content;min-width:118px!important;justify-self:start}
+}
+@media(max-width:480px){
+    .tfp-cohort-metrics{grid-template-columns:1fr 1fr!important}
+    .tfp-cohort-queue__item{grid-template-columns:36px minmax(0,1fr)}
+    .tfp-cohort-queue__button{width:100%}
+}
