@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TFP Dashboard
  * Description: Custom-coded student dashboard (Home, Grades, Communication, Documents, Calendar, Profile) for The Follow Project. Reuses helper functions from the TFP Authentication plugin. Not built with Elementor — fully custom templates for app-like behaviour and pixel-perfect design control.
- * Version: 1.2.95
+ * Version: 1.2.96
  * Author: The Follow Project
  * Text Domain: tfp-dashboard
  */
@@ -10,7 +10,7 @@
 if (!defined('ABSPATH'))
     exit;
 
-define('TFP_DASH_VERSION', '1.2.95');
+define('TFP_DASH_VERSION', '1.2.96');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
@@ -201,7 +201,7 @@ add_action('wp_enqueue_scripts', function () {
         ]);
     }
 
-    if (in_array($template, ['tfp-dashboard-facilitator-home', 'tfp-dashboard-facilitator-roster', 'tfp-dashboard-facilitator-student', 'tfp-dashboard-facilitator-attendance', 'tfp-dashboard-facilitator-homework', 'tfp-dashboard-facilitator-grades', 'tfp-dashboard-facilitator-tests', 'tfp-dashboard-facilitator-documents'], true)) {
+    if (in_array($template, ['tfp-dashboard-facilitator-home', 'tfp-dashboard-facilitator-roster', 'tfp-dashboard-facilitator-student', 'tfp-dashboard-facilitator-attendance', 'tfp-dashboard-facilitator-homework', 'tfp-dashboard-facilitator-grades', 'tfp-dashboard-facilitator-tests', 'tfp-dashboard-facilitator-documents', 'tfp-dashboard-facilitator-profile'], true)) {
         $facilitator_deps = ['tfp-dashboard-core', 'tfp-dashboard-components'];
 
         // Reuse WooCommerce's already-bundled SelectWoo/Select2 library instead
