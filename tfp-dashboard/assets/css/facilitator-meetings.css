@@ -498,3 +498,11 @@ body.tfp-meetings-modal-open {
         flex-direction: column
     }
 }
+
+/* Meeting row state + quick skip action */
+.tfp-meetings-row-actions{display:flex;align-items:center;justify-content:flex-start;gap:8px;white-space:nowrap}
+.tfp-meetings-action-btn--skip{display:inline-flex;align-items:center;justify-content:center;min-width:62px;height:30px;padding:0 12px;border:1px solid #003f45;border-radius:8px;background:#fbfbfb;color:#151411;font:500 12px/1 var(--tfp-dash-font);cursor:pointer}
+.tfp-meetings-action-btn--skip:hover{background:#fff;color:var(--tfp-dash-teal);border-color:var(--tfp-dash-teal)}
+.tfp-meetings-status--upcoming{background:#e3e7e8;border-color:#151411;color:#151411}
+.tfp-meetings-status--in_progress{background:#e1f4f2;border-color:#00666e;color:#151411}
+.tfp-meetings-status--needs_log{background:#fbeaea;border-color:#af1e2d;color:#151411}
