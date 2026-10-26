@@ -457,8 +457,17 @@ function tfp_facilitator_meetings_render()
         $items = array_values(array_filter($items, static function ($row) use ($search, $cohort_filter) {
             if ($cohort_filter && (int) $row['cohort_id'] !== $cohort_filter)
                 return false;
-            if ($search !== '' && strpos(strtolower($row['cohort_name'] . ' ' . $row['module']), strtolower($search)) === false)
-                return false;
+            if ($search !== '') {
+                $searchable = strtolower(
+                    $row['date_label'] . ' ' .
+                    $row['time_label'] . ' ' .
+                    $row['cohort_name'] . ' ' .
+                    $row['module']
+                );
+
+                if (strpos($searchable, strtolower($search)) === false)
+                    return false;
+            }
             return true;
         }));
 
