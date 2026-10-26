@@ -182,6 +182,22 @@ function tfp_facilitator_meetings_attendance($student_ids, $lesson_id)
     return $recorded ? round(($present / $recorded) * 100) : null;
 }
 
+function tfp_facilitator_meetings_status($timestamp, $attendance = null, $now = null)
+{
+    $timestamp = (int) $timestamp;
+    $now = $now !== null ? (int) $now : current_time('timestamp');
+
+    if ($timestamp > $now) {
+        return 'upcoming';
+    }
+
+    if ($timestamp <= $now && $now < ($timestamp + HOUR_IN_SECONDS)) {
+        return 'in_progress';
+    }
+
+    return $attendance !== null ? 'in_progress' : 'needs_log';
+}
+
 function tfp_facilitator_meetings_rows($cohorts)
 {
     $rows = [];
@@ -222,10 +238,12 @@ function tfp_facilitator_meetings_rows($cohorts)
                 'timestamp' => $timestamp,
                 'date_label' => wp_date('M j, Y', $timestamp, $zone['timezone']),
                 'time_label' => wp_date('g:i A T', $timestamp, $zone['timezone']),
+                'request_date' => wp_date('Y-m-d\\TH:i', $timestamp, $zone['timezone']),
                 'homework_label' => tfp_facilitator_meetings_letter($scores['homework']),
                 'test_label' => tfp_facilitator_meetings_letter($scores['test']),
                 'attendance_percent' => $attendance,
                 'attendance_label' => $attendance !== null ? $attendance . '%' : '—',
+                'meeting_status' => tfp_facilitator_meetings_status($timestamp, $attendance),
                 'meeting_url' => esc_url_raw((string) get_post_meta($lesson->ID, 'tfp_week_meeting_discord_url', true)),
                 'description' => wp_strip_all_tags((string) get_post_meta($lesson->ID, 'tfp_week_meeting_description', true)),
                 'facilitator' => wp_strip_all_tags((string) get_post_meta($lesson->ID, 'tfp_week_facilitator_name', true)),
@@ -648,6 +666,7 @@ function tfp_facilitator_meetings_render()
                             <th><?php esc_html_e('Homework Avg.', 'tfp-dashboard'); ?></th>
                             <th><?php esc_html_e('Test Avg.', 'tfp-dashboard'); ?></th>
                             <th><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></th>
+                            <th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th>
                             <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                         </tr></thead>
                         <tbody>
@@ -660,11 +679,27 @@ function tfp_facilitator_meetings_render()
                                 <td><span class="tfp-meetings-grade"><?php echo esc_html($row['homework_label']); ?></span></td>
                                 <td><span class="tfp-meetings-grade"><?php echo esc_html($row['test_label']); ?></span></td>
                                 <td><span class="tfp-meetings-attendance"><?php echo esc_html($row['attendance_label']); ?></span></td>
-                                <td><button type="button" class="tfp-meetings-action-btn tfp-dash-btn-small tfp-dash-btn--primary" data-tfp-meeting="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></button></td>
+                                <td><span class="tfp-meetings-status tfp-meetings-status--<?php echo esc_attr($row['meeting_status']); ?>"><?php
+                                    echo esc_html(
+                                        $row['meeting_status'] === 'needs_log'
+                                            ? __('Needs Log', 'tfp-dashboard')
+                                            : ($row['meeting_status'] === 'in_progress'
+                                                ? __('In Progress', 'tfp-dashboard')
+                                                : __('Upcoming', 'tfp-dashboard'))
+                                    );
+                                ?></span></td>
+                                <td>
+                                    <div class="tfp-meetings-row-actions">
+                                        <?php if ($row['meeting_status'] === 'upcoming'): ?>
+                                            <button type="button" class="tfp-meetings-action-btn tfp-meetings-action-btn--skip" data-tfp-skip="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('Skip', 'tfp-dashboard'); ?></button>
+                                        <?php endif; ?>
+                                        <button type="button" class="tfp-meetings-action-btn tfp-dash-btn-small tfp-dash-btn--primary" data-tfp-meeting="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></button>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach;
                         else: ?>
-                            <tr><td colspan="7"><div class="tfp-facilitator-empty"><?php echo $tab === 'past' ? esc_html__('No past meetings found.', 'tfp-dashboard') : esc_html__('No upcoming meetings found.', 'tfp-dashboard'); ?></div></td></tr>
+                            <tr><td colspan="8"><div class="tfp-facilitator-empty"><?php echo $tab === 'past' ? esc_html__('No past meetings found.', 'tfp-dashboard') : esc_html__('No upcoming meetings found.', 'tfp-dashboard'); ?></div></td></tr>
                         <?php endif; ?>
                         </tbody>
                     </table>
@@ -717,7 +752,7 @@ function tfp_facilitator_meetings_render()
                     <label data-tfp-student-wrap hidden><?php esc_html_e('Student', 'tfp-dashboard'); ?>
                         <select name="student_id" data-tfp-request-student><option value=""><?php esc_html_e('Select Student', 'tfp-dashboard'); ?></option></select>
                     </label>
-                    <label><?php esc_html_e('Affected Date', 'tfp-dashboard'); ?><input type="datetime-local" name="date" required></label>
+                    <label><?php esc_html_e('Affected Date', 'tfp-dashboard'); ?><input type="datetime-local" name="date" data-tfp-request-date required></label>
                     <label><?php esc_html_e('Reason', 'tfp-dashboard'); ?><textarea name="reason" rows="4" required></textarea></label>
                     <button type="submit" class="tfp-meetings-create-btn"><?php esc_html_e('Create Request', 'tfp-dashboard'); ?></button>
                 </form>
