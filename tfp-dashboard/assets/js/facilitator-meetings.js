@@ -24,5 +24,32 @@ openModal(m);
 }
 
 function refreshStudents(){var c=config(),co=document.querySelector('[data-tfp-request-cohort]'),s=document.querySelector('[data-tfp-request-student]'),w=document.querySelector('[data-tfp-student-wrap]'),t=document.querySelector('[data-tfp-request-type]');if(!co||!s||!w)return;var absence=t&&t.value==='student_absence';w.hidden=!absence;s.innerHTML='<option value="">Select Student</option>';var list=c.studentsByCohort&&c.studentsByCohort[co.value]?c.studentsByCohort[co.value]:[];list.forEach(function(item){var o=document.createElement('option');o.value=item.id;o.textContent=item.name;s.appendChild(o)})}
-document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-tfp-meeting]').forEach(function(b){b.addEventListener('click',function(){try{showMeeting(JSON.parse(b.getAttribute('data-tfp-meeting')))}catch(e){}})});document.querySelectorAll('[data-tfp-skip]').forEach(function(b){b.addEventListener('click',function(){try{openSkipRequest(JSON.parse(b.getAttribute('data-tfp-skip')))}catch(e){}})});document.querySelectorAll('[data-tfp-request]').forEach(function(b){b.addEventListener('click',function(){try{showRequest(JSON.parse(b.getAttribute('data-tfp-request')))}catch(e){}})});document.querySelectorAll('[data-tfp-modal-close]').forEach(function(b){b.addEventListener('click',closeModal)});document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});var create=document.querySelector('[data-tfp-create-modal]'),open=document.querySelector('[data-tfp-open-request-create]'),form=document.querySelector('[data-tfp-request-form]'),type=document.querySelector('[data-tfp-request-type]'),cohort=document.querySelector('[data-tfp-request-cohort]');if(open)open.addEventListener('click',function(){openModal(create)});if(type)type.addEventListener('change',refreshStudents);if(cohort)cohort.addEventListener('change',refreshStudents);if(form)form.addEventListener('submit',function(e){e.preventDefault();var c=config(),d=new FormData(form);d.append('action','tfp_facilitator_meeting_create_request');d.append('nonce',c.nonce||'');fetch(c.ajaxUrl,{method:'POST',body:d}).then(function(r){return r.json()}).then(function(r){if(!r.success)throw new Error(r.data&&r.data.message?r.data.message:'Unable to create request.');window.location.reload()}).catch(function(err){window.alert(err.message||'Unable to create request.')})});document.querySelectorAll('.tfp-meetings-filter-form select').forEach(function(s){s.addEventListener('change',function(){s.form.submit()})});document.querySelectorAll('.tfp-meetings-filter-form input[type=search]').forEach(function(i){i.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();i.form.submit()}})})});
+
+function initMeetingsFilters(){
+var form=document.querySelector('.tfp-meetings-filter-form');
+if(!form)return;
+var pageInput=form.querySelector('input[name="tfp_meeting_page"]');
+var searchInput=form.querySelector('input[name="tfp_meeting_search"]');
+var timer=null;
+function submitFilters(){
+if(pageInput)pageInput.value='1';
+form.submit();
+}
+if(window.jQuery){
+window.jQuery(form).find('select').each(function(){
+window.jQuery(this).off('change.tfpMeetings').on('change.tfpMeetings',submitFilters);
+});
+}else{
+form.querySelectorAll('select').forEach(function(select){select.addEventListener('change',submitFilters)});
+}
+if(searchInput){
+searchInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitFilters()}});
+searchInput.addEventListener('search',submitFilters);
+searchInput.addEventListener('input',function(){
+window.clearTimeout(timer);
+timer=window.setTimeout(submitFilters,400);
+});
+}
+}
+document.addEventListener('DOMContentLoaded',function(){initMeetingsFilters();document.querySelectorAll('[data-tfp-meeting]').forEach(function(b){b.addEventListener('click',function(){try{showMeeting(JSON.parse(b.getAttribute('data-tfp-meeting')))}catch(e){}})});document.querySelectorAll('[data-tfp-skip]').forEach(function(b){b.addEventListener('click',function(){try{openSkipRequest(JSON.parse(b.getAttribute('data-tfp-skip')))}catch(e){}})});document.querySelectorAll('[data-tfp-request]').forEach(function(b){b.addEventListener('click',function(){try{showRequest(JSON.parse(b.getAttribute('data-tfp-request')))}catch(e){}})});document.querySelectorAll('[data-tfp-modal-close]').forEach(function(b){b.addEventListener('click',closeModal)});document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});var create=document.querySelector('[data-tfp-create-modal]'),open=document.querySelector('[data-tfp-open-request-create]'),form=document.querySelector('[data-tfp-request-form]'),type=document.querySelector('[data-tfp-request-type]'),cohort=document.querySelector('[data-tfp-request-cohort]');if(open)open.addEventListener('click',function(){openModal(create)});if(type)type.addEventListener('change',refreshStudents);if(cohort)cohort.addEventListener('change',refreshStudents);if(form)form.addEventListener('submit',function(e){e.preventDefault();var c=config(),d=new FormData(form);d.append('action','tfp_facilitator_meeting_create_request');d.append('nonce',c.nonce||'');fetch(c.ajaxUrl,{method:'POST',body:d}).then(function(r){return r.json()}).then(function(r){if(!r.success)throw new Error(r.data&&r.data.message?r.data.message:'Unable to create request.');window.location.reload()}).catch(function(err){window.alert(err.message||'Unable to create request.')})});});
 })();
