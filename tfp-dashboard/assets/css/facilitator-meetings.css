@@ -28,6 +28,10 @@
     white-space: nowrap
 }
 
+.tfp-meetings-tabs a:hover {
+    color: inherit;
+}
+
 .tfp-meetings-tabs a.is-active {
     color: var(--tfp-dash-text);
     border-bottom-color: var(--tfp-dash-teal);
@@ -140,25 +144,6 @@
     width: 140px
 }
 
-.tfp-meetings-create-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 40px;
-    padding: 0 14px;
-    border: 1px solid var(--tfp-dash-teal);
-    border-radius: 8px;
-    background: var(--tfp-dash-teal);
-    color: #fff;
-    font: 500 13px/1 var(--tfp-dash-font);
-    cursor: pointer;
-    white-space: nowrap
-}
-
-.tfp-meetings-create-btn:hover {
-    background: var(--tfp-dash-teal-dark)
-}
 
 .tfp-meetings-table-wrap {
     width: 100%;

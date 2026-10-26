@@ -459,10 +459,10 @@ function tfp_facilitator_meetings_render()
                 return false;
             if ($search !== '') {
                 $searchable = strtolower(
-                    $row['date_label'] . ' ' .
-                    $row['time_label'] . ' ' .
-                    $row['cohort_name'] . ' ' .
-                    $row['module']
+                    $row['date_label'] . ' '
+                    . $row['time_label'] . ' '
+                    . $row['cohort_name'] . ' '
+                    . $row['module']
                 );
 
                 if (strpos($searchable, strtolower($search)) === false)
@@ -606,7 +606,7 @@ function tfp_facilitator_meetings_render()
                             <option value="denied" <?php selected($_GET['tfp_request_status'] ?? '', 'denied'); ?>><?php esc_html_e('Denied', 'tfp-dashboard'); ?></option>
                         </select>
                     </form>
-                    <button type="button" class="tfp-meetings-create-btn" data-tfp-open-request-create><span aria-hidden="true">+</span><?php esc_html_e('Create New Skip Request', 'tfp-dashboard'); ?></button>
+                    <button type="button" class="tfp-meetings-create-btn tfp-dash-btn tfp-dash-btn--primary" data-tfp-open-request-create><span aria-hidden="true">+</span><?php esc_html_e('Create New Skip Request', 'tfp-dashboard'); ?></button>
                 </div>
 
                 <div class="tfp-dash-table-wrap tfp-meetings-table-wrap">
@@ -826,7 +826,7 @@ function tfp_facilitator_meetings_render()
                     </label>
                     <label><?php esc_html_e('Affected Date', 'tfp-dashboard'); ?><input type="datetime-local" name="date" data-tfp-request-date required></label>
                     <label><?php esc_html_e('Reason', 'tfp-dashboard'); ?><textarea name="reason" rows="4" required></textarea></label>
-                    <button type="submit" class="tfp-meetings-create-btn"><?php esc_html_e('Create Request', 'tfp-dashboard'); ?></button>
+                    <button type="submit" class="tfp-meetings-create-btn tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Create Request', 'tfp-dashboard'); ?></button>
                 </form>
             </div>
         </div>
