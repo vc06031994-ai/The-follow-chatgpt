@@ -1,11 +1,11 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 /**
  * Facilitator Meetings.
  * Uses real cohort schedules, LearnDash weeks and stored assessment/attendance data.
  */
-
 add_action('init', function () {
     register_post_type('tfp_meeting_request', [
         'labels' => [
@@ -40,27 +40,47 @@ function tfp_facilitator_meetings_schedule($schedule)
     ];
 
     $days = [
-        'sunday'=>0,'sun'=>0,'monday'=>1,'mon'=>1,'tuesday'=>2,'tue'=>2,
-        'wednesday'=>3,'wed'=>3,'thursday'=>4,'thu'=>4,'friday'=>5,'fri'=>5,
-        'saturday'=>6,'sat'=>6,
+        'sunday' => 0,
+        'sun' => 0,
+        'monday' => 1,
+        'mon' => 1,
+        'tuesday' => 2,
+        'tue' => 2,
+        'wednesday' => 3,
+        'wed' => 3,
+        'thursday' => 4,
+        'thu' => 4,
+        'friday' => 5,
+        'fri' => 5,
+        'saturday' => 6,
+        'sat' => 6,
     ];
 
-    if (preg_match('/(sunday|sun|monday|mon|tuesday|tue|wednesday|wed|thursday|thu|friday|fri|saturday|sat)/i', $schedule, $m)) {
+    if (preg_match("/\x08(sunday|sun|monday|mon|tuesday|tue|wednesday|wed|thursday|thu|friday|fri|saturday|sat)\x08/i", $schedule, $m)) {
         $out['weekday'] = $days[strtolower($m[1])] ?? 0;
     }
 
-    if (preg_match('/(d{1,2})(?::(d{2}))?s*:?s*(am|pm)/i', $schedule, $m)) {
+    if (preg_match("/(d{1,2})(?::(d{2}))?s*:?s*(am|pm)\x08/i", $schedule, $m)) {
         $out['time'] = max(1, min(12, (int) $m[1])) . ':' . (isset($m[2]) && $m[2] !== '' ? str_pad($m[2], 2, '0', STR_PAD_LEFT) : '00') . ' ' . strtoupper($m[3]);
     }
 
     foreach ([
-        'pt' => ['America/Los_Angeles', 'PT'], 'pst' => ['America/Los_Angeles', 'PT'], 'pdt' => ['America/Los_Angeles', 'PT'],
-        'et' => ['America/New_York', 'ET'], 'est' => ['America/New_York', 'ET'], 'edt' => ['America/New_York', 'ET'],
-        'ct' => ['America/Chicago', 'CT'], 'cst' => ['America/Chicago', 'CT'], 'cdt' => ['America/Chicago', 'CT'],
-        'mt' => ['America/Denver', 'MT'], 'mst' => ['America/Denver', 'MT'], 'mdt' => ['America/Denver', 'MT'],
-        'utc' => ['UTC', 'UTC'], 'gmt' => ['UTC', 'UTC'],
+        'pt' => ['America/Los_Angeles', 'PT'],
+        'pst' => ['America/Los_Angeles', 'PT'],
+        'pdt' => ['America/Los_Angeles', 'PT'],
+        'et' => ['America/New_York', 'ET'],
+        'est' => ['America/New_York', 'ET'],
+        'edt' => ['America/New_York', 'ET'],
+        'ct' => ['America/Chicago', 'CT'],
+        'cst' => ['America/Chicago', 'CT'],
+        'cdt' => ['America/Chicago', 'CT'],
+        'mt' => ['America/Denver', 'MT'],
+        'mst' => ['America/Denver', 'MT'],
+        'mdt' => ['America/Denver', 'MT'],
+        'utc' => ['UTC', 'UTC'],
+        'gmt' => ['UTC', 'UTC'],
     ] as $needle => $zone) {
-        if (preg_match('/' . preg_quote($needle, '/') . '/i', $schedule)) {
+        if (preg_match("/\x08" . preg_quote($needle, '/') . "\x08/i", $schedule)) {
             $out['timezone'] = new DateTimeZone($zone[0]);
             $out['label'] = $zone[1];
             break;
@@ -72,7 +92,8 @@ function tfp_facilitator_meetings_schedule($schedule)
 
 function tfp_facilitator_meetings_timestamp($start_date, $schedule, $week_index)
 {
-    if (!$start_date || !strtotime($start_date)) return 0;
+    if (!$start_date || !strtotime($start_date))
+        return 0;
 
     $parts = tfp_facilitator_meetings_schedule($schedule);
 
@@ -83,8 +104,10 @@ function tfp_facilitator_meetings_timestamp($start_date, $schedule, $week_index)
 
         if (preg_match('/^(d{1,2}):(d{2})s+(AM|PM)$/', $parts['time'], $m)) {
             $hour = (int) $m[1];
-            if (strtoupper($m[3]) === 'PM' && $hour < 12) $hour += 12;
-            if (strtoupper($m[3]) === 'AM' && $hour === 12) $hour = 0;
+            if (strtoupper($m[3]) === 'PM' && $hour < 12)
+                $hour += 12;
+            if (strtoupper($m[3]) === 'AM' && $hour === 12)
+                $hour = 0;
             $date = $date->setTime($hour, (int) $m[2], 0);
         }
 
@@ -96,12 +119,17 @@ function tfp_facilitator_meetings_timestamp($start_date, $schedule, $week_index)
 
 function tfp_facilitator_meetings_letter($percent)
 {
-    if ($percent === null || !is_numeric($percent)) return '—';
+    if ($percent === null || !is_numeric($percent))
+        return '—';
     $percent = (float) $percent;
-    if ($percent >= 90) return 'A';
-    if ($percent >= 80) return 'B';
-    if ($percent >= 70) return 'C';
-    if ($percent >= 60) return 'D';
+    if ($percent >= 90)
+        return 'A';
+    if ($percent >= 80)
+        return 'B';
+    if ($percent >= 70)
+        return 'C';
+    if ($percent >= 60)
+        return 'D';
     return 'F';
 }
 
@@ -143,10 +171,12 @@ function tfp_facilitator_meetings_attendance($student_ids, $lesson_id)
             : get_user_meta($student_id, 'tfp_facilitator_student_attendance_' . absint($lesson_id), true);
 
         $status = is_array($record) ? strtoupper((string) ($record['status'] ?? '')) : '';
-        if (!in_array($status, ['P', 'EA', 'UA'], true)) continue;
+        if (!in_array($status, ['P', 'EA', 'UA'], true))
+            continue;
 
         $recorded++;
-        if ($status === 'P') $present++;
+        if ($status === 'P')
+            $present++;
     }
 
     return $recorded ? round(($present / $recorded) * 100) : null;
@@ -162,7 +192,8 @@ function tfp_facilitator_meetings_rows($cohorts)
         $schedule = (string) get_post_meta($cohort_id, '_schedule_text', true);
         $start_date = (string) get_post_meta($cohort_id, '_start_date', true);
 
-        if (!$course_id || !function_exists('tfp_ld_get_weeks')) continue;
+        if (!$course_id || !function_exists('tfp_ld_get_weeks'))
+            continue;
 
         $weeks = array_values((array) tfp_ld_get_weeks($course_id));
         $student_ids = function_exists('tfp_facilitator_cohort_students')
@@ -171,10 +202,12 @@ function tfp_facilitator_meetings_rows($cohorts)
         $zone = tfp_facilitator_meetings_schedule($schedule);
 
         foreach ($weeks as $index => $lesson) {
-            if (!$lesson instanceof WP_Post) continue;
+            if (!$lesson instanceof WP_Post)
+                continue;
 
             $timestamp = tfp_facilitator_meetings_timestamp($start_date, $schedule, $index);
-            if (!$timestamp) continue;
+            if (!$timestamp)
+                continue;
 
             $scores = tfp_facilitator_meetings_scores($student_ids, $lesson->ID);
             $attendance = tfp_facilitator_meetings_attendance($student_ids, $lesson->ID);
@@ -350,7 +383,7 @@ function tfp_facilitator_meetings_update_request()
 
     $request_id = absint($_POST['request_id'] ?? 0);
     $status = sanitize_key($_POST['status'] ?? '');
-    $allowed_statuses = ['pending','in_progress','needs_review','acknowledged','approved','denied'];
+    $allowed_statuses = ['pending', 'in_progress', 'needs_review', 'acknowledged', 'approved', 'denied'];
 
     if (!$request_id || get_post_type($request_id) !== 'tfp_meeting_request' || !in_array($status, $allowed_statuses, true)) {
         wp_send_json_error(['message' => __('Invalid request update.', 'tfp-dashboard')], 400);
@@ -395,7 +428,8 @@ function tfp_facilitator_meetings_render()
     $past_all = array_values(array_filter($rows, static fn($row) => (int) $row['timestamp'] < $now));
 
     $tab = sanitize_key($_GET['tfp_meeting_tab'] ?? 'upcoming');
-    if (!in_array($tab, ['upcoming','past','requests'], true)) $tab = 'upcoming';
+    if (!in_array($tab, ['upcoming', 'past', 'requests'], true))
+        $tab = 'upcoming';
 
     $search = sanitize_text_field($_GET['tfp_meeting_search'] ?? '');
     $cohort_filter = absint($_GET['tfp_meeting_cohort'] ?? 0);
@@ -403,14 +437,18 @@ function tfp_facilitator_meetings_render()
 
     $filter_rows = static function ($items) use ($search, $cohort_filter, $sort) {
         $items = array_values(array_filter($items, static function ($row) use ($search, $cohort_filter) {
-            if ($cohort_filter && (int) $row['cohort_id'] !== $cohort_filter) return false;
-            if ($search !== '' && strpos(strtolower($row['cohort_name'] . ' ' . $row['module']), strtolower($search)) === false) return false;
+            if ($cohort_filter && (int) $row['cohort_id'] !== $cohort_filter)
+                return false;
+            if ($search !== '' && strpos(strtolower($row['cohort_name'] . ' ' . $row['module']), strtolower($search)) === false)
+                return false;
             return true;
         }));
 
         usort($items, static function ($a, $b) use ($sort) {
-            if ($sort === 'cohort') return strcasecmp($a['cohort_name'], $b['cohort_name']);
-            if ($sort === 'module') return strcasecmp($a['module'], $b['module']);
+            if ($sort === 'cohort')
+                return strcasecmp($a['cohort_name'], $b['cohort_name']);
+            if ($sort === 'module')
+                return strcasecmp($a['module'], $b['module']);
             return (int) $a['timestamp'] <=> (int) $b['timestamp'];
         });
         return $items;
@@ -448,10 +486,12 @@ function tfp_facilitator_meetings_render()
 
     $request_pending = $request_skip = $request_absence = 0;
     foreach ($request_rows as $request) {
-        if (!in_array($request['status'], ['approved','denied','acknowledged'], true)) {
+        if (!in_array($request['status'], ['approved', 'denied', 'acknowledged'], true)) {
             $request_pending++;
-            if ($request['type'] === 'cohort_skip') $request_skip++;
-            if ($request['type'] === 'student_absence') $request_absence++;
+            if ($request['type'] === 'cohort_skip')
+                $request_skip++;
+            if ($request['type'] === 'student_absence')
+                $request_absence++;
         }
     }
 
@@ -514,9 +554,9 @@ function tfp_facilitator_meetings_render()
         </section>
 
         <nav class="tfp-meetings-tabs" aria-label="<?php esc_attr_e('Meeting sections', 'tfp-dashboard'); ?>">
-            <a class="<?php echo $tab === 'upcoming' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['tfp_meeting_tab'=>'upcoming'], $meeting_url)); ?>"><?php esc_html_e('Upcoming Meetings', 'tfp-dashboard'); ?></a>
-            <a class="<?php echo $tab === 'past' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['tfp_meeting_tab'=>'past'], $meeting_url)); ?>"><?php esc_html_e('Past Meetings', 'tfp-dashboard'); ?></a>
-            <a class="<?php echo $tab === 'requests' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['tfp_meeting_tab'=>'requests'], $meeting_url)); ?>"><?php esc_html_e('Requests', 'tfp-dashboard'); ?></a>
+            <a class="<?php echo $tab === 'upcoming' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['tfp_meeting_tab' => 'upcoming'], $meeting_url)); ?>"><?php esc_html_e('Upcoming Meetings', 'tfp-dashboard'); ?></a>
+            <a class="<?php echo $tab === 'past' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['tfp_meeting_tab' => 'past'], $meeting_url)); ?>"><?php esc_html_e('Past Meetings', 'tfp-dashboard'); ?></a>
+            <a class="<?php echo $tab === 'requests' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['tfp_meeting_tab' => 'requests'], $meeting_url)); ?>"><?php esc_html_e('Requests', 'tfp-dashboard'); ?></a>
         </nav>
 
         <?php if ($tab === 'requests'): ?>
@@ -553,16 +593,18 @@ function tfp_facilitator_meetings_render()
                             <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                         </tr></thead>
                         <tbody>
-                        <?php if ($request_rows): foreach ($request_rows as $request): ?>
+                        <?php if ($request_rows):
+                            foreach ($request_rows as $request): ?>
                             <tr>
                                 <td><span class="tfp-meetings-request-tag tfp-meetings-request-tag--<?php echo esc_attr($request['type']); ?>"><?php echo esc_html($request['type_label']); ?></span></td>
                                 <td><?php echo esc_html($request['requester']); ?></td>
                                 <td class="tfp-meetings-date"><?php echo esc_html($request['date']); ?></td>
                                 <td><?php echo esc_html($request['reason']); ?></td>
                                 <td><span class="tfp-meetings-status tfp-meetings-status--<?php echo esc_attr($request['status']); ?>"><?php echo esc_html($request['status_label']); ?></span></td>
-                                <td><button type="button" class="tfp-meetings-action-btn is-outline" data-tfp-request="<?php echo esc_attr(wp_json_encode($request)); ?>"><?php echo in_array($request['status'], ['pending','in_progress','needs_review'], true) ? esc_html__('Add', 'tfp-dashboard') : esc_html__('View', 'tfp-dashboard'); ?></button></td>
+                                <td><button type="button" class="tfp-meetings-action-btn is-outline" data-tfp-request="<?php echo esc_attr(wp_json_encode($request)); ?>"><?php echo in_array($request['status'], ['pending', 'in_progress', 'needs_review'], true) ? esc_html__('Add', 'tfp-dashboard') : esc_html__('View', 'tfp-dashboard'); ?></button></td>
                             </tr>
-                        <?php endforeach; else: ?>
+                        <?php endforeach;
+                        else: ?>
                             <tr><td colspan="6"><div class="tfp-facilitator-empty"><?php esc_html_e('No meeting requests found.', 'tfp-dashboard'); ?></div></td></tr>
                         <?php endif; ?>
                         </tbody>
@@ -573,7 +615,7 @@ function tfp_facilitator_meetings_render()
         <?php else: ?>
             <section class="tfp-meetings-panel">
                 <div class="tfp-meetings-panel__head">
-                    <h2><?php echo $tab === 'past' ? esc_html__('Active Cohorts', 'tfp-dashboard') : esc_html__('All Upcoming Meetings', 'tfp-dashboard'); ?></h2>
+                    <h5><?php echo $tab === 'past' ? esc_html__('Active Cohorts', 'tfp-dashboard') : esc_html__('All Upcoming Meetings', 'tfp-dashboard'); ?></h5>
                     <form method="get" class="tfp-meetings-filter-form tfp-facilitator-filters">
                         <input type="hidden" name="tfp_meeting_tab" value="<?php echo esc_attr($tab); ?>">
                         <div class="tfp-dash-search tfp-facilitator-search">
@@ -609,7 +651,8 @@ function tfp_facilitator_meetings_render()
                             <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                         </tr></thead>
                         <tbody>
-                        <?php if ($page_rows): foreach ($page_rows as $row): ?>
+                        <?php if ($page_rows):
+                            foreach ($page_rows as $row): ?>
                             <tr>
                                 <td class="tfp-meetings-date-cell"><strong><?php echo esc_html($row['date_label']); ?></strong><small><?php echo esc_html($row['time_label']); ?></small></td>
                                 <td><?php echo esc_html($row['cohort_name']); ?></td>
@@ -617,9 +660,10 @@ function tfp_facilitator_meetings_render()
                                 <td><span class="tfp-meetings-grade"><?php echo esc_html($row['homework_label']); ?></span></td>
                                 <td><span class="tfp-meetings-grade"><?php echo esc_html($row['test_label']); ?></span></td>
                                 <td><span class="tfp-meetings-attendance"><?php echo esc_html($row['attendance_label']); ?></span></td>
-                                <td><button type="button" class="tfp-meetings-action-btn" data-tfp-meeting="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></button></td>
+                                <td><button type="button" class="tfp-meetings-action-btn tfp-dash-btn-small tfp-dash-btn--primary" data-tfp-meeting="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></button></td>
                             </tr>
-                        <?php endforeach; else: ?>
+                        <?php endforeach;
+                        else: ?>
                             <tr><td colspan="7"><div class="tfp-facilitator-empty"><?php echo $tab === 'past' ? esc_html__('No past meetings found.', 'tfp-dashboard') : esc_html__('No upcoming meetings found.', 'tfp-dashboard'); ?></div></td></tr>
                         <?php endif; ?>
                         </tbody>
@@ -681,10 +725,10 @@ function tfp_facilitator_meetings_render()
         </div>
 
         <script type="application/json" data-tfp-meetings-config><?php echo wp_json_encode([
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => $nonce,
-            'studentsByCohort' => $students_by_cohort,
-        ]); ?></script>
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => $nonce,
+        'studentsByCohort' => $students_by_cohort,
+    ]); ?></script>
     </div>
     <?php
 }
