@@ -522,7 +522,7 @@ function tfp_facilitator_meetings_render()
         <?php if ($tab === 'requests'): ?>
             <section class="tfp-meetings-panel">
                 <div class="tfp-meetings-panel__head tfp-meetings-panel__head--requests">
-                    <form method="get" class="tfp-meetings-filter-form tfp-facilitator-filters">
+                    <form method="get" class="tfp-meetings-filter-form tfp-facilitator-filters tfp-meetings-filter-form--requests">
                         <input type="hidden" name="tfp_meeting_tab" value="requests">
                         <select name="tfp_request_type" aria-label="<?php esc_attr_e('Request type', 'tfp-dashboard'); ?>">
                             <option value=""><?php esc_html_e('All Request Types', 'tfp-dashboard'); ?></option>
