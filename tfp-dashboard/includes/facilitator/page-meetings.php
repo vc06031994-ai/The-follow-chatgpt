@@ -628,7 +628,21 @@ function tfp_facilitator_meetings_render()
                         </tbody>
                     </table>
                 </div>
-                <footer class="tfp-meetings-pagination"><span><?php printf(esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), $request_rows ? 1 : 0, count($request_rows), count($request_rows)); ?></span></footer>
+                <footer class="tfp-homework-pagination">
+                    <span class="tfp-homework-pagination__details">
+                        <?php if ($request_rows): ?>
+                            <?php printf(
+                                esc_html__('%1$d - %2$d of %3$d items', 'tfp-dashboard'),
+                                1,
+                                count($request_rows),
+                                count($request_rows)
+                            ); ?>
+                        <?php else: ?>
+                            <?php esc_html_e('0 of 0 items', 'tfp-dashboard'); ?>
+                        <?php endif; ?>
+                    </span>
+                    <div class="tfp-homework-pagination__actions"></div>
+                </footer>
             </section>
         <?php else: ?>
             <section class="tfp-meetings-panel">
