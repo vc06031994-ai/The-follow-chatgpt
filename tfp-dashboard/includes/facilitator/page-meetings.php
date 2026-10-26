@@ -238,7 +238,7 @@ function tfp_facilitator_meetings_rows($cohorts)
                 'timestamp' => $timestamp,
                 'date_label' => wp_date('M j, Y', $timestamp, $zone['timezone']),
                 'time_label' => wp_date('g:i A T', $timestamp, $zone['timezone']),
-                'request_date' => wp_date('Y-m-d\\TH:i', $timestamp, $zone['timezone']),
+                'request_date' => wp_date('Y-m-d\TH:i', $timestamp, $zone['timezone']),
                 'homework_label' => tfp_facilitator_meetings_letter($scores['homework']),
                 'test_label' => tfp_facilitator_meetings_letter($scores['test']),
                 'attendance_percent' => $attendance,
@@ -680,18 +680,18 @@ function tfp_facilitator_meetings_render()
                                 <td><span class="tfp-meetings-grade"><?php echo esc_html($row['test_label']); ?></span></td>
                                 <td><span class="tfp-meetings-attendance"><?php echo esc_html($row['attendance_label']); ?></span></td>
                                 <td><span class="tfp-meetings-status tfp-meetings-status--<?php echo esc_attr($row['meeting_status']); ?>"><?php
-                                    echo esc_html(
-                                        $row['meeting_status'] === 'needs_log'
-                                            ? __('Needs Log', 'tfp-dashboard')
-                                            : ($row['meeting_status'] === 'in_progress'
-                                                ? __('In Progress', 'tfp-dashboard')
-                                                : __('Upcoming', 'tfp-dashboard'))
-                                    );
+                                echo esc_html(
+                                    $row['meeting_status'] === 'needs_log'
+                                        ? __('Needs Log', 'tfp-dashboard')
+                                        : ($row['meeting_status'] === 'in_progress'
+                                            ? __('In Progress', 'tfp-dashboard')
+                                            : __('Upcoming', 'tfp-dashboard'))
+                                );
                                 ?></span></td>
                                 <td>
                                     <div class="tfp-meetings-row-actions">
                                         <?php if ($row['meeting_status'] === 'upcoming'): ?>
-                                            <button type="button" class="tfp-meetings-action-btn tfp-meetings-action-btn--skip" data-tfp-skip="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('Skip', 'tfp-dashboard'); ?></button>
+                                            <button type="button" class="tfp-meetings-action-btn tfp-meetings-action-btn--skip tfp-dash-btn-small tfp-dash--outline" data-tfp-skip="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('Skip', 'tfp-dashboard'); ?></button>
                                         <?php endif; ?>
                                         <button type="button" class="tfp-meetings-action-btn tfp-dash-btn-small tfp-dash-btn--primary" data-tfp-meeting="<?php echo esc_attr(wp_json_encode($row)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></button>
                                     </div>
