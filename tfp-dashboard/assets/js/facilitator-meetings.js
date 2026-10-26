@@ -37,17 +37,32 @@ form.submit();
 }
 if(window.jQuery){
 window.jQuery(form).find('select').each(function(){
-window.jQuery(this).off('change.tfpMeetings').on('change.tfpMeetings',submitFilters);
+var $select=window.jQuery(this);
+$select.off('.tfpMeetings');
+$select.on('change.tfpMeetings select2:select.tfpMeetings select2:unselect.tfpMeetings',function(){
+submitFilters();
+});
 });
 }else{
 form.querySelectorAll('select').forEach(function(select){select.addEventListener('change',submitFilters)});
 }
 if(searchInput){
-searchInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitFilters()}});
-searchInput.addEventListener('search',submitFilters);
-searchInput.addEventListener('input',function(){
+var scheduleSearch=function(){
 window.clearTimeout(timer);
-timer=window.setTimeout(submitFilters,400);
+timer=window.setTimeout(submitFilters,350);
+};
+searchInput.addEventListener('input',scheduleSearch);
+searchInput.addEventListener('keyup',scheduleSearch);
+searchInput.addEventListener('change',submitFilters);
+searchInput.addEventListener('search',submitFilters);
+searchInput.addEventListener('blur',function(){
+if(searchInput.value.trim()!=='')submitFilters();
+});
+searchInput.addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+e.preventDefault();
+submitFilters();
+}
 });
 }
 }
