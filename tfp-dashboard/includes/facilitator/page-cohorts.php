@@ -525,7 +525,7 @@ function tfp_facilitator_cohorts_render_header($title, $subtitle, $crumbs, $back
                 <p class="tfp-dash-pageheader__subtitle"><?php echo esc_html($subtitle); ?></p>
             </div>
             <?php if ($back): ?>
-                <a class="tfp-cohort-back" href="<?php echo esc_url(tfp_facilitator_cohorts_url()); ?>"><span aria-hidden="true">↩</span><?php esc_html_e('Back to All Courses', 'tfp-dashboard'); ?></a>
+                <a class="tfp-cohort-back tfp-dash-btn-second tfp-dash-btn--primary" href="<?php echo esc_url(tfp_facilitator_cohorts_url()); ?>"><span aria-hidden="true">↩</span><?php esc_html_e('Back to All Courses', 'tfp-dashboard'); ?></a>
             <?php endif; ?>
         </div>
     </header>

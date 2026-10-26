@@ -18,26 +18,6 @@
     margin-bottom: 10px !important
 }
 
-.tfp-cohort-back {
-    flex: 0 0 auto;
-    min-height: 42px;
-    padding: 0 16px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border-radius: 8px;
-    background: var(--tfp-dash-teal);
-    color: #fff !important;
-    text-decoration: none !important;
-    font: 500 13px/1.3 var(--tfp-dash-font);
-}
-
-.tfp-cohort-back:hover {
-    background: var(--tfp-dash-teal-dark);
-    color: #fff !important
-}
-
 .tfp-cohort-metrics {
     margin: 0 0 32px !important
 }
