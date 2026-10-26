@@ -574,7 +574,7 @@ function tfp_facilitator_meetings_render()
             <section class="tfp-meetings-panel">
                 <div class="tfp-meetings-panel__head">
                     <h2><?php echo $tab === 'past' ? esc_html__('Active Cohorts', 'tfp-dashboard') : esc_html__('All Upcoming Meetings', 'tfp-dashboard'); ?></h2>
-                    <form method="get" class="tfp-meetings-filter-form">
+                    <form method="get" class="tfp-meetings-filter-form tfp-facilitator-filters">
                         <input type="hidden" name="tfp_meeting_tab" value="<?php echo esc_attr($tab); ?>">
                         <div class="tfp-dash-search tfp-facilitator-search">
                             <span class="tfp-dash-search__icon" aria-hidden="true">
