@@ -247,100 +247,76 @@ function tfp_facilitator_tests_summary($cohort, $week_number = 0)
     $lesson = isset($weeks[$selected_week - 1]) ? $weeks[$selected_week - 1] : null;
     $lesson_id = $lesson ? (int) $lesson->ID : 0;
 
-    if ($week_number > 0) {
-        $target_lessons = $lesson_id ? [$lesson_id] : [];
-    } else {
-        $target_lessons = array_map(
-            static function ($week) {
-                return (int) $week->ID;
-            },
-            $weeks
-        );
-    }
+    $quiz_questions = $lesson_id && function_exists('tfp_week_get_quiz_questions')
+        ? (array) tfp_week_get_quiz_questions($lesson_id, false)
+        : [];
+    $test_questions = $lesson_id && function_exists('tfp_week_get_test_questions')
+        ? (array) tfp_week_get_test_questions($lesson_id, false)
+        : [];
+
+    $quiz_required = !empty($quiz_questions);
+    $test_required = !empty($test_questions);
 
     $quiz_scores = [];
     $test_scores = [];
+    $quiz_submitted = 0;
     $test_submitted = 0;
-    $active_signal = 0;
 
     foreach ($students as $student_id) {
-        if ($lesson_id) {
-            $quiz = tfp_facilitator_tests_score('tfp_week_get_quiz_result', $student_id, $lesson_id);
-            $test = tfp_facilitator_tests_score('tfp_week_get_test_result', $student_id, $lesson_id);
+        $quiz_result = $quiz_required && function_exists('tfp_week_get_quiz_result')
+            ? tfp_week_get_quiz_result($student_id, $lesson_id)
+            : null;
+        $test_result = $test_required && function_exists('tfp_week_get_test_result')
+            ? tfp_week_get_test_result($student_id, $lesson_id)
+            : null;
 
-            if ($quiz !== null) {
-                $quiz_scores[] = $quiz;
-                $active_signal++;
-            }
-
-            if ($test !== null) {
-                $test_scores[] = $test;
-                $test_submitted++;
-                $active_signal++;
-            }
+        if (is_array($quiz_result) && isset($quiz_result['score']) && is_numeric($quiz_result['score'])) {
+            $quiz_scores[] = (float) $quiz_result['score'];
+            $quiz_submitted++;
         }
 
-        if ($week_number === 0 && !$lesson_id) {
-            $active_signal += 0;
-        }
-    }
-
-    if ($week_number === 0) {
-        $quiz_scores = [];
-        $test_scores = [];
-
-        foreach ($students as $student_id) {
-            foreach ($target_lessons as $target_lesson_id) {
-                $quiz = tfp_facilitator_tests_score('tfp_week_get_quiz_result', $student_id, $target_lesson_id);
-                $test = tfp_facilitator_tests_score('tfp_week_get_test_result', $student_id, $target_lesson_id);
-
-                if ($quiz !== null) {
-                    $quiz_scores[] = $quiz;
-                }
-
-                if ($test !== null) {
-                    $test_scores[] = $test;
-                }
-            }
+        if (is_array($test_result) && isset($test_result['score']) && is_numeric($test_result['score'])) {
+            $test_scores[] = (float) $test_result['score'];
+            $test_submitted++;
         }
     }
 
     $quiz_avg = $quiz_scores ? (int) round(array_sum($quiz_scores) / count($quiz_scores)) : null;
     $test_avg = $test_scores ? (int) round(array_sum($test_scores) / count($test_scores)) : null;
 
+    /*
+     * Submission Status is a true test-submission metric. A student is
+     * counted as pending only when the selected week actually contains a
+     * required test. This prevents older-week results from inflating the
+     * current cohort's active-week status.
+     */
     $completion_pct = null;
-    $pending_tests = count($students);
+    $pending_tests = 0;
 
-    if ($lesson_id && $students) {
-        $completion = 0;
-
-        foreach ($students as $student_id) {
-            $quiz_done = tfp_facilitator_tests_score('tfp_week_get_quiz_result', $student_id, $lesson_id) !== null;
-            $test_done = tfp_facilitator_tests_score('tfp_week_get_test_result', $student_id, $lesson_id) !== null;
-
-            if ($quiz_done || $test_done) {
-                $completion++;
-            }
-        }
-
-        $completion_pct = (int) round(($completion / count($students)) * 100);
+    if ($test_required && $students) {
+        $completion_pct = (int) round(($test_submitted / count($students)) * 100);
         $pending_tests = max(0, count($students) - $test_submitted);
-    } elseif (!$lesson_id && $students) {
-        $completion_pct = null;
-        $pending_tests = count($students);
     }
 
     $blocked = 0;
     $stalled = 0;
 
-    if ($lesson_id) {
+    if ($students && ($quiz_required || $test_required)) {
         foreach ($students as $student_id) {
-            $quiz_done = tfp_facilitator_tests_score('tfp_week_get_quiz_result', $student_id, $lesson_id) !== null;
-            $test_done = tfp_facilitator_tests_score('tfp_week_get_test_result', $student_id, $lesson_id) !== null;
+            $quiz_done = !$quiz_required;
+            $test_done = !$test_required;
+
+            if ($quiz_required && function_exists('tfp_week_get_quiz_result')) {
+                $quiz_done = (bool) tfp_week_get_quiz_result($student_id, $lesson_id);
+            }
+
+            if ($test_required && function_exists('tfp_week_get_test_result')) {
+                $test_done = (bool) tfp_week_get_test_result($student_id, $lesson_id);
+            }
 
             if (!$quiz_done && !$test_done) {
                 $blocked++;
-            } elseif (!$test_done) {
+            } elseif ($test_required && !$test_done) {
                 $stalled++;
             }
         }
@@ -356,6 +332,16 @@ function tfp_facilitator_tests_summary($cohort, $week_number = 0)
         'selected_week' => $selected_week,
         'lesson' => $lesson,
         'lesson_id' => $lesson_id,
+        'quiz_required' => $quiz_required,
+        'test_required' => $test_required,
+        'quiz_question_count' => count($quiz_questions),
+        'test_question_count' => count($test_questions),
+        'quiz_submitted' => $quiz_submitted,
+        'test_submitted' => $test_submitted,
+        'quiz_score_count' => count($quiz_scores),
+        'test_score_count' => count($test_scores),
+        'quiz_score_sum' => array_sum($quiz_scores),
+        'test_score_sum' => array_sum($test_scores),
         'quiz_avg' => $quiz_avg,
         'test_avg' => $test_avg,
         'completion_pct' => $completion_pct,
@@ -371,11 +357,12 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
 {
     $active_cohorts = count($cohorts);
     $student_ids = [];
-    $quiz_scores = [];
-    $test_scores = [];
-    $pending = 0;
-    $submitted = 0;
-    $eligible_students = 0;
+    $quiz_score_sum = 0;
+    $quiz_score_count = 0;
+    $test_score_sum = 0;
+    $test_score_count = 0;
+    $required_tests = 0;
+    $submitted_tests = 0;
     $gap_counter = [];
     $mastery_counter = [];
 
@@ -383,27 +370,20 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
         $summary = tfp_facilitator_tests_summary($cohort, 0);
 
         $student_ids = array_merge($student_ids, $summary['students']);
-        $eligible_students += count($summary['students']);
 
-        if ($summary['quiz_avg'] !== null) {
-            $quiz_scores[] = $summary['quiz_avg'];
+        if ($summary['quiz_score_count'] > 0) {
+            $quiz_score_sum += (float) $summary['quiz_score_sum'];
+            $quiz_score_count += (int) $summary['quiz_score_count'];
         }
 
-        if ($summary['test_avg'] !== null) {
-            $test_scores[] = $summary['test_avg'];
+        if ($summary['test_score_count'] > 0) {
+            $test_score_sum += (float) $summary['test_score_sum'];
+            $test_score_count += (int) $summary['test_score_count'];
         }
 
-        $pending += (int) $summary['pending_tests'];
-
-        if ($summary['lesson_id'] && $summary['students']) {
-            foreach ($summary['students'] as $student_id) {
-                $quiz_done = tfp_facilitator_tests_score('tfp_week_get_quiz_result', $student_id, $summary['lesson_id']) !== null;
-                $test_done = tfp_facilitator_tests_score('tfp_week_get_test_result', $student_id, $summary['lesson_id']) !== null;
-
-                if ($quiz_done || $test_done) {
-                    $submitted++;
-                }
-            }
+        if ($summary['test_required']) {
+            $required_tests += count($summary['students']);
+            $submitted_tests += (int) $summary['test_submitted'];
         }
 
         if ($summary['gap']['critical_gap'] !== '') {
@@ -417,9 +397,6 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
 
     $student_ids = array_values(array_unique(array_map('absint', $student_ids)));
 
-    $highest_quiz = $quiz_scores ? (int) round(array_sum($quiz_scores) / count($quiz_scores)) : null;
-    $highest_test = $test_scores ? (int) round(array_sum($test_scores) / count($test_scores)) : null;
-
     arsort($gap_counter);
     arsort($mastery_counter);
 
@@ -429,10 +406,10 @@ function tfp_facilitator_tests_overview_metrics($cohorts)
     return [
         'active_cohorts' => $active_cohorts,
         'students' => count($student_ids),
-        'quiz_avg' => $highest_quiz,
-        'test_avg' => $highest_test,
-        'pending' => $pending,
-        'completion_pct' => $eligible_students > 0 ? (int) round(($submitted / $eligible_students) * 100) : null,
+        'quiz_avg' => $quiz_score_count > 0 ? (int) round($quiz_score_sum / $quiz_score_count) : null,
+        'test_avg' => $test_score_count > 0 ? (int) round($test_score_sum / $test_score_count) : null,
+        'pending' => max(0, $required_tests - $submitted_tests),
+        'completion_pct' => $required_tests > 0 ? (int) round(($submitted_tests / $required_tests) * 100) : null,
         'critical_gap' => $critical_gap,
         'highest_mastery' => $highest_mastery,
     ];
