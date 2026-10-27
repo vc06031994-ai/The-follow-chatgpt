@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TFP Dashboard
  * Description: Custom-coded student dashboard (Home, Grades, Communication, Documents, Calendar, Profile) for The Follow Project. Reuses helper functions from the TFP Authentication plugin. Not built with Elementor — fully custom templates for app-like behaviour and pixel-perfect design control.
- * Version: 1.3.13
+ * Version: 1.3.14
  * Author: The Follow Project
  * Text Domain: tfp-dashboard
  */
