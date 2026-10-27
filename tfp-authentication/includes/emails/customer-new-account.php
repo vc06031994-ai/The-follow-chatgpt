@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TFP custom WooCommerce new-account welcome email.
  *
@@ -31,7 +32,7 @@ $view_in_browser_url = apply_filters(
 $hero_image_url = apply_filters(
     'tfp_welcome_email_hero_image_url',
     function_exists('wp_get_attachment_image_url')
-        ? wp_get_attachment_image_url(5109, 'full')
+        ? wp_get_attachment_image_url(6887, 'full')
         : ''
 );
 
@@ -59,11 +60,11 @@ if (function_exists('wc_get_products')) {
 
     if (count($books) < 2) {
         $fallback_books = wc_get_products([
-            'status'   => 'publish',
-            'limit'    => 4,
+            'status' => 'publish',
+            'limit' => 4,
             'category' => ['books'],
-            'orderby'  => 'date',
-            'order'    => 'DESC',
+            'orderby' => 'date',
+            'order' => 'DESC',
         ]);
 
         foreach ($fallback_books as $product) {
@@ -81,7 +82,7 @@ $book_cards = [];
 foreach ($books as $product) {
     $book_cards[] = [
         'title' => $product->get_name(),
-        'url'   => $product->get_permalink(),
+        'url' => $product->get_permalink(),
         'image' => wp_get_attachment_image_url($product->get_image_id(), 'medium'),
     ];
 }
@@ -89,7 +90,7 @@ foreach ($books as $product) {
 while (count($book_cards) < 2) {
     $book_cards[] = [
         'title' => '',
-        'url'   => $shop_url,
+        'url' => $shop_url,
         'image' => '',
     ];
 }
@@ -177,7 +178,17 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                             <tr>
                                 <td width="33.33%" align="center" style="padding:0 8px;vertical-align:top;">
-                                    <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-family:Arial,sans-serif;font-size:27px;line-height:62px;color:#ffffff;">▤</div>
+                                    <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-family:Arial,sans-serif;font-size:27px;line-height:62px;color:#ffffff;">
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                            <path d="M16 11C16 9.93913 16.4214 8.92172 17.1716 8.17157C17.9217 7.42143 18.9391 7 20 7H29V25H20C18.9391 25 17.9217 25.4214 17.1716 26.1716C16.4214 26.9217 16 27.9391 16 29" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
+                                            <path d="M3 25H12C13.0609 25 14.0783 25.4214 14.8284 26.1716C15.5786 26.9217 16 27.9391 16 29V11C16 9.93913 15.5786 8.92172 14.8284 8.17157C14.0783 7.42143 13.0609 7 12 7H3V25Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
+                                            <path d="M20 12H25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
+                                            <path d="M20 16H25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
+                                            <path d="M20 20H25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
+                                            </svg>  
+                                        </span>
+                                    </div>
                                     <div style="padding-top:7px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;color:#151411;"><?php esc_html_e('Browse Books', 'woocommerce'); ?></div>
                                     <a href="<?php echo esc_url($shop_url); ?>" style="display:block;padding-top:4px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;line-height:20px;color:#00666e;text-decoration:none;"><?php esc_html_e('Visit the shop →', 'woocommerce'); ?></a>
                                 </td>
@@ -213,18 +224,18 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
 
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:12px;">
                             <tr>
-                                <?php foreach ($book_cards as $card) : ?>
+                                <?php foreach ($book_cards as $card): ?>
                                     <td width="50%" valign="top" style="padding:0 12px 0 0;text-align:center;">
-                                        <?php if (!empty($card['image'])) : ?>
+                                        <?php if (!empty($card['image'])): ?>
                                             <a href="<?php echo esc_url($card['url']); ?>" style="text-decoration:none;">
                                                 <img src="<?php echo esc_url($card['image']); ?>" alt="<?php echo esc_attr($card['title']); ?>" width="250" style="display:block;width:100%;max-width:250px;height:220px;object-fit:cover;background:#d4c4a8;border:0;margin:0 auto;">
                                             </a>
-                                        <?php else : ?>
+                                        <?php else: ?>
                                             <div style="height:220px;background:#d4c4a8;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:220px;color:#6b7280;text-align:center;">
                                                 <?php esc_html_e('Book Cover', 'woocommerce'); ?>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if (!empty($card['title'])) : ?>
+                                        <?php if (!empty($card['title'])): ?>
                                             <div style="padding-top:12px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;line-height:24px;color:#151411;"><?php echo esc_html($card['title']); ?></div>
                                         <?php endif; ?>
                                         <div style="padding-top:0;font-family:Georgia,serif;font-size:12px;line-height:18px;color:#2a2c2d;">
