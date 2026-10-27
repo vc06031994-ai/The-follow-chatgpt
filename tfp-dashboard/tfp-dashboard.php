@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TFP Dashboard
  * Description: Custom-coded student dashboard (Home, Grades, Communication, Documents, Calendar, Profile) for The Follow Project. Reuses helper functions from the TFP Authentication plugin. Not built with Elementor — fully custom templates for app-like behaviour and pixel-perfect design control.
- * Version: 1.3.13
+ * Version: 1.3.14
  * Author: The Follow Project
  * Text Domain: tfp-dashboard
  */
@@ -10,7 +10,7 @@
 if (!defined('ABSPATH'))
     exit;
 
-define('TFP_DASH_VERSION', '1.3.13');
+define('TFP_DASH_VERSION', '1.3.14');
 define('TFP_DASH_PATH', plugin_dir_path(__FILE__));
 define('TFP_DASH_URL', plugin_dir_url(__FILE__));
 
@@ -76,6 +76,7 @@ require_once TFP_DASH_PATH . 'includes/checkout/course-render.php';
 require_once TFP_DASH_PATH . 'includes/checkout/course-ajax.php';
 require_once TFP_DASH_PATH . 'includes/learndash/helpers.php';
 require_once TFP_DASH_PATH . 'includes/learndash/admin-meta-box.php';
+require_once TFP_DASH_PATH . 'includes/learndash/syllabus-shortcode.php';
 require_once TFP_DASH_PATH . 'includes/week/cpt-readings.php';
 require_once TFP_DASH_PATH . 'includes/week/ajax.php';
 require_once TFP_DASH_PATH . 'includes/week/homework-helpers.php';
