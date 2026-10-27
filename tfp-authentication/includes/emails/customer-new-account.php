@@ -193,12 +193,24 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                     <a href="<?php echo esc_url($shop_url); ?>" style="display:block;padding-top:4px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;line-height:20px;color:#00666e;text-decoration:none;"><?php esc_html_e('Visit the shop →', 'woocommerce'); ?></a>
                                 </td>
                                 <td width="33.33%" align="center" style="padding:0 8px;vertical-align:top;">
-                                    <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-family:Arial,sans-serif;font-size:26px;line-height:62px;color:#ffffff;">▱</div>
+                                    <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-size:0;line-height:62px;text-align:center;color:#ffffff;">
+                                        <span style="display:inline-block;width:32px;height:32px;line-height:0;vertical-align:middle;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" style="display:block;width:32px;height:32px;">
+                                                <path d="M5.33332 22.6667H4.66666C3.56209 22.6667 2.66666 23.5621 2.66666 24.6667C2.66666 25.7713 3.56209 26.6667 4.66666 26.6667H27.3333C28.4379 26.6667 29.3333 25.7713 29.3333 24.6667C29.3333 23.5621 28.4379 22.6667 27.3333 22.6667H26.6667M5.33332 22.6667H26.6667M5.33332 22.6667V10.9336C5.33332 9.44014 5.33332 8.69285 5.62397 8.12242C5.87963 7.62065 6.28729 7.213 6.78905 6.95734C7.35948 6.66669 8.10678 6.66669 9.60025 6.66669H22.4002C23.8937 6.66669 24.6394 6.66669 25.2099 6.95734C25.7116 7.213 26.1206 7.62065 26.3763 8.12242C26.6667 8.69229 26.6667 9.43868 26.6667 10.9292V22.6667" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
+                                            </svg>  
+                                        </span>
+                                    </div>
                                     <div style="padding-top:7px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;color:#151411;"><?php esc_html_e('My Account', 'woocommerce'); ?></div>
                                     <a href="<?php echo esc_url($set_password_link); ?>" style="display:block;padding-top:4px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;line-height:20px;color:#00666e;text-decoration:none;"><?php echo esc_html($account_link_label); ?></a>
                                 </td>
                                 <td width="33.33%" align="center" style="padding:0 8px;vertical-align:top;">
-                                    <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-family:Arial,sans-serif;font-size:26px;line-height:62px;color:#ffffff;">♧</div>
+                                    <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-family:Arial,sans-serif;font-size:26px;line-height:62px;color:#ffffff;">
+                                        <span style="display:inline-block;width:32px;height:32px;line-height:0;vertical-align:middle;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                                <path d="M22.6667 26.6667C22.6667 24.4575 19.6819 22.6667 16 22.6667C12.3181 22.6667 9.33333 24.4575 9.33333 26.6667M28 22.6672C28 21.0269 26.3545 19.6173 24 19M4 22.6672C4 21.0269 5.64546 19.6173 8 19M24 13.6482C24.8183 12.9157 25.3333 11.8514 25.3333 10.6667C25.3333 8.45755 23.5425 6.66669 21.3333 6.66669C20.3089 6.66669 19.3743 7.05183 18.6667 7.68521M8 13.6482C7.18167 12.9157 6.66667 11.8514 6.66667 10.6667C6.66667 8.45755 8.45753 6.66669 10.6667 6.66669C11.6911 6.66669 12.6257 7.05183 13.3333 7.68521M16 18.6667C13.7909 18.6667 12 16.8758 12 14.6667C12 12.4575 13.7909 10.6667 16 10.6667C18.2091 10.6667 20 12.4575 20 14.6667C20 16.8758 18.2091 18.6667 16 18.6667Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white"/>
+                                            </svg>
+                                        </span>
+                                    </div>
                                     <div style="padding-top:7px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;color:#151411;"><?php esc_html_e('Join Community', 'woocommerce'); ?></div>
                                     <a href="<?php echo esc_url(home_url('/updates/')); ?>" style="display:block;padding-top:4px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;line-height:20px;color:#00666e;text-decoration:none;"><?php esc_html_e('Get worksheets →', 'woocommerce'); ?></a>
                                 </td>
