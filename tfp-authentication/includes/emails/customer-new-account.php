@@ -182,7 +182,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                         <span style="display:inline-block;width:32px;height:32px;line-height:0;vertical-align:middle;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" style="display:block;width:32px;height:32px;">
                                             <path d="M16 11C16 9.93913 16.4214 8.92172 17.1716 8.17157C17.9217 7.42143 18.9391 7 20 7H29V25H20C18.9391 25 17.9217 25.4214 17.1716 26.1716 16.4214 26.9217 16 27.9391 16 29" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
-                                            <path d="M3 25H12C13.0609 25 14.0783 25.4214 14.0783 26.1716C15.5786 26.9217 16 27.9391 16 29V11C16 9.93913 15.5786 8.92172 14.8284 8.17157C14.0783 7.42143 13.0609 7 12 7H3V25Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
+                                            <path d="M3 25H12C13.0609 25 14.0783 25.4214 14.8284 26.1716C15.5786 26.9217 16 27.9391 16 29V11C16 9.93913 15.5786 8.92172 14.8284 8.17157C14.0786 7.42143 13.0609 7 12 7H3V25Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
                                             <path d="M20 12H25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
                                             <path d="M20 16H25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
                                             <path d="M20 20H25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="white" />
