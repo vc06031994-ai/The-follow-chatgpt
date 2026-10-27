@@ -1,29 +1,46 @@
 <?php
+/**
+ * Plain-text companion for the TFP custom WooCommerce new-account email.
+ */
 defined('ABSPATH') || exit;
 
-echo esc_html(wp_strip_all_tags($email_heading));
-echo "\n\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
-echo sprintf(esc_html__('Hi %s,', 'woocommerce'), esc_html($user_display_name)) . "\n\n";
+$my_account_url = function_exists('wc_get_page_permalink')
+    ? wc_get_page_permalink('myaccount')
+    : home_url('/');
+
+$shop_url = function_exists('wc_get_page_permalink')
+    ? wc_get_page_permalink('shop')
+    : home_url('/');
+
+$account_url = !empty($password_generated) && !empty($set_password_url)
+    ? $set_password_url
+    : $my_account_url;
+
+echo esc_html__('Welcome to The Follow Project.', 'woocommerce');
+echo "\n\n";
+echo esc_html__("You're all set.", 'woocommerce') . "\n\n";
+echo esc_html__('Your account is ready. Track your orders and access your study resources all in one place.', 'woocommerce') . "\n\n";
 
 if (!empty($password_generated) && !empty($set_password_url)) {
-    echo sprintf(esc_html__('Thanks for creating an account on %s. Here’s a copy of your user details.', 'woocommerce'), esc_html($blogname)) . "\n\n";
-    echo "----------------------------------------\n\n";
-    echo sprintf(esc_html__('Username: %s.', 'woocommerce'), esc_html($user_login)) . "\n\n";
-    echo esc_html__('To set your password, visit the following address:', 'woocommerce') . "\n\n";
+    echo esc_html__('Your new account was created during checkout. Use the secure link below to set your password and access your account:', 'woocommerce') . "\n";
     echo esc_url($set_password_url) . "\n\n";
-    echo esc_html__('My account:', 'woocommerce') . " " . esc_url($set_password_url) . "\n\n";
-} else {
-    echo sprintf(
-        esc_html__('Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s', 'woocommerce'),
-        esc_html($blogname),
-        esc_html($user_login),
-        esc_url(wc_get_page_permalink('myaccount'))
-    ) . "\n\n";
 }
+
+echo esc_html__('Browse Books:', 'woocommerce') . "\n";
+echo esc_url($shop_url) . "\n\n";
+
+echo esc_html__('My Account:', 'woocommerce') . "\n";
+echo esc_url($account_url) . "\n\n";
+
+echo esc_html__('Join Community:', 'woocommerce') . "\n";
+echo esc_url(home_url('/updates/')) . "\n\n";
+
+echo esc_html__('Start Your Journey', 'woocommerce') . "\n";
+echo esc_html__('Begin with one of our most-read titles.', 'woocommerce') . "\n\n";
 
 if ($additional_content) {
     echo wp_kses_post(wp_strip_all_tags(wptexturize($additional_content))) . "\n\n";
 }
 
-echo "----------------------------------------\n\n";
-echo wp_kses_post(apply_filters('woocommerce_email_footer_text', get_option('woocommerce_email_footer_text')));
+echo esc_html__('If you have any questions, reply to this email or contact care@thefollowproject.com.', 'woocommerce') . "\n\n";
+echo esc_html__('The Follow Project | Faith-Based Ministries', 'woocommerce');
