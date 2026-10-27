@@ -62,6 +62,25 @@ add_action('init', function(){
 		return;
 	}
 
+	// Student/program accounts must enter the school through the Magic Link flow.
+	// Keep normal e-commerce customers on password login, while preserving
+	// staff/facilitator access for administration and testing.
+	$is_program_user = function_exists( 'tfp_student_magic_link_is_program_user' )
+		&& tfp_student_magic_link_is_program_user( $user->ID );
+	$is_staff_user = user_can( $user->ID, 'manage_options' )
+		|| user_can( $user->ID, 'manage_woocommerce' )
+		|| (bool) array_intersect( [ 'facilitator', 'group_leader' ], (array) $user->roles );
+
+	if ( $is_program_user && ! $is_staff_user ) {
+		$tfp_login_has_errors = true;
+		$msg = __( 'Student accounts must use Student Login and request a secure Magic Link. Please switch to Student Login to continue.', 'tfp-authentication' );
+		$tfp_login_errors[] = $msg;
+		if ( function_exists( 'wc_add_notice' ) ) {
+			wc_add_notice( $msg, 'error' );
+		}
+		return;
+	}
+
 	$creds = [
 		'user_login'    => $user->user_login,
 		'user_password' => $password,
