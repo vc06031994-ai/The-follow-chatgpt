@@ -34,6 +34,8 @@ $logo_url = defined('TFP_AUTH_URL')
 
 $blogname = get_bloginfo('name');
 
+$book_registration_url = 'https://thefollowproject.com/thefollowprojectstaging/newsletter/';
+
 $shipping_address = $order->get_formatted_shipping_address();
 if (empty($shipping_address)) {
     $shipping_address = $order->get_formatted_billing_address();
@@ -64,12 +66,7 @@ foreach ($items as $item) {
     if ($product) {
         $registerable_items[] = [
             'title' => $product->get_name(),
-            'url' => apply_filters(
-                'tfp_processing_order_book_registration_url',
-                $my_account_url,
-                $product,
-                $order
-            ),
+            'url' => $book_registration_url,
         ];
     }
 }
