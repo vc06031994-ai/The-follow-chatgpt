@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.4.1
+Version: 1.4.2
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.4.1');
+define('TFP_AUTH_VERSION','1.4.2');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -24,6 +24,21 @@ require_once TFP_AUTH_PATH.'includes/account-page/ajax.php';
 require_once TFP_AUTH_PATH.'includes/account-page/password-reset.php';
 require_once TFP_AUTH_PATH.'includes/account-page/customer-account-routing.php';
 require_once TFP_AUTH_PATH.'includes/emails/welcome-email-preview.php';
+require_once TFP_AUTH_PATH.'includes/emails/processing-order-email-preview.php';
+
+/**
+ * Use the TFP-designed processing-order email template for WooCommerce.
+ */
+add_filter('woocommerce_locate_template', function($template, $template_name, $template_path) {
+    if ('customer-processing-order.php' === $template_name) {
+        $tfp_template = TFP_AUTH_PATH . 'includes/emails/customer-processing-order.php';
+        if (file_exists($tfp_template)) {
+            return $tfp_template;
+        }
+    }
+
+    return $template;
+}, 10, 3);
 /**
  * Register frontend plugin component styles.
  */
