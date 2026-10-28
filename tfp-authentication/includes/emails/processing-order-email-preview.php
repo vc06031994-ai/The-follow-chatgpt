@@ -94,9 +94,6 @@ function tfp_build_processing_order_preview_order($recipient = '') {
     }
 
     $order->set_shipping_total(0);
-    $order->set_shipping_tax(0);
-    $order->set_cart_tax(0);
-    $order->set_total_tax(0);
     $order->calculate_totals(false);
 
     return $order;
