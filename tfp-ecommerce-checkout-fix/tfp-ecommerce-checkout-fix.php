@@ -1,5 +1,8 @@
 <?php
-/** Plugin Name: TFP E-commerce Checkout Fix */
+/**
+ * Plugin Name: TFP E-commerce Checkout Fix
+ * Version: 1.0.1
+ */
 if (!defined('ABSPATH')) exit;
 function tfp_ecom_course($o=null){
  if($o&&is_a($o,'WC_Order')){foreach($o->get_items() as $i){$p=$i->get_product();if($p&&has_term('programs','product_cat',$p->get_id()))return true;}}
@@ -27,14 +30,8 @@ add_action('woocommerce_checkout_create_order',function($o,$data){
  }
  $m=['first_name'=>$o->get_billing_first_name(),'last_name'=>$o->get_billing_last_name(),'billing_email'=>$e,'billing_phone'=>$o->get_billing_phone(),'billing_address_1'=>$o->get_billing_address_1(),'billing_address_2'=>$o->get_billing_address_2(),'billing_city'=>$o->get_billing_city(),'billing_state'=>$o->get_billing_state(),'billing_postcode'=>$o->get_billing_postcode(),'billing_country'=>$o->get_billing_country(),'shipping_first_name'=>$o->get_shipping_first_name(),'shipping_last_name'=>$o->get_shipping_last_name(),'shipping_address_1'=>$o->get_shipping_address_1(),'shipping_address_2'=>$o->get_shipping_address_2(),'shipping_city'=>$o->get_shipping_city(),'shipping_state'=>$o->get_shipping_state(),'shipping_postcode'=>$o->get_shipping_postcode(),'shipping_country'=>$o->get_shipping_country()];
  foreach($m as $k=>$v)update_user_meta($uid,$k,$v);
- if($new){$o->update_meta_data('_tfp_new_account','yes');$o->update_meta_data('_tfp_new_account_pass',$pass);}
+
 },10,2);
-add_action('woocommerce_checkout_order_created',function($o){
- if(!$o||'yes'!==$o->get_meta('_tfp_new_account'))return;
- $uid=(int)$o->get_customer_id();$pass=(string)$o->get_meta('_tfp_new_account_pass');
- if($uid&&$pass&&function_exists('WC')){$es=WC()->mailer()->get_emails();if(isset($es['WC_Email_Customer_New_Account']))$es['WC_Email_Customer_New_Account']->trigger($uid,$pass,true);}
- $o->delete_meta_data('_tfp_new_account');$o->delete_meta_data('_tfp_new_account_pass');$o->save();
-});
 add_action('template_redirect',function(){
  if(!function_exists('is_wc_endpoint_url')||!is_wc_endpoint_url('order-received'))return;
  $id=absint(get_query_var('order-received'));if(!$id&&!empty($_GET['order-received']))$id=absint($_GET['order-received']);$o=$id?wc_get_order($id):false;if(!$o)return;
