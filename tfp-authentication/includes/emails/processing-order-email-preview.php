@@ -31,7 +31,9 @@ function tfp_build_processing_order_preview_order($recipient = '')
 
     $order = new WC_Order();
 
-    $order->set_status('processing');
+    // Keep the temporary preview order in WooCommerce's default pending state.
+    // Setting it to "processing" triggers real WooCommerce notification hooks,
+    // which can send additional order/stock emails during a preview.
     $order->set_created_via('tfp-processing-order-preview');
     $order->set_date_created(gmdate('Y-m-d H:i:s'));
     $order->set_currency(function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : 'USD');
