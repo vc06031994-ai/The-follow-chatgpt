@@ -106,8 +106,8 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
 ?>
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;background:#ffffff;">
     <tr>
-        <td align="center" style="padding:0;">
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;">
+        <td align="center" style="padding:4px;background:#f5f5f5;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff;border:1px solid #eeeeee; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;">
                 <tr>
                     <td style="height:42px;background:#00666e;padding:0 40px;text-align:right;font-family:Arial,sans-serif;font-size:12px;font-weight:700;line-height:16px;color:#ffffff;">
                         <a href="<?php echo esc_url($view_in_browser_url); ?>" style="color:#ffffff;text-decoration:none;">
