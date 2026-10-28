@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TFP Processing Order email browser preview and test sender.
  *
@@ -22,7 +23,8 @@ add_action('admin_menu', function () {
  *
  * No order is saved to the database.
  */
-function tfp_build_processing_order_preview_order($recipient = '') {
+function tfp_build_processing_order_preview_order($recipient = '')
+{
     if (!class_exists('WC_Order') || !function_exists('wc_get_products')) {
         return null;
     }
@@ -104,7 +106,8 @@ function tfp_build_processing_order_preview_order($recipient = '') {
  *
  * No order is saved to the database.
  */
-function tfp_send_processing_order_email_test($recipient) {
+function tfp_send_processing_order_email_test($recipient)
+{
     if (!function_exists('WC') || !WC()->mailer()) {
         return new WP_Error(
             'woocommerce_unavailable',
@@ -158,7 +161,8 @@ function tfp_send_processing_order_email_test($recipient) {
     return true;
 }
 
-function tfp_render_processing_order_email_preview() {
+function tfp_render_processing_order_email_preview()
+{
     if (!current_user_can('manage_woocommerce')) {
         wp_die(esc_html__('You do not have permission to view this preview.', 'tfp-authentication'));
     }
@@ -222,7 +226,7 @@ function tfp_render_processing_order_email_preview() {
     <div class="wrap" style="max-width:700px;">
         <h1><?php esc_html_e('TFP Order Confirmation Preview', 'tfp-authentication'); ?></h1>
 
-        <?php if ($send_notice) : ?>
+        <?php if ($send_notice): ?>
             <div class="notice notice-<?php echo esc_attr($send_notice_type); ?> is-dismissible">
                 <p><?php echo esc_html($send_notice); ?></p>
             </div>
