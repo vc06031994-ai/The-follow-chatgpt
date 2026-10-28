@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.4.4
+Version: 1.4.5
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.4.4');
+define('TFP_AUTH_VERSION','1.4.5');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -25,6 +25,55 @@ require_once TFP_AUTH_PATH.'includes/account-page/password-reset.php';
 require_once TFP_AUTH_PATH.'includes/account-page/customer-account-routing.php';
 require_once TFP_AUTH_PATH.'includes/emails/welcome-email-preview.php';
 require_once TFP_AUTH_PATH.'includes/emails/processing-order-email-preview.php';
+
+/**
+ * Force the TFP PHP templates for the selected customer emails.
+ *
+ * This runs after WooCommerce has initialized its email objects, so it also
+ * handles installations where the 'woocommerce_email_classes' filter ran
+ * before this plugin was loaded.
+ */
+function tfp_force_custom_customer_email_templates() {
+    if (!function_exists('WC')) {
+        return;
+    }
+
+    $mailer = WC()->mailer();
+
+    if (!$mailer) {
+        return;
+    }
+
+    $emails = $mailer->get_emails();
+
+    foreach ([
+        'WC_Email_Customer_New_Account',
+        'WC_Email_Customer_Processing_Order',
+    ] as $email_key) {
+        if (isset($emails[$email_key]) && is_object($emails[$email_key])) {
+            if (property_exists($emails[$email_key], 'block_email_editor_enabled')) {
+                $emails[$email_key]->block_email_editor_enabled = false;
+            }
+
+            if (property_exists($emails[$email_key], 'template_html')) {
+                if ('WC_Email_Customer_New_Account' === $email_key) {
+                    $emails[$email_key]->template_html = 'emails/customer-new-account.php';
+                } elseif ('WC_Email_Customer_Processing_Order' === $email_key) {
+                    $emails[$email_key]->template_html = 'emails/customer-processing-order.php';
+                }
+            }
+
+            if (property_exists($emails[$email_key], 'template_plain')) {
+                if ('WC_Email_Customer_New_Account' === $email_key) {
+                    $emails[$email_key]->template_plain = 'emails/plain-customer-new-account.php';
+                }
+            }
+        }
+    }
+}
+
+add_action('init', 'tfp_force_custom_customer_email_templates', 9999);
+add_action('woocommerce_init', 'tfp_force_custom_customer_email_templates', 9999);
 
 /**
  * Use the TFP-designed PHP templates for WooCommerce customer emails.
