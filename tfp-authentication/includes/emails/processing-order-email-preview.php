@@ -143,7 +143,9 @@ function tfp_send_processing_order_email_test($recipient)
     $headers = $email->get_headers();
     $attachments = $email->get_attachments();
 
-    $sent = $email->send(
+    // Send exactly one test message. Using wp_mail() directly avoids triggering
+    // WooCommerce notification hooks or any additional email pipelines.
+    $sent = wp_mail(
         $recipient,
         $subject,
         $message,
