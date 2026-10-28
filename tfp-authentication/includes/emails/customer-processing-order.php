@@ -32,6 +32,8 @@ $logo_url = defined('TFP_AUTH_URL')
     ? trailingslashit(TFP_AUTH_URL) . 'assets/images/MAIN_LOGO.png'
     : '';
 
+$blogname = get_bloginfo('name');
+
 $shipping_address = $order->get_formatted_shipping_address();
 if (empty($shipping_address)) {
     $shipping_address = $order->get_formatted_billing_address();
