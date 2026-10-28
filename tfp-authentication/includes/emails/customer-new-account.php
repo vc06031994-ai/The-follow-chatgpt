@@ -237,7 +237,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                             </div>
                                         <?php endif; ?>
                                         <?php if (!empty($card['title'])): ?>
-                                            <div style="padding-top:12px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;line-height:24px;color:#151411;"><?php echo esc_html($card['title']); ?></div>
+                                            <div style="padding-top:12px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;line-height:24px;color:#151411;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:250px;"><?php echo esc_html($card['title']); ?></div>
                                         <?php endif; ?>
                                         <div style="padding-top:0;font-family:Georgia,serif;font-size:12px;line-height:18px;color:#2a2c2d;">
                                             <?php esc_html_e('Explore more from The Follow Project', 'woocommerce'); ?>
