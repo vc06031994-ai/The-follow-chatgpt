@@ -38,10 +38,9 @@ $hero_image_url = apply_filters(
 
 $logo_url = apply_filters(
     'tfp_welcome_email_logo_url',
-    plugins_url(
-        'assets/images/welcome-logo.png',
-        __FILE__
-    )
+    defined('TFP_AUTH_URL')
+        ? trailingslashit(TFP_AUTH_URL) . 'assets/images/welcome-logo.png'
+        : ''
 );
 
 $books = [];
@@ -180,7 +179,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                 <td width="33.33%" align="center" style="padding:0 8px;vertical-align:top;">
                                     <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-size:0;line-height:62px;text-align:center;color:#ffffff;">
                                         <span style="display:inline-block;width:32px;height:32px;line-height:0;vertical-align:middle;">
-                                            <img src="<?php echo esc_url(plugins_url('assets/images/welcome-icon-books.png', __FILE__)); ?>" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;">
+                                            <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/welcome-icon-books.png'); ?>" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;">
                                         </span>
                                     </div>
                                     <div style="padding-top:7px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;color:#151411;"><?php esc_html_e('Browse Books', 'woocommerce'); ?></div>
@@ -189,7 +188,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                 <td width="33.33%" align="center" style="padding:0 8px;vertical-align:top;">
                                     <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-size:0;line-height:62px;text-align:center;color:#ffffff;">
                                         <span style="display:inline-block;width:32px;height:32px;line-height:0;vertical-align:middle;">
-                                            <img src="<?php echo esc_url(plugins_url('assets/images/welcome-icon-account.png', __FILE__)); ?>" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;">  
+                                            <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/welcome-icon-account.png'); ?>" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;">  
                                         </span>
                                     </div>
                                     <div style="padding-top:7px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;color:#151411;"><?php esc_html_e('My Account', 'woocommerce'); ?></div>
@@ -198,7 +197,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                 <td width="33.33%" align="center" style="padding:0 8px;vertical-align:top;">
                                     <div style="width:62px;height:62px;margin:0 auto;background:#570506;border-radius:50%;font-family:Arial,sans-serif;font-size:26px;line-height:62px;color:#ffffff;">
                                         <span style="display:inline-block;width:32px;height:32px;line-height:0;vertical-align:middle;">
-                                            <img src="<?php echo esc_url(plugins_url('assets/images/welcome-icon-community.png', __FILE__)); ?>" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;">
+                                            <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/welcome-icon-community.png'); ?>" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;">
                                         </span>
                                     </div>
                                     <div style="padding-top:7px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;color:#151411;"><?php esc_html_e('Join Community', 'woocommerce'); ?></div>
@@ -257,7 +256,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                     <td style="padding:32px 40px 28px;background:#00666e;text-align:center;">
                         <div style="font-family:Arial,sans-serif;font-size:24px;font-weight:700;line-height:32px;color:#ffffff;"><?php esc_html_e('FIND US ON SOCIALS', 'woocommerce'); ?></div>
                         <div style="padding-top:20px;font-family:Arial,sans-serif;font-size:22px;line-height:30px;color:#ffffff;">
-                            <img src="<?php echo esc_url(plugins_url('assets/images/welcome-social-icons.png', __FILE__)); ?>" alt="" width="299" height="44" style="display:block;width:299px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
+                            <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/welcome-social-icons.png'); ?>" alt="" width="299" height="44" style="display:block;width:299px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
                         </div>
                         <div style="padding-top:20px;font-family:Georgia,serif;font-size:14px;line-height:23px;color:#ffffff;">
                             <?php esc_html_e('If you have any questions, reply to this email or contact', 'woocommerce'); ?><br>
