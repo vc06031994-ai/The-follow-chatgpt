@@ -143,10 +143,20 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                 </tr>
 
                 <tr>
-                    <td style="height:300px;background:#3f4546<?php echo $hero_image_url ? ';background-image:url(' . esc_url($hero_image_url) . ');background-size:cover;background-position:center' : ''; ?>;text-align:center;vertical-align:middle;">
-                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <td
+                        width="600"
+                        height="300"
+                        valign="middle"
+                        background="<?php echo esc_url($hero_image_url); ?>"
+                        style="width:600px;height:300px;background-color:#3f4546;<?php echo $hero_image_url ? 'background-image:url(' . esc_url($hero_image_url) . ');' : ''; ?>background-size:cover;background-position:center center;background-repeat:no-repeat;text-align:center;vertical-align:middle;"
+                    >
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" height="300" style="width:100%;height:300px;">
                             <tr>
-                                <td style="padding:0 40px;background:rgba(7,6,6,0.37);height:300px;text-align:center;vertical-align:middle;">
+                                <td
+                                    height="300"
+                                    valign="middle"
+                                    style="height:300px;padding:0 40px;background:rgba(7,6,6,0.37);text-align:center;vertical-align:middle;"
+                                >
                                     <div style="font-family:'Eudoxus Sans',Arial,sans-serif;font-size:28px;font-weight:700;line-height:42px;color:#ffffff;">
                                         <?php echo $safe_heading; ?>.
                                     </div>
@@ -227,12 +237,12 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                             <?php esc_html_e('Begin with one of our most-read titles:', 'woocommerce'); ?>
                         </div>
 
-                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:12px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;margin-top:12px;table-layout:fixed;border-collapse:collapse;">
                             <tr>
                                 <?php foreach ($book_cards as $card): ?>
-                                    <td width="50%" valign="top" style="padding:0 12px 0 0;text-align:center;">
+                                    <td width="50%" valign="top" style="width:50%;padding:0 6px;text-align:center;vertical-align:top;">
                                         <?php if (!empty($card['image'])): ?>
-                                            <a href="<?php echo esc_url($card['url']); ?>" style="text-decoration:none;">
+                                            <a href="<?php echo esc_url($card['url']); ?>" style="display:block;text-decoration:none;">
                                                 <img src="<?php echo esc_url($card['image']); ?>" alt="<?php echo esc_attr($card['title']); ?>" width="250" style="display:block;width:100%;max-width:250px;height:220px;object-fit:cover;background:#d4c4a8;border:0;margin:0 auto;">
                                             </a>
                                         <?php else: ?>
@@ -241,7 +251,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                             </div>
                                         <?php endif; ?>
                                         <?php if (!empty($card['title'])): ?>
-                                            <div style="padding-top:12px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:16px;font-weight:700;line-height:24px;color:#151411;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:250px;"><?php echo esc_html($card['title']); ?></div>
+                                            <div style="padding-top:12px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:16px;font-weight:700;line-height:24px;color:#151411;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;max-width:250px;margin:0 auto;"><?php echo esc_html($card['title']); ?></div>
                                         <?php endif; ?>
                                         <div style="padding-top:0;font-family:'Lora',Georgia,serif;font-size:12px;line-height:18px;color:#2a2c2d;">
                                             <?php esc_html_e('Explore more from The Follow Project', 'woocommerce'); ?>
@@ -252,8 +262,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                                     </td>
                                 <?php endforeach; ?>
                             </tr>
-                        </table>
-                    </td>
+                        </table>                  </td>
                 </tr>
 
                 <tr>
