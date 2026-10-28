@@ -39,7 +39,7 @@ $hero_image_url = apply_filters(
 $logo_url = apply_filters(
     'tfp_welcome_email_logo_url',
     defined('TFP_AUTH_URL')
-        ? trailingslashit(TFP_AUTH_URL) . 'assets/images/welcome-logo.png'
+        ? trailingslashit(TFP_AUTH_URL) . 'assets/images/MAIN_LOGO.png'
         : ''
 );
 
@@ -99,7 +99,7 @@ $set_password_link = !empty($password_generated) && !empty($set_password_url)
     : $my_account_url;
 
 $account_link_label = !empty($password_generated) && !empty($set_password_url)
-    ? __('Set password & view orders →', 'woocommerce')
+    ? __('View orders →', 'woocommerce')
     : __('View orders →', 'woocommerce');
 
 $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
@@ -256,7 +256,7 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                     <td style="padding:32px 40px 28px;background:#00666e;text-align:center;">
                         <div style="font-family:Arial,sans-serif;font-size:24px;font-weight:700;line-height:32px;color:#ffffff;"><?php esc_html_e('FIND US ON SOCIALS', 'woocommerce'); ?></div>
                         <div style="padding-top:20px;font-family:Arial,sans-serif;font-size:22px;line-height:30px;color:#ffffff;">
-                            <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/welcome-social-icons.png'); ?>" alt="" width="299" height="44" style="display:block;width:299px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
+                            <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/footer-logo.png'); ?>" alt="" width="299" height="44" style="display:block;width:299px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
                         </div>
                         <div style="padding-top:20px;font-family:Georgia,serif;font-size:14px;line-height:23px;color:#ffffff;">
                             <?php esc_html_e('If you have any questions, reply to this email or contact', 'woocommerce'); ?><br>
