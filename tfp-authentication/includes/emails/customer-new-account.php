@@ -257,27 +257,22 @@ $safe_heading = esc_html__('Welcome to The Follow Project', 'woocommerce');
                         <div style="font-family:Arial,sans-serif;font-size:24px;font-weight:700;line-height:32px;color:#ffffff;"><?php esc_html_e('FIND US ON SOCIALS', 'woocommerce'); ?></div>
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="300" style="width:300px;max-width:100%;margin:20px auto 0;border-collapse:collapse;">
                             <tr>
-                                <td width="20%" align="center" style="padding:0;">
+                                <td width="25%" align="center" style="padding:0;">
                                     <a href="https://www.youtube.com/@TheFollowProject" style="text-decoration:none;">
                                         <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/social-youtube.png'); ?>" alt="YouTube" width="44" height="44" style="display:block;width:44px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
                                     </a>
                                 </td>
-                                <td width="20%" align="center" style="padding:0;">
+                                <td width="25%" align="center" style="padding:0;">
                                     <a href="https://www.instagram.com/thefollowproject.us" style="text-decoration:none;">
                                         <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/social-instagram.png'); ?>" alt="Instagram" width="44" height="44" style="display:block;width:44px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
                                     </a>
                                 </td>
-                                <td width="20%" align="center" style="padding:0;">
-                                    <a href="https://www.linkedin.com/company/thefollowproject/home/" style="text-decoration:none;">
-                                        <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/social-linkedin.png'); ?>" alt="LinkedIn" width="44" height="44" style="display:block;width:44px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
-                                    </a>
-                                </td>
-                                <td width="20%" align="center" style="padding:0;">
+                                <td width="25%" align="center" style="padding:0;">
                                     <a href="https://www.tiktok.com/@thefollowprojectofficial" style="text-decoration:none;">
                                         <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/social-tiktok.png'); ?>" alt="TikTok" width="44" height="44" style="display:block;width:44px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
                                     </a>
                                 </td>
-                                <td width="20%" align="center" style="padding:0;">
+                                <td width="25%" align="center" style="padding:0;">
                                     <a href="https://www.pinterest.com/thefollowproject/" style="text-decoration:none;">
                                         <img src="<?php echo esc_url(trailingslashit(TFP_AUTH_URL) . 'assets/images/social-pinterest.png'); ?>" alt="Pinterest" width="44" height="44" style="display:block;width:44px;height:44px;border:0;outline:none;text-decoration:none;margin:0 auto;">
                                     </a>
