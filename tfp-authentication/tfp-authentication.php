@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.4.3
+Version: 1.4.4
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.4.3');
+define('TFP_AUTH_VERSION','1.4.4');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -27,18 +27,37 @@ require_once TFP_AUTH_PATH.'includes/emails/welcome-email-preview.php';
 require_once TFP_AUTH_PATH.'includes/emails/processing-order-email-preview.php';
 
 /**
- * Use the TFP-designed processing-order email template for WooCommerce.
+ * Use the TFP-designed PHP templates for WooCommerce customer emails.
+ *
+ * WooCommerce's Block Email Editor can render a saved block template before
+ * the legacy PHP template is reached. Disable that path for the emails that
+ * are intentionally controlled by these TFP PHP templates.
  */
-add_filter('woocommerce_locate_template', function($template, $template_name, $template_path) {
-    if ('customer-processing-order.php' === $template_name) {
-        $tfp_template = TFP_AUTH_PATH . 'includes/emails/customer-processing-order.php';
-        if (file_exists($tfp_template)) {
-            return $tfp_template;
+add_filter('woocommerce_email_classes', function($emails) {
+    foreach ([
+        'WC_Email_Customer_New_Account',
+        'WC_Email_Customer_Processing_Order',
+    ] as $email_key) {
+        if (isset($emails[$email_key]) && is_object($emails[$email_key]) && property_exists($emails[$email_key], 'block_email_editor_enabled')) {
+            $emails[$email_key]->block_email_editor_enabled = false;
         }
     }
 
+    return $emails;
+}, 999);
+
+add_filter('woocommerce_locate_template', function($template, $template_name, $template_path) {
+    $tfp_templates = [
+        'customer-new-account.php' => TFP_AUTH_PATH . 'includes/emails/customer-new-account.php',
+        'customer-processing-order.php' => TFP_AUTH_PATH . 'includes/emails/customer-processing-order.php',
+    ];
+
+    if (isset($tfp_templates[$template_name]) && file_exists($tfp_templates[$template_name])) {
+        return $tfp_templates[$template_name];
+    }
+
     return $template;
-}, 10, 3);
+}, 999, 3);
 /**
  * Register frontend plugin component styles.
  */
