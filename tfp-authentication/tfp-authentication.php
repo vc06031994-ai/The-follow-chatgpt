@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.4.5
+Version: 1.4.6
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.4.5');
+define('TFP_AUTH_VERSION','1.4.6');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -98,7 +98,9 @@ add_filter('woocommerce_email_classes', function($emails) {
 add_filter('woocommerce_locate_template', function($template, $template_name, $template_path) {
     $tfp_templates = [
         'customer-new-account.php' => TFP_AUTH_PATH . 'includes/emails/customer-new-account.php',
+        'emails/customer-new-account.php' => TFP_AUTH_PATH . 'includes/emails/customer-new-account.php',
         'customer-processing-order.php' => TFP_AUTH_PATH . 'includes/emails/customer-processing-order.php',
+        'emails/customer-processing-order.php' => TFP_AUTH_PATH . 'includes/emails/customer-processing-order.php',
     ];
 
     if (isset($tfp_templates[$template_name]) && file_exists($tfp_templates[$template_name])) {
