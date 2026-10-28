@@ -144,14 +144,14 @@ $waiting_community_url = apply_filters(
                         </div>
                         <div style="padding-top:8px;font-family:'Lora',Georgia,serif;font-size:13px;line-height:21px;color:#2a2c2d;">
                             <?php
-                            printf(
-                                esc_html__('Order #%s | %s | %d %s — %s', 'woocommerce'),
-                                esc_html($order->get_order_number()),
-                                esc_html($order_date),
+                            echo esc_html(sprintf(
+                                __('Order #%s | %s | %d %s — ', 'woocommerce'),
+                                $order->get_order_number(),
+                                $order_date,
                                 (int) $total_item_count,
-                                _n('item', 'items', $total_item_count, 'woocommerce'),
-                                wp_kses_post($display_total)
-                            );
+                                _n('item', 'items', $total_item_count, 'woocommerce')
+                            ));
+                            echo wp_kses_post($display_total);
                             ?>
                         </div>
 
