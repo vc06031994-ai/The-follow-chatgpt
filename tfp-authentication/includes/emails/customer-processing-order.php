@@ -257,7 +257,7 @@ $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
                         <?php foreach ($registerable_items as $registerable_item): ?>
                             <div style="padding-top:12px;">
                                 <a href="<?php echo esc_url($registerable_item['url']); ?>" style="display:inline-block;padding:8px 18px;background:#00666e;border-radius:8px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:13px;line-height:18px;color:#ffffff;text-decoration:none;">
-                                    <?php esc_html_e('Register Your Book →', 'woocommerce'); ?>
+                                    <?php esc_html_e('Register Book →', 'woocommerce'); ?>
                                 </a>
                             </div>
                         <?php endforeach; ?>
