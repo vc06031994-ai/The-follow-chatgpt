@@ -281,7 +281,7 @@ $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
                                 <td width="50%" valign="top" style="width:50%;padding:0 6px;text-align:center;">
                                     <a href="<?php echo esc_url($waiting_rumble_url); ?>" style="display:block;text-decoration:none;">
                                         <img
-                                            src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/10/Inspirational-Rumble-Workspace-Still-Life.webp"
+                                            src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/10/Warm-Rumble-Home-Office-Setup-2.webp"
                                             alt="Follow The Follow Project on Rumble"
                                             width="100%"
                                             style="display:block;width:100%;max-width:100%;height:170px;object-fit:cover;border:0;margin:0 auto;"
@@ -306,7 +306,7 @@ $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
                                 <td width="50%" valign="top" style="width:50%;padding:0 6px;text-align:center;">
                                     <a href="<?php echo esc_url($waiting_community_url); ?>" style="display:block;text-decoration:none;">
                                         <img
-                                            src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/10/Warm-Community-Study-Gathering.webp"
+                                            src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/10/Modern-Workspace-with-Colourful-Skool-Display.webp"
                                             alt="Join The Follow Project Community"
                                             width="100%"
                                             style="display:block;width:100%;max-width:100%;height:170px;object-fit:cover;border:0;margin:0 auto;"
