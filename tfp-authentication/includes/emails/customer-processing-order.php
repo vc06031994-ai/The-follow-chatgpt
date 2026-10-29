@@ -72,15 +72,8 @@ foreach ($items as $item) {
     }
 }
 
-$waiting_rumble_url = apply_filters(
-    'tfp_processing_order_rumble_url',
-    home_url('/updates/')
-);
-
-$waiting_community_url = apply_filters(
-    'tfp_processing_order_community_url',
-    home_url('/updates/')
-);
+$waiting_rumble_url = 'https://rumble.com/user/thefollowproject';
+$waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
 ?>
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;background:#ffffff;">
     <tr>
