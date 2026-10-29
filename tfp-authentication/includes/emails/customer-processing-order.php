@@ -3,6 +3,7 @@
 @import url('https://stijndv.com/fonts/Eudoxus-Sans.css');
 </style>
 <?php
+
 /**
  * TFP custom WooCommerce processing-order / order-confirmation email.
  *
@@ -176,7 +177,8 @@ $waiting_community_url = apply_filters(
                         </div>
 
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;margin-top:10px;table-layout:fixed;border-collapse:collapse;">
-                            <?php foreach ($items as $item) :
+                            <?php
+                            foreach ($items as $item):
                                 $product = $item->get_product();
                                 $product_name = $item->get_name();
                                 $product_image = $product
@@ -194,18 +196,18 @@ $waiting_community_url = apply_filters(
                                 }
                                 $quantity = (int) $item->get_quantity();
                                 $item_total = wc_price($item->get_total(), ['currency' => $order->get_currency()]);
-                            ?>
+                                ?>
                                 <tr>
-                                    <td width="90" valign="top" style="width:90px;padding:0 12px 14px 0;border-bottom:1px solid #dddddd;">
-                                        <?php if ($product_image) : ?>
+                                    <td width="90" valign="top" style="width:90px;padding:10px 12px 14px 0;border-bottom:1px solid #dddddd;">
+                                        <?php if ($product_image): ?>
                                             <img src="<?php echo esc_url($product_image); ?>" alt="<?php echo esc_attr($product_name); ?>" width="90" height="90" style="display:block;width:90px;height:90px;object-fit:cover;background:#d4c4a8;border:0;">
-                                        <?php else : ?>
+                                        <?php else: ?>
                                             <div style="width:90px;height:90px;background:#d4c4a8;font-family:'Lora',Georgia,serif;font-size:10px;font-style:italic;line-height:90px;color:#6b7280;text-align:center;">
                                                 <?php esc_html_e('Book', 'woocommerce'); ?>
                                             </div>
                                         <?php endif; ?>
                                     </td>
-                                    <td valign="top" style="padding:8px 8px 14px 0;border-bottom:1px solid #dddddd;">
+                                    <td valign="top" style="padding:17px 8px 14px 0;border-bottom:1px solid #dddddd;">
                                         <div style="font-family:'Eudoxus Sans',Arial,sans-serif;font-size:14px;font-weight:700;line-height:20px;color:#151411;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                                             <?php echo esc_html($product_name); ?>
                                         </div>
@@ -259,7 +261,7 @@ $waiting_community_url = apply_filters(
                             <?php esc_html_e('Register to unlock your weekly teaching videos and study resources — even before your copy arrives. It only takes 30 seconds.', 'woocommerce'); ?>
                         </div>
 
-                        <?php foreach ($registerable_items as $registerable_item) : ?>
+                        <?php foreach ($registerable_items as $registerable_item): ?>
                             <div style="padding-top:12px;">
                                 <a href="<?php echo esc_url($registerable_item['url']); ?>" style="display:inline-block;padding:8px 18px;background:#00666e;border-radius:8px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:13px;line-height:18px;color:#ffffff;text-decoration:none;">
                                     <?php echo esc_html(sprintf(__('Register Your %s →', 'woocommerce'), $registerable_item['title'])); ?>
