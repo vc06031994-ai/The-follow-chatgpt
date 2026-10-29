@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.4.9
+Version: 1.5.0
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.4.9');
+define('TFP_AUTH_VERSION','1.5.0');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
