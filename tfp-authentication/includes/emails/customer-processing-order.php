@@ -279,9 +279,14 @@ $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;margin-top:16px;table-layout:fixed;border-collapse:collapse;">
                             <tr>
                                 <td width="50%" valign="top" style="width:50%;padding:0 6px;text-align:center;">
-                                    <div style="height:170px;background:#d4c4a8;font-family:'Lora',Georgia,serif;font-size:12px;font-style:italic;line-height:170px;color:#6b7280;text-align:center;">
-                                        <?php esc_html_e('[Your Image Here]', 'woocommerce'); ?>
-                                    </div>
+                                    <a href="<?php echo esc_url($waiting_rumble_url); ?>" style="display:block;text-decoration:none;">
+                                        <img
+                                            src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/10/Inspirational-Rumble-Workspace-Still-Life.webp"
+                                            alt="Follow The Follow Project on Rumble"
+                                            width="100%"
+                                            style="display:block;width:100%;max-width:100%;height:170px;object-fit:cover;border:0;margin:0 auto;"
+                                        >
+                                    </a>
                                     <div style="padding-top:12px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:13px;font-weight:700;line-height:20px;color:#bd9817;">
                                         <?php esc_html_e('Join Us Live on Rumble', 'woocommerce'); ?>
                                     </div>
@@ -299,9 +304,14 @@ $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
                                 </td>
 
                                 <td width="50%" valign="top" style="width:50%;padding:0 6px;text-align:center;">
-                                    <div style="height:170px;background:#d4c4a8;font-family:'Lora',Georgia,serif;font-size:12px;font-style:italic;line-height:170px;color:#6b7280;text-align:center;">
-                                        <?php esc_html_e('[Your Image Here]', 'woocommerce'); ?>
-                                    </div>
+                                    <a href="<?php echo esc_url($waiting_community_url); ?>" style="display:block;text-decoration:none;">
+                                        <img
+                                            src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/10/Warm-Community-Study-Gathering.webp"
+                                            alt="Join The Follow Project Community"
+                                            width="100%"
+                                            style="display:block;width:100%;max-width:100%;height:170px;object-fit:cover;border:0;margin:0 auto;"
+                                        >
+                                    </a>
                                     <div style="padding-top:12px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:13px;font-weight:700;line-height:20px;color:#bd9817;">
                                         <?php esc_html_e('Join Community', 'woocommerce'); ?>
                                     </div>
