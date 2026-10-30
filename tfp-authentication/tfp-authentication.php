@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.5.1
+Version: 1.5.2
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.5.1');
+define('TFP_AUTH_VERSION','1.5.2');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -25,6 +25,7 @@ require_once TFP_AUTH_PATH.'includes/account-page/password-reset.php';
 require_once TFP_AUTH_PATH.'includes/account-page/customer-account-routing.php';
 require_once TFP_AUTH_PATH.'includes/emails/welcome-email-preview.php';
 require_once TFP_AUTH_PATH.'includes/emails/processing-order-email-preview.php';
+require_once TFP_AUTH_PATH.'includes/emails/shipping-confirmation-email-preview.php';
 
 /**
  * Force the TFP PHP templates for the selected customer emails.
@@ -49,6 +50,7 @@ function tfp_force_custom_customer_email_templates() {
     foreach ([
         'WC_Email_Customer_New_Account',
         'WC_Email_Customer_Processing_Order',
+        'WC_Email_Customer_Completed_Order',
     ] as $email_key) {
         if (isset($emails[$email_key]) && is_object($emails[$email_key])) {
             if (property_exists($emails[$email_key], 'block_email_editor_enabled')) {
@@ -60,6 +62,8 @@ function tfp_force_custom_customer_email_templates() {
                     $emails[$email_key]->template_html = 'emails/customer-new-account.php';
                 } elseif ('WC_Email_Customer_Processing_Order' === $email_key) {
                     $emails[$email_key]->template_html = 'emails/customer-processing-order.php';
+                } elseif ('WC_Email_Customer_Completed_Order' === $email_key) {
+                    $emails[$email_key]->template_html = 'emails/customer-shipping-confirmation.php';
                 }
             }
 
@@ -101,6 +105,8 @@ add_filter('woocommerce_locate_template', function($template, $template_name, $t
         'emails/customer-new-account.php' => TFP_AUTH_PATH . 'includes/emails/customer-new-account.php',
         'customer-processing-order.php' => TFP_AUTH_PATH . 'includes/emails/customer-processing-order.php',
         'emails/customer-processing-order.php' => TFP_AUTH_PATH . 'includes/emails/customer-processing-order.php',
+        'customer-shipping-confirmation.php' => TFP_AUTH_PATH . 'includes/emails/customer-shipping-confirmation.php',
+        'emails/customer-shipping-confirmation.php' => TFP_AUTH_PATH . 'includes/emails/customer-shipping-confirmation.php',
     ];
 
     if (isset($tfp_templates[$template_name]) && file_exists($tfp_templates[$template_name])) {
