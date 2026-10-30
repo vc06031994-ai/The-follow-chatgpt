@@ -80,6 +80,85 @@ foreach ($items as $item) {
 
 $waiting_rumble_url = 'https://rumble.com/user/thefollowproject';
 $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
+
+/**
+ * Resolve shipment tracking data from WooCommerce order meta.
+ *
+ * Printful and other fulfillment integrations can store these values using
+ * different meta keys, so common keys are checked and a filter is provided
+ * for integrations that expose their tracking data through another source.
+ */
+$tracking_number = '';
+$tracking_carrier = '';
+$tracking_url = '';
+
+$tracking_meta_keys = [
+    'tracking_number',
+    '_tracking_number',
+    'shipment_tracking_number',
+    '_shipment_tracking_number',
+    'carrier',
+    '_carrier',
+    'shipping_carrier',
+    '_shipping_carrier',
+    'tracking_url',
+    '_tracking_url',
+    'shipment_tracking_url',
+    '_shipment_tracking_url',
+    'tracking_link',
+    '_tracking_link',
+    '_printful_tracking_number',
+    '_printful_carrier',
+    '_printful_tracking_url',
+];
+
+foreach ($tracking_meta_keys as $meta_key) {
+    $value = $order->get_meta($meta_key, true);
+
+    if (is_array($value) || is_object($value)) {
+        continue;
+    }
+
+    $value = trim((string) $value);
+
+    if ($value === '') {
+        continue;
+    }
+
+    if (!$tracking_number && stripos($meta_key, 'tracking_number') !== false) {
+        $tracking_number = $value;
+    } elseif (!$tracking_carrier && stripos($meta_key, 'carrier') !== false) {
+        $tracking_carrier = $value;
+    } elseif (!$tracking_url && (stripos($meta_key, 'tracking_url') !== false || stripos($meta_key, 'tracking_link') !== false)) {
+        $tracking_url = $value;
+    }
+}
+
+$tracking_data = apply_filters(
+    'tfp_shipping_confirmation_tracking_data',
+    [
+        'number'  => $tracking_number,
+        'carrier' => $tracking_carrier,
+        'url'     => $tracking_url,
+    ],
+    $order
+);
+
+if (is_array($tracking_data)) {
+    $tracking_number = trim((string) ($tracking_data['number'] ?? $tracking_number));
+    $tracking_carrier = trim((string) ($tracking_data['carrier'] ?? $tracking_carrier));
+    $tracking_url = trim((string) ($tracking_data['url'] ?? $tracking_url));
+}
+
+$track_order_url = $tracking_url;
+if (!$track_order_url && method_exists($order, 'get_view_order_url')) {
+    $track_order_url = $order->get_view_order_url();
+}
+if (!$track_order_url) {
+    $track_order_url = $my_account_url;
+}
+
+$has_tracking_data = ($tracking_number !== '' || $tracking_carrier !== '' || $tracking_url !== '');
 ?>
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;background:#ffffff;">
     <tr>
@@ -119,47 +198,54 @@ $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
                 <tr>
                     <td style="padding:32px 40px 24px;background:#ffffff;">
                         <div style="font-family:'Eudoxus Sans',Arial,sans-serif;font-size:16px;font-weight:700;line-height:21px;color:#bd9817;">
-                            <?php echo esc_html(sprintf(__('Your Order #%s Has Shipped', 'woocommerce'), $order->get_order_number())); ?>
+                            <?php esc_html_e('Your Order Is On Its Way', 'woocommerce'); ?>
                         </div>
                         <div style="padding-top:7px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:28px;font-weight:700;line-height:43px;color:#151411;">
-                            <?php echo esc_html(sprintf(__('Great news, %s!', 'woocommerce'), $order->get_billing_first_name() ?: $order->get_formatted_billing_full_name())); ?>
+                            <?php esc_html_e("It's shipped!", 'woocommerce'); ?>
                         </div>
                         <div style="padding-top:6px;font-family:'Lora',Georgia,serif;font-size:14px;line-height:25px;color:#2a2c2d;">
-                            <?php esc_html_e("Your book is on its way. We've shipped your order and it is now making its way to you.", 'woocommerce'); ?>
+                            <?php
+                            echo esc_html(
+                                sprintf(
+                                    __('%s, your order has been fulfilled and is on its way to you.', 'woocommerce'),
+                                    $order->get_billing_first_name() ?: $order->get_formatted_billing_full_name()
+                                )
+                            );
+                            ?>
                         </div>
                     </td>
                 </tr>
 
                 <tr>
-                    <td style="padding:0 40px 24px;">
+                    <td style="padding:0 40px 16px;">
                         <div style="height:1px;background:#570506;font-size:1px;line-height:1px;">&nbsp;</div>
                     </td>
                 </tr>
 
                 <tr>
-                    <td style="padding:0 40px 32px;background:#ffffff;">
+                    <td style="padding:0 40px 24px;background:#ffffff;">
                         <div style="font-family:'Eudoxus Sans',Arial,sans-serif;font-size:16px;font-weight:700;line-height:21px;color:#bd9817;">
-                            <?php esc_html_e('Shipping Details', 'woocommerce'); ?>
-                        </div>
-                        <div style="padding-top:8px;font-family:'Lora',Georgia,serif;font-size:13px;line-height:21px;color:#2a2c2d;">
-                            <?php
-                            echo esc_html(sprintf(
-                                __('Order #%s | %s | %d %s — ', 'woocommerce'),
-                                $order->get_order_number(),
-                                $order_date,
-                                (int) $total_item_count,
-                                _n('item', 'items', $total_item_count, 'woocommerce')
-                            ));
-                            echo wp_kses_post($display_total);
-                            ?>
+                            <?php esc_html_e('Tracking Info', 'woocommerce'); ?>
                         </div>
 
-                        <div style="padding-top:18px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:16px;font-weight:700;line-height:21px;color:#bd9817;">
-                            <?php esc_html_e('Shipping to', 'woocommerce'); ?>
-                        </div>
-                        <div style="padding-top:7px;font-family:'Lora',Georgia,serif;font-size:13px;line-height:21px;color:#2a2c2d;">
-                            <?php echo wp_kses_post($shipping_address ?: __('Shipping address unavailable.', 'woocommerce')); ?>
-                        </div>
+                        <?php if ($has_tracking_data): ?>
+                            <div style="padding-top:8px;font-family:'Lora',Georgia,serif;font-size:13px;line-height:21px;color:#2a2c2d;">
+                                <?php esc_html_e('Tracking #:', 'woocommerce'); ?>
+                                <?php echo esc_html($tracking_number ?: __('Not available', 'woocommerce')); ?>
+                                <?php if ($tracking_carrier): ?>
+                                    <?php echo ' ' . esc_html(__('via', 'woocommerce')) . ' ' . esc_html($tracking_carrier); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div style="padding-top:14px;">
+                                <a href="<?php echo esc_url($track_order_url); ?>" style="display:inline-block;padding:8px 18px;background:#00666e;border-radius:8px;font-family:'Eudoxus Sans',Arial,sans-serif;font-size:13px;line-height:18px;color:#ffffff;text-decoration:none;">
+                                    <?php esc_html_e('Track Your Order →', 'woocommerce'); ?>
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div style="padding-top:8px;font-family:'Lora',Georgia,serif;font-size:13px;line-height:21px;color:#2a2c2d;">
+                                <?php esc_html_e('Your tracking information will be available as soon as the carrier registers the shipment.', 'woocommerce'); ?>
+                            </div>
+                        <?php endif; ?>
                     </td>
                 </tr>
 
@@ -173,6 +259,17 @@ $waiting_community_url = 'https://www.skool.com/the-follow-project-2107';
                     <td style="padding:0 40px 24px;background:#ffffff;">
                         <div style="font-family:'Eudoxus Sans',Arial,sans-serif;font-size:16px;font-weight:700;line-height:21px;color:#bd9817;">
                             <?php esc_html_e('Order Summary', 'woocommerce'); ?>
+                        </div>
+                        <div style="padding-top:8px;font-family:'Lora',Georgia,serif;font-size:13px;line-height:21px;color:#2a2c2d;">
+                            <?php
+                            echo esc_html(sprintf(
+                                __('Order #%s | %s | %d %s', 'woocommerce'),
+                                $order->get_order_number(),
+                                $order_date,
+                                (int) $total_item_count,
+                                _n('item', 'items', $total_item_count, 'woocommerce')
+                            ));
+                            ?>
                         </div>
 
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;margin-top:10px;table-layout:fixed;border-collapse:collapse;">
