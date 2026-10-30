@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: TFP Authentication
-Version: 1.5.2
+Version: 1.5.3
 */
 if(!defined('ABSPATH')) exit;
-define('TFP_AUTH_VERSION','1.5.2');
+define('TFP_AUTH_VERSION','1.5.3');
 define('TFP_AUTH_PATH', plugin_dir_path(__FILE__));
 define('TFP_AUTH_URL', plugin_dir_url(__FILE__));
 
@@ -27,24 +27,10 @@ require_once TFP_AUTH_PATH.'includes/emails/welcome-email-preview.php';
 require_once TFP_AUTH_PATH.'includes/emails/processing-order-email-preview.php';
 require_once TFP_AUTH_PATH.'includes/emails/shipping-confirmation-email-preview.php';
 
-/**
- * Force the TFP PHP templates for the selected customer emails.
- *
- * This runs after WooCommerce has initialized its email objects, so it also
- * handles installations where the 'woocommerce_email_classes' filter ran
- * before this plugin was loaded.
- */
 function tfp_force_custom_customer_email_templates() {
-    if (!function_exists('WC')) {
-        return;
-    }
-
+    if (!function_exists('WC')) return;
     $mailer = WC()->mailer();
-
-    if (!$mailer) {
-        return;
-    }
-
+    if (!$mailer) return;
     $emails = $mailer->get_emails();
 
     foreach ([
@@ -79,17 +65,11 @@ function tfp_force_custom_customer_email_templates() {
 add_action('init', 'tfp_force_custom_customer_email_templates', 9999);
 add_action('woocommerce_init', 'tfp_force_custom_customer_email_templates', 9999);
 
-/**
- * Use the TFP-designed PHP templates for WooCommerce customer emails.
- *
- * WooCommerce's Block Email Editor can render a saved block template before
- * the legacy PHP template is reached. Disable that path for the emails that
- * are intentionally controlled by these TFP PHP templates.
- */
 add_filter('woocommerce_email_classes', function($emails) {
     foreach ([
         'WC_Email_Customer_New_Account',
         'WC_Email_Customer_Processing_Order',
+        'WC_Email_Customer_Completed_Order',
     ] as $email_key) {
         if (isset($emails[$email_key]) && is_object($emails[$email_key]) && property_exists($emails[$email_key], 'block_email_editor_enabled')) {
             $emails[$email_key]->block_email_editor_enabled = false;
@@ -115,9 +95,7 @@ add_filter('woocommerce_locate_template', function($template, $template_name, $t
 
     return $template;
 }, 999, 3);
-/**
- * Register frontend plugin component styles.
- */
+
 function tfp_auth_register_styles(){
 	if(!function_exists('wp_register_style')) return;
 
@@ -135,12 +113,8 @@ function tfp_auth_register_styles(){
 }
 add_action('wp_enqueue_scripts','tfp_auth_register_styles');
 
-/**
- * Enqueue frontend plugin component styles when rendered.
- */
 function tfp_auth_enqueue_styles(){
 	if(!function_exists('wp_enqueue_style')) return;
-	// wp_enqueue_style('tfp-auth-buttons');
 	wp_enqueue_style('tfp-auth-forms');
 	wp_enqueue_style('tfp-auth-popup');
 	wp_enqueue_style('tfp-auth-utils');
@@ -152,8 +126,7 @@ function tfp_auth_enqueue_styles(){
 		global $tfp_login_has_errors;
 		$auto_open = false;
 		if ( isset( $_POST['tfp-login-nonce'] ) && true === $tfp_login_has_errors ) {
-
-		$auto_open = true;
+			$auto_open = true;
 		}
 
 		wp_localize_script('tfp-auth-script', 'tfpAuthSettings', [
@@ -163,7 +136,6 @@ function tfp_auth_enqueue_styles(){
 			'autoOpenLoginPopup'  => $auto_open,
 		]);
 
-		// Enqueue the new account JS specifically when we might be on the account page, or globally for now.
 		wp_enqueue_script('tfp-account-script');
 		wp_localize_script('tfp-account-script', 'tfpAccountSettings', [
 			'ajaxUrl' => admin_url('admin-ajax.php'),
@@ -172,7 +144,4 @@ function tfp_auth_enqueue_styles(){
 	}
 }
 
-/**
- * Load plugin styles and scripts on the front end.
- */
 add_action('wp_enqueue_scripts', 'tfp_auth_enqueue_styles');
