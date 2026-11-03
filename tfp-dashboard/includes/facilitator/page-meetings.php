@@ -560,9 +560,13 @@ function tfp_facilitator_meetings_render_attendance($cohort, $course_id, $weeks,
     });
 
     $homework_url = add_query_arg([
-        'tfp_homework_cohort' => (int) $cohort->ID,
-        'tfp_homework_week' => (int) $lesson->ID,
+        'tfp_homework_course' => (int) $course_id,
+        'tfp_homework_cohort_filter' => (int) $cohort->ID,
     ], tfp_dashboard_get_url('tfp-dashboard-facilitator-homework'));
+    $tests_url = add_query_arg([
+        'tfp_qt_cohort' => (int) $cohort->ID,
+        'tfp_qt_week' => (int) $week_number,
+    ], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'));
     ?>
     <div class="tfp-course-attendance-page" data-tfp-course-attendance>
         <button type="button" class="tfp-dash-pageheader__mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>"><?php echo tfp_dashboard_icon('toggle'); ?></button>
@@ -587,8 +591,8 @@ function tfp_facilitator_meetings_render_attendance($cohort, $course_id, $weeks,
 
         <nav class="tfp-course-view-tabs" aria-label="<?php esc_attr_e('Course view sections', 'tfp-dashboard'); ?>">
             <a class="is-active" href="<?php echo esc_url($page_url); ?>" aria-current="page"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
-            <span aria-disabled="true"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></span>
-            <span aria-disabled="true"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></span>
+            <a href="<?php echo esc_url($homework_url); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url($tests_url); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <span aria-disabled="true"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></span>
             <span aria-disabled="true"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></span>
         </nav>
