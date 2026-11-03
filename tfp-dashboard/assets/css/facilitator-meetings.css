@@ -890,3 +890,38 @@ body.tfp-meetings-modal-open {
     .tfp-meeting-performance-card { min-height: 0; padding: 14px 12px; }
     .tfp-meeting-performance-pagination { align-items: flex-start; flex-direction: column; }
 }
+
+
+/* Prevent cohort title from colliding with the absolute-positioned back button. */
+@media (min-width: 768px) {
+    .tfp-meeting-cohort-header__main {
+        padding-right: 250px;
+    }
+
+    .tfp-meeting-cohort-header__main > div {
+        max-width: calc(100% - 0px);
+    }
+
+    .tfp-meeting-cohort-header__main h1 {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        font-size: clamp(28px, 2.2vw, 36px) !important;
+        line-height: 1.2 !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+    .tfp-meeting-cohort-header__main {
+        padding-right: 220px;
+    }
+
+    .tfp-meeting-cohort-header__main > .tfp-dash-btn {
+        right: 24px;
+        max-width: 200px;
+        white-space: normal;
+    }
+
+    .tfp-meeting-cohort-header__main h1 {
+        font-size: 30px !important;
+    }
+}
