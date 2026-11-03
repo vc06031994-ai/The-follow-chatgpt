@@ -66,8 +66,94 @@ submitFilters();
 });
 }
 }
+
+function initSessionAttendance(){
+var root=document.querySelector('[data-tfp-session-attendance]');
+if(!root)return;
+var search=root.querySelector('[data-tfp-attendance-search]');
+var rows=Array.from(root.querySelectorAll('[data-tfp-attendance-row]'));
+var empty=root.querySelector('[data-tfp-attendance-empty]');
+var save=root.querySelector('[data-tfp-attendance-save]');
+var feedback=root.querySelector('[data-tfp-attendance-feedback]');
+var cfg=config();
+if(search){
+search.addEventListener('input',function(){
+var q=String(search.value||'').trim().toLowerCase(),visible=0;
+rows.forEach(function(row){
+var match=!q||String(row.getAttribute('data-student-name')||'').indexOf(q)!==-1;
+row.hidden=!match;
+if(match)visible++;
+});
+if(empty)empty.hidden=visible!==0;
+});
+}
+root.addEventListener('click',function(event){
+var button=event.target.closest('[data-attendance-status]');
+if(!button||!root.contains(button))return;
+var row=button.closest('[data-tfp-attendance-row]');
+if(!row)return;
+var status=button.getAttribute('data-attendance-status');
+row.setAttribute('data-status',status);
+row.querySelectorAll('[data-attendance-status]').forEach(function(item){
+var active=item===button;
+item.classList.toggle('is-active',active);
+item.classList.toggle('is-present',active&&status==='P');
+item.classList.toggle('is-absent',active&&status==='UA');
+item.setAttribute('aria-pressed',active?'true':'false');
+});
+});
+if(save){
+save.addEventListener('click',function(){
+var records=[],missing=[];
+rows.forEach(function(row){
+var status=String(row.getAttribute('data-status')||'');
+if(!['P','EA','UA'].includes(status)){
+missing.push(row.querySelector('.tfp-meeting-attendance-student')?.textContent.trim()||'');
+return;
+}
+records.push({
+student_id:parseInt(row.getAttribute('data-student-id'),10)||0,
+status:status,
+note:row.querySelector('[data-attendance-note]')?.value||''
+});
+});
+if(missing.length){
+if(feedback)feedback.textContent='Please mark Present or Absent for every disciple before saving.';
+return;
+}
+if(!records.length){
+if(feedback)feedback.textContent='There are no attendance records to save.';
+return;
+}
+save.disabled=true;
+save.setAttribute('aria-busy','true');
+if(feedback)feedback.textContent='Saving attendance…';
+var data=new FormData();
+data.append('action',cfg.attendanceAction||'tfp_facilitator_meeting_save_attendance');
+data.append('nonce',cfg.attendanceNonce||'');
+data.append('cohort_id',String(cfg.cohortId||''));
+data.append('lesson_id',String(cfg.lessonId||''));
+data.append('records',JSON.stringify(records));
+fetch(cfg.ajaxUrl,{method:'POST',credentials:'same-origin',body:data})
+.then(function(response){return response.json();})
+.then(function(response){
+if(!response||!response.success)throw new Error(response&&response.data&&response.data.message?response.data.message:'Unable to save attendance.');
+if(feedback)feedback.textContent=response.data.message||'Attendance saved successfully.';
+})
+.catch(function(error){
+if(feedback)feedback.textContent=error.message||'Unable to save attendance.';
+})
+.finally(function(){
+save.disabled=false;
+save.removeAttribute('aria-busy');
+});
+});
+}
+}
+
 document.addEventListener('DOMContentLoaded',function(){
 initMeetingsFilters();
+initSessionAttendance();
 var weekSelect=document.querySelector('[data-tfp-meeting-week]');
 if(weekSelect){weekSelect.addEventListener('change',function(){if(this.form)this.form.submit();});}
 var exportButton=document.querySelector('[data-tfp-export-meeting-report]');
