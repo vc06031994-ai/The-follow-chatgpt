@@ -1874,3 +1874,24 @@ body .tfp-meeting-attendance-page .tfp-meeting-attendance-panel__footer button {
     }
 }
 
+/* Attendance Save button — keep the normal action color; only demo-disabled is muted. */
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-save:not(:disabled) {
+    border: 1px solid #00666e !important;
+    background: #00666e !important;
+    color: #ffffff !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-save:not(:disabled):hover {
+    border-color: #00565d !important;
+    background: #00565d !important;
+    color: #ffffff !important;
+}
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-save:disabled {
+    border: 1px solid #00666e !important;
+    background: #00666e !important;
+    color: #ffffff !important;
+    opacity: .55 !important;
+    cursor: not-allowed !important;
+}
+
