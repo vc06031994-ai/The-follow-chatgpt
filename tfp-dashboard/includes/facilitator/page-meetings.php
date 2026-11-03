@@ -1109,6 +1109,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                             <p class="tfp-meeting-session-card__missing"><?php esc_html_e('A live meeting link has not been added for this week yet.', 'tfp-dashboard'); ?></p>
                         <?php endif; ?>
                         <?php if ($meeting_notes): ?><details class="tfp-meeting-session-card__notes"><summary><?php esc_html_e('Facilitator meeting notes', 'tfp-dashboard'); ?></summary><p><?php echo esc_html($meeting_notes); ?></p></details><?php endif; ?>
+                        <a class="tfp-dash-btn-second tfp-meeting-session-card__attendance-link" href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_session_view' => 'attendance'], $base_url)); ?>"><?php esc_html_e('Manage Attendance', 'tfp-dashboard'); ?> <span aria-hidden="true">→</span></a>
                     </div>
                 <?php else: ?>
                     <div class="tfp-facilitator-empty"><?php esc_html_e('No LearnDash weeks are linked to this cohort course.', 'tfp-dashboard'); ?></div>
