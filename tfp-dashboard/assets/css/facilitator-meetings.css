@@ -1517,7 +1517,7 @@ body.tfp-meetings-modal-open {
 }
 .tfp-meeting-attendance-table-wrap {
     max-height: min(735px, calc(100vh - 380px));
-    min-height: 360px;
+    min-height: 0;
     overflow: auto;
 }
 .tfp-meeting-attendance-table {
@@ -1702,7 +1702,7 @@ body.tfp-meetings-modal-open {
     .tfp-meeting-attendance-search { width: 100%; min-width: 0; }
     .tfp-meeting-attendance-table-wrap {
         max-height: 62vh;
-        min-height: 280px;
+        min-height: 0;
     }
     .tfp-meeting-attendance-table { min-width: 760px; }
     .tfp-meeting-attendance-table th,
