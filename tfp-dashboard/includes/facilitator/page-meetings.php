@@ -670,10 +670,6 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         wp_die(esc_html__('The selected course week could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
     }
 
-    if (!function_exists('tfp_facilitator_student_allowed') || !tfp_facilitator_student_allowed(get_current_user_id())) {
-        wp_die(esc_html__('You are not allowed to review this cohort.', 'tfp-dashboard'), '', ['response' => 403]);
-    }
-
     $student_ids = function_exists('tfp_facilitator_cohort_students')
         ? array_values(array_unique(array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id))))
         : [];
@@ -727,13 +723,18 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
                 : [];
             $decision = sanitize_key((string) ($review_item['decision'] ?? ''));
             $is_wrong = $decision === 'incorrect';
-            if ($decision === '' && $has_answer && function_exists('tfp_week_is_homework_answer_correct')) {
-                $is_wrong = !tfp_week_is_homework_answer_correct($question, $answer);
-            }
-            if ($has_answer && isset($question_stats[$question_id])) {
-                $question_stats[$question_id]['answered']++;
-                if ($is_wrong) {
-                    $question_stats[$question_id]['wrong']++;
+            $can_auto_grade = ($question['type'] ?? '') === 'multiple_choice'
+                && $has_answer
+                && function_exists('tfp_week_is_homework_answer_correct');
+            if ($decision !== '' || $can_auto_grade) {
+                if ($can_auto_grade && $decision === '') {
+                    $is_wrong = !tfp_week_is_homework_answer_correct($question, $answer);
+                }
+                if ($has_answer && isset($question_stats[$question_id])) {
+                    $question_stats[$question_id]['answered']++;
+                    if ($is_wrong) {
+                        $question_stats[$question_id]['wrong']++;
+                    }
                 }
             }
             $student_questions[$question_id] = [
