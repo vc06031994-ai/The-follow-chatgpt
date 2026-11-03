@@ -85,7 +85,7 @@ var csv='\uFEFF'+rows.join('\r\n');
 var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
 var url=window.URL.createObjectURL(blob);
 var link=document.createElement('a');
-var title=document.querySelector('.tfp-cohort-pageheader__main h1');
+var title=document.querySelector('.tfp-meeting-cohort-header__main h1');
 var week=weekSelect?weekSelect.value:'all';
 var slug=(title?title.textContent:'cohort').trim().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase();
 link.href=url;link.download=(slug||'cohort')+'-week-'+week+'-report.csv';
