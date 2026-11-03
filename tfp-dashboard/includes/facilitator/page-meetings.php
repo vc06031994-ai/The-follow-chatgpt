@@ -483,8 +483,10 @@ function tfp_facilitator_meetings_render_attendance($cohort, $course_id, $weeks,
                     ? tfp_facilitator_student_attendance($student_id, (int) $lesson->ID)
                     : [];
                 $previous_status = strtoupper((string) ($previous['status'] ?? ''));
-                $choice = sanitize_key($choices[$student_id] ?? '');
-                $note = sanitize_textarea_field($notes[$student_id] ?? '');
+                $raw_choice = $choices[$student_id] ?? '';
+                $raw_note = $notes[$student_id] ?? '';
+                $choice = is_scalar($raw_choice) ? sanitize_key((string) $raw_choice) : '';
+                $note = is_scalar($raw_note) ? sanitize_textarea_field((string) $raw_note) : '';
 
                 // Preserve an existing excused absence unless the facilitator changes the selection.
                 if ($choice === 'P') {
