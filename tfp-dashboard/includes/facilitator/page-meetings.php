@@ -694,6 +694,30 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         return strcasecmp($a['name'], $b['name']);
     });
 
+    // Demo preview is available only on staging and never writes to real user records.
+    $demo_allowed = wp_get_environment_type() === 'staging'
+        || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_mode = $demo_allowed && isset($_GET['tfp_attendance_demo'])
+        && sanitize_text_field(wp_unslash($_GET['tfp_attendance_demo'])) === '1';
+    if ($demo_mode) {
+        $demo_names = [
+            'Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett',
+            'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell',
+            'Henry Cooper', 'Isabella Reed', 'Jack Peterson', 'Liam Anderson',
+            'Mia Collins', 'Noah Bailey', 'Olivia Parker', 'Samuel Hayes',
+            'Sophia Turner', 'Theodore Ward', 'Victoria Price', 'William Scott',
+        ];
+        foreach ($demo_names as $index => $demo_name) {
+            $demo_statuses = ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'UA', 'UA', 'UA', 'UA', 'UA', 'EA', 'EA', 'EA', '', ''];
+            $students[] = [
+                'id' => 0,
+                'name' => $demo_name,
+                'status' => $demo_statuses[$index],
+                'note' => $index % 3 === 0 ? 'Demo session note for layout testing' : '',
+            ];
+        }
+    }
+
     $base_url = tfp_facilitator_meetings_url();
     $back_url = add_query_arg([
         'tfp_meeting_cohort_id' => $cohort_id,
@@ -710,6 +734,13 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
     $schedule = (string) get_post_meta($cohort_id, '_schedule_text', true);
     $course_title = $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard');
     $nonce = wp_create_nonce('tfp_facilitator_meeting_attendance');
+    $demo_url = add_query_arg([
+        'tfp_meeting_cohort_id' => $cohort_id,
+        'tfp_meeting_week' => $week_number,
+        'tfp_meeting_session_view' => 'attendance',
+        'tfp_attendance_demo' => '1',
+    ], $base_url);
+    $live_url = remove_query_arg('tfp_attendance_demo', $demo_url);
     ?>
     <div class="tfp-meeting-attendance-page" data-tfp-session-attendance>
         <nav class="tfp-meeting-attendance-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
@@ -743,12 +774,22 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         <section class="tfp-meeting-attendance-panel">
             <header class="tfp-meeting-attendance-panel__head">
                 <h2><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h2>
+                <?php if ($demo_allowed): ?>
+                    <a class="tfp-meeting-attendance-demo-toggle" href="<?php echo esc_url($demo_mode ? $live_url : $demo_url); ?>">
+                        <?php echo esc_html($demo_mode ? __('Exit Demo Preview', 'tfp-dashboard') : __('Load 20 Demo Students', 'tfp-dashboard')); ?>
+                    </a>
+                <?php endif; ?>
                 <label class="tfp-meeting-attendance-search">
                     <span class="screen-reader-text"><?php esc_html_e('Search by name', 'tfp-dashboard'); ?></span>
                     <?php echo tfp_dashboard_icon('search'); ?>
                     <input type="search" placeholder="<?php esc_attr_e('Search by Name', 'tfp-dashboard'); ?>" data-tfp-attendance-search>
                 </label>
             </header>
+            <?php if ($demo_mode): ?>
+                <div class="tfp-meeting-attendance-demo-notice" role="status">
+                    <?php esc_html_e('DEMO PREVIEW — 20 sample students. Changes are temporary and will not be saved to the database.', 'tfp-dashboard'); ?>
+                </div>
+            <?php endif; ?>
 
             <div class="tfp-meeting-attendance-table-wrap">
                 <table class="tfp-meeting-attendance-table">
@@ -790,7 +831,7 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
             <footer class="tfp-meeting-attendance-panel__footer">
                 <span class="tfp-meeting-attendance-feedback" role="status" aria-live="polite" data-tfp-attendance-feedback></span>
                 <div>
-                    <button type="button" class="tfp-dash-btn-second tfp-meeting-attendance-save" data-tfp-attendance-save><?php esc_html_e('Save Attendance', 'tfp-dashboard'); ?></button>
+                    <button type="button" class="tfp-dash-btn-second tfp-meeting-attendance-save" data-tfp-attendance-save <?php disabled($demo_mode); ?> title="<?php echo esc_attr($demo_mode ? __('Saving is disabled in demo preview.', 'tfp-dashboard') : ''); ?>"><?php esc_html_e('Save Attendance', 'tfp-dashboard'); ?></button>
                     <a href="<?php echo esc_url($homework_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Next: Open Homework', 'tfp-dashboard'); ?><span aria-hidden="true">→</span></a>
                 </div>
             </footer>
