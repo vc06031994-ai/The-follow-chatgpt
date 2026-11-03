@@ -94,3 +94,32 @@ document.body.appendChild(link);link.click();link.remove();window.URL.revokeObje
 }
 document.querySelectorAll('[data-tfp-meeting]').forEach(function(b){b.addEventListener('click',function(){try{showMeeting(JSON.parse(b.getAttribute('data-tfp-meeting')))}catch(e){}})});document.querySelectorAll('[data-tfp-skip]').forEach(function(b){b.addEventListener('click',function(){try{openSkipRequest(JSON.parse(b.getAttribute('data-tfp-skip')))}catch(e){}})});document.querySelectorAll('[data-tfp-request]').forEach(function(b){b.addEventListener('click',function(){try{showRequest(JSON.parse(b.getAttribute('data-tfp-request')))}catch(e){}})});document.querySelectorAll('[data-tfp-modal-close]').forEach(function(b){b.addEventListener('click',closeModal)});document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});var create=document.querySelector('[data-tfp-create-modal]'),open=document.querySelector('[data-tfp-open-request-create]'),form=document.querySelector('[data-tfp-request-form]'),type=document.querySelector('[data-tfp-request-type]'),cohort=document.querySelector('[data-tfp-request-cohort]');if(open)open.addEventListener('click',function(){openModal(create)});if(type)type.addEventListener('change',refreshStudents);if(cohort)cohort.addEventListener('change',refreshStudents);if(form)form.addEventListener('submit',function(e){e.preventDefault();var c=config(),d=new FormData(form);d.append('action','tfp_facilitator_meeting_create_request');d.append('nonce',c.nonce||'');fetch(c.ajaxUrl,{method:'POST',body:d}).then(function(r){return r.json()}).then(function(r){if(!r.success)throw new Error(r.data&&r.data.message?r.data.message:'Unable to create request.');window.location.reload()}).catch(function(err){window.alert(err.message||'Unable to create request.')})});});
 })();
+
+document.addEventListener('DOMContentLoaded',function(){
+    var attendanceRoot=document.querySelector('[data-tfp-course-attendance]');
+    if(!attendanceRoot)return;
+    attendanceRoot.querySelectorAll('[data-tfp-attendance-choice]').forEach(function(button){
+        button.addEventListener('click',function(){
+            var group=button.closest('.tfp-attendance-choice');
+            if(!group)return;
+            var value=button.getAttribute('data-tfp-attendance-choice')||'';
+            var hidden=group.querySelector('[data-tfp-attendance-value]');
+            if(hidden)hidden.value=value;
+            group.querySelectorAll('[data-tfp-attendance-choice]').forEach(function(option){
+                var active=option===button;
+                option.classList.toggle('is-selected',active);
+                option.setAttribute('aria-pressed',active?'true':'false');
+            });
+        });
+    });
+    var search=attendanceRoot.querySelector('[data-tfp-attendance-search]');
+    if(search){
+        search.addEventListener('input',function(){
+            var term=(search.value||'').trim().toLowerCase();
+            attendanceRoot.querySelectorAll('[data-tfp-attendance-row]').forEach(function(row){
+                var name=(row.getAttribute('data-student-name')||'').toLowerCase();
+                row.hidden=term!==''&&name.indexOf(term)===-1;
+            });
+        });
+    }
+});
