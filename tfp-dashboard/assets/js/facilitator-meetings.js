@@ -209,3 +209,117 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     }
 });
+
+/* Cohort week Homework review — live question/student switching and saved notes. */
+document.addEventListener('DOMContentLoaded', function () {
+    var root = document.querySelector('[data-tfp-session-homework]');
+    if (!root) return;
+
+    var dataNode = root.querySelector('[data-tfp-homework-data]');
+    var payload = {};
+    try { payload = JSON.parse(dataNode ? dataNode.textContent : '{}'); } catch (error) { payload = {}; }
+
+    var questions = Array.isArray(payload.questions) ? payload.questions : [];
+    var students = Array.isArray(payload.students) ? payload.students : [];
+    var activeQuestion = questions.length ? questions[0].id : '';
+    var activeStudent = students.length ? String(students[0].id) : '';
+    var feedback = root.querySelector('[data-homework-feedback]');
+    var answerPreview = root.querySelector('[data-homework-answer-preview]');
+    var saveButton = root.querySelector('[data-homework-save-note]');
+    var saveFeedback = root.querySelector('[data-homework-save-feedback]');
+
+    function selectedQuestion() {
+        return questions.find(function (item) { return item.id === activeQuestion; }) || null;
+    }
+    function selectedStudent() {
+        return students.find(function (item) { return String(item.id) === activeStudent; }) || null;
+    }
+    function renderStudent() {
+        var student = selectedStudent();
+        var question = selectedQuestion();
+        var item = student && question && student.questions ? student.questions[question.id] : null;
+        if (feedback) feedback.value = item && item.feedback ? item.feedback : '';
+        if (answerPreview) {
+            answerPreview.textContent = item && item.has_answer
+                ? 'Student response: ' + item.answer
+                : (student ? 'No submitted answer for this question.' : 'Select a student to view their submitted answer.');
+        }
+        if (saveFeedback) saveFeedback.textContent = '';
+    }
+    function selectQuestion(id) {
+        activeQuestion = id;
+        root.querySelectorAll('[data-homework-question-select]').forEach(function (button) {
+            var active = button.getAttribute('data-homework-question-select') === id;
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        root.querySelectorAll('[data-homework-question-panel]').forEach(function (panel) {
+            panel.hidden = panel.getAttribute('data-homework-question-panel') !== id;
+        });
+        renderStudent();
+    }
+    root.querySelectorAll('[data-homework-question-select]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            selectQuestion(button.getAttribute('data-homework-question-select') || '');
+        });
+    });
+    root.querySelectorAll('[data-homework-student-select]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            activeStudent = button.getAttribute('data-homework-student-select') || '';
+            root.querySelectorAll('[data-homework-student-select]').forEach(function (item) {
+                var active = item === button;
+                item.classList.toggle('is-active', active);
+                item.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+            renderStudent();
+        });
+    });
+
+    if (saveButton) {
+        saveButton.addEventListener('click', function () {
+            var student = selectedStudent();
+            var question = selectedQuestion();
+            if (!student || !question) {
+                if (saveFeedback) saveFeedback.textContent = 'Select a student and question first.';
+                return;
+            }
+            saveButton.disabled = true;
+            if (saveFeedback) saveFeedback.textContent = 'Saving…';
+            var form = new FormData();
+            form.append('action', 'tfp_facilitator_homework_save_review');
+            form.append('nonce', root.getAttribute('data-nonce') || '');
+            form.append('student_id', String(student.id));
+            form.append('lesson_id', root.getAttribute('data-lesson-id') || '');
+            form.append('cohort_id', root.getAttribute('data-cohort-id') || '');
+            form.append('question_id', question.id);
+            form.append('decision', '');
+            form.append('feedback', feedback ? feedback.value : '');
+            fetch(root.getAttribute('data-ajax-url'), {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: form
+            }).then(function (response) {
+                return response.json();
+            }).then(function (response) {
+                if (!response || !response.success) {
+                    throw new Error(response && response.data && response.data.message ? response.data.message : 'Unable to save notes.');
+                }
+                var target = student.questions[question.id];
+                if (target) target.feedback = feedback ? feedback.value : '';
+                if (saveFeedback) saveFeedback.textContent = 'Notes saved.';
+            }).catch(function (error) {
+                if (saveFeedback) saveFeedback.textContent = error.message || 'Unable to save notes.';
+            }).finally(function () {
+                saveButton.disabled = false;
+            });
+        });
+    }
+
+    if (activeQuestion) selectQuestion(activeQuestion);
+    if (activeStudent) {
+        var initial = root.querySelector('[data-homework-student-select="' + activeStudent.replace(/"/g, '') + '"]');
+        if (initial) initial.classList.add('is-active');
+        renderStudent();
+    }
+});
+
