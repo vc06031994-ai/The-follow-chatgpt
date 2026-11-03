@@ -277,8 +277,14 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     if ($template === 'tfp-dashboard-facilitator-meetings') {
-        wp_enqueue_style('tfp-dashboard-facilitator-meetings', TFP_DASH_URL . 'assets/css/facilitator-meetings.css', ['tfp-dashboard-facilitator'], TFP_DASH_VERSION);
-        wp_enqueue_script('tfp-dashboard-facilitator-meetings', TFP_DASH_URL . 'assets/js/facilitator-meetings.js', ['tfp-dashboard-facilitator'], TFP_DASH_VERSION, true);
+        // File timestamps invalidate cached meeting assets after focused UI updates.
+        $meetings_css_path = TFP_DASH_PATH . 'assets/css/facilitator-meetings.css';
+        $meetings_js_path = TFP_DASH_PATH . 'assets/js/facilitator-meetings.js';
+        $meetings_css_version = file_exists($meetings_css_path) ? (string) filemtime($meetings_css_path) : TFP_DASH_VERSION;
+        $meetings_js_version = file_exists($meetings_js_path) ? (string) filemtime($meetings_js_path) : TFP_DASH_VERSION;
+
+        wp_enqueue_style('tfp-dashboard-facilitator-meetings', TFP_DASH_URL . 'assets/css/facilitator-meetings.css', ['tfp-dashboard-facilitator'], $meetings_css_version);
+        wp_enqueue_script('tfp-dashboard-facilitator-meetings', TFP_DASH_URL . 'assets/js/facilitator-meetings.js', ['tfp-dashboard-facilitator'], $meetings_js_version, true);
     }
 
     if ($template === 'tfp-dashboard-communication') {
