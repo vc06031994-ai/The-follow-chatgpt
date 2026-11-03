@@ -653,6 +653,236 @@ function tfp_facilitator_meetings_render_attendance($cohort, $course_id, $weeks,
 }
 
 
+
+/**
+ * Render the cohort/week homework review using the existing LearnDash answers
+ * and facilitator review records. No separate homework data is created.
+ */
+function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
+{
+    $cohort_id = absint($cohort->ID);
+    $course_id = absint(get_post_meta($cohort_id, '_related_course', true));
+    $weeks = $course_id && function_exists('tfp_ld_get_weeks') ? array_values((array) tfp_ld_get_weeks($course_id)) : [];
+    $week_number = max(1, absint($week_number));
+    $lesson = $weeks[$week_number - 1] ?? null;
+
+    if (!$lesson instanceof WP_Post) {
+        wp_die(esc_html__('The selected course week could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    if (!function_exists('tfp_facilitator_student_allowed') || !tfp_facilitator_student_allowed(get_current_user_id())) {
+        wp_die(esc_html__('You are not allowed to review this cohort.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+
+    $student_ids = function_exists('tfp_facilitator_cohort_students')
+        ? array_values(array_unique(array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id))))
+        : [];
+    $questions = function_exists('tfp_week_get_homework_questions')
+        ? tfp_week_get_homework_questions((int) $lesson->ID, false)
+        : [];
+    $students = [];
+    $question_stats = [];
+
+    foreach ($questions as $index => $question) {
+        $question_id = sanitize_key((string) ($question['id'] ?? ''));
+        if (!$question_id) {
+            continue;
+        }
+        $question_stats[$question_id] = [
+            'index' => (int) $index,
+            'prompt' => (string) ($question['prompt'] ?? ''),
+            'wrong' => 0,
+            'answered' => 0,
+            'percent' => null,
+        ];
+    }
+
+    foreach ($student_ids as $student_id) {
+        $user = get_userdata($student_id);
+        if (!$user) {
+            continue;
+        }
+        $answers = function_exists('tfp_week_get_homework_answers')
+            ? (array) tfp_week_get_homework_answers($student_id, (int) $lesson->ID)
+            : [];
+        $review = function_exists('tfp_facilitator_homework_review_data')
+            ? tfp_facilitator_homework_review_data($student_id, (int) $lesson->ID)
+            : ['questions' => []];
+        $student_questions = [];
+
+        foreach ($questions as $index => $question) {
+            $question_id = sanitize_key((string) ($question['id'] ?? ''));
+            if (!$question_id) {
+                continue;
+            }
+            $answer = isset($answers[$question_id]) && is_array($answers[$question_id]) ? $answers[$question_id] : [];
+            $has_answer = function_exists('tfp_week_is_question_answered')
+                ? tfp_week_is_question_answered($question, $answer)
+                : !empty($answer);
+            $answer_text = function_exists('tfp_facilitator_homework_question_answer')
+                ? tfp_facilitator_homework_question_answer($question, $answer)
+                : trim((string) ($answer['text'] ?? ''));
+            $review_item = isset($review['questions'][$question_id]) && is_array($review['questions'][$question_id])
+                ? $review['questions'][$question_id]
+                : [];
+            $decision = sanitize_key((string) ($review_item['decision'] ?? ''));
+            $is_wrong = $decision === 'incorrect';
+            if ($decision === '' && $has_answer && function_exists('tfp_week_is_homework_answer_correct')) {
+                $is_wrong = !tfp_week_is_homework_answer_correct($question, $answer);
+            }
+            if ($has_answer && isset($question_stats[$question_id])) {
+                $question_stats[$question_id]['answered']++;
+                if ($is_wrong) {
+                    $question_stats[$question_id]['wrong']++;
+                }
+            }
+            $student_questions[$question_id] = [
+                'answer' => $has_answer ? $answer_text : __('Not submitted', 'tfp-dashboard'),
+                'has_answer' => (bool) $has_answer,
+                'decision' => $decision,
+                'feedback' => (string) ($review_item['feedback'] ?? ''),
+                'mastery' => isset($review_item['mastery']) && is_array($review_item['mastery']) ? $review_item['mastery'] : [],
+            ];
+        }
+
+        $students[] = [
+            'id' => $student_id,
+            'name' => $user->display_name ?: $user->user_email,
+            'questions' => $student_questions,
+        ];
+    }
+
+    foreach ($question_stats as &$stat) {
+        $stat['percent'] = $stat['answered'] > 0 ? (int) round(($stat['wrong'] / $stat['answered']) * 100) : null;
+    }
+    unset($stat);
+
+    $base_url = tfp_facilitator_meetings_url();
+    $attendance_url = add_query_arg([
+        'tfp_meeting_cohort_id' => $cohort_id,
+        'tfp_meeting_week' => $week_number,
+        'tfp_meeting_session_view' => 'attendance',
+    ], $base_url);
+    $all_meetings_url = remove_query_arg(
+        ['tfp_meeting_cohort_id', 'tfp_meeting_week', 'tfp_meeting_session_view', 'tfp_meeting_student_page'],
+        $base_url
+    );
+    $tests_url = add_query_arg(
+        ['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number],
+        tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')
+    );
+    $first_student = !empty($students) ? (int) $students[0]['id'] : 0;
+    $first_question = !empty($questions) ? sanitize_key((string) ($questions[0]['id'] ?? '')) : '';
+    $nonce = wp_create_nonce('tfp_facilitator_student_ajax');
+    $question_payload = [];
+    foreach ($questions as $index => $question) {
+        $question_id = sanitize_key((string) ($question['id'] ?? ''));
+        if (!$question_id) {
+            continue;
+        }
+        $question_payload[] = [
+            'id' => $question_id,
+            'number' => $index + 1,
+            'prompt' => (string) ($question['prompt'] ?? ''),
+            'correct' => function_exists('tfp_facilitator_homework_correct_answer') ? tfp_facilitator_homework_correct_answer($question) : '',
+            'explanation' => function_exists('tfp_facilitator_homework_question_explanation') ? tfp_facilitator_homework_question_explanation($question) : '',
+            'scripture' => function_exists('tfp_facilitator_homework_question_scripture') ? tfp_facilitator_homework_question_scripture($question) : '',
+            'wrong' => $question_stats[$question_id]['wrong'] ?? 0,
+            'answered' => $question_stats[$question_id]['answered'] ?? 0,
+            'percent' => $question_stats[$question_id]['percent'] ?? null,
+        ];
+    }
+    ?>
+    <div class="tfp-meeting-homework-page" data-tfp-session-homework
+        data-cohort-id="<?php echo esc_attr($cohort_id); ?>"
+        data-lesson-id="<?php echo esc_attr((int) $lesson->ID); ?>"
+        data-student-id="<?php echo esc_attr($first_student); ?>"
+        data-nonce="<?php echo esc_attr($nonce); ?>"
+        data-ajax-url="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
+        <nav class="tfp-meeting-homework-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
+            <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home')); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a><span>/</span>
+            <a href="<?php echo esc_url($all_meetings_url); ?>"><?php esc_html_e('Meetings', 'tfp-dashboard'); ?></a><span>/</span>
+            <a href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number], $base_url)); ?>"><?php echo esc_html($cohort->post_title); ?></a><span>/</span>
+            <strong><?php echo esc_html(sprintf(__('Week %d Session', 'tfp-dashboard'), $week_number)); ?></strong>
+        </nav>
+        <header class="tfp-meeting-homework-header">
+            <div><h1><?php echo esc_html($cohort->post_title); ?></h1><p><?php echo esc_html($lesson->post_title); ?></p></div>
+            <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($all_meetings_url); ?>">↩ <?php esc_html_e('Back to All Meetings', 'tfp-dashboard'); ?></a>
+        </header>
+        <nav class="tfp-meeting-homework-tabs" aria-label="<?php esc_attr_e('Course session sections', 'tfp-dashboard'); ?>">
+            <a href="<?php echo esc_url($attendance_url); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
+            <span class="is-active" aria-current="page"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></span>
+            <a href="<?php echo esc_url($tests_url); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
+            <span class="is-disabled" aria-disabled="true"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></span>
+            <span class="is-disabled" aria-disabled="true"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></span>
+        </nav>
+
+        <section class="tfp-meeting-homework-surface">
+            <header class="tfp-meeting-homework-surface__head"><h2><?php esc_html_e('Homework', 'tfp-dashboard'); ?></h2></header>
+            <?php if (!$questions): ?>
+                <div class="tfp-meeting-homework-empty"><h3><?php esc_html_e('No homework content available', 'tfp-dashboard'); ?></h3><p><?php printf(esc_html__('There are no homework questions configured for Week %d.', 'tfp-dashboard'), $week_number); ?></p></div>
+            <?php else: ?>
+                <div class="tfp-meeting-homework-metrics">
+                    <?php foreach ($question_payload as $q): ?>
+                        <button type="button" class="tfp-meeting-homework-metric<?php echo $q['id'] === $first_question ? ' is-active' : ''; ?>" data-homework-question-select="<?php echo esc_attr($q['id']); ?>">
+                            <small><?php echo esc_html(sprintf(__('Question %d', 'tfp-dashboard'), $q['number'])); ?></small>
+                            <strong><?php echo $q['percent'] === null ? '—' : esc_html($q['percent'] . '%'); ?></strong>
+                            <span><?php echo esc_html(sprintf(__('%d Students Wrong', 'tfp-dashboard'), (int) $q['wrong'])); ?></span>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+                <nav class="tfp-meeting-homework-question-tabs" aria-label="<?php esc_attr_e('Homework questions', 'tfp-dashboard'); ?>">
+                    <?php foreach ($question_payload as $q): ?>
+                        <button type="button" class="<?php echo $q['id'] === $first_question ? 'is-active' : ''; ?>" data-homework-question-select="<?php echo esc_attr($q['id']); ?>">Q<?php echo esc_html($q['number']); ?></button>
+                    <?php endforeach; ?>
+                </nav>
+                <div class="tfp-meeting-homework-content">
+                    <main class="tfp-meeting-homework-reference">
+                        <?php foreach ($question_payload as $q): ?>
+                            <article data-homework-question-panel="<?php echo esc_attr($q['id']); ?>" <?php echo $q['id'] === $first_question ? '' : 'hidden'; ?>>
+                                <h3 data-homework-prompt><?php echo esc_html($q['prompt']); ?></h3>
+                                <h4><?php esc_html_e('Curriculum Reference', 'tfp-dashboard'); ?></h4>
+                                <h5><?php esc_html_e('Correct Answer', 'tfp-dashboard'); ?></h5>
+                                <div data-homework-correct><?php echo wp_kses_post(wpautop($q['correct'] ?: __('No reference answer was provided for this question.', 'tfp-dashboard'))); ?></div>
+                                <h5><?php esc_html_e('Explanation:', 'tfp-dashboard'); ?></h5>
+                                <div data-homework-explanation><?php echo wp_kses_post(wpautop($q['explanation'])); ?></div>
+                                <?php if (!empty($q['scripture'])): ?><h5><?php esc_html_e('Scripture:', 'tfp-dashboard'); ?></h5><blockquote><?php echo wp_kses_post(wpautop($q['scripture'])); ?></blockquote><?php endif; ?>
+                            </article>
+                        <?php endforeach; ?>
+                    </main>
+                    <aside class="tfp-meeting-homework-students">
+                        <p class="tfp-meeting-homework-note-hint"><?php esc_html_e('Notes are optional for Homework and Tests, but required for Exercises. Each student must have a note to close out the Exercises tab.', 'tfp-dashboard'); ?></p>
+                        <section class="tfp-meeting-homework-note-card">
+                            <label for="tfp-meeting-homework-feedback"><?php esc_html_e('Facilitator Notes', 'tfp-dashboard'); ?></label>
+                            <textarea id="tfp-meeting-homework-feedback" data-homework-feedback placeholder="<?php esc_attr_e('Add a note about this student’s response...', 'tfp-dashboard'); ?>"></textarea>
+                            <button type="button" data-homework-save-note><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                            <small data-homework-save-feedback role="status" aria-live="polite"></small>
+                        </section>
+                        <h4><?php printf(esc_html__('All Students (%d)', 'tfp-dashboard'), count($students)); ?></h4>
+                        <div class="tfp-meeting-homework-student-list">
+                            <?php foreach ($students as $student_index => $student): ?>
+                                <button type="button" class="<?php echo $student_index === 0 ? 'is-active' : ''; ?>" data-homework-student-select="<?php echo esc_attr($student['id']); ?>">
+                                    <span aria-hidden="true"></span><?php echo esc_html($student['name']); ?>
+                                </button>
+                            <?php endforeach; ?>
+                            <?php if (!$students): ?><p><?php esc_html_e('No students are assigned to this cohort.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                        </div>
+                        <div class="tfp-meeting-homework-answer-preview" data-homework-answer-preview>
+                            <?php esc_html_e('Select a student to view their submitted answer.', 'tfp-dashboard'); ?>
+                        </div>
+                        <div class="tfp-meeting-homework-legend"><span><?php esc_html_e('Add Notes', 'tfp-dashboard'); ?></span><span><?php esc_html_e('Notes Saved', 'tfp-dashboard'); ?></span></div>
+                    </aside>
+                </div>
+            <?php endif; ?>
+            <footer class="tfp-meeting-homework-footer">
+                <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($tests_url); ?>"><?php esc_html_e('Next: Open Test', 'tfp-dashboard'); ?> →</a>
+            </footer>
+        </section>
+        <script type="application/json" data-tfp-homework-data><?php echo wp_json_encode(['questions' => $question_payload, 'students' => $students], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
+    </div>
+    <?php
+}
+
 /**
  * Render the facilitator's editable attendance screen for one cohort week.
  * Reads and writes the existing per-student attendance user-meta records.
@@ -728,9 +958,10 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         $base_url
     );
     $homework_url = add_query_arg([
-        'tfp_homework_course' => $course_id,
-        'tfp_homework_cohort_filter' => $cohort_id,
-    ], tfp_dashboard_get_url('tfp-dashboard-facilitator-homework'));
+        'tfp_meeting_cohort_id' => $cohort_id,
+        'tfp_meeting_week' => $week_number,
+        'tfp_meeting_session_view' => 'homework',
+    ], $base_url);
     $schedule = (string) get_post_meta($cohort_id, '_schedule_text', true);
     $course_title = $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard');
     $nonce = wp_create_nonce('tfp_facilitator_meeting_attendance');
@@ -958,8 +1189,13 @@ add_action('wp_ajax_tfp_facilitator_meeting_save_attendance', 'tfp_facilitator_m
 
 function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
 {
-    if (sanitize_key($_GET['tfp_meeting_session_view'] ?? '') === 'attendance') {
+    $session_view = sanitize_key(wp_unslash($_GET['tfp_meeting_session_view'] ?? ''));
+    if ($session_view === 'attendance') {
         tfp_facilitator_meetings_render_session_attendance($cohort, absint($_GET['tfp_meeting_week'] ?? 1));
+        return;
+    }
+    if ($session_view === 'homework') {
+        tfp_facilitator_meetings_render_session_homework($cohort, absint($_GET['tfp_meeting_week'] ?? 1));
         return;
     }
 
