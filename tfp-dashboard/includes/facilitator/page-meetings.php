@@ -884,6 +884,58 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
     <?php
 }
 
+
+/**
+ * Save the facilitator's per-student, per-question note without changing
+ * the submission's grading/completion state.
+ */
+function tfp_facilitator_meetings_save_homework_note()
+{
+    if (!is_user_logged_in() || !function_exists('tfp_dashboard_user_is_staff') || !tfp_dashboard_user_is_staff()) {
+        wp_send_json_error(['message' => __('Unauthorized.', 'tfp-dashboard')], 403);
+    }
+    check_ajax_referer('tfp_facilitator_student_ajax', 'nonce');
+
+    $student_id = absint($_POST['student_id'] ?? 0);
+    $lesson_id = absint($_POST['lesson_id'] ?? 0);
+    $cohort_id = absint($_POST['cohort_id'] ?? 0);
+    $question_id = sanitize_key(wp_unslash($_POST['question_id'] ?? ''));
+    $feedback = sanitize_textarea_field(wp_unslash($_POST['feedback'] ?? ''));
+
+    if (!function_exists('tfp_facilitator_homework_validate_context')
+        || !tfp_facilitator_homework_validate_context($student_id, $lesson_id, $cohort_id)) {
+        wp_send_json_error(['message' => __('Invalid homework review context.', 'tfp-dashboard')], 400);
+    }
+
+    $questions = function_exists('tfp_week_get_homework_questions')
+        ? tfp_week_get_homework_questions($lesson_id, false)
+        : [];
+    $valid_question = false;
+    foreach ($questions as $question) {
+        if ((string) ($question['id'] ?? '') === $question_id) {
+            $valid_question = true;
+            break;
+        }
+    }
+    if (!$valid_question) {
+        wp_send_json_error(['message' => __('The selected homework question was not found.', 'tfp-dashboard')], 400);
+    }
+
+    $review = tfp_facilitator_homework_review_data($student_id, $lesson_id);
+    $existing = isset($review['questions'][$question_id]) && is_array($review['questions'][$question_id])
+        ? $review['questions'][$question_id]
+        : [];
+    $existing['feedback'] = $feedback;
+    $existing['updated_at'] = current_time('mysql');
+    $existing['reviewer_id'] = get_current_user_id();
+    $review['questions'][$question_id] = $existing;
+    $review['reviewer_id'] = get_current_user_id();
+
+    update_user_meta($student_id, tfp_facilitator_homework_review_key($lesson_id), $review);
+    wp_send_json_success(['message' => __('Notes saved.', 'tfp-dashboard')]);
+}
+add_action('wp_ajax_tfp_facilitator_meeting_save_homework_note', 'tfp_facilitator_meetings_save_homework_note');
+
 /**
  * Render the facilitator's editable attendance screen for one cohort week.
  * Reads and writes the existing per-student attendance user-meta records.
