@@ -605,3 +605,15 @@ body.tfp-meetings-modal-open {
         z-index: 2;
     }
 }
+
+
+/* Reduce the cohort title to an H2-like visual size. */
+.tfp-meeting-cohort-header__main h1 {
+    font-size: 36px !important;
+    line-height: 1.25 !important;
+}
+@media (max-width: 767px) {
+    .tfp-meeting-cohort-header__main h1 {
+        font-size: 30px !important;
+    }
+}
