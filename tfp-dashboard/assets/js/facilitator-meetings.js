@@ -77,11 +77,11 @@ var table=document.querySelector('[data-tfp-meeting-report-table]');
 if(!table){window.alert('No report data is available to export.');return;}
 var rows=Array.from(table.querySelectorAll('tr')).map(function(row){
 return Array.from(row.querySelectorAll('th,td')).map(function(cell){
-var value=(cell.innerText||cell.textContent||'').replace(/\\s+/g,' ').trim().replace(/"/g,'""');
+var value=(cell.innerText||cell.textContent||'').replace(/\s+/g,' ').trim().replace(/"/g,'""');
 return '"'+value+'"';
 }).join(',');
 });
-var csv='\\uFEFF'+rows.join('\\r\\n');
+var csv='\uFEFF'+rows.join('\r\n');
 var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
 var url=window.URL.createObjectURL(blob);
 var link=document.createElement('a');
