@@ -465,28 +465,26 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
         ? (array) tfp_facilitator_cohorts_action_items([$cohort], $cohort)
         : [];
 
-    // Derive the strongest and weakest weekly understanding from saved LearnDash completion.
+    // Derive concept mastery from saved quiz and test scores for each lesson.
     $mastery = [];
     foreach ($weeks as $index => $week) {
-        $completed = 0;
-        $recorded = 0;
+        $assessment_scores = [];
         foreach ($students as $student_id) {
-            if (function_exists('tfp_ld_get_week_progress')) {
-                $progress = tfp_ld_get_week_progress($student_id, $week->ID);
-                $has_record = !empty(array_filter($progress));
-                if ($has_record) {
-                    $recorded++;
-                    if (!empty($progress['reading'])) {
-                        $completed++;
-                    }
+            foreach (['tfp_week_get_quiz_result', 'tfp_week_get_test_result'] as $result_callback) {
+                if (!function_exists($result_callback)) {
+                    continue;
+                }
+                $result = call_user_func($result_callback, $student_id, $week->ID);
+                if (is_array($result) && isset($result['score'], $result['total']) && is_numeric($result['score']) && is_numeric($result['total']) && (float) $result['total'] > 0) {
+                    $assessment_scores[] = ((float) $result['score'] / (float) $result['total']) * 100;
                 }
             }
         }
-        if ($recorded > 0) {
+        if ($assessment_scores) {
             $mastery[] = [
                 'week' => $index + 1,
                 'title' => wp_strip_all_tags($week->post_title),
-                'percent' => (int) round(($completed / $recorded) * 100),
+                'percent' => (int) round(array_sum($assessment_scores) / count($assessment_scores)),
             ];
         }
     }
@@ -592,7 +590,17 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                 <div class="tfp-meeting-queue-card__list">
                     <?php if ($queue_items): foreach ($queue_items as $item): ?>
                         <article class="tfp-meeting-queue-item">
-                            <span class="tfp-meeting-queue-item__icon"><?php echo tfp_dashboard_icon($item['icon'] ?? 'warning'); ?></span>
+                            <span class="tfp-meeting-queue-item__icon"><?php
+                                $queue_icon = [
+                                    'meeting' => 'action-meeting',
+                                    'unlock' => 'action-warning',
+                                    'warning' => 'action-warning',
+                                    'homework' => 'action-warning',
+                                    'diagnostic' => 'action-course',
+                                    'publish' => 'action-publish',
+                                ][$item['icon'] ?? 'warning'] ?? 'action-homework';
+                                echo tfp_dashboard_icon($queue_icon);
+                            ?></span>
                             <div class="tfp-meeting-queue-item__copy"><strong><?php echo esc_html($item['title']); ?></strong><small><?php echo esc_html($item['desc']); ?></small></div>
                             <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($item['url']); ?>"><?php echo esc_html($item['button']); ?></a>
                         </article>
