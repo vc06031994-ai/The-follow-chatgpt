@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
             saveButton.disabled = true;
             if (saveFeedback) saveFeedback.textContent = 'Saving…';
             var form = new FormData();
-            form.append('action', 'tfp_facilitator_homework_save_review');
+            form.append('action', 'tfp_facilitator_meeting_save_homework_note');
             form.append('nonce', root.getAttribute('data-nonce') || '');
             form.append('student_id', String(student.id));
             form.append('lesson_id', root.getAttribute('data-lesson-id') || '');
