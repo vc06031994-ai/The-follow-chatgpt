@@ -468,9 +468,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
     $meeting_date = $meeting_row ? trim($meeting_row['date_label'] . ' • ' . $meeting_row['time_label']) : __('Schedule not set', 'tfp-dashboard');
     $base_url = tfp_facilitator_meetings_url();
     $back_url = remove_query_arg(['tfp_meeting_cohort_id', 'tfp_meeting_week', 'tfp_meeting_student_page'], $base_url);
-    $queue_items = function_exists('tfp_facilitator_cohorts_action_items')
-        ? (array) tfp_facilitator_cohorts_action_items([$cohort], $cohort)
-        : [];
+
 
     // Concept mastery is calculated from actual LearnDash completion and saved grade records.
     $mastery = [];
@@ -542,6 +540,39 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
         ];
     }
     usort($performance, static fn($a, $b) => strcasecmp($a['name'], $b['name']));
+
+    // Queue rows are generated from the same live student statuses shown in the performance grid.
+    $queue_display_items = [];
+    foreach ($performance as $student_row) {
+        if (in_array($student_row['test_tone'], ['warning', 'danger'], true)) {
+            $queue_display_items[] = [
+                'title' => __('Test Unlocks Required', 'tfp-dashboard'),
+                'student' => $student_row['name'],
+                'button' => __('Unlock Test', 'tfp-dashboard'),
+                'icon' => 'action-warning',
+                'button_icon' => 'unlock',
+                'url' => add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')),
+            ];
+        }
+        if (in_array($student_row['homework_tone'], ['warning', 'danger'], true)) {
+            $queue_display_items[] = [
+                'title' => __('Grade Homework', 'tfp-dashboard'),
+                'student' => $student_row['name'],
+                'button' => __('Grade Now', 'tfp-dashboard'),
+                'icon' => 'action-warning',
+                'button_icon' => 'grades',
+                'url' => add_query_arg(['tfp_fg_cohort' => $cohort_id, 'tfp_fg_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-grades')),
+            ];
+        }
+    }
+    $queue_display_items[] = [
+        'title' => __('Publish & Submit Weekly Meeting Notes', 'tfp-dashboard'),
+        'student' => sprintf(__('Week %d: Close Meeting Tasks to Post Official Grades', 'tfp-dashboard'), $week_number),
+        'button' => __('Publish', 'tfp-dashboard'),
+        'icon' => 'action-publish',
+        'button_icon' => 'doc',
+        'url' => add_query_arg(['tfp_fg_cohort' => $cohort_id, 'tfp_fg_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-grades')),
+    ];
     $student_page = max(1, absint($_GET['tfp_meeting_student_page'] ?? 1));
     $per_page = 7;
     $total_students = count($performance);
@@ -609,13 +640,22 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                 <?php endif; ?>
             </section>
 
-            <div class="tfp-meeting-queue-slot">
-                <?php if (function_exists('tfp_facilitator_cohorts_render_queue')): ?>
-                    <?php tfp_facilitator_cohorts_render_queue($queue_items); ?>
-                <?php else: ?>
-                    <section class="tfp-dash-panel tfp-cohort-queue"><h5><?php esc_html_e('Action Fulfillment Queue', 'tfp-dashboard'); ?></h5><div class="tfp-facilitator-empty"><?php esc_html_e('No action items are available.', 'tfp-dashboard'); ?></div></section>
-                <?php endif; ?>
-            </div>
+            <section class="tfp-dash-panel tfp-meeting-queue-card">
+                <div class="tfp-meeting-cohort__panel-title">
+                    <div><h3><?php esc_html_e('Action Fulfillment Queue', 'tfp-dashboard'); ?></h3><p><?php esc_html_e('Tasks that need your Attention, Actions and Submission.', 'tfp-dashboard'); ?></p></div>
+                    <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home') . '#tfp-facilitator-review-list'); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
+                </div>
+                <div class="tfp-meeting-queue-card__list">
+                    <?php foreach ($queue_display_items as $item): ?>
+                        <article class="tfp-meeting-queue-item">
+                            <span class="tfp-meeting-queue-item__icon"><?php echo tfp_dashboard_icon($item['icon']); ?></span>
+                            <div class="tfp-meeting-queue-item__copy"><strong><?php echo esc_html($item['title']); ?></strong><small><?php echo esc_html($item['student']); ?></small></div>
+                            <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($item['url']); ?>"><?php echo tfp_dashboard_icon($item['button_icon']); ?><span><?php echo esc_html($item['button']); ?></span></a>
+                        </article>
+                    <?php endforeach; ?>
+                    <?php if (!$queue_display_items): ?><div class="tfp-facilitator-empty"><?php esc_html_e('No action items require attention right now.', 'tfp-dashboard'); ?></div><?php endif; ?>
+                </div>
+            </section>
 
             <section class="tfp-dash-panel tfp-meeting-mastery-card">
                 <div class="tfp-meeting-cohort__panel-title"><h3><?php esc_html_e('Concept Mastery', 'tfp-dashboard'); ?></h3></div>
