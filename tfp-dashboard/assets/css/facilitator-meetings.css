@@ -1742,3 +1742,47 @@ body.tfp-meetings-modal-open {
     background: #e8f3f2;
     color: #00565d;
 }
+
+
+/* Attendance page typography reset: override theme/Elementor global h1-h3 rules. */
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-header h1 {
+    margin: 0 0 8px !important;
+    max-width: 100% !important;
+    color: #151411 !important;
+    font-family: var(--tfp-dash-font, inherit) !important;
+    font-size: 36px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-panel__head h2 {
+    margin: 0 !important;
+    color: #151411 !important;
+    font-family: var(--tfp-dash-font, inherit) !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-table th,
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-table td {
+    font-family: var(--tfp-dash-font, inherit) !important;
+}
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-tabs > * {
+    font-size: 14px !important;
+    line-height: 1.3 !important;
+}
+body .tfp-meeting-attendance-page .tfp-meeting-attendance-panel {
+    min-width: 0;
+}
+@media (max-width: 767px) {
+    body .tfp-meeting-attendance-page .tfp-meeting-attendance-header h1 {
+        font-size: 28px !important;
+        line-height: 1.2 !important;
+    }
+    body .tfp-meeting-attendance-page .tfp-meeting-attendance-panel__head h2 {
+        font-size: 18px !important;
+    }
+}
