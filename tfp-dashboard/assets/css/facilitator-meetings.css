@@ -586,3 +586,22 @@ body.tfp-meetings-modal-open {
  .tfp-meeting-queue-item>.tfp-dash-btn{grid-column:2;justify-self:start;min-width:120px}
  .tfp-meeting-performance-pagination{align-items:flex-start;flex-direction:column}
 }
+
+
+/* Keep the cohort back link inside the title header on desktop. */
+@media (min-width: 768px) {
+    .tfp-meeting-cohort-header {
+        position: relative;
+    }
+
+    .tfp-meeting-cohort-header__main {
+        padding-right: 280px;
+    }
+
+    .tfp-meeting-cohort-header__main > .tfp-dash-btn {
+        position: absolute;
+        top: 82px;
+        right: 36px;
+        z-index: 2;
+    }
+}
