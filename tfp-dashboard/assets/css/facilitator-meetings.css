@@ -1833,3 +1833,44 @@ body .tfp-meeting-attendance-page .tfp-meeting-attendance-panel__footer button {
     }
 }
 
+/* Staging-only attendance demo preview controls. */
+.tfp-meeting-attendance-demo-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #00666e;
+    border-radius: 7px;
+    background: #fff;
+    color: #00666e;
+    font: 600 11px/1.2 var(--tfp-dash-font);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.tfp-meeting-attendance-demo-toggle:hover {
+    background: #e8f3f2;
+    color: #00565d;
+}
+.tfp-meeting-attendance-demo-notice {
+    margin: 12px 20px 0;
+    padding: 10px 13px;
+    border: 1px solid #e6c76d;
+    border-radius: 7px;
+    background: #fff8df;
+    color: #674f00;
+    font: 600 11px/1.45 var(--tfp-dash-font);
+}
+.tfp-meeting-attendance-page .tfp-meeting-attendance-save:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+@media (max-width: 767px) {
+    .tfp-meeting-attendance-demo-toggle {
+        width: 100%;
+    }
+    .tfp-meeting-attendance-demo-notice {
+        margin: 10px 12px 0;
+    }
+}
+
