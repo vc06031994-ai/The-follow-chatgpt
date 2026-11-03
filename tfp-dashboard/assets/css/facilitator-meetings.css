@@ -510,23 +510,20 @@ body.tfp-meetings-modal-open {
 .tfp-meeting-session-card__notes{margin-top:12px;color:#333;font:500 11px/1.5 var(--tfp-dash-font)}
 .tfp-meeting-session-card__notes summary{cursor:pointer;font-weight:700}
 .tfp-meeting-session-card__notes p{margin:8px 0 0}
-.tfp-meeting-queue-slot{grid-area:queue;min-width:0;min-height:0}
-.tfp-meeting-queue-slot>.tfp-cohort-queue{box-sizing:border-box;display:flex;flex-direction:column;height:100%;min-width:0;margin:0!important;padding:18px!important;border:1px solid #c4c4c4;border-radius:12px;background:#fff;box-shadow:none}
-.tfp-meeting-queue-slot .tfp-cohort-panel-head{align-items:center;margin:0 0 10px;padding:0 0 10px;border-bottom:1px solid #dedede}
-.tfp-meeting-queue-slot .tfp-cohort-panel-head>div{min-width:0}
-.tfp-meeting-queue-slot .tfp-cohort-panel-head h5{margin:0 0 4px!important;color:#151411;font:700 16px/1.3 var(--tfp-dash-font)}
-.tfp-meeting-queue-slot .tfp-cohort-panel-head p{margin:0!important;color:#333;font:500 12px/1.5 var(--tfp-dash-font-alt,Georgia,serif)}
-.tfp-meeting-queue-slot .tfp-cohort-panel-head>a{flex:0 0 auto;color:#151411;font:500 10px/1.3 var(--tfp-dash-font)}
-.tfp-meeting-queue-slot .tfp-cohort-queue__list{max-height:none;min-height:0;flex:1;overflow-y:auto;padding:0 5px 0 0;scrollbar-width:thin}
-.tfp-meeting-queue-slot .tfp-cohort-queue__item{grid-template-columns:36px minmax(0,1fr) 120px;gap:12px;min-height:56px;padding:7px 8px;margin:0 0 8px;border:1px solid #dedede;border-radius:8px;background:#fbfbfb;cursor:default}
-.tfp-meeting-queue-slot .tfp-cohort-queue__icon{width:36px;height:36px}
-.tfp-meeting-queue-slot .tfp-cohort-queue__icon>svg{width:36px;height:36px}
-.tfp-meeting-queue-slot .tfp-cohort-queue__copy h3{margin:0;color:#151411;font:700 11px/1.3 var(--tfp-dash-font)}
-.tfp-meeting-queue-slot .tfp-cohort-queue__copy h3 em{font-style:normal;font-weight:500}
-.tfp-meeting-queue-slot .tfp-cohort-queue__copy p{margin:3px 0 0;color:#333;font:500 10px/1.3 var(--tfp-dash-font)}
-.tfp-meeting-queue-slot .tfp-cohort-queue__button{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:40px;padding:0 8px;border-radius:8px;text-decoration:none;font:500 12px/1.2 var(--tfp-dash-font)}
-.tfp-meeting-queue-slot .tfp-cohort-queue__button-icon{display:inline-flex;align-items:center}
-.tfp-meeting-queue-slot .tfp-cohort-queue__button-icon svg{width:18px;height:18px}
+.tfp-meeting-queue-card{grid-area:queue;display:flex;flex-direction:column;min-width:0;height:100%}
+.tfp-meeting-queue-card>.tfp-meeting-cohort__panel-title{align-items:flex-start}
+.tfp-meeting-queue-card>.tfp-meeting-cohort__panel-title>div{min-width:0}
+.tfp-meeting-queue-card>.tfp-meeting-cohort__panel-title p{margin:4px 0 0;color:#333;font:500 12px/1.5 var(--tfp-dash-font-alt,Georgia,serif)}
+.tfp-meeting-queue-card>.tfp-meeting-cohort__panel-title>a{flex:0 0 auto;color:#151411;font:500 10px/1.3 var(--tfp-dash-font);text-decoration:none}
+.tfp-meeting-queue-card__list{display:grid;align-content:start;gap:8px;min-height:0;flex:1;max-height:560px;overflow-y:auto;margin-top:10px;padding:0 5px 0 0;scrollbar-width:thin}
+.tfp-meeting-queue-item{display:grid;grid-template-columns:36px minmax(0,1fr) 120px;align-items:center;gap:12px;min-height:56px;padding:7px 8px;border:1px solid #dedede;border-radius:8px;background:#fbfbfb}
+.tfp-meeting-queue-item__icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid #9ba1a1;border-radius:50%;background:#e3e7e8;color:#151411}
+.tfp-meeting-queue-item__icon svg{width:20px;height:20px}
+.tfp-meeting-queue-item__copy{min-width:0}
+.tfp-meeting-queue-item__copy strong{display:block;color:#151411;font:700 11px/1.3 var(--tfp-dash-font)}
+.tfp-meeting-queue-item__copy small{display:block;margin-top:3px;color:#444;font:500 10px/1.3 var(--tfp-dash-font)}
+.tfp-meeting-queue-item>.tfp-dash-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 8px;white-space:nowrap;text-decoration:none;font:500 12px/1.2 var(--tfp-dash-font)}
+.tfp-meeting-queue-item>.tfp-dash-btn svg{width:18px;height:18px}
 .tfp-meeting-mastery-card{grid-area:mastery}
 .tfp-meeting-mastery-group{padding-top:14px}
 .tfp-meeting-mastery-group h4{margin:0 0 12px;color:#00666e;text-transform:uppercase;font:700 10px/1.3 var(--tfp-dash-font)}
@@ -560,7 +557,7 @@ body.tfp-meetings-modal-open {
  .tfp-meeting-cohort-header__main{padding-right:32px;padding-left:32px}
  .tfp-meeting-cohort-page{max-width:calc(100% - 48px)}
  .tfp-meeting-cohort__top-grid{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}
- .tfp-meeting-queue-slot .tfp-cohort-queue__item{grid-template-columns:32px minmax(0,1fr) 110px;gap:8px}
+ .tfp-meeting-queue-item{grid-template-columns:32px minmax(0,1fr) 110px;gap:8px}
 }
 @media(max-width:767px){
  .tfp-meeting-cohort-header{margin:0 -14px!important}
@@ -576,16 +573,16 @@ body.tfp-meetings-modal-open {
  .tfp-meeting-cohort__top-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-template-areas:"session" "mastery" "queue";gap:14px}
  .tfp-meeting-cohort__top-grid>.tfp-dash-panel{height:auto;min-height:0}
  .tfp-meeting-session-card__body{padding:16px}
- .tfp-meeting-queue-slot>.tfp-cohort-queue{height:auto;min-height:420px}
- .tfp-meeting-queue-slot .tfp-cohort-queue__list{max-height:420px}
- .tfp-meeting-queue-slot .tfp-cohort-queue__item{grid-template-columns:36px minmax(0,1fr) auto}
+ .tfp-meeting-queue-card{height:auto;min-height:420px}
+ .tfp-meeting-queue-card__list{max-height:420px}
+ .tfp-meeting-queue-item{grid-template-columns:36px minmax(0,1fr) auto}
  .tfp-meeting-performance-card{min-height:0;padding:14px 12px}
  .tfp-meeting-cohort-header__main>.tfp-dash-btn{align-self:flex-start}
 }
 @media(max-width:480px){
  .tfp-meeting-cohort__controls{display:grid;grid-template-columns:1fr}
  .tfp-meeting-cohort__controls>.tfp-dash-btn{justify-content:center}
- .tfp-meeting-queue-slot .tfp-cohort-queue__item{grid-template-columns:32px minmax(0,1fr);gap:9px}
- .tfp-meeting-queue-slot .tfp-cohort-queue__button{grid-column:2;justify-self:start;min-width:120px}
+ .tfp-meeting-queue-item{grid-template-columns:32px minmax(0,1fr);gap:9px}
+ .tfp-meeting-queue-item>.tfp-dash-btn{grid-column:2;justify-self:start;min-width:120px}
  .tfp-meeting-performance-pagination{align-items:flex-start;flex-direction:column}
 }
