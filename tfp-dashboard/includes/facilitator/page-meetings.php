@@ -544,11 +544,11 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
             ['label' => __('Facilitator', 'tfp-dashboard'), 'url' => tfp_dashboard_get_url('tfp-dashboard-facilitator-home')],
             ['label' => __('Meetings', 'tfp-dashboard'), 'url' => $back_url],
             ['label' => $cohort->post_title],
-        ],
-        true
+        ]
     );
     ?>
     <div class="tfp-meeting-cohort-page" data-tfp-meeting-cohort>
+        <div class="tfp-meeting-cohort__back-row"><a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($back_url); ?>"><span aria-hidden="true">↩</span><?php esc_html_e('Back to All Meetings', 'tfp-dashboard'); ?></a></div>
         <div class="tfp-meeting-cohort__toolbar">
             <h2><?php echo $lesson ? esc_html(sprintf(__('Week %1$02d: %2$s', 'tfp-dashboard'), $week_number, $lesson->post_title)) : esc_html__('Weekly Session', 'tfp-dashboard'); ?></h2>
             <div class="tfp-meeting-cohort__controls">
