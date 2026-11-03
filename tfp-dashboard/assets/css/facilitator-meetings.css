@@ -971,3 +971,55 @@ body.tfp-meetings-modal-open {
         line-height: 1.3 !important;
     }
 }
+
+
+/* Restore breathing room between stacked cohort cards and the performance grid. */
+@media (min-width: 768px) {
+    .tfp-meeting-cohort__top-grid {
+        grid-template-rows: 274px 280px;
+        column-gap: 16px;
+        row-gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .tfp-meeting-mastery-card {
+        padding: 18px !important;
+        overflow: visible;
+    }
+
+    .tfp-meeting-mastery-card > .tfp-meeting-cohort__panel-title {
+        margin-bottom: 2px;
+    }
+
+    .tfp-meeting-mastery-group {
+        padding-top: 10px;
+    }
+
+    .tfp-meeting-mastery-group h4 {
+        margin-bottom: 9px;
+    }
+
+    .tfp-meeting-mastery-row {
+        margin-bottom: 9px;
+    }
+
+    .tfp-meeting-performance-card {
+        padding-top: 18px;
+    }
+}
+
+@media (max-width: 767px) {
+    .tfp-meeting-cohort__top-grid {
+        row-gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .tfp-meeting-mastery-card {
+        padding: 16px !important;
+    }
+
+    .tfp-meeting-performance-card {
+        margin-top: 0;
+        padding-top: 16px;
+    }
+}
