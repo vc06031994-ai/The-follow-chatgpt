@@ -573,7 +573,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                         <?php if ($description): ?><p><?php echo esc_html($description); ?></p><?php endif; ?>
                         <?php if ($facilitator_name): ?><small><?php echo esc_html($facilitator_name); ?></small><?php endif; ?>
                         <?php if ($meeting_url): ?>
-                            <a class="tfp-dash-btn tfp-dash-btn--primary tfp-meeting-session-card__join" href="<?php echo esc_url($meeting_url); ?>" target="_blank" rel="noopener noreferrer"><?php echo tfp_dashboard_icon('arrow'); ?><span><?php esc_html_e('Start Weekly Live Session Now', 'tfp-dashboard'); ?></span></a>
+                            <a class="tfp-dash-btn tfp-dash-btn--primary tfp-meeting-session-card__join" href="<?php echo esc_url($meeting_url); ?>" target="_blank" rel="noopener noreferrer"><?php echo tfp_dashboard_icon('send'); ?><span><?php esc_html_e('Start Weekly Live Session Now', 'tfp-dashboard'); ?></span></a>
                         <?php else: ?>
                             <p class="tfp-meeting-session-card__missing"><?php esc_html_e('A live meeting link has not been added for this week yet.', 'tfp-dashboard'); ?></p>
                         <?php endif; ?>
