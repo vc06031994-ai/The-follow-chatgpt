@@ -1722,3 +1722,23 @@ body.tfp-meetings-modal-open {
     .tfp-meeting-attendance-panel__footer a,
     .tfp-meeting-attendance-panel__footer button { width: 100%; }
 }
+
+
+.tfp-meeting-session-card__attendance-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 34px;
+    margin-top: 9px;
+    padding: 0 11px;
+    border: 1px solid #00666e;
+    border-radius: 7px;
+    color: #00666e;
+    font: 600 11px/1.2 var(--tfp-dash-font);
+    text-decoration: none;
+}
+.tfp-meeting-session-card__attendance-link:hover {
+    background: #e8f3f2;
+    color: #00565d;
+}
