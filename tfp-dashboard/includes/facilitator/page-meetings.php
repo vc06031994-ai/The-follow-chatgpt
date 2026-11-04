@@ -1790,10 +1790,7 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
                                 </td>
                                 <td class="tfp-meeting-notes-actions">
                                     <button type="button" class="tfp-meeting-notes-action" data-notes-edit <?php disabled($demo_mode); ?>><?php echo $row['note'] !== '' ? esc_html__('Edit', 'tfp-dashboard') : esc_html__('Add Note', 'tfp-dashboard'); ?></button>
-                                    <?php if ($row['note'] !== ''): ?>
-                                        <form method="post"><input type="hidden" name="tfp_notes_nonce" value="<?php echo esc_attr($nonce); ?>"><input type="hidden" name="tfp_notes_action" value="delete_log"><input type="hidden" name="student_id" value="<?php echo esc_attr($row['id']); ?>"><button type="submit" class="tfp-meeting-notes-action is-danger" <?php disabled($demo_mode); ?>><?php esc_html_e('Delete', 'tfp-dashboard'); ?></button></form>
-                                        <form method="post"><input type="hidden" name="tfp_notes_nonce" value="<?php echo esc_attr($nonce); ?>"><input type="hidden" name="tfp_notes_action" value="share_log"><input type="hidden" name="student_id" value="<?php echo esc_attr($row['id']); ?>"><button type="submit" class="tfp-meeting-notes-action" <?php disabled($demo_mode); ?>><?php esc_html_e('Share', 'tfp-dashboard'); ?></button></form>
-                                    <?php endif; ?>
+
                                 </td>
                             </tr>
                         <?php endforeach; ?>
