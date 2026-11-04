@@ -1658,9 +1658,9 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
     foreach ($performance as $student_row) {
         if (in_array($student_row['test_tone'], ['warning', 'danger'], true)) {
             $queue_display_items[] = [
-                'title' => __('Test Unlocks Required', 'tfp-dashboard'),
+                'title' => __('Test Review Required', 'tfp-dashboard'),
                 'student' => $student_row['name'],
-                'button' => __('Unlock Test', 'tfp-dashboard'),
+                'button' => __('Review Test', 'tfp-dashboard'),
                 'icon' => 'action-warning',
                 'button_icon' => 'unlock',
                 'url' => add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')),
@@ -1900,11 +1900,11 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                         $action_url = $profile_url;
                         $action_label = __('View Profile', 'tfp-dashboard');
                         if (in_array($row['homework_tone'], ['warning', 'danger'], true)) {
-                            $action_url = add_query_arg(['tfp_fg_cohort' => $cohort_id, 'tfp_fg_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-grades'));
+                            $action_url = add_query_arg(['tfp_homework_course' => $course_id, 'tfp_homework_cohort_filter' => $cohort_id], tfp_dashboard_get_url('tfp-dashboard-facilitator-homework'));
                             $action_label = __('Review Homework', 'tfp-dashboard');
                         } elseif (in_array($row['test_tone'], ['warning', 'danger'], true)) {
                             $action_url = add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'));
-                            $action_label = __('Unlock Test', 'tfp-dashboard');
+                            $action_label = __('Review Test', 'tfp-dashboard');
                         }
                         ?>
                         <tr>
