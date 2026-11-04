@@ -3253,3 +3253,38 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     border-color: #00545b !important;
     color: #fff !important;
 }
+
+/* Facilitator Course Exercises workspace — supplied reference styling. */
+.tfp-meeting-exercise-page .tfp-meeting-homework-surface{margin-top:26px}
+.tfp-meeting-exercise-page .tfp-meeting-homework-surface__head{min-height:72px;box-sizing:border-box;padding:22px 24px}
+.tfp-meeting-exercise-page .tfp-meeting-homework-surface__head h2{font:700 16px/1.3 var(--tfp-dash-font,inherit)!important}
+.tfp-meeting-exercise-content{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(320px,1fr);min-height:790px}
+.tfp-meeting-exercise-reference{min-width:0;padding:34px 34px 40px;border-right:1px solid #dedede;color:#171717}
+.tfp-meeting-exercise-reference .tfp-meeting-exercise-meta{margin:0 0 18px;color:#171717;font:14px/1.55 Georgia,serif}
+.tfp-meeting-exercise-reference h3{margin:0 0 20px!important;color:#151411!important;font:700 14px/1.35 var(--tfp-dash-font,inherit)!important}
+.tfp-meeting-exercise-reference h3.tfp-meeting-exercise-purpose-title{margin-top:34px!important}
+.tfp-meeting-exercise-reference p{margin:0 0 22px;color:#171717;font:14px/1.62 Georgia,serif}
+.tfp-meeting-exercise-logs{min-width:0;padding:34px 26px 24px}
+.tfp-meeting-exercise-required{margin:0 0 24px}
+.tfp-meeting-exercise-required strong{display:block;margin-bottom:8px;color:#791313;font:700 12px/1.35 var(--tfp-dash-font,inherit)}
+.tfp-meeting-exercise-required p{margin:0;color:#333;font:10px/1.45 var(--tfp-dash-font,inherit)}
+.tfp-meeting-exercise-note-card{display:flex;min-height:205px;flex-direction:column;align-items:stretch;gap:10px;margin:0 0 20px;padding:16px;border:1px solid #dedede;border-radius:8px;background:#fff}
+.tfp-meeting-exercise-note-card label{color:#00717a;font:700 13px/1.3 var(--tfp-dash-font,inherit)}
+.tfp-meeting-exercise-note-card textarea{width:100%;min-height:104px;flex:1 1 auto;margin:0;padding:0;border:0;outline:0;background:transparent;color:#333;font:13px/1.5 Georgia,serif;resize:vertical}
+.tfp-meeting-exercise-note-card button{align-self:flex-end;min-height:30px;margin:0;padding:0 14px;border:0;border-radius:8px;background:#00666e;color:#fff;font:500 12px/1.2 var(--tfp-dash-font,inherit);cursor:pointer}
+.tfp-meeting-exercise-note-card button:hover{background:#00545b;color:#fff}
+.tfp-meeting-exercise-note-card button:disabled{opacity:.6;cursor:wait}
+.tfp-meeting-exercise-note-card small{min-height:12px;color:#00666e;font:10px/1.3 var(--tfp-dash-font,inherit)}
+.tfp-meeting-exercise-logs>h4{margin:0 0 12px!important;color:#151411!important;font:700 13px/1.3 var(--tfp-dash-font,inherit)!important}
+.tfp-meeting-exercise-student-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 6px;max-height:260px;overflow:auto}
+.tfp-meeting-exercise-student-list button{display:flex;min-width:0;min-height:21px;align-items:center;gap:6px;overflow:hidden;padding:4px 6px;border:1px solid #dedede;border-radius:3px;background:#fff;color:#151411;font:500 10px/1.2 var(--tfp-dash-font,inherit);text-align:left;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.tfp-meeting-exercise-student-list button>span{width:5px;height:5px;flex:0 0 5px;border-radius:50%;background:#790f12}
+.tfp-meeting-exercise-student-list button.is-saved>span{background:#00666e}
+.tfp-meeting-exercise-student-list button.is-active{border-color:#00666e;background:#eff8f7}
+.tfp-meeting-exercise-student-list button:hover,.tfp-meeting-exercise-student-list button:focus{border-color:#7fb8b3;background:#e8f3f2;color:#151411;box-shadow:none}
+.tfp-meeting-exercise-legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:16px;padding-top:12px;border-top:1px solid #e2e2e2;color:#333;font:500 10px/1.3 var(--tfp-dash-font,inherit)}
+.tfp-meeting-exercise-legend span::before{display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:#790f12;content:""}
+.tfp-meeting-exercise-legend span+span::before{background:#00666e}
+.tfp-meeting-exercise-empty{color:#666;font:13px/1.5 var(--tfp-dash-font,inherit)}
+@media(max-width:1100px){.tfp-meeting-exercise-content{grid-template-columns:minmax(0,1.5fr) minmax(270px,1fr);min-height:680px}.tfp-meeting-exercise-logs{padding-right:18px;padding-left:18px}}
+@media(max-width:767px){.tfp-meeting-exercise-content{grid-template-columns:minmax(0,1fr);min-height:0}.tfp-meeting-exercise-reference{padding:24px 16px;border-right:0;border-bottom:1px solid #dedede}.tfp-meeting-exercise-logs{padding:22px 16px}.tfp-meeting-exercise-student-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
