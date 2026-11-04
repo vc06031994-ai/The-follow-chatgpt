@@ -2237,3 +2237,54 @@ body .tfp-meeting-attendance-page .tfp-meeting-attendance-save:disabled {
     .tfp-meeting-homework-footer a { width: 100%; justify-content: center; }
 }
 
+/* Homework demo preview controls and notice. */
+.tfp-meeting-homework-surface__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+.tfp-meeting-homework-demo-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid #00666e;
+    border-radius: 7px;
+    background: #fff;
+    color: #00666e;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.tfp-meeting-homework-demo-toggle:hover {
+    background: #00666e;
+    color: #fff;
+}
+.tfp-meeting-homework-demo-notice {
+    margin: 14px 24px 0;
+    padding: 11px 14px;
+    border: 1px solid #e4c56d;
+    border-radius: 6px;
+    background: #fff8df;
+    color: #604b12;
+    font-size: 12px;
+    line-height: 1.45;
+}
+.tfp-meeting-homework-note-card button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+@media (max-width: 767px) {
+    .tfp-meeting-homework-surface__head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .tfp-meeting-homework-demo-notice {
+        margin-right: 14px;
+        margin-left: 14px;
+    }
+}
+
