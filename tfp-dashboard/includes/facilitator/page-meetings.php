@@ -1589,7 +1589,15 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
 
     <div class="tfp-meeting-cohort-page" data-tfp-meeting-cohort>
         <div class="tfp-meeting-cohort__toolbar">
-            <h2><?php echo $lesson ? esc_html(sprintf(__('Week %1$02d: %2$s', 'tfp-dashboard'), $week_number, $lesson->post_title)) : esc_html__('Weekly Session', 'tfp-dashboard'); ?></h2>
+            <?php
+            $toolbar_lesson_title = $lesson ? trim((string) $lesson->post_title) : '';
+            // Course lesson titles sometimes already include their week number.
+            // Avoid rendering "Week 09: Week 09: ..." in the toolbar.
+            if ($toolbar_lesson_title !== '') {
+                $toolbar_lesson_title = preg_replace('/^Week\s*0*' . preg_quote((string) $week_number, '/') . '\s*[:\-–—]\s*/i', '', $toolbar_lesson_title);
+            }
+            ?>
+            <h2><?php echo $lesson ? esc_html(sprintf(__('Week %1$02d: %2$s', 'tfp-dashboard'), $week_number, $toolbar_lesson_title)) : esc_html__('Weekly Session', 'tfp-dashboard'); ?></h2>
             <div class="tfp-meeting-cohort__controls">
                 <form method="get" class="tfp-meeting-cohort__week-form">
                     <input type="hidden" name="tfp_meeting_cohort_id" value="<?php echo esc_attr($cohort_id); ?>">
