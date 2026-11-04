@@ -1715,9 +1715,9 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
         }
         $queue_display_items = [
             [
-                'title' => __('Test Unlocks Required', 'tfp-dashboard'),
+                'title' => __('Test Review Required', 'tfp-dashboard'),
                 'student' => __('Omar Delgado', 'tfp-dashboard'),
-                'button' => __('Unlock Test', 'tfp-dashboard'),
+                'button' => __('Review Test', 'tfp-dashboard'),
                 'icon' => 'action-warning',
                 'button_icon' => 'unlock',
                 'url' => '#',
