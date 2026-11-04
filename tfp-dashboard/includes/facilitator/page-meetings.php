@@ -753,12 +753,93 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         ];
     }
 
+
+    // Visual demo data is isolated to staging and never written to student records.
+    $demo_allowed = wp_get_environment_type() === 'staging'
+        || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_mode = $demo_allowed
+        && isset($_GET['tfp_homework_demo'])
+        && sanitize_text_field(wp_unslash($_GET['tfp_homework_demo'])) === '1';
+
+    if ($demo_mode) {
+        if (!$questions) {
+            $questions = [
+                ['id' => 'demo_q1', 'type' => 'free_text', 'prompt' => 'Breakdown the process of sin in it’s conception. Does this process give you a stronger grasp of how to reject sin?'],
+                ['id' => 'demo_q2', 'type' => 'free_text', 'prompt' => 'How does obedience reflect trust, surrender, and action in daily life?'],
+                ['id' => 'demo_q3', 'type' => 'free_text', 'prompt' => 'What does Scripture teach about choosing wisdom over personal understanding?'],
+                ['id' => 'demo_q4', 'type' => 'free_text', 'prompt' => 'Describe one practical way to apply this week’s lesson in your community.'],
+                ['id' => 'demo_q5', 'type' => 'free_text', 'prompt' => 'What question or topic would you like to discuss in the next session?'],
+            ];
+            foreach ($questions as $index => $question) {
+                $question_stats[$question['id']] = [
+                    'index' => $index,
+                    'prompt' => $question['prompt'],
+                    'wrong' => 0,
+                    'answered' => 0,
+                    'percent' => null,
+                ];
+            }
+        }
+
+        $demo_names = [
+            'Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett',
+            'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell',
+            'Henry Cooper', 'Isabella Reed', 'Jack Peterson', 'Liam Anderson',
+            'Mia Collins', 'Noah Bailey', 'Olivia Parker', 'Samuel Hayes',
+            'Sophia Turner', 'Theodore Ward', 'Victoria Price', 'William Scott',
+        ];
+        $demo_answers = [
+            'I understand that sin begins with a choice and grows when a person ignores God’s direction. Recognising the first step helps me choose a better response.',
+            'Obedience means trusting God even when the next step is difficult. It calls for consistent action, not only good intentions.',
+            'The lesson reminds me to seek God’s wisdom first and remain open to correction through Scripture and prayer.',
+            'I can put this into practice by listening carefully, responding with patience, and supporting someone who needs guidance.',
+            'I would like to explore practical examples and discuss how this teaching applies to everyday decisions.',
+        ];
+        $students = [];
+        foreach ($demo_names as $student_index => $demo_name) {
+            $student_questions = [];
+            foreach ($questions as $question_index => $question) {
+                $question_id = sanitize_key((string) ($question['id'] ?? ''));
+                if (!$question_id) {
+                    continue;
+                }
+                $submitted = (($student_index + $question_index) % 7) !== 0;
+                $student_questions[$question_id] = [
+                    'answer' => $submitted ? $demo_answers[($student_index + $question_index) % count($demo_answers)] : __('Not submitted', 'tfp-dashboard'),
+                    'has_answer' => $submitted,
+                    'decision' => '',
+                    'feedback' => $submitted && (($student_index + $question_index) % 4 === 0)
+                        ? 'Good reflection. Please add one practical example from your week.'
+                        : '',
+                    'mastery' => [],
+                ];
+                if ($submitted && isset($question_stats[$question_id])) {
+                    $question_stats[$question_id]['answered']++;
+                    if ((($student_index + $question_index) % 5) === 0) {
+                        $question_stats[$question_id]['wrong']++;
+                    }
+                }
+            }
+            $students[] = [
+                'id' => 0,
+                'name' => $demo_name,
+                'questions' => $student_questions,
+            ];
+        }
+    }
+
     foreach ($question_stats as &$stat) {
         $stat['percent'] = $stat['answered'] > 0 ? (int) round(($stat['wrong'] / $stat['answered']) * 100) : null;
     }
     unset($stat);
 
     $base_url = tfp_facilitator_meetings_url();
+    $demo_url = add_query_arg([
+        'tfp_meeting_cohort_id' => $cohort_id,
+        'tfp_meeting_week' => $week_number,
+        'tfp_meeting_session_view' => 'homework',
+        'tfp_homework_demo' => $demo_mode ? '0' : '1',
+    ], $base_url);
     $attendance_url = add_query_arg([
         'tfp_meeting_cohort_id' => $cohort_id,
         'tfp_meeting_week' => $week_number,
@@ -819,7 +900,15 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         </nav>
 
         <section class="tfp-meeting-homework-surface">
-            <header class="tfp-meeting-homework-surface__head"><h2><?php esc_html_e('Homework', 'tfp-dashboard'); ?></h2></header>
+            <header class="tfp-meeting-homework-surface__head">
+                <h2><?php esc_html_e('Homework', 'tfp-dashboard'); ?></h2>
+                <?php if ($demo_allowed): ?>
+                    <a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? __('Exit Demo Preview', 'tfp-dashboard') : __('Load Demo Preview', 'tfp-dashboard')); ?></a>
+                <?php endif; ?>
+            </header>
+            <?php if ($demo_mode): ?>
+                <div class="tfp-meeting-homework-demo-notice" role="status"><?php esc_html_e('DEMO PREVIEW — 20 sample students and sample responses. Changes are temporary and will not be saved to the database.', 'tfp-dashboard'); ?></div>
+            <?php endif; ?>
             <?php if (!$questions): ?>
                 <div class="tfp-meeting-homework-empty"><h3><?php esc_html_e('No homework content available', 'tfp-dashboard'); ?></h3><p><?php printf(esc_html__('There are no homework questions configured for Week %d.', 'tfp-dashboard'), $week_number); ?></p></div>
             <?php else: ?>
@@ -856,7 +945,8 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
                         <section class="tfp-meeting-homework-note-card">
                             <label for="tfp-meeting-homework-feedback"><?php esc_html_e('Facilitator Notes', 'tfp-dashboard'); ?></label>
                             <textarea id="tfp-meeting-homework-feedback" data-homework-feedback placeholder="<?php esc_attr_e('Add a note about this student’s response...', 'tfp-dashboard'); ?>"></textarea>
-                            <button type="button" data-homework-save-note><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                            <button type="button" data-homework-save-note <?php disabled($demo_mode); ?>><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                            <?php if ($demo_mode): ?><small><?php esc_html_e('Saving is disabled in demo preview.', 'tfp-dashboard'); ?></small><?php endif; ?>
                             <small data-homework-save-feedback role="status" aria-live="polite"></small>
                         </section>
                         <h4><?php printf(esc_html__('All Students (%d)', 'tfp-dashboard'), count($students)); ?></h4>
