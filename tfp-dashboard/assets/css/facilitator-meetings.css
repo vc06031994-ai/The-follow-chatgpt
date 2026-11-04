@@ -2332,3 +2332,61 @@ body .tfp-meeting-attendance-page .tfp-meeting-attendance-save:disabled {
     .tfp-meeting-cohort-demo-toggle { width: 100%; }
 }
 
+
+
+/* Homework question summary cards — match Figma's stacked metric-card layout.
+   Scoped only to the Homework page to avoid changing other dashboard buttons. */
+body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeting-homework-metric {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+    min-height: 86px !important;
+    padding: 12px 15px !important;
+    border: 1px solid #e2e2e2 !important;
+    border-radius: 12px !important;
+    background: #eeeeee !important;
+    color: #151411 !important;
+    text-align: left !important;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, .18) !important;
+    font-family: var(--tfp-dash-font, inherit) !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+    cursor: pointer;
+}
+body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeting-homework-metric small {
+    display: block !important;
+    margin: 0 !important;
+    color: #333333 !important;
+    font: 500 10px/1.3 var(--tfp-dash-font, inherit) !important;
+}
+body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeting-homework-metric strong {
+    display: block !important;
+    margin: 0 !important;
+    color: #151411 !important;
+    font: 700 19px/1.2 var(--tfp-dash-font, inherit) !important;
+}
+body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeting-homework-metric span {
+    display: block !important;
+    margin: 0 !important;
+    color: #333333 !important;
+    font: 500 12px/1.3 var(--tfp-dash-font, inherit) !important;
+}
+body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeting-homework-metric.is-active {
+    border-color: #00666e !important;
+    background: #eeeeee !important;
+    color: #151411 !important;
+    box-shadow: 0 0 0 1px #00666e, 0 3px 3px rgba(0, 0, 0, .14) !important;
+}
+body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeting-homework-metric:hover {
+    background: #e8eeee !important;
+    color: #151411 !important;
+}
+@media (max-width: 767px) {
+    body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeting-homework-metric {
+        min-height: 76px !important;
+        padding: 10px !important;
+    }
+}
