@@ -781,6 +781,14 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
             }
         }
 
+        // Demo metrics are calculated only from the sample responses, not mixed with live submissions.
+        foreach ($question_stats as &$demo_stat) {
+            $demo_stat['wrong'] = 0;
+            $demo_stat['answered'] = 0;
+            $demo_stat['percent'] = null;
+        }
+        unset($demo_stat);
+
         $demo_names = [
             'Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett',
             'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell',
@@ -821,7 +829,7 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
                 }
             }
             $students[] = [
-                'id' => 0,
+                'id' => 'demo-' . ($student_index + 1),
                 'name' => $demo_name,
                 'questions' => $student_questions,
             ];
