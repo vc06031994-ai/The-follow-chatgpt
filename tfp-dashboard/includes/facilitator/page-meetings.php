@@ -1980,6 +1980,16 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
     $attendance_percent = function_exists('tfp_facilitator_meetings_attendance')
         ? tfp_facilitator_meetings_attendance($student_ids, $lesson->ID)
         : null;
+    $present_count = 0;
+    foreach ($student_ids as $student_id) {
+        $attendance_record = function_exists('tfp_facilitator_student_attendance')
+            ? tfp_facilitator_student_attendance($student_id, $lesson->ID)
+            : get_user_meta($student_id, 'tfp_facilitator_student_attendance_' . absint($lesson->ID), true);
+        $attendance_status = is_array($attendance_record) ? strtoupper((string) ($attendance_record['status'] ?? '')) : '';
+        if ($attendance_status === 'P') {
+            $present_count++;
+        }
+    }
 
     $logs_key = 'tfp_meeting_exercise_logs_' . $cohort_id;
     $logs = get_post_meta($lesson->ID, $logs_key, true);
@@ -2077,7 +2087,7 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
             <main class="tfp-meeting-closed-card">
                 <h2><?php esc_html_e('Session Performance Scorecard', 'tfp-dashboard'); ?></h2>
                 <div class="tfp-meeting-closed-metrics">
-                    <article><small><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></small><strong><?php echo $attendance_percent !== null ? esc_html($attendance_percent . '%') : '—'; ?></strong><span><?php echo esc_html(sprintf(_n('%d Student Present', '%d Students Present', count($student_ids), 'tfp-dashboard'), count($student_ids))); ?></span></article>
+                    <article><small><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></small><strong><?php echo $attendance_percent !== null ? esc_html($attendance_percent . '%') : '—'; ?></strong><span><?php echo esc_html(sprintf(_n('%d Student Present', '%d Students Present', $present_count, 'tfp-dashboard'), $present_count)); ?></span></article>
                     <article><small><?php esc_html_e('Weekly Progress', 'tfp-dashboard'); ?></small><strong><?php echo $weekly_progress !== null ? esc_html($weekly_progress . '%') : '—'; ?></strong><span><?php esc_html_e('Average recorded weekly activity', 'tfp-dashboard'); ?></span></article>
                     <article><small><?php esc_html_e('Overall Grade', 'tfp-dashboard'); ?></small><strong><?php echo $overall_grade !== null ? esc_html($overall_grade . '%') : '—'; ?></strong><span><?php esc_html_e('Average available assessment score', 'tfp-dashboard'); ?></span></article>
                     <article><small><?php esc_html_e('Dashboard Notes', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($notes_count); ?></strong><span><?php esc_html_e('Observations Posted', 'tfp-dashboard'); ?></span></article>
@@ -2086,8 +2096,8 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
                 <section class="tfp-meeting-closed-recap">
                     <h3><?php esc_html_e('Internal Session Recap', 'tfp-dashboard'); ?></h3>
                     <div class="tfp-meeting-closed-recap-grid">
-                        <article><h4><?php esc_html_e('Group Engagement', 'tfp-dashboard'); ?></h4><p><?php echo $reflections['atmosphere'] !== '' ? esc_html((string) ($reflections['atmosphere'] ?? '')) : esc_html__('No internal reflection was recorded.', 'tfp-dashboard'); ?></p></article>
-                        <article><h4><?php esc_html_e('Prayer Hurdle', 'tfp-dashboard'); ?></h4><p><?php echo $reflections['prayer_hurdle'] !== '' ? esc_html((string) ($reflections['prayer_hurdle'] ?? '')) : esc_html__('No prayer hurdle reflection was recorded.', 'tfp-dashboard'); ?></p></article>
+                        <article><h4><?php esc_html_e('Group Engagement', 'tfp-dashboard'); ?></h4><p><?php echo !empty($reflections['atmosphere']) ? esc_html((string) $reflections['atmosphere']) : esc_html__('No internal reflection was recorded.', 'tfp-dashboard'); ?></p></article>
+                        <article><h4><?php esc_html_e('Prayer Hurdle', 'tfp-dashboard'); ?></h4><p><?php echo !empty($reflections['prayer_hurdle']) ? esc_html((string) $reflections['prayer_hurdle']) : esc_html__('No prayer hurdle reflection was recorded.', 'tfp-dashboard'); ?></p></article>
                     </div>
                 </section>
 
