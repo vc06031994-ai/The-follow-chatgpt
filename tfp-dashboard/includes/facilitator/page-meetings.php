@@ -277,12 +277,35 @@ function tfp_facilitator_meetings_requests($args = [])
         'cohort_id' => 0,
     ]);
 
-    $meta_query = ['relation' => 'AND'];
+    // Restrict every request query to cohorts assigned to the current facilitator.
+    // This prevents the "All Cohorts" view from exposing other facilitators' requests.
+    $allowed_cohort_ids = array_values(array_filter(array_map(
+        'absint',
+        wp_list_pluck(tf_facilitator_meetings_cohorts_safe(), 'ID')
+    )));
+
+    if (!$allowed_cohort_ids) {
+        return [];
+    }
+
+    $requested_cohort_id = absint($args['cohort_id']);
+    if ($requested_cohort_id && !in_array($requested_cohort_id, $allowed_cohort_ids, true)) {
+        return [];
+    }
+
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'key' => '_tfp_request_cohort_id',
+            'value' => $requested_cohort_id ? [$requested_cohort_id] : $allowed_cohort_ids,
+            'compare' => 'IN',
+            'type' => 'NUMERIC',
+        ],
+    ];
 
     foreach ([
         '_tfp_request_status' => $args['status'],
         '_tfp_request_type' => $args['type'],
-        '_tfp_request_cohort_id' => $args['cohort_id'],
     ] as $key => $value) {
         if ($value !== '' && $value !== 0) {
             $meta_query[] = [
@@ -319,7 +342,9 @@ function tfp_facilitator_meetings_requests($args = [])
             'student_id' => $student_id,
             'cohort_id' => $cohort_id,
             'cohort' => $cohort_id ? wp_strip_all_tags(get_the_title($cohort_id)) : '—',
-            'date' => $date && strtotime($date) ? wp_date('M j, Y, g:i A', strtotime($date)) : '—',
+            'date' => $date && strtotime($date)
+                ? wp_date('M j, Y, g:i A', (new DateTimeImmutable($date, new DateTimeZone('UTC')))->getTimestamp(), wp_timezone())
+                : '—',
             'reason' => (string) get_post_meta($post->ID, '_tfp_request_reason', true),
             'status' => $status ?: 'needs_review',
             'status_label' => tfp_facilitator_meetings_request_label($status ?: 'needs_review'),
@@ -351,7 +376,16 @@ function tfp_facilitator_meetings_create_request()
         wp_send_json_error(['message' => __('Please select a valid active cohort.', 'tfp-dashboard')], 400);
     }
 
-    if (!$date || strtotime($date) === false || $reason === '') {
+    // Interpret datetime-local input in the WordPress site timezone, then store UTC.
+    $request_datetime = $date
+        ? DateTimeImmutable::createFromFormat('!Y-m-d\\TH:i', $date, wp_timezone())
+        : false;
+    $date_errors = DateTimeImmutable::getLastErrors();
+    if (
+        !$request_datetime
+        || ($date_errors && ($date_errors['warning_count'] || $date_errors['error_count']))
+        || $reason === ''
+    ) {
         wp_send_json_error(['message' => __('Please provide a valid date and reason.', 'tfp-dashboard')], 400);
     }
 
@@ -385,7 +419,7 @@ function tfp_facilitator_meetings_create_request()
     update_post_meta($request_id, '_tfp_requester_id', get_current_user_id());
     update_post_meta($request_id, '_tfp_request_student_id', $student_id);
     update_post_meta($request_id, '_tfp_request_cohort_id', $cohort_id);
-    update_post_meta($request_id, '_tfp_request_date', gmdate('Y-m-d H:i:s', strtotime($date)));
+    update_post_meta($request_id, '_tfp_request_date', $request_datetime->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s'));
     update_post_meta($request_id, '_tfp_request_reason', $reason);
     update_post_meta($request_id, '_tfp_request_status', 'needs_review');
 
