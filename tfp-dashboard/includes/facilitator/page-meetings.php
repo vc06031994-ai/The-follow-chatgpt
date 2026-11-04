@@ -1523,7 +1523,7 @@ function tfp_facilitator_meetings_render_session_exercise($cohort, $week_number)
                     <h4><?php printf(esc_html__('All Students (%d)', 'tfp-dashboard'), count($students)); ?></h4>
                     <div class="tfp-meeting-exercise-student-list">
                         <?php foreach ($students as $index => $student): ?>
-                            <button type="button" class="<?php echo $index === 0 ? 'is-active' : ''; ?>" data-exercise-student="<?php echo esc_attr($student['id']); ?>" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>">
+                            <button type="button" class="<?php echo trim(($index === 0 ? 'is-active ' : '') . ($student['saved'] ? 'is-saved' : '')); ?>" data-exercise-student="<?php echo esc_attr($student['id']); ?>" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>">
                                 <span aria-hidden="true"></span><?php echo esc_html($student['name']); ?>
                             </button>
                         <?php endforeach; ?>
