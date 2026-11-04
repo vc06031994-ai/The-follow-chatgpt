@@ -1601,8 +1601,21 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
     $nonce = wp_create_nonce($nonce_action);
     $feedback = '';
 
+    // Demo preview is available only on staging/development/local installs.
+    // It uses display-only sample data and never writes to real student records.
+    $demo_environment = wp_get_environment_type();
+    $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
+    $demo_path = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_PATH));
+    $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
+        || in_array($demo_host, ['localhost', '127.0.0.1'], true)
+        || (bool) preg_match('/\\.(local|test|localhost)$/i', $demo_host)
+        || strpos($demo_path, '/thefollowprojectstaging') !== false;
+    $demo_mode = $demo_allowed
+        && isset($_GET['tfp_notes_demo'])
+        && sanitize_text_field(wp_unslash($_GET['tfp_notes_demo'])) === '1';
+
     // All writes are restricted to this facilitator's assigned cohort and this course week.
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tfp_notes_action'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tfp_notes_action']) && !$demo_mode) {
         $posted_nonce = sanitize_text_field(wp_unslash($_POST['tfp_notes_nonce'] ?? ''));
         if (!wp_verify_nonce($posted_nonce, $nonce_action)) {
             $feedback = __('Security check failed. Please refresh and try again.', 'tfp-dashboard');
@@ -1699,10 +1712,25 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
     usort($rows, static function ($a, $b) {
         return strcasecmp($a['name'], $b['name']);
     });
+    // Replace only the rendered view with sample content while demo mode is active.
+    // Sample records are not persisted and all editing/saving controls are disabled below.
+    if ($demo_mode) {
+        $rows = [
+            ['id' => 0, 'name' => 'Sharon Stone', 'note' => 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.', 'updated_at' => '', 'type' => 'Exercise Log'],
+            ['id' => 0, 'name' => 'Barry Bromid', 'note' => '', 'updated_at' => '', 'type' => 'Exercise Log Required'],
+            ['id' => 0, 'name' => 'Lena Merrick', 'note' => 'Exercise Log', 'updated_at' => '', 'type' => 'Warm-up Routine'],
+            ['id' => 0, 'name' => 'Derek Holloway', 'note' => 'Sin – The Beginning', 'updated_at' => '', 'type' => 'Homework Review'],
+            ['id' => 0, 'name' => 'Cassandra Voss', 'note' => 'Morning meditation enhanced focus and reduced stress levels significantly.', 'updated_at' => '', 'type' => 'Cool-down Stretches'],
+            ['id' => 0, 'name' => 'Elias Montague', 'note' => 'Dietary adjustments made, focusing on increased protein and reduced sugar intake.', 'updated_at' => '', 'type' => 'Progress Notes'],
+        ];
+        $reflection_one = 'The group was engaged and attentive. Several students shared meaningful observations during the discussion.';
+        $reflection_two = 'Continue encouraging consistent Scripture reading and support students who are finding it difficult to build a daily routine.';
+    }
+
     $missing_count = count(array_filter($rows, static function ($row) {
         return trim($row['note']) === '';
     }));
-    $posted = get_post_meta($lesson->ID, 'tfp_meeting_session_posted_' . $cohort_id, true);
+    $posted = !$demo_mode && get_post_meta($lesson->ID, 'tfp_meeting_session_posted_' . $cohort_id, true);
     $posted = is_array($posted) && !empty($posted['posted']);
     $base_url = tfp_facilitator_meetings_url();
     ?>
@@ -1723,6 +1751,11 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
         </nav>
 
         <section class="tfp-meeting-notes-shell">
+            <?php if ($demo_allowed): ?>
+                <?php $demo_url = add_query_arg('tfp_notes_demo', $demo_mode ? '0' : '1', remove_query_arg('tfp_notes_demo')); ?>
+                <div class="tfp-meeting-notes-demo-control"><a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? 'Exit Demo Preview' : 'Load Demo Data'); ?></a></div>
+            <?php endif; ?>
+            <?php if ($demo_mode): ?><p class="tfp-meeting-notes-feedback" role="status">DEMO PREVIEW — Sample observations and private reflections are displayed. Editing, saving, deleting and posting are disabled; no data is stored.</p><?php endif; ?>
             <?php if ($feedback): ?><p class="tfp-meeting-notes-feedback" role="status"><?php echo esc_html($feedback); ?></p><?php endif; ?>
             <div class="tfp-meeting-notes-alert <?php echo $missing_count ? 'is-warning' : 'is-complete'; ?>" role="status">
                 <span class="tfp-meeting-notes-alert__icon" aria-hidden="true">!</span>
@@ -1744,7 +1777,7 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
                         <?php foreach ($rows as $row): ?>
                             <tr class="<?php echo $row['note'] === '' ? 'is-missing' : ''; ?>" data-notes-row>
                                 <td><strong><?php echo esc_html($row['name']); ?></strong></td>
-                                <td><?php echo $row['note'] !== '' ? esc_html__('Exercise Log', 'tfp-dashboard') : '<span class="tfp-meeting-notes-required">' . esc_html__('Exercise Log Required', 'tfp-dashboard') . '</span>'; ?></td>
+                                <td><?php if ($row['note'] === ''): ?><span class="tfp-meeting-notes-required"><?php esc_html_e('Exercise Log Required', 'tfp-dashboard'); ?></span><?php else: ?><?php echo esc_html($row['type'] ?? __('Exercise Log', 'tfp-dashboard')); ?><?php endif; ?></td>
                                 <td>
                                     <div class="tfp-meeting-notes-observation" data-notes-observation><?php echo $row['note'] !== '' ? esc_html($row['note']) : esc_html__('No observation recorded for the mandatory activation exercise.', 'tfp-dashboard'); ?></div>
                                     <form class="tfp-meeting-notes-edit" method="post" hidden>
@@ -1752,14 +1785,14 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
                                         <input type="hidden" name="tfp_notes_action" value="save_log">
                                         <input type="hidden" name="student_id" value="<?php echo esc_attr($row['id']); ?>">
                                         <textarea name="exercise_note" maxlength="5000" required><?php echo esc_textarea($row['note']); ?></textarea>
-                                        <button type="submit" class="tfp-meeting-notes-action"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                                        <button type="submit" class="tfp-meeting-notes-action" <?php disabled($demo_mode); ?>><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
                                     </form>
                                 </td>
                                 <td class="tfp-meeting-notes-actions">
-                                    <button type="button" class="tfp-meeting-notes-action" data-notes-edit><?php echo $row['note'] !== '' ? esc_html__('Edit', 'tfp-dashboard') : esc_html__('Add Note', 'tfp-dashboard'); ?></button>
+                                    <button type="button" class="tfp-meeting-notes-action" data-notes-edit <?php disabled($demo_mode); ?>><?php echo $row['note'] !== '' ? esc_html__('Edit', 'tfp-dashboard') : esc_html__('Add Note', 'tfp-dashboard'); ?></button>
                                     <?php if ($row['note'] !== ''): ?>
-                                        <form method="post"><input type="hidden" name="tfp_notes_nonce" value="<?php echo esc_attr($nonce); ?>"><input type="hidden" name="tfp_notes_action" value="delete_log"><input type="hidden" name="student_id" value="<?php echo esc_attr($row['id']); ?>"><button type="submit" class="tfp-meeting-notes-action is-danger"><?php esc_html_e('Delete', 'tfp-dashboard'); ?></button></form>
-                                        <form method="post"><input type="hidden" name="tfp_notes_nonce" value="<?php echo esc_attr($nonce); ?>"><input type="hidden" name="tfp_notes_action" value="share_log"><input type="hidden" name="student_id" value="<?php echo esc_attr($row['id']); ?>"><button type="submit" class="tfp-meeting-notes-action"><?php esc_html_e('Share', 'tfp-dashboard'); ?></button></form>
+                                        <form method="post"><input type="hidden" name="tfp_notes_nonce" value="<?php echo esc_attr($nonce); ?>"><input type="hidden" name="tfp_notes_action" value="delete_log"><input type="hidden" name="student_id" value="<?php echo esc_attr($row['id']); ?>"><button type="submit" class="tfp-meeting-notes-action is-danger" <?php disabled($demo_mode); ?>><?php esc_html_e('Delete', 'tfp-dashboard'); ?></button></form>
+                                        <form method="post"><input type="hidden" name="tfp_notes_nonce" value="<?php echo esc_attr($nonce); ?>"><input type="hidden" name="tfp_notes_action" value="share_log"><input type="hidden" name="student_id" value="<?php echo esc_attr($row['id']); ?>"><button type="submit" class="tfp-meeting-notes-action" <?php disabled($demo_mode); ?>><?php esc_html_e('Share', 'tfp-dashboard'); ?></button></form>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -1780,7 +1813,7 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
                 <label for="tfp-notes-prayer-hurdle"><?php esc_html_e('What is the primary prayer hurdle for this cohort right now?', 'tfp-dashboard'); ?></label>
                 <textarea id="tfp-notes-prayer-hurdle" name="reflection_prayer_hurdle" rows="4" maxlength="5000" placeholder="<?php esc_attr_e('Record hunger for Scripture, resistance, or general breakthrough...', 'tfp-dashboard'); ?>"><?php echo esc_textarea($reflection_two); ?></textarea>
                 <p><?php esc_html_e('These reflections are private and will not be displayed on student dashboards.', 'tfp-dashboard'); ?></p>
-                <button type="submit" class="tfp-meeting-notes-action"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="submit" class="tfp-meeting-notes-action" <?php disabled($demo_mode); ?>><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
             </form>
         </section>
 
@@ -1788,7 +1821,7 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
             <form method="post">
                 <input type="hidden" name="tfp_notes_nonce" value="<?php echo esc_attr($nonce); ?>">
                 <input type="hidden" name="tfp_notes_action" value="finish_session">
-                <button type="submit" class="tfp-dash-btn tfp-dash-btn--primary" <?php disabled($missing_count > 0); ?>>
+                <button type="submit" class="tfp-dash-btn tfp-dash-btn--primary" <?php disabled($missing_count > 0 || $demo_mode); ?>>
                     <?php echo $posted ? esc_html__('Session Posted', 'tfp-dashboard') : esc_html__('Finish & Post Session', 'tfp-dashboard'); ?> ↗
                 </button>
                 <?php if ($missing_count): ?><small><?php echo esc_html(sprintf(__('Missing mandatory data for %d student(s).', 'tfp-dashboard'), $missing_count)); ?></small><?php elseif ($posted): ?><small><?php esc_html_e('This session has been posted.', 'tfp-dashboard'); ?></small><?php endif; ?>
