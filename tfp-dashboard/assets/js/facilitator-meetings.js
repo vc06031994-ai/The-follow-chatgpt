@@ -359,3 +359,104 @@ document.addEventListener('DOMContentLoaded',function(){
  });
  if(activeQuestion)showQuestion(activeQuestion);
 });
+
+
+/* Facilitator course Exercises — select students and save required exercise logs. */
+document.addEventListener('DOMContentLoaded', function () {
+    var root = document.querySelector('[data-tfp-session-exercise]');
+    if (!root) return;
+
+    var dataNode = root.querySelector('[data-exercise-student-data]');
+    var payload = {};
+    try {
+        payload = JSON.parse(dataNode ? dataNode.textContent : '{}');
+    } catch (error) {
+        payload = {};
+    }
+
+    var students = Array.isArray(payload.students) ? payload.students : [];
+    var activeStudent = String(payload.selected || (students[0] && students[0].id) || '');
+    var noteField = root.querySelector('[data-exercise-note]');
+    var selectedName = root.querySelector('[data-exercise-selected-name]');
+    var saveButton = root.querySelector('[data-exercise-save]');
+    var feedback = root.querySelector('[data-exercise-feedback]');
+
+    function getStudent(id) {
+        return students.find(function (student) {
+            return String(student.id) === String(id);
+        }) || null;
+    }
+
+    function renderStudent() {
+        var student = getStudent(activeStudent);
+        if (!student) return;
+
+        if (selectedName) selectedName.textContent = student.name;
+        if (noteField) noteField.value = student.note || '';
+        if (feedback) feedback.textContent = student.saved ? 'Notes Saved' : 'Add Notes';
+        root.querySelectorAll('[data-exercise-student]').forEach(function (button) {
+            var active = String(button.dataset.exerciseStudent) === activeStudent;
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+    }
+
+    root.querySelectorAll('[data-exercise-student]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            activeStudent = String(button.dataset.exerciseStudent || '');
+            renderStudent();
+        });
+    });
+
+    if (saveButton) {
+        saveButton.addEventListener('click', function () {
+            var student = getStudent(activeStudent);
+            var note = noteField ? noteField.value.trim() : '';
+            if (!student) {
+                if (feedback) feedback.textContent = 'Select a student first.';
+                return;
+            }
+            if (!note) {
+                if (feedback) feedback.textContent = 'An exercise log is required for every student.';
+                if (noteField) noteField.focus();
+                return;
+            }
+
+            saveButton.disabled = true;
+            if (feedback) feedback.textContent = 'Saving…';
+
+            var body = new FormData();
+            body.append('action', 'tfp_facilitator_meeting_save_exercise_log');
+            body.append('nonce', root.dataset.nonce || '');
+            body.append('cohort_id', root.dataset.cohortId || '');
+            body.append('lesson_id', root.dataset.lessonId || '');
+            body.append('student_id', activeStudent);
+            body.append('note', note);
+
+            fetch(root.dataset.ajaxUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: body
+            }).then(function (response) {
+                return response.json();
+            }).then(function (response) {
+                if (!response || !response.success) {
+                    throw new Error(response && response.data && response.data.message
+                        ? response.data.message
+                        : 'Unable to save the exercise log.');
+                }
+                student.note = note;
+                student.saved = true;
+                student.updated_at = response.data.updated_at || '';
+                if (feedback) feedback.textContent = 'Notes Saved';
+                renderStudent();
+            }).catch(function (error) {
+                if (feedback) feedback.textContent = error.message || 'Unable to save the exercise log.';
+            }).finally(function () {
+                saveButton.disabled = false;
+            });
+        });
+    }
+
+    renderStudent();
+});
