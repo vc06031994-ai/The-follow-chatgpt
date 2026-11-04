@@ -785,12 +785,53 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
     }
 
 
+    // Staging-only sample preview; demo answers and students are never persisted.
+    $demo_allowed = wp_get_environment_type() === 'staging' || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_mode = $demo_allowed && isset($_GET['tfp_homework_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_homework_demo'])) === '1';
+    if ($demo_mode) {
+        $questions = [
+            ['id' => 'demo_hw_q1', 'prompt' => 'What does it mean to show kindness to others?', 'type' => 'long_text'],
+            ['id' => 'demo_hw_q2', 'prompt' => 'How can you apply this week’s lesson in daily life?', 'type' => 'long_text'],
+        ];
+        $sample_students = [
+            ['id' => 'demo_student_1', 'name' => 'Alex Morgan', 'answers' => ['demo_hw_q1' => 'Showing patience, listening carefully, and helping someone in need.', 'demo_hw_q2' => 'I will practise the lesson by supporting my family and community.']],
+            ['id' => 'demo_student_2', 'name' => 'Ava Thompson', 'answers' => ['demo_hw_q1' => 'Treating people with respect and offering help when they need it.', 'demo_hw_q2' => 'I will take time to encourage others and respond with compassion.']],
+            ['id' => 'demo_student_3', 'name' => 'Benjamin Carter', 'answers' => ['demo_hw_q1' => 'Being thoughtful and putting another person’s needs first.', 'demo_hw_q2' => 'I will use the lesson when making decisions at school and at home.']],
+            ['id' => 'demo_student_4', 'name' => 'Chloe Bennett', 'answers' => ['demo_hw_q1' => 'Listening without judging and giving practical support.', 'demo_hw_q2' => 'I will look for one practical way to help someone each day.']],
+        ];
+        $students = [];
+        $question_stats = [];
+        foreach ($questions as $index => $question) {
+            $question_stats[$question['id']] = ['index' => $index, 'prompt' => $question['prompt'], 'wrong' => 1, 'answered' => 4, 'percent' => 25];
+        }
+        foreach ($sample_students as $sample) {
+            $student_questions = [];
+            foreach ($questions as $question) {
+                $qid = $question['id'];
+                $student_questions[$qid] = [
+                    'answer' => $sample['answers'][$qid],
+                    'has_answer' => true,
+                    'decision' => 'reviewed',
+                    'feedback' => 'Good reflection. Consider adding one specific example from the lesson.',
+                    'mastery' => [],
+                ];
+            }
+            $students[] = ['id' => $sample['id'], 'name' => $sample['name'], 'questions' => $student_questions];
+        }
+    }
+
     foreach ($question_stats as &$stat) {
         $stat['percent'] = $stat['answered'] > 0 ? (int) round(($stat['wrong'] / $stat['answered']) * 100) : null;
     }
     unset($stat);
 
     $base_url = tfp_facilitator_meetings_url();
+    $demo_url = add_query_arg([
+        'tfp_meeting_cohort_id' => $cohort_id,
+        'tfp_meeting_week' => $week_number,
+        'tfp_meeting_session_view' => 'homework',
+        'tfp_homework_demo' => $demo_mode ? '0' : '1',
+    ], $base_url);
     $attendance_url = add_query_arg([
         'tfp_meeting_cohort_id' => $cohort_id,
         'tfp_meeting_week' => $week_number,
@@ -854,7 +895,9 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         <section class="tfp-meeting-homework-surface">
             <header class="tfp-meeting-homework-surface__head">
                 <h2><?php esc_html_e('Homework', 'tfp-dashboard'); ?></h2>
+                <?php if ($demo_allowed): ?><a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? 'Exit Demo Preview' : 'Load Demo Data'); ?></a><?php endif; ?>
             </header>
+            <?php if ($demo_mode): ?><div class="tfp-meeting-homework-demo-notice" role="status">DEMO PREVIEW — 2 sample questions and 4 sample student submissions. Notes are read-only; no data is saved.</div><?php endif; ?>
             <?php if (!$questions): ?>
                 <div class="tfp-meeting-homework-empty"><h3><?php esc_html_e('No homework content available', 'tfp-dashboard'); ?></h3><p><?php printf(esc_html__('There are no homework questions configured for Week %d.', 'tfp-dashboard'), $week_number); ?></p></div>
             <?php else: ?>
@@ -890,8 +933,8 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
                         <p class="tfp-meeting-homework-note-hint"><?php esc_html_e('Notes are optional for Homework and Tests, but required for Exercises. Each student must have a note to close out the Exercises tab.', 'tfp-dashboard'); ?></p>
                         <section class="tfp-meeting-homework-note-card">
                             <label for="tfp-meeting-homework-feedback"><?php esc_html_e('Facilitator Notes', 'tfp-dashboard'); ?></label>
-                            <textarea id="tfp-meeting-homework-feedback" data-homework-feedback placeholder="<?php esc_attr_e('Add a note about this student’s response...', 'tfp-dashboard'); ?>"></textarea>
-                            <button type="button" data-homework-save-note><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                            <textarea id="tfp-meeting-homework-feedback" data-homework-feedback placeholder="<?php esc_attr_e('Add a note about this student’s response...', 'tfp-dashboard'); ?>" <?php echo $demo_mode ? 'readonly' : ''; ?>></textarea>
+                            <button type="button" data-homework-save-note <?php disabled($demo_mode); ?>><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
                             <small data-homework-save-feedback role="status" aria-live="polite"></small>
                         </section>
                         <h4><?php printf(esc_html__('All Students (%d)', 'tfp-dashboard'), count($students)); ?></h4>
@@ -1012,6 +1055,25 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         return strcasecmp($a['name'], $b['name']);
     });
 
+    // Staging-only demo preview; sample records stay in memory and are never saved.
+    $demo_allowed = wp_get_environment_type() === 'staging' || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_mode = $demo_allowed && isset($_GET['tfp_attendance_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_attendance_demo'])) === '1';
+    if ($demo_mode) {
+        $demo_names = ['Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett', 'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell'];
+        $demo_statuses = ['P', 'P', 'UA', 'P', 'EA', 'P', 'UA', 'P'];
+        $demo_notes = ['Participated actively.', 'Arrived on time.', 'Absent without notice.', 'Engaged throughout the session.', 'Excused absence.', 'Contributed to discussion.', 'Follow-up required.', 'Completed all activities.'];
+        $students = [];
+        foreach ($demo_names as $index => $name) {
+            $students[] = ['id' => 'demo_student_' . ($index + 1), 'name' => $name, 'status' => $demo_statuses[$index], 'note' => $demo_notes[$index]];
+        }
+    }
+    $demo_url = add_query_arg([
+        'tfp_meeting_cohort_id' => $cohort_id,
+        'tfp_meeting_week' => $week_number,
+        'tfp_meeting_session_view' => 'attendance',
+        'tfp_attendance_demo' => $demo_mode ? '0' : '1',
+    ], tfp_facilitator_meetings_url());
+
     $base_url = tfp_facilitator_meetings_url();
     $back_url = add_query_arg([
         'tfp_meeting_cohort_id' => $cohort_id,
@@ -1062,12 +1124,14 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         <section class="tfp-meeting-attendance-panel">
             <header class="tfp-meeting-attendance-panel__head">
                 <h2><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h2>
+                <?php if ($demo_allowed): ?><a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? 'Exit Demo Preview' : 'Load Demo Data'); ?></a><?php endif; ?>
                 <label class="tfp-meeting-attendance-search">
                     <span class="screen-reader-text"><?php esc_html_e('Search by name', 'tfp-dashboard'); ?></span>
                     <?php echo tfp_dashboard_icon('search'); ?>
                     <input type="search" placeholder="<?php esc_attr_e('Search by Name', 'tfp-dashboard'); ?>" data-tfp-attendance-search>
                 </label>
             </header>
+            <?php if ($demo_mode): ?><div class="tfp-meeting-homework-demo-notice" role="status">DEMO PREVIEW — 8 sample students and attendance records. Changes are disabled; no student data is saved.</div><?php endif; ?>
 
             <div class="tfp-meeting-attendance-table-wrap">
                 <table class="tfp-meeting-attendance-table">
@@ -1109,7 +1173,7 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
             <footer class="tfp-meeting-attendance-panel__footer">
                 <span class="tfp-meeting-attendance-feedback" role="status" aria-live="polite" data-tfp-attendance-feedback></span>
                 <div>
-                    <button type="button" class="tfp-dash-btn-second tfp-meeting-attendance-save" data-tfp-attendance-save><?php esc_html_e('Save Attendance', 'tfp-dashboard'); ?></button>
+                    <button type="button" class="tfp-dash-btn-second tfp-meeting-attendance-save" data-tfp-attendance-save <?php disabled($demo_mode); ?>><?php esc_html_e('Save Attendance', 'tfp-dashboard'); ?></button>
                     <a href="<?php echo esc_url($homework_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Next: Open Homework', 'tfp-dashboard'); ?><span aria-hidden="true">→</span></a>
                 </div>
             </footer>
@@ -1121,6 +1185,7 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
             'attendanceAction' => 'tfp_facilitator_meeting_save_attendance',
             'cohortId' => $cohort_id,
             'lessonId' => (int) $lesson->ID,
+            'demoMode' => $demo_mode,
         ]); ?></script>
     </div>
     <?php
