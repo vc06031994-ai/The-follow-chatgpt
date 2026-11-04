@@ -1661,10 +1661,7 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
         </nav>
 
         <section class="tfp-meeting-notes-shell">
-            <?php if ($demo_allowed): ?>
-                <?php $demo_url = add_query_arg('tfp_notes_demo', $demo_mode ? '0' : '1', remove_query_arg('tfp_notes_demo')); ?>
-                <div class="tfp-meeting-notes-demo-control"><a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? 'Exit Demo Preview' : 'Load Demo Data'); ?></a></div>
-            <?php endif; ?>
+
             <?php if ($demo_mode): ?><p class="tfp-meeting-notes-feedback" role="status">DEMO PREVIEW — Sample observations and private reflections are displayed. Editing, saving, deleting and posting are disabled; no data is stored.</p><?php endif; ?>
             <?php if ($feedback): ?><p class="tfp-meeting-notes-feedback" role="status"><?php echo esc_html($feedback); ?></p><?php endif; ?>
             <div class="tfp-meeting-notes-alert <?php echo $missing_count ? 'is-warning' : 'is-complete'; ?>" role="status">
