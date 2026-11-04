@@ -1163,8 +1163,8 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
             <span class="is-active" aria-current="page"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></span>
             <a href="<?php echo esc_url($homework_url); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'))); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
-            <span class="is-disabled" aria-disabled="true"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></span>
-            <span class="is-disabled" aria-disabled="true"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></span>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
         </nav>
 
         <section class="tfp-meeting-attendance-panel">
@@ -1673,17 +1673,17 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                 'button' => __('Grade Now', 'tfp-dashboard'),
                 'icon' => 'action-warning',
                 'button_icon' => 'grades',
-                'url' => add_query_arg(['tfp_fg_cohort' => $cohort_id, 'tfp_fg_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-grades')),
+                'url' => add_query_arg(['tfp_homework_course' => $course_id, 'tfp_homework_cohort_filter' => $cohort_id], tfp_dashboard_get_url('tfp-dashboard-facilitator-homework')),
             ];
         }
     }
     $queue_display_items[] = [
-        'title' => __('Publish & Submit Weekly Meeting Notes', 'tfp-dashboard'),
-        'student' => sprintf(__('Week %d: Close Meeting Tasks to Post Official Grades', 'tfp-dashboard'), $week_number),
-        'button' => __('Publish', 'tfp-dashboard'),
+        'title' => __('Publish Weekly Meeting Notes', 'tfp-dashboard'),
+        'student' => sprintf(__('Week %d: Add facilitator notes for this session', 'tfp-dashboard'), $week_number),
+        'button' => __('Add Note', 'tfp-dashboard'),
         'icon' => 'action-publish',
         'button_icon' => 'doc',
-        'url' => add_query_arg(['tfp_fg_cohort' => $cohort_id, 'tfp_fg_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-grades')),
+        'url' => tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes'),
     ];
     if ($demo_mode) {
         // Keep sample data separate from real users, submissions, and stored progress.
