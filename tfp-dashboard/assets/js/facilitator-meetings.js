@@ -486,7 +486,8 @@ document.addEventListener('DOMContentLoaded', function () {
         exportButton.addEventListener('click', function () {
             var table = root.querySelector('.tfp-meeting-notes-table');
             if (!table) return;
-            var csv = Array.from(table.querySelectorAll('tr')).map(function (tr) {
+            // Export only observation headers and data rows; omit the action/footer row.
+            var csv = Array.from(table.querySelectorAll('thead tr, tbody tr')).map(function (tr) {
                 return Array.from(tr.querySelectorAll('th,td')).map(function (cell) {
                     var value = (cell.innerText || cell.textContent || '')
                         .replace(/\s+/g, ' ').trim().replace(/"/g, '""');
