@@ -1345,27 +1345,6 @@ function tfp_facilitator_meetings_render_session_exercise($cohort, $week_number)
     $description = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_exercise_description', true);
     $purpose = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_exercise_purpose', true);
 
-    // Reference-based demo content is shown only on staging/development/local installs.
-    // Existing configured lesson content always takes priority; demo content is never persisted.
-    $demo_environment = wp_get_environment_type();
-    $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
-    $demo_path = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_PATH));
-    $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
-        || in_array($demo_host, ['localhost', '127.0.0.1'], true)
-        || (bool) preg_match('/\\.(local|test|localhost)$/i', $demo_host)
-        || strpos($demo_path, '/thefollowprojectstaging') !== false;
-    $exercise_is_empty = $title === '' && $group === '' && $format === '' && trim($description) === '' && trim($purpose) === '';
-    $demo_mode = $demo_allowed && $exercise_is_empty
-        && (!isset($_GET['tfp_exercise_demo']) || sanitize_text_field(wp_unslash($_GET['tfp_exercise_demo'])) !== '0');
-
-    if ($demo_mode) {
-        $title = 'Exercise #2 – Flesh vs. Holy Spirit';
-        $group = 'Group/Individual';
-        $format = 'Seated • Journaling • Guided Listening';
-        $description = "In this exercise, the student remains seated while the facilitator directs the class or small group to journal while speaking and listening to either the voice of the flesh or the voice of the Holy Spirit.\n\nThe goal is to help participants become aware that the flesh does speak, and to begin discerning the difference between thoughts, impressions, and desires that originate from the flesh versus those that are communicated by the Holy Spirit.\n\nParticipants are guided to listen intentionally, write what they hear, and reflect on the source of each impression without judgment. This exercise helps surface internal patterns and strengthens spiritual awareness through observation and practice.";
-        $purpose = "The purpose of this exercise is to develop discernment and spiritual awareness by recognizing the distinction between the flesh and the Holy Spirit.\n\nBefore something can be denied, it must first be identified. This exercise creates space for participants to notice how the flesh communicates, while also learning to recognize the voice and leading of the Holy Spirit.\n\nBelievers understand that Jesus has taken authority over all flesh, and through the Holy Spirit we are empowered to subdue the self’s voice and desires. This exercise supports that process by building awareness, humility, and trust in God’s guidance through intentional listening and journaling.";
-    }
-
     $student_ids = function_exists('tfp_facilitator_cohort_students')
         ? array_values(array_unique(array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id))))
         : [];
@@ -1436,10 +1415,6 @@ function tfp_facilitator_meetings_render_session_exercise($cohort, $week_number)
         <section class="tfp-meeting-homework-surface tfp-meeting-exercise-surface">
             <header class="tfp-meeting-homework-surface__head">
                 <h2><?php echo esc_html($title ?: __('Weekly Exercise', 'tfp-dashboard')); ?></h2>
-                <?php if ($demo_allowed): ?>
-                    <?php $demo_url = add_query_arg('tfp_exercise_demo', $demo_mode ? '0' : '1', remove_query_arg('tfp_exercise_demo')); ?>
-                    <a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? 'Exit Demo Preview' : 'Load Demo Data'); ?></a>
-                <?php endif; ?>
             </header>
             <div class="tfp-meeting-exercise-content">
                 <main class="tfp-meeting-exercise-reference">
