@@ -162,27 +162,29 @@ function tfp_facilitator_meetings_scores($student_ids, $lesson_id)
 
 function tfp_facilitator_meetings_attendance($student_ids, $lesson_id)
 {
-    $present = 0;
-    $recorded = 0;
+    // Include every assigned student in the denominator; missing attendance is not excluded.
+    $student_ids = array_values(array_unique(array_filter(array_map('absint', (array) $student_ids))));
+    $total_students = count($student_ids);
+    if (!$total_students) {
+        return null;
+    }
 
-    foreach (array_map('absint', (array) $student_ids) as $student_id) {
+    $present = 0;
+    foreach ($student_ids as $student_id) {
         $record = function_exists('tfp_facilitator_student_attendance')
             ? tfp_facilitator_student_attendance($student_id, $lesson_id)
             : get_user_meta($student_id, 'tfp_facilitator_student_attendance_' . absint($lesson_id), true);
 
         $status = is_array($record) ? strtoupper((string) ($record['status'] ?? '')) : '';
-        if (!in_array($status, ['P', 'EA', 'UA'], true))
-            continue;
-
-        $recorded++;
-        if ($status === 'P')
+        if ($status === 'P') {
             $present++;
+        }
     }
 
-    return $recorded ? round(($present / $recorded) * 100) : null;
+    return (int) round(($present / $total_students) * 100);
 }
 
-function tfp_facilitator_meetings_status($timestamp, $attendance = null, $now = null)
+function tfp_facilitator_meetings_status($timestamp, $posted = false, $now = null)
 {
     $timestamp = (int) $timestamp;
     $now = $now !== null ? (int) $now : current_time('timestamp', true);
@@ -195,7 +197,8 @@ function tfp_facilitator_meetings_status($timestamp, $attendance = null, $now = 
         return 'in_progress';
     }
 
-    return $attendance !== null ? 'in_progress' : 'needs_log';
+    // A past meeting is complete only after the facilitator posts the session.
+    return $posted ? 'posted' : 'needs_log';
 }
 
 function tfp_facilitator_meetings_rows($cohorts)
@@ -227,6 +230,8 @@ function tfp_facilitator_meetings_rows($cohorts)
 
             $scores = tfp_facilitator_meetings_scores($student_ids, $lesson->ID);
             $attendance = tfp_facilitator_meetings_attendance($student_ids, $lesson->ID);
+            $posted_record = get_post_meta($lesson->ID, 'tfp_meeting_session_posted_' . $cohort_id, true);
+            $is_posted = is_array($posted_record) && !empty($posted_record['posted']);
 
             $rows[] = [
                 'cohort_id' => $cohort_id,
@@ -243,7 +248,7 @@ function tfp_facilitator_meetings_rows($cohorts)
                 'test_label' => tfp_facilitator_meetings_letter($scores['test']),
                 'attendance_percent' => $attendance,
                 'attendance_label' => $attendance !== null ? $attendance . '%' : '—',
-                'meeting_status' => tfp_facilitator_meetings_status($timestamp, $attendance),
+                'meeting_status' => tfp_facilitator_meetings_status($timestamp, $is_posted),
                 'meeting_url' => esc_url_raw((string) get_post_meta($lesson->ID, 'tfp_week_meeting_discord_url', true)),
                 'description' => wp_strip_all_tags((string) get_post_meta($lesson->ID, 'tfp_week_meeting_description', true)),
                 'facilitator' => wp_strip_all_tags((string) get_post_meta($lesson->ID, 'tfp_week_facilitator_name', true)),
@@ -2051,7 +2056,6 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
             $homework = (array) tfp_week_homework_progress($student_id, $lesson->ID);
             if (!empty($homework['total'])) {
                 $student_progress[] = min(100, max(0, ((float) $homework['completed'] / (float) $homework['total']) * 100));
-                $grade_values[] = min(100, max(0, ((float) $homework['completed'] / (float) $homework['total']) * 100));
             }
         }
 
@@ -2797,9 +2801,11 @@ function tfp_facilitator_meetings_render()
                                 echo esc_html(
                                     $row['meeting_status'] === 'needs_log'
                                         ? __('Needs Log', 'tfp-dashboard')
-                                        : ($row['meeting_status'] === 'in_progress'
-                                            ? __('In Progress', 'tfp-dashboard')
-                                            : __('Upcoming', 'tfp-dashboard'))
+                                        : ($row['meeting_status'] === 'posted'
+                                            ? __('Posted', 'tfp-dashboard')
+                                            : ($row['meeting_status'] === 'in_progress'
+                                                ? __('In Progress', 'tfp-dashboard')
+                                                : __('Upcoming', 'tfp-dashboard')))
                                 );
                                 ?></span></td>
                                 <td>
