@@ -1944,6 +1944,171 @@ function tfp_facilitator_meetings_save_test_note()
 add_action('wp_ajax_tfp_facilitator_meeting_save_test_note','tfp_facilitator_meetings_save_test_note');
 
 
+
+/**
+ * Read-only closeout report for a posted cohort session.
+ * All scorecard values are calculated from the existing cohort/week records.
+ */
+function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
+{
+    $cohort_id = absint($cohort->ID);
+    $course_id = function_exists('tfp_facilitator_cohort_course_id')
+        ? absint(tfp_facilitator_cohort_course_id($cohort_id))
+        : absint(get_post_meta($cohort_id, '_related_course', true));
+    $weeks = $course_id && function_exists('tfp_ld_get_weeks') ? array_values((array) tfp_ld_get_weeks($course_id)) : [];
+    $week_number = max(1, absint($week_number));
+    $lesson = $weeks[$week_number - 1] ?? null;
+
+    if (!$lesson instanceof WP_Post) {
+        wp_die(esc_html__('The selected course week could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    $allowed_cohorts = array_map('absint', wp_list_pluck(tfp_facilitator_meetings_cohorts_safe(), 'ID'));
+    if (!in_array($cohort_id, $allowed_cohorts, true)) {
+        wp_die(esc_html__('You do not have access to this cohort.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+
+    $posted = get_post_meta($lesson->ID, 'tfp_meeting_session_posted_' . $cohort_id, true);
+    $is_posted = is_array($posted) && !empty($posted['posted']);
+    $student_ids = function_exists('tfp_facilitator_cohort_students')
+        ? array_values(array_unique(array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id))))
+        : [];
+    $attendance_percent = function_exists('tfp_facilitator_meetings_attendance')
+        ? tfp_facilitator_meetings_attendance($student_ids, $lesson->ID)
+        : null;
+
+    $logs_key = 'tfp_meeting_exercise_logs_' . $cohort_id;
+    $logs = get_post_meta($lesson->ID, $logs_key, true);
+    $logs = is_array($logs) ? $logs : [];
+    $reflection_key = 'tfp_meeting_internal_reflections_' . $cohort_id;
+    $reflections = get_post_meta($lesson->ID, $reflection_key, true);
+    $reflections = is_array($reflections) ? $reflections : [];
+
+    $audit_rows = [];
+    $progress_values = [];
+    $grade_values = [];
+    $notes_count = 0;
+    foreach ($student_ids as $student_id) {
+        $user = get_userdata($student_id);
+        if (!$user) {
+            continue;
+        }
+
+        $record = isset($logs[$student_id]) && is_array($logs[$student_id]) ? $logs[$student_id] : [];
+        $note = trim((string) ($record['text'] ?? ''));
+        if ($note !== '') {
+            $notes_count++;
+            $audit_rows[] = [
+                'name' => $user->display_name ?: $user->user_email,
+                'type' => __('Exercise Log', 'tfp-dashboard'),
+                'note' => $note,
+            ];
+        }
+
+        $progress = function_exists('tfp_ld_get_week_progress') ? (array) tfp_ld_get_week_progress($student_id, $lesson->ID) : [];
+        $student_progress = [];
+        if (array_key_exists('reading', $progress)) {
+            $student_progress[] = !empty($progress['reading']) ? 100 : 0;
+        }
+
+        if (function_exists('tfp_week_homework_progress')) {
+            $homework = (array) tfp_week_homework_progress($student_id, $lesson->ID);
+            if (!empty($homework['total'])) {
+                $student_progress[] = min(100, max(0, ((float) $homework['completed'] / (float) $homework['total']) * 100));
+                $grade_values[] = min(100, max(0, ((float) $homework['completed'] / (float) $homework['total']) * 100));
+            }
+        }
+
+        foreach (['quiz' => 'tfp_week_get_quiz_result', 'test' => 'tfp_week_get_test_result'] as $kind => $callback) {
+            if (!function_exists($callback)) {
+                continue;
+            }
+            $result = call_user_func($callback, $student_id, $lesson->ID);
+            if (is_array($result) && isset($result['score'], $result['total']) && is_numeric($result['score']) && is_numeric($result['total']) && (float) $result['total'] > 0) {
+                $percent = min(100, max(0, ((float) $result['score'] / (float) $result['total']) * 100));
+                $student_progress[] = 100;
+                $grade_values[] = $percent;
+            }
+        }
+
+        if ($student_progress) {
+            $progress_values[] = array_sum($student_progress) / count($student_progress);
+        }
+    }
+
+    usort($audit_rows, static function ($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+    });
+    $weekly_progress = $progress_values ? (int) round(array_sum($progress_values) / count($progress_values)) : null;
+    $overall_grade = $grade_values ? (int) round(array_sum($grade_values) / count($grade_values)) : null;
+    $course_title = $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard');
+    $base_url = tfp_facilitator_meetings_url();
+    $notes_url = tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes');
+    $back_url = remove_query_arg(['tfp_meeting_cohort_id', 'tfp_meeting_week', 'tfp_meeting_student_page'], $base_url);
+    ?>
+    <div class="tfp-meeting-session-detail-page tfp-meeting-closed-page">
+        <nav class="tfp-meeting-closed-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
+            <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home')); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
+            <span>/</span><a href="<?php echo esc_url($base_url); ?>"><?php esc_html_e('Meetings', 'tfp-dashboard'); ?></a>
+            <span>/</span><a href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number], $base_url)); ?>"><?php echo esc_html($cohort->post_title); ?></a>
+            <span>/</span><strong><?php echo esc_html(sprintf(__('Week %d Session', 'tfp-dashboard'), $week_number)); ?></strong>
+        </nav>
+        <header class="tfp-meeting-homework-header">
+            <div><h1><?php echo esc_html($cohort->post_title); ?></h1><p><?php echo esc_html($course_title); ?></p></div>
+            <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($back_url); ?>">↩ <?php esc_html_e('Back to All Meetings', 'tfp-dashboard'); ?></a>
+        </header>
+        <nav class="tfp-meeting-homework-tabs" aria-label="<?php esc_attr_e('Course session sections', 'tfp-dashboard'); ?>">
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'attendance')); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'homework')); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests')); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url($notes_url); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+            <a class="is-active" aria-current="page" href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
+        </nav>
+
+        <?php if (!$is_posted): ?>
+            <div class="tfp-meeting-closed-notice" role="status"><?php esc_html_e('This session has not been posted yet. Complete the mandatory exercise logs and use Finish & Post Session on the Notes page to close it.', 'tfp-dashboard'); ?> <a href="<?php echo esc_url($notes_url); ?>"><?php esc_html_e('Open Notes', 'tfp-dashboard'); ?></a></div>
+        <?php else: ?>
+            <main class="tfp-meeting-closed-card">
+                <h2><?php esc_html_e('Session Performance Scorecard', 'tfp-dashboard'); ?></h2>
+                <div class="tfp-meeting-closed-metrics">
+                    <article><small><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></small><strong><?php echo $attendance_percent !== null ? esc_html($attendance_percent . '%') : '—'; ?></strong><span><?php echo esc_html(sprintf(_n('%d Student Present', '%d Students Present', count($student_ids), 'tfp-dashboard'), count($student_ids))); ?></span></article>
+                    <article><small><?php esc_html_e('Weekly Progress', 'tfp-dashboard'); ?></small><strong><?php echo $weekly_progress !== null ? esc_html($weekly_progress . '%') : '—'; ?></strong><span><?php esc_html_e('Average recorded weekly activity', 'tfp-dashboard'); ?></span></article>
+                    <article><small><?php esc_html_e('Overall Grade', 'tfp-dashboard'); ?></small><strong><?php echo $overall_grade !== null ? esc_html($overall_grade . '%') : '—'; ?></strong><span><?php esc_html_e('Average available assessment score', 'tfp-dashboard'); ?></span></article>
+                    <article><small><?php esc_html_e('Dashboard Notes', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($notes_count); ?></strong><span><?php esc_html_e('Observations Posted', 'tfp-dashboard'); ?></span></article>
+                </div>
+
+                <section class="tfp-meeting-closed-recap">
+                    <h3><?php esc_html_e('Internal Session Recap', 'tfp-dashboard'); ?></h3>
+                    <div class="tfp-meeting-closed-recap-grid">
+                        <article><h4><?php esc_html_e('Group Engagement', 'tfp-dashboard'); ?></h4><p><?php echo $reflections['atmosphere'] !== '' ? esc_html((string) ($reflections['atmosphere'] ?? '')) : esc_html__('No internal reflection was recorded.', 'tfp-dashboard'); ?></p></article>
+                        <article><h4><?php esc_html_e('Prayer Hurdle', 'tfp-dashboard'); ?></h4><p><?php echo $reflections['prayer_hurdle'] !== '' ? esc_html((string) ($reflections['prayer_hurdle'] ?? '')) : esc_html__('No prayer hurdle reflection was recorded.', 'tfp-dashboard'); ?></p></article>
+                    </div>
+                </section>
+
+                <section class="tfp-meeting-closed-audit">
+                    <h3><?php esc_html_e('Final Observation Audit', 'tfp-dashboard'); ?></h3>
+                    <div class="tfp-meeting-closed-table-wrap">
+                        <table class="tfp-meeting-closed-table" data-closed-session-report>
+                            <thead><tr><th><?php esc_html_e('Disciples', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Type of note recorded', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Logged Observation', 'tfp-dashboard'); ?></th></tr></thead>
+                            <tbody>
+                            <?php foreach ($audit_rows as $row): ?>
+                                <tr><td><strong><?php echo esc_html($row['name']); ?></strong></td><td><?php echo esc_html($row['type']); ?></td><td><?php echo esc_html($row['note']); ?></td></tr>
+                            <?php endforeach; ?>
+                            <?php if (!$audit_rows): ?><tr><td colspan="3"><?php esc_html_e('No observations are available for this session.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tfp-meeting-closed-view-notes"><a href="<?php echo esc_url($notes_url); ?>"><?php esc_html_e('View All Notes', 'tfp-dashboard'); ?></a></div>
+                </section>
+            </main>
+            <footer class="tfp-meeting-closed-footer"><button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-closed-session-export>↓ <?php esc_html_e('Export Full Session Report', 'tfp-dashboard'); ?></button></footer>
+        <?php endif; ?>
+    </div>
+    <?php
+}
+
+
 function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
 {
     $session_view = sanitize_key(wp_unslash($_GET['tfp_meeting_session_view'] ?? ''));
@@ -1965,6 +2130,10 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
         return;
     }
 
+    if ($session_view === 'closed-session') {
+        tfp_facilitator_meetings_render_closed_session($cohort, absint($_GET['tfp_meeting_week'] ?? 1));
+        return;
+    }
     $cohort_id = absint($cohort->ID);
     $course_id = function_exists('tfp_facilitator_cohort_course_id') ? (int) tfp_facilitator_cohort_course_id($cohort_id) : 0;
     $weeks = $course_id && function_exists('tfp_ld_get_weeks') ? array_values((array) tfp_ld_get_weeks($course_id)) : [];
