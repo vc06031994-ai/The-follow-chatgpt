@@ -251,6 +251,8 @@ document.addEventListener('DOMContentLoaded', function () {
         root.querySelectorAll('[data-homework-question-select]').forEach(function (button) {
             var active = button.getAttribute('data-homework-question-select') === id;
             button.classList.toggle('is-active', active);
+            var student = getStudent(button.dataset.exerciseStudent);
+            button.classList.toggle('is-saved', !!(student && student.saved));
             button.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
         root.querySelectorAll('[data-homework-question-panel]').forEach(function (panel) {
