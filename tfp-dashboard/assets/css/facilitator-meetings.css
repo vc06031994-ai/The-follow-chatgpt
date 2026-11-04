@@ -3463,3 +3463,14 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     .tfp-meeting-notes-footer form { width: 100%; }
     .tfp-meeting-notes-footer button { width: 100%; justify-content: center; }
 }
+
+
+/* Notes page demo preview control; scoped to this page only. */
+.tfp-meeting-notes-demo-control {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 12px;
+}
+.tfp-meeting-notes-demo-control .tfp-meeting-homework-demo-toggle {
+    text-decoration: none;
+}
