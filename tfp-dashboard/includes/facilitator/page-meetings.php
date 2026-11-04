@@ -1752,6 +1752,7 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests')); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
             <span class="is-active" aria-current="page"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></span>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
         </nav>
 
         <section class="tfp-meeting-notes-shell">
@@ -2077,14 +2078,13 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests')); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url($notes_url); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
-            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
             <a class="is-active" aria-current="page" href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
         </nav>
 
         <?php if (!$is_posted): ?>
             <div class="tfp-meeting-closed-notice" role="status"><?php esc_html_e('This session has not been posted yet. Complete the mandatory exercise logs and use Finish & Post Session on the Notes page to close it.', 'tfp-dashboard'); ?> <a href="<?php echo esc_url($notes_url); ?>"><?php esc_html_e('Open Notes', 'tfp-dashboard'); ?></a></div>
         <?php else: ?>
-            <main class="tfp-meeting-closed-card">
+            <section class="tfp-meeting-closed-card">
                 <h2><?php esc_html_e('Session Performance Scorecard', 'tfp-dashboard'); ?></h2>
                 <div class="tfp-meeting-closed-metrics">
                     <article><small><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></small><strong><?php echo $attendance_percent !== null ? esc_html($attendance_percent . '%') : '—'; ?></strong><span><?php echo esc_html(sprintf(_n('%d Student Present', '%d Students Present', $present_count, 'tfp-dashboard'), $present_count)); ?></span></article>
@@ -2116,7 +2116,7 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
                     </div>
                     <div class="tfp-meeting-closed-view-notes"><a href="<?php echo esc_url($notes_url); ?>"><?php esc_html_e('View All Notes', 'tfp-dashboard'); ?></a></div>
                 </section>
-            </main>
+            </section>
             <footer class="tfp-meeting-closed-footer"><button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-closed-session-export>↓ <?php esc_html_e('Export Full Session Report', 'tfp-dashboard'); ?></button></footer>
         <?php endif; ?>
     </div>
