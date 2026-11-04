@@ -1592,6 +1592,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
             <div class="tfp-meeting-cohort__controls">
                 <form method="get" class="tfp-meeting-cohort__week-form">
                     <input type="hidden" name="tfp_meeting_cohort_id" value="<?php echo esc_attr($cohort_id); ?>">
+                    <?php if ($demo_mode): ?><input type="hidden" name="tfp_meeting_demo" value="1"><?php endif; ?>
                     <label class="screen-reader-text" for="tfp-meeting-week"><?php esc_html_e('Select week', 'tfp-dashboard'); ?></label>
                     <select id="tfp-meeting-week" name="tfp_meeting_week" data-tfp-meeting-week>
                         <?php foreach ($weeks as $index => $week): ?>
@@ -1715,8 +1716,8 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
             <footer class="tfp-meeting-performance-pagination">
                 <span><?php echo esc_html($from . ' - ' . $to . ' of ' . $total_students . ' items'); ?></span>
                 <div>
-                    <?php if ($student_page > 1): ?><a href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page - 1], $base_url)); ?>"><?php esc_html_e('‹ Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
-                    <?php if ($student_page < $total_pages): ?><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page + 1], $base_url)); ?>"><?php esc_html_e('Next ›', 'tfp-dashboard'); ?></a><?php endif; ?>
+                    <?php if ($student_page > 1): ?><a href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page - 1, 'tfp_meeting_demo' => $demo_mode ? '1' : null], $base_url)); ?>"><?php esc_html_e('‹ Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
+                    <?php if ($student_page < $total_pages): ?><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page + 1, 'tfp_meeting_demo' => $demo_mode ? '1' : null], $base_url)); ?>"><?php esc_html_e('Next ›', 'tfp-dashboard'); ?></a><?php endif; ?>
                 </div>
             </footer>
         </section>
