@@ -1623,7 +1623,9 @@ function tfp_facilitator_meetings_save_test_note()
     check_ajax_referer('tfp_meeting_test_note_'.$cohort.'_'.$lesson,'nonce');
     $allowed=array_map('absint',wp_list_pluck(tfp_facilitator_meetings_cohorts_safe(),'ID'));
     $members=function_exists('tfp_facilitator_cohort_students')?(array)tfp_facilitator_cohort_students($cohort):[];
-    if(!$cohort||!in_array($cohort,$allowed,true)||!$lesson||get_post_type($lesson)!=='sfwd-lessons'||!$student||!in_array($student,array_map('absint',$members),true)) wp_send_json_error(['message'=>'Invalid cohort, lesson or student.'],403);
+    $course_id = $cohort ? (int) get_post_meta($cohort, '_related_course', true) : 0;
+    $cohort_weeks = $course_id && function_exists('tfp_ld_get_weeks') ? array_map('absint', wp_list_pluck((array) tfp_ld_get_weeks($course_id), 'ID')) : [];
+    if(!$cohort||!in_array($cohort,$allowed,true)||!$lesson||get_post_type($lesson)!=='sfwd-lessons'||!in_array($lesson,$cohort_weeks,true)||!$student||!in_array($student,array_map('absint',$members),true)) wp_send_json_error(['message'=>'Invalid cohort, lesson or student.'],403);
     $valid=false; foreach((array)tfp_week_get_test_questions($lesson,false) as $q) if(sanitize_key((string)($q['id']??''))===$question) $valid=true;
     if(!$valid) wp_send_json_error(['message'=>'Test question not found.'],404);
     $key='tfp_meeting_test_notes_'.$cohort.'_'.$lesson; $notes=get_post_meta($lesson,$key,true); if(!is_array($notes))$notes=[];
@@ -1770,7 +1772,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                 'button' => __('Review Test', 'tfp-dashboard'),
                 'icon' => 'action-warning',
                 'button_icon' => 'unlock',
-                'url' => add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')),
+                'url' => tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests'),
             ];
         }
         if (in_array($student_row['homework_tone'], ['warning', 'danger'], true)) {
