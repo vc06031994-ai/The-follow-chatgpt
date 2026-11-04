@@ -788,10 +788,12 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
     // Staging-only sample preview; demo answers and students are never persisted.
     $demo_environment = wp_get_environment_type();
     $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
-    // Enable previews only in staging/development or local environments; never on production.
+    $demo_path = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_PATH));
+    // Enable previews on staging/development/local installs, including staging folders on a production domain.
     $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
         || in_array($demo_host, ['localhost', '127.0.0.1'], true)
-        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host);
+        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host)
+        || strpos($demo_path, '/thefollowprojectstaging') !== false;
     $demo_mode = $demo_allowed && isset($_GET['tfp_homework_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_homework_demo'])) === '1';
     if ($demo_mode) {
         $questions = [
@@ -1063,10 +1065,12 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
     // Staging-only demo preview; sample records stay in memory and are never saved.
     $demo_environment = wp_get_environment_type();
     $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
-    // Enable previews only in staging/development or local environments; never on production.
+    $demo_path = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_PATH));
+    // Enable previews on staging/development/local installs, including staging folders on a production domain.
     $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
         || in_array($demo_host, ['localhost', '127.0.0.1'], true)
-        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host);
+        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host)
+        || strpos($demo_path, '/thefollowprojectstaging') !== false;
     $demo_mode = $demo_allowed && isset($_GET['tfp_attendance_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_attendance_demo'])) === '1';
     if ($demo_mode) {
         $demo_names = ['Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett', 'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell'];
@@ -1499,11 +1503,18 @@ function tfp_facilitator_meetings_render_session_tests($cohort, $week_number)
     // Demo preview is staging-only and uses in-memory sample data; it never writes to student records.
     $demo_environment = wp_get_environment_type();
     $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
-    // Enable previews only in staging/development or local environments; never on production.
+    $demo_path = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_PATH));
+    // Enable previews on staging/development/local installs, including staging folders on a production domain.
     $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
         || in_array($demo_host, ['localhost', '127.0.0.1'], true)
-        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host);
-    $demo_mode = $demo_allowed && isset($_GET['tfp_test_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_test_demo'])) === '1';
+        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host)
+        || strpos($demo_path, '/thefollowprojectstaging') !== false;
+    // Automatically show sample test data on staging when this week has no configured questions.
+    // Explicit tfp_test_demo=0 always exits the preview; tfp_test_demo=1 enables it on demand.
+    $demo_mode_requested = isset($_GET['tfp_test_demo'])
+        ? sanitize_text_field(wp_unslash($_GET['tfp_test_demo'])) === '1'
+        : empty($questions);
+    $demo_mode = $demo_allowed && $demo_mode_requested;
     $stats = [];
     foreach ($questions as $i => $q) {
         $qid = sanitize_key((string) ($q['id'] ?? ''));
