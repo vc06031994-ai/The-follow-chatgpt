@@ -3554,11 +3554,8 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
 }
 
 
-/* Notes page: lock the Action column and Export control to consistent table edges. */
-.tfp-meeting-notes-page .tfp-meeting-notes-table {
-    width: 100% !important;
-    table-layout: fixed !important;
-}
+
+/* Notes page: Edit and Export are stacked in the same Action column. */
 .tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(4),
 .tfp-meeting-notes-page .tfp-meeting-notes-table td:nth-child(4) {
     width: 18% !important;
@@ -3567,320 +3564,28 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     padding-right: 18px !important;
 }
 .tfp-meeting-notes-page .tfp-meeting-notes-table td.tfp-meeting-notes-actions {
-    vertical-align: middle !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-actions > [data-notes-edit] {
-    display: inline-flex !important;
-    margin: 0 !important;
-    vertical-align: middle !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-export {
-    display: flex !important;
-    width: 100% !important;
-    justify-content: flex-end !important;
-    box-sizing: border-box !important;
-    padding: 12px 18px 0 !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-export [data-notes-export] {
-    display: inline-flex !important;
-    margin: 0 !important;
-    vertical-align: middle !important;
-}
-
-
-/* Final alignment correction: Action heading, Edit and Export share one right edge. */
-.tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(4),
-.tfp-meeting-notes-page .tfp-meeting-notes-table td:nth-child(4) {
-    text-align: right !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-actions > [data-notes-edit] {
-    margin-left: auto !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-export {
-    justify-content: flex-end !important;
-    padding-right: 18px !important;
-}
-
-
-/* Notes reference match: keep the action alert red and restore the observation card surface. */
-.tfp-meeting-notes-page .tfp-meeting-notes-alert,
-.tfp-meeting-notes-page .tfp-meeting-notes-alert.is-complete {
-    border: 1px solid #e37b82 !important;
-    background: #fbeaec !important;
-    color: #171717 !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-alert__icon,
-.tfp-meeting-notes-page .tfp-meeting-notes-alert.is-complete .tfp-meeting-notes-alert__icon {
-    background: #b51f31 !important;
-    color: #fff !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-alert p,
-.tfp-meeting-notes-page .tfp-meeting-notes-alert.is-complete p {
-    color: #b51f31 !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-review {
-    border: 1px solid #d0d0d0 !important;
-    border-radius: 11px !important;
-    background: #fff !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .06) !important;
-    padding: 18px 0 12px !important;
-}
-/* Keep the table itself borderless and transparent inside the bordered card. */
-.tfp-meeting-notes-page .tfp-meeting-notes-table,
-.tfp-meeting-notes-page .tfp-meeting-notes-table thead,
-.tfp-meeting-notes-page .tfp-meeting-notes-table tbody,
-.tfp-meeting-notes-page .tfp-meeting-notes-table th,
-.tfp-meeting-notes-page .tfp-meeting-notes-table td {
-    background: transparent !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-table {
-    border: 0 !important;
-    outline: 0 !important;
-}
-.tfp-meeting-notes-page .tfp-meeting-notes-reflections {
-    border: 1px solid #dedede !important;
-    border-radius: 7px !important;
-    background: #fff !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .04) !important;
-}
-
-
-/* Facilitator Course > Closed Session report page. */
-.tfp-meeting-closed-page { padding: 0 0 28px; }
-.tfp-meeting-closed-breadcrumb {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-    padding: 14px 28px; background: #f1f1f1; color: #171717; font-size: 13px;
-}
-.tfp-meeting-closed-breadcrumb a { color: #00717a; text-decoration: none; }
-.tfp-meeting-closed-breadcrumb strong { font-weight: 700; }
-.tfp-meeting-closed-page .tfp-meeting-homework-header {
-    display: flex; align-items: center; justify-content: space-between; gap: 20px;
-    padding: 18px 44px 20px; border-bottom: 1px solid #650000;
-}
-.tfp-meeting-closed-page .tfp-meeting-homework-header h1 { margin: 0 0 8px; font-size: clamp(28px, 3vw, 40px); line-height: 1.15; }
-.tfp-meeting-closed-page .tfp-meeting-homework-header p { margin: 0; font: 16px/1.45 Georgia, serif; }
-.tfp-meeting-closed-page .tfp-meeting-homework-tabs { margin: 18px 44px 0; }
-.tfp-meeting-closed-card {
-    margin: 50px 44px 34px; padding: 28px 30px 30px;
-    border: 1px solid #d0d0d0; border-radius: 11px; background: #fff;
-}
-.tfp-meeting-closed-card > h2 { margin: 0 0 24px; color: #171717; font-size: 18px; font-weight: 700; }
-.tfp-meeting-closed-metrics {
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 0 0 28px;
-}
-.tfp-meeting-closed-metrics article {
-    display: flex; min-height: 86px; flex-direction: column; align-items: flex-start; gap: 5px;
-    padding: 12px 15px; border-radius: 11px; background: #e7e9e9;
-    box-shadow: 0 3px 4px rgba(0,0,0,.2);
-}
-.tfp-meeting-closed-metrics article small { color: #252525; font-size: 10px; }
-.tfp-meeting-closed-metrics article strong { color: #00717a; font-size: 20px; line-height: 1.2; }
-.tfp-meeting-closed-metrics article span { color: #222; font: 11px/1.4 Georgia, serif; }
-.tfp-meeting-closed-recap,
-.tfp-meeting-closed-audit {
-    margin: 0 0 28px; padding: 16px 15px 18px;
-    border: 1px solid #dedede; border-radius: 7px; background: #fff;
-}
-.tfp-meeting-closed-recap h3,
-.tfp-meeting-closed-audit h3 {
-    margin: 0 0 18px; padding: 0 0 12px; border-bottom: 1px solid #dedede;
-    color: #00717a; font-size: 15px; font-weight: 700;
-}
-.tfp-meeting-closed-recap-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
-.tfp-meeting-closed-recap-grid h4 { margin: 2px 0 8px; color: #555; font-size: 13px; }
-.tfp-meeting-closed-recap-grid p { margin: 0; color: #333; font: 12px/1.65 Georgia, serif; white-space: pre-wrap; overflow-wrap: anywhere; }
-.tfp-meeting-closed-table-wrap { width: 100%; overflow-x: auto; }
-.tfp-meeting-closed-table { width: 100%; border-collapse: collapse; color: #171717; font-size: 11px; }
-.tfp-meeting-closed-table th,
-.tfp-meeting-closed-table td { padding: 10px 18px; border-bottom: 1px solid #e5e7ea; text-align: left; vertical-align: middle; }
-.tfp-meeting-closed-table th { background: #fafbfc; font-size: 11px; font-weight: 700; }
-.tfp-meeting-closed-table td:first-child strong { font-size: 12px; }
-.tfp-meeting-closed-view-notes { display: flex; justify-content: center; padding: 28px 0 0; }
-.tfp-meeting-closed-view-notes a {
-    display: inline-flex; align-items: center; justify-content: center; min-height: 40px;
-    padding: 0 18px; border: 1px solid #d0d0d0; border-radius: 7px;
-    background: #e2e5e5; color: #222; font-size: 12px; text-decoration: none;
-}
-.tfp-meeting-closed-footer {
-    display: flex; justify-content: flex-end; margin: 0 44px; padding: 20px 22px 0;
-    border-top: 1px solid #dedede;
-}
-.tfp-meeting-closed-notice { margin: 40px 44px; padding: 18px; border: 1px solid #e4c56d; border-radius: 7px; background: #fff8e6; }
-.tfp-meeting-closed-notice a { color: #00666e; font-weight: 700; }
-@media (max-width: 900px) {
-    .tfp-meeting-closed-page .tfp-meeting-homework-header { padding: 18px 22px; }
-    .tfp-meeting-closed-page .tfp-meeting-homework-tabs { margin-right: 22px; margin-left: 22px; }
-    .tfp-meeting-closed-card { margin: 32px 22px 24px; padding: 22px; }
-    .tfp-meeting-closed-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .tfp-meeting-closed-footer { margin: 0 22px; }
-}
-@media (max-width: 600px) {
-    .tfp-meeting-closed-page .tfp-meeting-homework-header { align-items: flex-start; flex-direction: column; }
-    .tfp-meeting-closed-card { margin: 24px 12px; padding: 16px 12px; }
-    .tfp-meeting-closed-metrics { gap: 10px; }
-    .tfp-meeting-closed-metrics article { min-height: 82px; padding: 10px; }
-    .tfp-meeting-closed-recap-grid { grid-template-columns: 1fr; gap: 18px; }
-    .tfp-meeting-closed-table { min-width: 620px; }
-    .tfp-meeting-closed-footer { margin: 0 12px; padding: 16px 0 0; }
-    .tfp-meeting-closed-footer button { width: 100%; justify-content: center; }
-    .tfp-meeting-closed-notice { margin: 24px 12px; }
-}
-
-
-/* Closed Session demo preview controls (staging only). */
-.tfp-meeting-closed-demo-control {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 18px 44px -28px;
-}
-.tfp-meeting-closed-demo-control > span {
-    color: #00717a;
-    font-size: 12px;
-}
-.tfp-meeting-closed-demo-control .tfp-dash-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 38px;
-    padding: 0 16px;
-    border: 1px solid #006b73;
-    border-radius: 7px;
-    background: #fff;
-    color: #006b73;
-    font-size: 12px;
-    text-decoration: none;
-}
-@media (max-width: 900px) {
-    .tfp-meeting-closed-demo-control { margin-right: 22px; margin-left: 22px; }
-}
-@media (max-width: 600px) {
-    .tfp-meeting-closed-demo-control { margin: 16px 12px -12px; }
-}
-
-
-/* Closed Session audit: match existing facilitator tables with horizontal rules only. */
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table {
-    width: 100% !important;
-    min-width: 0 !important;
-    border: 0 !important;
-    border-collapse: collapse !important;
-    border-spacing: 0 !important;
-    table-layout: fixed !important;
-    background: transparent !important;
-    color: #171717 !important;
-    font-family: var(--tfp-dash-font, inherit) !important;
-    font-size: 11px !important;
-}
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table thead,
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table tbody,
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table tr,
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th,
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table td {
-    background: transparent !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
-    box-shadow: none !important;
-}
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th,
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table td {
-    padding: 8px 18px !important;
-    border-top: 0 !important;
-    border-bottom: 1px solid #e7e7e7 !important;
-    text-align: left !important;
-    vertical-align: middle !important;
-    line-height: 1.45 !important;
-}
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th {
-    color: #151411 !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-}
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th:nth-child(1) { width: 16% !important; }
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th:nth-child(2) { width: 18% !important; }
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th:nth-child(3) { width: 66% !important; }
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table td:first-child strong {
-    color: #171717 !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-}
-body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table tbody tr:hover {
-    background: transparent !important;
-}
-
-
-/* Final Notes table parity with Closed Session audit: no vertical grid lines or boxed table. */
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table {
-    width: 100% !important;
-    min-width: 760px !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-collapse: collapse !important;
-    border-spacing: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table thead,
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tbody,
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tr,
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table th,
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table td {
-    background: transparent !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
-    box-shadow: none !important;
-}
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table th,
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table td {
-    padding: 8px 18px !important;
-    border-top: 0 !important;
-    border-bottom: 1px solid #e7e7e7 !important;
-    text-align: left !important;
-    vertical-align: middle !important;
-    line-height: 1.45 !important;
-}
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table th {
-    color: #151411 !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-}
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tbody tr.is-missing {
-    outline: 1px solid #d52b3b !important;
-    outline-offset: -1px !important;
-    background: transparent !important;
-}
-body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tbody tr:not(.is-missing):hover {
-    background: transparent !important;
-}
-
-
-/* Notes page: keep table-cell layout intact and align Edit above Export on the right. */
-body .tfp-meeting-notes-page .tfp-meeting-notes-table td.tfp-meeting-notes-actions {
     display: table-cell !important;
-    width: 22% !important;
-    text-align: right !important;
+    text-align: left !important;
     vertical-align: middle !important;
-    padding-right: 18px !important;
+    white-space: nowrap !important;
 }
-body .tfp-meeting-notes-page .tfp-meeting-notes-actions > [data-notes-edit] {
+.tfp-meeting-notes-page .tfp-meeting-notes-actions > [data-notes-edit] {
     display: inline-flex !important;
     margin: 0 !important;
     float: none !important;
 }
-body .tfp-meeting-notes-page .tfp-meeting-notes-export {
-    display: flex !important;
-    align-items: flex-end !important;
-    justify-content: flex-start !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 12px 18px 0 !important;
-    margin: 0 !important;
+.tfp-meeting-notes-page .tfp-meeting-notes-table tfoot td {
+    border: 0 !important;
+    background: transparent !important;
+    padding-top: 12px !important;
+    padding-bottom: 0 !important;
 }
-body .tfp-meeting-notes-page .tfp-meeting-notes-export [data-notes-export] {
+.tfp-meeting-notes-page .tfp-meeting-notes-table tfoot .tfp-meeting-notes-export-cell {
+    text-align: left !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table tfoot [data-notes-export] {
     display: inline-flex !important;
     margin: 0 !important;
     float: none !important;
