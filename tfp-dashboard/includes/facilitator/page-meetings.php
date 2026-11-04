@@ -599,10 +599,7 @@ function tfp_facilitator_meetings_render_attendance($cohort, $course_id, $weeks,
         'tfp_homework_course' => (int) $course_id,
         'tfp_homework_cohort_filter' => (int) $cohort->ID,
     ], tfp_dashboard_get_url('tfp-dashboard-facilitator-homework'));
-    $tests_url = add_query_arg([
-        'tfp_qt_cohort' => (int) $cohort->ID,
-        'tfp_qt_week' => (int) $week_number,
-    ], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'));
+    $tests_url = tfp_facilitator_meetings_session_url((int) $cohort->ID, (int) $week_number, 'tests');
     ?>
     <div class="tfp-course-attendance-page" data-tfp-course-attendance>
         <button type="button" class="tfp-dash-pageheader__mobile-toggle" data-tfp-sidebar-toggle aria-label="<?php esc_attr_e('Open facilitator menu', 'tfp-dashboard'); ?>"><?php echo tfp_dashboard_icon('toggle'); ?></button>
@@ -893,10 +890,7 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         ['tfp_meeting_cohort_id', 'tfp_meeting_week', 'tfp_meeting_session_view', 'tfp_meeting_student_page'],
         $base_url
     );
-    $tests_url = add_query_arg(
-        ['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number],
-        tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')
-    );
+    $tests_url = tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests');
     // Demo IDs are strings (demo-1, demo-2); preserve them for JS selection.
     $first_student = !empty($students) ? (string) $students[0]['id'] : '';
     $first_question = !empty($questions) ? sanitize_key((string) ($questions[0]['id'] ?? '')) : '';
@@ -1196,7 +1190,7 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         <nav class="tfp-meeting-attendance-tabs" aria-label="<?php esc_attr_e('Course session sections', 'tfp-dashboard'); ?>">
             <span class="is-active" aria-current="page"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></span>
             <a href="<?php echo esc_url($homework_url); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
-            <a href="<?php echo esc_url(add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'))); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests')); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
         </nav>
