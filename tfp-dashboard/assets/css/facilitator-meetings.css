@@ -2448,3 +2448,39 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     background: #dff0ee !important;
     border-color: #00666e !important;
 }
+
+/* Facilitator session Test review — aligned with the existing course workspace. */
+.tfp-meeting-test-surface{overflow:hidden}
+.tfp-meeting-test-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:18px 24px}
+.tfp-meeting-test-stat{min-width:0;text-align:left;border:1px solid #e3e3e3;border-radius:13px;background:#eee;padding:14px 16px;box-shadow:0 3px 3px rgba(0,0,0,.2);color:#171717;cursor:pointer}
+.tfp-meeting-test-stat small,.tfp-meeting-test-stat span{display:block;font-size:11px}
+.tfp-meeting-test-stat strong{display:block;font-size:20px;line-height:1.5}
+.tfp-meeting-test-stat[aria-pressed=true]{outline:2px solid #00666e;outline-offset:1px}
+.tfp-meeting-test-question-tabs{display:flex;gap:0;overflow-x:auto;padding:0 24px;border-bottom:1px solid #bbb}
+.tfp-meeting-test-question-tabs button{flex:0 0 auto;min-width:72px;padding:12px 16px;border:0;border-bottom:2px solid transparent;background:transparent;color:#aaa;font-weight:700;cursor:pointer}
+.tfp-meeting-test-question-tabs button[aria-selected=true]{color:#171717;border-bottom-color:#00666e}
+.tfp-meeting-test-detail{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);min-height:520px}
+.tfp-meeting-test-reference{padding:28px 32px;border-right:1px solid #ddd}
+.tfp-meeting-test-reference h3{font-size:17px;line-height:1.45;margin:0 0 26px}
+.tfp-meeting-test-reference h4{color:#00666e;font-size:16px;margin:0 0 18px}
+.tfp-meeting-test-reference h5{font-size:14px;margin:16px 0 8px}
+.tfp-meeting-test-reference p,.tfp-meeting-test-reference blockquote{font-family:Georgia,serif;font-size:14px;line-height:1.7}
+.tfp-meeting-test-reference blockquote{border-left:4px solid #8b7936;padding-left:12px;margin-left:0}
+.tfp-meeting-test-notes{padding:26px 22px}
+.tfp-meeting-test-hint{font-size:11px;line-height:1.45;margin:0 0 18px}
+.tfp-meeting-test-notes form{border:1px solid #ddd;border-radius:8px;padding:14px;margin-bottom:20px}
+.tfp-meeting-test-notes select,.tfp-meeting-test-notes textarea{display:block;width:100%;margin:0 0 10px;padding:10px;border:1px solid #ddd;border-radius:5px;background:#fff}
+.tfp-meeting-test-notes form button{display:block;margin-left:auto}
+.tfp-meeting-test-notes [role=status]{font-size:12px;margin:8px 0 0}
+.tfp-meeting-test-notes h4{font-size:14px;margin:16px 0 10px}
+.tfp-meeting-test-student-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tfp-meeting-test-student-list button{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;padding:5px 6px;border:1px solid #ddd;border-radius:3px;background:#fff;font-size:10px;cursor:pointer}
+.tfp-meeting-test-student-list button:before{content:"";display:inline-block;width:5px;height:5px;margin-right:6px;border-radius:50%;background:#00666e;vertical-align:middle}
+.tfp-meeting-test-student-list button.is-active{background:#e8f3f2;border-color:#00666e}
+.tfp-meeting-test-legend{display:flex;gap:18px;border-top:1px solid #ddd;margin-top:18px;padding-top:12px;font-size:10px}
+.tfp-meeting-test-legend span:before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:#8a1717;margin-right:7px;vertical-align:middle}
+.tfp-meeting-test-legend span+span:before{background:#00666e}
+.tfp-meeting-test-footer{display:flex;justify-content:flex-end;padding:20px 24px;border-top:1px solid #ddd}
+.tfp-meeting-test-empty{padding:40px 24px}
+@media(max-width:900px){.tfp-meeting-test-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.tfp-meeting-test-detail{grid-template-columns:1fr}.tfp-meeting-test-reference{border-right:0;border-bottom:1px solid #ddd}.tfp-meeting-test-notes{padding:22px}}
+@media(max-width:560px){.tfp-meeting-test-stats{grid-template-columns:repeat(2,minmax(0,1fr));padding:14px}.tfp-meeting-test-reference{padding:22px 18px}.tfp-meeting-test-question-tabs{padding:0 12px}.tfp-meeting-test-student-list{grid-template-columns:repeat(2,minmax(0,1fr))}.tfp-meeting-test-footer{padding:16px}.tfp-meeting-test-footer a{width:100%;text-align:center;justify-content:center}}
