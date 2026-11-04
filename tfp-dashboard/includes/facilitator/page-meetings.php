@@ -1821,8 +1821,7 @@ function tfp_facilitator_meetings_render_session_tests($cohort, $week_number)
         <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id,$week_number,'exercise')); ?>">Exercises</a>
         <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id,$week_number,'notes')); ?>">Notes</a>
       </nav>
-      <section class="tfp-meeting-homework-surface tfp-meeting-test-surface"><header class="tfp-meeting-homework-surface__head"><h2>Tests</h2><?php if($demo_allowed): ?><a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? 'Exit Demo Preview' : 'Load Demo Data'); ?></a><?php endif; ?></header>
-       <?php if($demo_mode): ?><div class="tfp-meeting-homework-demo-notice" role="status">DEMO PREVIEW — 4 sample questions, 20 sample students and sample performance. Notes are read-only; no data is saved.</div><?php endif; ?>
+      <section class="tfp-meeting-homework-surface tfp-meeting-test-surface"><header class="tfp-meeting-homework-surface__head"><h2>Tests</h2></header>
       <?php if (!$stats): ?><div class="tfp-meeting-test-empty"><h3>No test questions found for this week.</h3><p>Add test questions to this course week to view question-level performance.</p></div>
       <?php else: ?>
         <div class="tfp-meeting-test-stats"><?php foreach($stats as $item): ?><button type="button" class="tfp-meeting-test-stat" data-test-question="<?php echo esc_attr($item['id']); ?>" aria-pressed="<?php echo $item['id']===$first['id']?'true':'false'; ?>"><small>Question <?php echo esc_html($item['number']); ?></small><strong><?php echo esc_html($item['wrong_pct']===null?'—':$item['wrong_pct'].'%'); ?></strong><span># Students Wrong</span></button><?php endforeach; ?></div>
@@ -2010,16 +2009,6 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
             <div><h1><?php echo esc_html($cohort->post_title); ?></h1><p><?php echo esc_html($course_title); ?></p></div>
             <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($back_url); ?>">↩ <?php esc_html_e('Back to All Meetings', 'tfp-dashboard'); ?></a>
         </header>
-        <?php if ($demo_allowed): ?>
-            <div class="tfp-meeting-closed-demo-control">
-                <?php if ($demo_mode): ?>
-                    <span role="status"><?php esc_html_e('DEMO PREVIEW — Sample data only. No database changes are made.', 'tfp-dashboard'); ?></span>
-                    <a class="tfp-dash-btn" href="<?php echo esc_url(remove_query_arg('tfp_closed_demo')); ?>"><?php esc_html_e('Exit Demo', 'tfp-dashboard'); ?></a>
-                <?php else: ?>
-                    <a class="tfp-dash-btn" href="<?php echo esc_url(add_query_arg('tfp_closed_demo', '1')); ?>"><?php esc_html_e('Load Demo Data', 'tfp-dashboard'); ?></a>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
         <nav class="tfp-meeting-homework-tabs" aria-label="<?php esc_attr_e('Course session sections', 'tfp-dashboard'); ?>">
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'attendance')); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'homework')); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
