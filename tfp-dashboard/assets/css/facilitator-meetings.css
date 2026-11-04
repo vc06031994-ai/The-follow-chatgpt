@@ -2800,3 +2800,65 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
         justify-content: center;
     }
 }
+
+
+/* Final Test page parity refinements — visual-only; preserve read-only demo behavior. */
+.tfp-meeting-test-page .tfp-meeting-test-detail {
+    grid-template-columns: minmax(0, 3fr) minmax(340px, 1fr);
+    align-items: stretch;
+}
+.tfp-meeting-test-page .tfp-meeting-test-reference {
+    min-width: 0;
+    padding: 22px 24px;
+}
+.tfp-meeting-test-page .tfp-meeting-test-notes {
+    min-width: 0;
+    border-left: 0;
+    padding: 18px 16px;
+}
+.tfp-meeting-test-page .tfp-meeting-test-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.tfp-meeting-test-page .tfp-meeting-test-stat {
+    min-height: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+}
+.tfp-meeting-test-page .tfp-meeting-test-stat strong {
+    line-height: 1.15;
+}
+.tfp-meeting-test-page .tfp-meeting-test-notes form button:disabled {
+    opacity: 1;
+    background: #00666e;
+    color: #fff;
+    cursor: not-allowed;
+}
+.tfp-meeting-test-page .tfp-meeting-test-student-list button {
+    min-height: 22px;
+    display: flex;
+    align-items: center;
+}
+.tfp-meeting-test-page .tfp-meeting-test-student-list button:focus-visible,
+.tfp-meeting-test-page .tfp-meeting-test-stat:focus-visible,
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button:focus-visible {
+    outline: 2px solid #00666e;
+    outline-offset: 2px;
+}
+@media (max-width: 1100px) {
+    .tfp-meeting-test-page .tfp-meeting-test-detail {
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+    }
+}
+@media (max-width: 900px) {
+    .tfp-meeting-test-page .tfp-meeting-test-detail {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+@media (max-width: 560px) {
+    .tfp-meeting-test-page .tfp-meeting-test-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
