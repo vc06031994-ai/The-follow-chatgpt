@@ -505,3 +505,51 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+
+/* Closed Session: export the visible scorecard, internal recap and observation audit. */
+document.addEventListener('DOMContentLoaded', function () {
+    var root = document.querySelector('.tfp-meeting-closed-page');
+    if (!root) return;
+    var button = root.querySelector('[data-closed-session-export]');
+    if (!button) return;
+
+    button.addEventListener('click', function () {
+        var rows = [];
+        function addRow(values) {
+            rows.push(values.map(function (value) {
+                return '"' + String(value == null ? '' : value).replace(/\s+/g, ' ').trim().replace(/"/g, '""') + '"';
+            }).join(','));
+        }
+
+        addRow(['Session Performance Scorecard', 'Value', 'Description']);
+        root.querySelectorAll('.tfp-meeting-closed-metrics article').forEach(function (card) {
+            addRow([
+                card.querySelector('small') ? card.querySelector('small').textContent : '',
+                card.querySelector('strong') ? card.querySelector('strong').textContent : '',
+                card.querySelector('span') ? card.querySelector('span').textContent : ''
+            ]);
+        });
+        addRow([]);
+        addRow(['Internal Session Recap']);
+        root.querySelectorAll('.tfp-meeting-closed-recap-grid article').forEach(function (item) {
+            addRow([item.querySelector('h4') ? item.querySelector('h4').textContent : '', item.querySelector('p') ? item.querySelector('p').textContent : '']);
+        });
+        addRow([]);
+        var table = root.querySelector('[data-closed-session-report]');
+        if (table) {
+            table.querySelectorAll('tr').forEach(function (tr) {
+                addRow(Array.from(tr.querySelectorAll('th,td')).map(function (cell) { return cell.innerText || cell.textContent || ''; }));
+            });
+        }
+        var blob = new Blob(['\uFEFF' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        var url = window.URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = 'closed-session-report.csv';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    });
+});
