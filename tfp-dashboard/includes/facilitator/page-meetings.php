@@ -1998,6 +1998,17 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
     $notes_url = tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes');
     $back_url = remove_query_arg(['tfp_meeting_cohort_id', 'tfp_meeting_week', 'tfp_meeting_student_page'], $base_url);
     ?>
+    <style>
+        /* Keep Closed Session links aligned with the dashboard teal palette. */
+        .tfp-meeting-closed-page .tfp-meeting-closed-breadcrumb a,
+        .tfp-meeting-closed-page .tfp-meeting-closed-notice a,
+        .tfp-meeting-closed-page .tfp-meeting-closed-breadcrumb a:hover,
+        .tfp-meeting-closed-page .tfp-meeting-closed-notice a:hover,
+        .tfp-meeting-closed-page .tfp-meeting-closed-breadcrumb a:focus,
+        .tfp-meeting-closed-page .tfp-meeting-closed-notice a:focus {
+            color: #006b70 !important;
+        }
+    </style>
     <div class="tfp-meeting-session-detail-page tfp-meeting-closed-page">
         <nav class="tfp-meeting-closed-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
             <a href="<?php echo esc_url(tfp_dashboard_get_url('tfp-dashboard-facilitator-home')); ?>"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></a>
