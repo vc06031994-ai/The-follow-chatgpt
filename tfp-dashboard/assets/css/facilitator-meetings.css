@@ -3552,3 +3552,37 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     text-align: left !important;
     white-space: nowrap;
 }
+
+
+/* Notes page: lock the Action column and Export control to consistent table edges. */
+.tfp-meeting-notes-page .tfp-meeting-notes-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(4),
+.tfp-meeting-notes-page .tfp-meeting-notes-table td:nth-child(4) {
+    width: 18% !important;
+    text-align: left !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table td.tfp-meeting-notes-actions {
+    vertical-align: middle !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-actions > [data-notes-edit] {
+    display: inline-flex !important;
+    margin: 0 !important;
+    vertical-align: middle !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-export {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: flex-end !important;
+    box-sizing: border-box !important;
+    padding: 12px 18px 0 !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-export [data-notes-export] {
+    display: inline-flex !important;
+    margin: 0 !important;
+    vertical-align: middle !important;
+}
