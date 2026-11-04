@@ -595,8 +595,8 @@ function tfp_facilitator_meetings_render_attendance($cohort, $course_id, $weeks,
             <a class="is-active" href="<?php echo esc_url($page_url); ?>" aria-current="page"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url($homework_url); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url($tests_url); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
-            <span aria-disabled="true"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></span>
-            <span aria-disabled="true"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></span>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url((int) $cohort->ID, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url((int) $cohort->ID, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
         </nav>
 
         <?php if ($saved_message !== ''): ?><div class="tfp-course-attendance-notice is-success" role="status"><?php echo esc_html($saved_message); ?></div><?php endif; ?>
@@ -917,8 +917,8 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
             <a href="<?php echo esc_url($attendance_url); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
             <span class="is-active" aria-current="page"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></span>
             <a href="<?php echo esc_url($tests_url); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
-            <span class="is-disabled" aria-disabled="true"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></span>
-            <span class="is-disabled" aria-disabled="true"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></span>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
         </nav>
 
         <section class="tfp-meeting-homework-surface">
@@ -1352,6 +1352,181 @@ function tfp_facilitator_meetings_save_attendance()
 }
 add_action('wp_ajax_tfp_facilitator_meeting_save_attendance', 'tfp_facilitator_meetings_save_attendance');
 
+
+function tfp_facilitator_meetings_session_url($cohort_id, $week_number, $view)
+{
+    return add_query_arg([
+        'tfp_meeting_cohort_id' => absint($cohort_id),
+        'tfp_meeting_week' => absint($week_number),
+        'tfp_meeting_session_view' => sanitize_key($view),
+    ], tfp_facilitator_meetings_url());
+}
+
+/**
+ * Facilitator view of the exercise instructions configured on a LearnDash week.
+ * This deliberately reads existing lesson metadata; it does not invent submissions.
+ */
+function tfp_facilitator_meetings_render_session_exercise($cohort, $week_number)
+{
+    $cohort_id = absint($cohort->ID);
+    $course_id = (int) get_post_meta($cohort_id, '_related_course', true);
+    $weeks = $course_id && function_exists('tfp_ld_get_weeks') ? array_values((array) tfp_ld_get_weeks($course_id)) : [];
+    $lesson = $weeks[max(0, absint($week_number) - 1)] ?? null;
+    if (!$lesson instanceof WP_Post) {
+        wp_die(esc_html__('The selected course week could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    $title = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_exercise_title', true);
+    $group = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_exercise_group_type', true);
+    $format = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_exercise_format', true);
+    $description = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_exercise_description', true);
+    $purpose = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_exercise_purpose', true);
+    ?>
+    <div class="tfp-meeting-session-detail-page">
+        <header class="tfp-meeting-homework-header">
+            <div><h1><?php echo esc_html($cohort->post_title); ?></h1><p><?php echo esc_html($lesson->post_title); ?></p></div>
+            <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(tfp_facilitator_meetings_url(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => absint($week_number)])); ?>">↩ <?php esc_html_e('Back to Meeting', 'tfp-dashboard'); ?></a>
+        </header>
+        <nav class="tfp-meeting-homework-tabs" aria-label="<?php esc_attr_e('Course session sections', 'tfp-dashboard'); ?>">
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'attendance')); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'homework')); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => absint($week_number)], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'))); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
+            <a class="is-active" href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+        </nav>
+        <section class="tfp-meeting-homework-surface">
+            <header class="tfp-meeting-homework-surface__head"><h2><?php esc_html_e('Weekly Exercise', 'tfp-dashboard'); ?></h2></header>
+            <div class="tfp-meeting-homework-reference">
+                <?php if ($title || $description || $purpose): ?>
+                    <h3><?php echo esc_html($title ?: __('Exercise Instructions', 'tfp-dashboard')); ?></h3>
+                    <?php if ($group || $format): ?><p><?php echo esc_html(implode(' • ', array_filter([$group, $format]))); ?></p><?php endif; ?>
+                    <?php if ($description): ?><h4><?php esc_html_e('Description', 'tfp-dashboard'); ?></h4><?php echo wp_kses_post(wpautop($description)); ?><?php endif; ?>
+                    <?php if ($purpose): ?><h4><?php esc_html_e('Purpose', 'tfp-dashboard'); ?></h4><?php echo wp_kses_post(wpautop($purpose)); ?><?php endif; ?>
+                <?php else: ?>
+                    <p><?php esc_html_e('No exercise instructions have been configured for this week.', 'tfp-dashboard'); ?></p>
+                <?php endif; ?>
+                <p class="description"><?php esc_html_e('Exercise instructions are loaded from the selected course week. A separate student exercise-submission record is not currently available in the existing data model.', 'tfp-dashboard'); ?></p>
+            </div>
+        </section>
+    </div>
+    <?php
+}
+
+/**
+ * Display existing student reflections and allow facilitators to append a weekly note.
+ * Uses the existing lesson and user metadata keys used by the student week experience.
+ */
+function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
+{
+    $cohort_id = absint($cohort->ID);
+    $course_id = (int) get_post_meta($cohort_id, '_related_course', true);
+    $weeks = $course_id && function_exists('tfp_ld_get_weeks') ? array_values((array) tfp_ld_get_weeks($course_id)) : [];
+    $lesson = $weeks[max(0, absint($week_number) - 1)] ?? null;
+    if (!$lesson instanceof WP_Post) {
+        wp_die(esc_html__('The selected course week could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    $error = '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tfp_meeting_save_facilitator_note'])) {
+        $nonce = isset($_POST['tfp_meeting_notes_nonce']) ? sanitize_text_field(wp_unslash($_POST['tfp_meeting_notes_nonce'])) : '';
+        if (!wp_verify_nonce($nonce, 'tfp_meeting_notes_' . $cohort_id . '_' . (int) $lesson->ID)) {
+            $error = __('Security check failed. Please refresh and try again.', 'tfp-dashboard');
+        } else {
+            $note_text = isset($_POST['facilitator_note']) ? sanitize_textarea_field(wp_unslash($_POST['facilitator_note'])) : '';
+            if ($note_text === '') {
+                $error = __('Please enter a note before saving.', 'tfp-dashboard');
+            } else {
+                $meta_key = 'tfp_week_meeting_facilitator_notes_list';
+                $existing = get_post_meta($lesson->ID, $meta_key, true);
+                $list = [];
+                if (is_string($existing) && $existing !== '') {
+                    $decoded = json_decode($existing, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) $list = $decoded;
+                } elseif (is_array($existing)) {
+                    $list = $existing;
+                }
+                $list[] = ['author_id' => get_current_user_id(), 'text' => $note_text, 'created_at' => current_time('mysql')];
+                update_post_meta($lesson->ID, $meta_key, wp_json_encode($list));
+
+                // Maintain the legacy notes field used by the student-facing weekly meeting view.
+                $legacy = (string) get_post_meta($lesson->ID, 'tfp_week_meeting_facilitator_notes', true);
+                $legacy .= '<p class="tfp-week__meeting-facilitator-note">' . esc_html($note_text) . '</p>';
+                update_post_meta($lesson->ID, 'tfp_week_meeting_facilitator_notes', $legacy);
+
+                wp_safe_redirect(add_query_arg([
+                    'tfp_meeting_cohort_id' => $cohort_id,
+                    'tfp_meeting_week' => absint($week_number),
+                    'tfp_meeting_session_view' => 'notes',
+                    'notes_saved' => '1',
+                ], tfp_facilitator_meetings_url()));
+                exit;
+            }
+        }
+    }
+
+    $raw_notes = get_post_meta($lesson->ID, 'tfp_week_meeting_facilitator_notes_list', true);
+    $facilitator_notes = [];
+    if (is_string($raw_notes) && $raw_notes !== '') {
+        $decoded = json_decode($raw_notes, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) $facilitator_notes = $decoded;
+    } elseif (is_array($raw_notes)) {
+        $facilitator_notes = $raw_notes;
+    }
+
+    $reflections = [];
+    $student_ids = function_exists('tfp_facilitator_cohort_students') ? (array) tfp_facilitator_cohort_students($cohort_id) : [];
+    $reflection_key = 'tfp_week_meeting_notes_' . (int) $lesson->ID;
+    foreach ($student_ids as $student_id) {
+        $user = get_userdata($student_id);
+        $text = trim((string) get_user_meta($student_id, $reflection_key, true));
+        if ($user && $text !== '') $reflections[] = ['name' => $user->display_name, 'text' => $text];
+    }
+    ?>
+    <div class="tfp-meeting-session-detail-page">
+        <header class="tfp-meeting-homework-header">
+            <div><h1><?php echo esc_html($cohort->post_title); ?></h1><p><?php echo esc_html($lesson->post_title); ?></p></div>
+            <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(tfp_facilitator_meetings_url(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => absint($week_number)])); ?>">↩ <?php esc_html_e('Back to Meeting', 'tfp-dashboard'); ?></a>
+        </header>
+        <nav class="tfp-meeting-homework-tabs" aria-label="<?php esc_attr_e('Course session sections', 'tfp-dashboard'); ?>">
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'attendance')); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'homework')); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => absint($week_number)], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'))); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
+            <a class="is-active" href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+        </nav>
+        <section class="tfp-meeting-homework-surface">
+            <header class="tfp-meeting-homework-surface__head"><h2><?php esc_html_e('Weekly Notes', 'tfp-dashboard'); ?></h2></header>
+            <div class="tfp-meeting-homework-content">
+                <div class="tfp-meeting-homework-reference">
+                    <h3><?php esc_html_e('Student Reflections', 'tfp-dashboard'); ?></h3>
+                    <?php if ($reflections): foreach ($reflections as $reflection): ?>
+                        <article class="tfp-meeting-homework-answer-preview"><strong><?php echo esc_html($reflection['name']); ?></strong><div><?php echo wp_kses_post(wpautop($reflection['text'])); ?></div></article>
+                    <?php endforeach; else: ?>
+                        <p><?php esc_html_e('No student reflections have been submitted for this week.', 'tfp-dashboard'); ?></p>
+                    <?php endif; ?>
+                </div>
+                <aside class="tfp-meeting-homework-notes">
+                    <h3><?php esc_html_e('Facilitator Notes', 'tfp-dashboard'); ?></h3>
+                    <?php if (isset($_GET['notes_saved'])): ?><p role="status"><?php esc_html_e('Note saved successfully.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                    <?php if ($error): ?><p role="alert"><?php echo esc_html($error); ?></p><?php endif; ?>
+                    <?php if ($facilitator_notes): foreach ($facilitator_notes as $entry): ?>
+                        <article class="tfp-meeting-homework-answer-preview"><?php echo wp_kses_post(wpautop((string) ($entry['text'] ?? ''))); ?><small><?php echo esc_html((string) ($entry['created_at'] ?? '')); ?></small></article>
+                    <?php endforeach; else: ?>
+                        <p><?php esc_html_e('No facilitator notes have been posted yet.', 'tfp-dashboard'); ?></p>
+                    <?php endif; ?>
+                    <form method="post">
+                        <?php wp_nonce_field('tfp_meeting_notes_' . $cohort_id . '_' . (int) $lesson->ID, 'tfp_meeting_notes_nonce'); ?>
+                        <label for="tfp-meeting-facilitator-note"><?php esc_html_e('Add a facilitator note', 'tfp-dashboard'); ?></label>
+                        <textarea id="tfp-meeting-facilitator-note" name="facilitator_note" rows="4" maxlength="5000" required></textarea>
+                        <button type="submit" name="tfp_meeting_save_facilitator_note" value="1" class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Save Note', 'tfp-dashboard'); ?></button>
+                    </form>
+                </aside>
+            </div>
+        </section>
+    </div>
+    <?php
+}
+
 function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
 {
     $session_view = sanitize_key(wp_unslash($_GET['tfp_meeting_session_view'] ?? ''));
@@ -1361,6 +1536,14 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
     }
     if ($session_view === 'homework') {
         tfp_facilitator_meetings_render_session_homework($cohort, absint($_GET['tfp_meeting_week'] ?? 1));
+        return;
+    }
+    if ($session_view === 'exercise') {
+        tfp_facilitator_meetings_render_session_exercise($cohort, absint($_GET['tfp_meeting_week'] ?? 1));
+        return;
+    }
+    if ($session_view === 'notes') {
+        tfp_facilitator_meetings_render_session_notes($cohort, absint($_GET['tfp_meeting_week'] ?? 1));
         return;
     }
 
