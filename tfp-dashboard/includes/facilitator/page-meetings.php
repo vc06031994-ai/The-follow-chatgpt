@@ -1973,8 +1973,20 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
         wp_die(esc_html__('You do not have access to this cohort.', 'tfp-dashboard'), '', ['response' => 403]);
     }
 
+    // Demo preview is available only on staging/development and never writes to the database.
+    $demo_environment = function_exists('wp_get_environment_type') ? wp_get_environment_type() : 'production';
+    $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
+    $demo_path = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_PATH));
+    $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
+        || in_array($demo_host, ['localhost', '127.0.0.1'], true)
+        || (bool) preg_match('/\\.(local|test|localhost)$/i', $demo_host)
+        || strpos($demo_path, '/thefollowprojectstaging') !== false;
+    $demo_mode = $demo_allowed
+        && isset($_GET['tfp_closed_demo'])
+        && sanitize_text_field(wp_unslash($_GET['tfp_closed_demo'])) === '1';
+
     $posted = get_post_meta($lesson->ID, 'tfp_meeting_session_posted_' . $cohort_id, true);
-    $is_posted = is_array($posted) && !empty($posted['posted']);
+    $is_posted = (is_array($posted) && !empty($posted['posted'])) || $demo_mode;
     $student_ids = function_exists('tfp_facilitator_cohort_students')
         ? array_values(array_unique(array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id))))
         : [];
@@ -2056,6 +2068,26 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
     });
     $weekly_progress = $progress_values ? (int) round(array_sum($progress_values) / count($progress_values)) : null;
     $overall_grade = $grade_values ? (int) round(array_sum($grade_values) / count($grade_values)) : null;
+    if ($demo_mode) {
+        // Reference-only sample content. This data is rendered in memory and is never persisted.
+        $attendance_percent = 100;
+        $present_count = 25;
+        $weekly_progress = 92;
+        $overall_grade = 88;
+        $notes_count = 45;
+        $reflections = [
+            'atmosphere' => 'The teaching on spiritual gifts land deeply today. The group expressed vulnerability during the activation phase that we haven’t seen in previous weeks.',
+            'prayer_hurdle' => 'The teaching on spiritual gifts land deeply today. The group expressed vulnerability during the activation phase that we haven’t seen in previous weeks.',
+        ];
+        $audit_rows = [
+            ['name' => 'Sharon Stone', 'type' => 'Exercise Log', 'note' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. The group expressed meaningful observations during the session.'],
+            ['name' => 'Lena Merrick', 'type' => 'Warm-up Routine', 'note' => 'Exercise Log'],
+            ['name' => 'Derek Holloway', 'type' => 'Homework Review', 'note' => 'Sin - The Beginning'],
+            ['name' => 'Cassandra Voss', 'type' => 'Cool-down Stretches', 'note' => 'Morning meditation enhanced focus and reduced stress levels significantly.'],
+            ['name' => 'Elias Montague', 'type' => 'Progress Notes', 'note' => 'Dietary adjustments made, focusing on increased protein and reduced sugar intake.'],
+        ];
+    }
+
     $course_title = $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard');
     $base_url = tfp_facilitator_meetings_url();
     $notes_url = tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes');
@@ -2072,6 +2104,16 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
             <div><h1><?php echo esc_html($cohort->post_title); ?></h1><p><?php echo esc_html($course_title); ?></p></div>
             <a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url($back_url); ?>">↩ <?php esc_html_e('Back to All Meetings', 'tfp-dashboard'); ?></a>
         </header>
+        <?php if ($demo_allowed): ?>
+            <div class="tfp-meeting-closed-demo-control">
+                <?php if ($demo_mode): ?>
+                    <span role="status"><?php esc_html_e('DEMO PREVIEW — Sample data only. No database changes are made.', 'tfp-dashboard'); ?></span>
+                    <a class="tfp-dash-btn" href="<?php echo esc_url(remove_query_arg('tfp_closed_demo')); ?>"><?php esc_html_e('Exit Demo', 'tfp-dashboard'); ?></a>
+                <?php else: ?>
+                    <a class="tfp-dash-btn" href="<?php echo esc_url(add_query_arg('tfp_closed_demo', '1')); ?>"><?php esc_html_e('Load Demo Data', 'tfp-dashboard'); ?></a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
         <nav class="tfp-meeting-homework-tabs" aria-label="<?php esc_attr_e('Course session sections', 'tfp-dashboard'); ?>">
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'attendance')); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'homework')); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a>
