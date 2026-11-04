@@ -786,7 +786,12 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
 
 
     // Staging-only sample preview; demo answers and students are never persisted.
-    $demo_allowed = wp_get_environment_type() === 'staging' || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_environment = wp_get_environment_type();
+    $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
+    // Enable previews only in staging/development or local environments; never on production.
+    $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
+        || in_array($demo_host, ['localhost', '127.0.0.1'], true)
+        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host);
     $demo_mode = $demo_allowed && isset($_GET['tfp_homework_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_homework_demo'])) === '1';
     if ($demo_mode) {
         $questions = [
@@ -1056,7 +1061,12 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
     });
 
     // Staging-only demo preview; sample records stay in memory and are never saved.
-    $demo_allowed = wp_get_environment_type() === 'staging' || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_environment = wp_get_environment_type();
+    $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
+    // Enable previews only in staging/development or local environments; never on production.
+    $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
+        || in_array($demo_host, ['localhost', '127.0.0.1'], true)
+        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host);
     $demo_mode = $demo_allowed && isset($_GET['tfp_attendance_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_attendance_demo'])) === '1';
     if ($demo_mode) {
         $demo_names = ['Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett', 'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell'];
@@ -1487,7 +1497,12 @@ function tfp_facilitator_meetings_render_session_tests($cohort, $week_number)
     $student_ids = function_exists('tfp_facilitator_cohort_students') ? array_values(array_unique(array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id)))) : [];
     $questions = function_exists('tfp_week_get_test_questions') ? (array) tfp_week_get_test_questions($lesson->ID, false) : [];
     // Demo preview is staging-only and uses in-memory sample data; it never writes to student records.
-    $demo_allowed = wp_get_environment_type() === 'staging' || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_environment = wp_get_environment_type();
+    $demo_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
+    // Enable previews only in staging/development or local environments; never on production.
+    $demo_allowed = in_array($demo_environment, ['staging', 'development', 'local'], true)
+        || in_array($demo_host, ['localhost', '127.0.0.1'], true)
+        || (bool) preg_match('/\.(local|test|localhost)$/i', $demo_host);
     $demo_mode = $demo_allowed && isset($_GET['tfp_test_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_test_demo'])) === '1';
     $stats = [];
     foreach ($questions as $i => $q) {
