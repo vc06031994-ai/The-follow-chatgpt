@@ -3811,3 +3811,48 @@ body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-tabl
 body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table tbody tr:hover {
     background: transparent !important;
 }
+
+
+/* Final Notes table parity with Closed Session audit: no vertical grid lines or boxed table. */
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table {
+    width: 100% !important;
+    min-width: 760px !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table thead,
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tbody,
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tr,
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table th,
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table td {
+    background: transparent !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    box-shadow: none !important;
+}
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table th,
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table td {
+    padding: 8px 18px !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid #e7e7e7 !important;
+    text-align: left !important;
+    vertical-align: middle !important;
+    line-height: 1.45 !important;
+}
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table th {
+    color: #151411 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+}
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tbody tr.is-missing {
+    outline: 1px solid #d52b3b !important;
+    outline-offset: -1px !important;
+    background: transparent !important;
+}
+body .tfp-meeting-notes-page .tfp-meeting-notes-review .tfp-meeting-notes-table tbody tr:not(.is-missing):hover {
+    background: transparent !important;
+}
