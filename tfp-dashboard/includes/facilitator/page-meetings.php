@@ -1626,7 +1626,7 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
         } else {
             $action = sanitize_key(wp_unslash($_POST['tfp_notes_action']));
             $student_id = absint($_POST['student_id'] ?? 0);
-            $allowed_cohorts = array_map('absint', wp_list_pluck(tfp_facilitator_meetings_cohorts_safe(), 'ID'));
+            $allowed_cohorts = array_map('absint', wp_list_pluck(tfp_facilitator_meetings_cohorts(), 'ID'));
             $valid_students = array_map('absint', $student_ids);
 
             if (!in_array($cohort_id, $allowed_cohorts, true) || ($student_id && !in_array($student_id, $valid_students, true))) {
