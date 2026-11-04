@@ -2288,3 +2288,47 @@ body .tfp-meeting-attendance-page .tfp-meeting-attendance-save:disabled {
     }
 }
 
+/* Cohort-specific Meetings — safe sample-data preview controls. */
+.tfp-meeting-cohort-demo-tools {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 12px;
+}
+.tfp-meeting-cohort-demo-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid #00666e;
+    border-radius: 7px;
+    background: #fff;
+    color: #00666e;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.tfp-meeting-cohort-demo-toggle:hover {
+    background: #00666e;
+    color: #fff;
+}
+.tfp-meeting-cohort-demo-notice {
+    margin: 0 0 16px;
+    padding: 11px 14px;
+    border: 1px solid #e4c56d;
+    border-radius: 6px;
+    background: #fff8df;
+    color: #604b12;
+    font-size: 12px;
+    line-height: 1.45;
+}
+.tfp-meeting-cohort-page .is-demo-disabled {
+    opacity: .62;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+@media (max-width: 767px) {
+    .tfp-meeting-cohort-demo-tools { justify-content: stretch; }
+    .tfp-meeting-cohort-demo-toggle { width: 100%; }
+}
+
