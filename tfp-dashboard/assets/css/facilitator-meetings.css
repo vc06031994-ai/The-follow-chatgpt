@@ -3187,3 +3187,69 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
         padding-left: 12px;
     }
 }
+
+
+/* Test page theme-state correction: prevent global theme pink hover/focus styles. */
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button:hover,
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button:focus,
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button:active {
+    background: #e8f3f2 !important;
+    color: #00666e !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-left: 0 !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button[aria-selected="true"],
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button[aria-selected="true"]:hover,
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button[aria-selected="true"]:focus,
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button[aria-selected="true"]:active {
+    background: #fff !important;
+    color: #151411 !important;
+    border-bottom: 2px solid #00666e !important;
+    box-shadow: none !important;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-student-list button:hover,
+.tfp-meeting-test-page .tfp-meeting-test-student-list button:focus,
+.tfp-meeting-test-page .tfp-meeting-test-student-list button:active {
+    background: #e8f3f2 !important;
+    border-color: #7fb8b3 !important;
+    color: #151411 !important;
+    box-shadow: none !important;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-student-list button.is-active,
+.tfp-meeting-test-page .tfp-meeting-test-student-list button.is-active:hover,
+.tfp-meeting-test-page .tfp-meeting-test-student-list button.is-active:focus,
+.tfp-meeting-test-page .tfp-meeting-test-student-list button.is-active:active {
+    background: #dff0ee !important;
+    border-color: #00666e !important;
+    color: #151411 !important;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stat:focus,
+.tfp-meeting-test-page .tfp-meeting-test-stat:active {
+    background: #e8f3f2 !important;
+    border-color: #7fb8b3 !important;
+    color: #151411 !important;
+    box-shadow: 0 0 0 1px rgba(0, 102, 110, .12), 0 3px 3px rgba(0, 0, 0, .14) !important;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stat[aria-pressed="true"],
+.tfp-meeting-test-page .tfp-meeting-test-stat[aria-pressed="true"]:hover,
+.tfp-meeting-test-page .tfp-meeting-test-stat[aria-pressed="true"]:focus,
+.tfp-meeting-test-page .tfp-meeting-test-stat[aria-pressed="true"]:active {
+    border-color: #00666e !important;
+    background: #eeeeee !important;
+    color: #151411 !important;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes form button:hover,
+.tfp-meeting-test-page .tfp-meeting-test-footer a:hover {
+    background: #00545b !important;
+    border-color: #00545b !important;
+    color: #fff !important;
+}
