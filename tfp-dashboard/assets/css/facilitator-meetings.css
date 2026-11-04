@@ -2862,3 +2862,328 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+
+/* Test workspace — final visual parity with the supplied Facilitator Course / Test reference.
+   Scoped to this page only; note saving, question switching and student selection remain unchanged. */
+.tfp-meeting-test-page .tfp-meeting-test-surface {
+    border-color: #d0d0d0;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.tfp-meeting-test-page .tfp-meeting-homework-surface__head {
+    min-height: 72px;
+    box-sizing: border-box;
+    padding: 22px 24px;
+}
+
+.tfp-meeting-test-page .tfp-meeting-homework-surface__head h2 {
+    font: 700 16px/1.3 var(--tfp-dash-font, inherit) !important;
+    color: #151411 !important;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stats {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    padding: 18px 24px 10px;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stat {
+    display: flex;
+    min-width: 0;
+    min-height: 86px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 15px;
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+    background: #eeeeee;
+    color: #151411;
+    text-align: left;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, .18);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stat small,
+.tfp-meeting-test-page .tfp-meeting-test-stat span {
+    color: #333333;
+    font: 500 10px/1.3 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stat strong {
+    margin: 0;
+    color: #151411;
+    font: 700 19px/1.2 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stat[aria-pressed="true"] {
+    outline: none;
+    border-color: #00666e;
+    background: #eeeeee;
+    box-shadow: 0 0 0 1px #00666e, 0 3px 3px rgba(0, 0, 0, .14);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-stat:hover {
+    border-color: #7fb8b3;
+    background: #e8f3f2;
+    color: #151411;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs {
+    min-height: 50px;
+    padding: 10px 24px 0;
+    border-bottom-color: #d3d3d3;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button {
+    min-width: 68px;
+    padding: 9px 14px 8px;
+    color: #bcbcbc;
+    font: 600 14px/1.2 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-question-tabs button[aria-selected="true"] {
+    border-bottom: 2px solid #00666e;
+    color: #151411;
+    font-weight: 700;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-detail {
+    grid-template-columns: minmax(0, 1.9fr) minmax(320px, 1fr);
+    min-height: 634px;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-reference {
+    min-width: 0;
+    padding: 24px 34px 30px;
+    border-right: 1px solid #dedede;
+    border-bottom: 0;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-reference h3 {
+    margin: 0 0 28px;
+    color: #151411;
+    font: 700 16px/1.35 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-reference h4 {
+    margin: 0 0 20px;
+    color: #00717a;
+    font: 700 16px/1.3 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-reference h5 {
+    margin: 18px 0 10px;
+    color: #151411;
+    font: 700 13px/1.3 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-reference p,
+.tfp-meeting-test-page .tfp-meeting-test-reference blockquote {
+    margin-bottom: 12px;
+    color: #171717;
+    font: 14px/1.65 Georgia, serif;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-reference blockquote {
+    margin-top: 18px;
+    padding: 4px 0 4px 12px;
+    border-left: 4px solid #a18c39;
+    font-style: italic;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes {
+    min-width: 0;
+    padding: 28px 24px 22px;
+    border-left: 0;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-hint {
+    margin: 0 0 18px;
+    color: #333333;
+    font: 500 10px/1.45 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes form {
+    display: flex;
+    min-height: 205px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin: 0 0 20px;
+    padding: 16px;
+    border: 1px solid #dedede;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes select {
+    min-height: 20px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #00717a;
+    font: 700 13px/1.3 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes textarea {
+    min-height: 104px;
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    background: transparent;
+    color: #333333;
+    font: 13px/1.5 Georgia, serif;
+    resize: vertical;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes form button {
+    align-self: flex-end;
+    min-height: 30px;
+    margin: 0;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 8px;
+    background: #00666e;
+    color: #fff;
+    font: 500 12px/1.2 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes form button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-notes h4 {
+    margin: 0 0 12px;
+    color: #151411;
+    font: 700 13px/1.3 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-student-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px 6px;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-student-list button {
+    display: flex;
+    min-width: 0;
+    min-height: 21px;
+    align-items: center;
+    overflow: hidden;
+    padding: 4px 6px;
+    border: 1px solid #dedede;
+    border-radius: 3px;
+    background: #fff;
+    color: #151411;
+    font: 500 10px/1.2 var(--tfp-dash-font, inherit);
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-student-list button:before {
+    flex: 0 0 5px;
+    width: 5px;
+    height: 5px;
+    margin-right: 6px;
+    background: #00666e;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-student-list button.is-active {
+    border-color: #00666e;
+    background: #eff8f7;
+    color: #151411;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-legend {
+    gap: 18px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e2e2;
+    color: #333333;
+    font: 500 10px/1.3 var(--tfp-dash-font, inherit);
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-footer {
+    min-height: 86px;
+    box-sizing: border-box;
+    padding: 20px 28px 24px;
+    border-top: 1px solid #dedede;
+}
+
+.tfp-meeting-test-page .tfp-meeting-test-footer a {
+    min-height: 40px;
+    padding: 0 18px;
+    border-radius: 8px;
+    background: #00666e;
+    font: 500 12px/1.2 var(--tfp-dash-font, inherit);
+}
+
+@media (max-width: 1100px) {
+    .tfp-meeting-test-page .tfp-meeting-test-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-detail {
+        grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .tfp-meeting-test-page .tfp-meeting-test-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        padding: 14px;
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-detail {
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 0;
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-reference {
+        padding: 20px 16px;
+        border-right: 0;
+        border-bottom: 1px solid #dedede;
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-notes {
+        padding: 20px 16px;
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-student-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-footer {
+        padding: 16px;
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-footer a {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .tfp-meeting-test-page .tfp-meeting-test-stats {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-stat {
+        min-height: 72px;
+    }
+
+    .tfp-meeting-test-page .tfp-meeting-test-question-tabs {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+}
