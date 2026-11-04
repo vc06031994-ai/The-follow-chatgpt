@@ -462,3 +462,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderStudent();
 });
+
+
+/* Facilitator Course > Notes: row editing and observation CSV export. */
+document.addEventListener('DOMContentLoaded', function () {
+    var root = document.querySelector('.tfp-meeting-notes-page');
+    if (!root) return;
+
+    root.querySelectorAll('[data-notes-edit]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var row = button.closest('[data-notes-row]');
+            var form = row && row.querySelector('.tfp-meeting-notes-edit');
+            if (!form) return;
+            form.hidden = !form.hidden;
+            button.textContent = form.hidden
+                ? (row.classList.contains('is-missing') ? 'Add Note' : 'Edit')
+                : 'Cancel';
+        });
+    });
+
+    var exportButton = root.querySelector('[data-notes-export]');
+    if (exportButton) {
+        exportButton.addEventListener('click', function () {
+            var table = root.querySelector('.tfp-meeting-notes-table');
+            if (!table) return;
+            var csv = Array.from(table.querySelectorAll('tr')).map(function (tr) {
+                return Array.from(tr.querySelectorAll('th,td')).map(function (cell) {
+                    var value = (cell.innerText || cell.textContent || '')
+                        .replace(/\s+/g, ' ').trim().replace(/"/g, '""');
+                    return '"' + value + '"';
+                }).join(',');
+            }).join('\r\n');
+            var blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8;'});
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = 'session-observation-review.csv';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        });
+    }
+});
