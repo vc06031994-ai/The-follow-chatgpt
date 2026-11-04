@@ -2414,3 +2414,37 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
         padding: 10px !important;
     }
 }
+
+
+/* Unified teal hover state for Homework interactive controls.
+   Replaces theme/plugin pink hover styling without changing selected states. */
+.tfp-meeting-homework-question-tabs button:hover,
+.tfp-meeting-homework-question-tabs button:focus:not(:focus-visible) {
+    background: #e8f3f2 !important;
+    color: #00666e !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+.tfp-meeting-homework-question-tabs button.is-active:hover {
+    background: #e8f3f2 !important;
+    color: #00666e !important;
+    border-bottom: 2px solid #00666e !important;
+}
+.tfp-meeting-homework-metric:hover,
+.tfp-meeting-homework-metric:focus-visible {
+    background: #e8f3f2 !important;
+    border-color: #7fb8b3 !important;
+    color: #151411 !important;
+    box-shadow: 0 0 0 1px rgba(0, 102, 110, .12), 0 3px 3px rgba(0, 0, 0, .14) !important;
+}
+.tfp-meeting-homework-student-list button:hover,
+.tfp-meeting-homework-student-list button:focus-visible {
+    background: #e8f3f2 !important;
+    border-color: #7fb8b3 !important;
+    color: #151411 !important;
+    box-shadow: none !important;
+}
+.tfp-meeting-homework-student-list button.is-active:hover {
+    background: #dff0ee !important;
+    border-color: #00666e !important;
+}
