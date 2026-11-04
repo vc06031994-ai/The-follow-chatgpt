@@ -3586,3 +3586,17 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     margin: 0 !important;
     vertical-align: middle !important;
 }
+
+
+/* Final alignment correction: Action heading, Edit and Export share one right edge. */
+.tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(4),
+.tfp-meeting-notes-page .tfp-meeting-notes-table td:nth-child(4) {
+    text-align: right !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-actions > [data-notes-edit] {
+    margin-left: auto !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-export {
+    justify-content: flex-end !important;
+    padding-right: 18px !important;
+}
