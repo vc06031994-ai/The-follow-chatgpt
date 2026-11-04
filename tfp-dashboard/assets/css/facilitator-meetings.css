@@ -2048,6 +2048,30 @@ body .tfp-meeting-attendance-page .tfp-meeting-attendance-save:disabled {
     border-bottom-color: #00666e;
     color: #151411;
 }
+
+/* Prevent theme button-focus styles from adding a pink fill or dark border. */
+.tfp-meeting-homework-question-tabs button:focus,
+.tfp-meeting-homework-question-tabs button:active,
+.tfp-meeting-homework-question-tabs button:focus-visible {
+    background: transparent !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-left: 0 !important;
+    box-shadow: none !important;
+}
+.tfp-meeting-homework-question-tabs button:focus {
+    outline: none !important;
+}
+.tfp-meeting-homework-question-tabs button:focus-visible {
+    outline: 2px solid #00666e !important;
+    outline-offset: 2px;
+}
+.tfp-meeting-homework-question-tabs button.is-active,
+.tfp-meeting-homework-question-tabs button.is-active:focus,
+.tfp-meeting-homework-question-tabs button.is-active:active {
+    border-bottom: 2px solid #00666e !important;
+    color: #151411 !important;
+}
 .tfp-meeting-homework-content {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(300px, .95fr);
