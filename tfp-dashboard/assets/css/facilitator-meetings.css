@@ -3502,3 +3502,53 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     border-color: #00666e !important;
     opacity: .55;
 }
+
+
+/* Notes observation table: clean, borderless reference layout with consistent column alignment. */
+.tfp-meeting-notes-page .tfp-meeting-notes-review {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 18px 0 12px !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table,
+.tfp-meeting-notes-page .tfp-meeting-notes-table thead,
+.tfp-meeting-notes-page .tfp-meeting-notes-table tbody,
+.tfp-meeting-notes-page .tfp-meeting-notes-table tr,
+.tfp-meeting-notes-page .tfp-meeting-notes-table th,
+.tfp-meeting-notes-page .tfp-meeting-notes-table td {
+    background: transparent !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table {
+    border: 0 !important;
+    border-collapse: collapse !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table th {
+    background: transparent !important;
+    font-weight: 700;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table th,
+.tfp-meeting-notes-page .tfp-meeting-notes-table td {
+    padding: 8px 18px !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid #e7e7e7 !important;
+    vertical-align: middle !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(1) { width: 14% !important; }
+.tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(2) { width: 17% !important; }
+.tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(3) { width: 51% !important; }
+.tfp-meeting-notes-page .tfp-meeting-notes-table th:nth-child(4) { width: 18% !important; }
+.tfp-meeting-notes-page .tfp-meeting-notes-table tbody tr.is-missing {
+    outline: 1px solid #d52b3b !important;
+    outline-offset: -1px;
+    background: transparent !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table tbody tr:not(.is-missing):hover {
+    background: transparent !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-actions {
+    text-align: left !important;
+    white-space: nowrap;
+}
