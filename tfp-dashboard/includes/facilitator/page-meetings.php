@@ -1801,9 +1801,14 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
                         <?php endforeach; ?>
                         <?php if (!$rows): ?><tr><td colspan="4"><?php esc_html_e('No students are assigned to this cohort.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"></td>
+                                <td class="tfp-meeting-notes-export-cell"><button type="button" class="tfp-meeting-notes-action" data-notes-export><?php esc_html_e('Export', 'tfp-dashboard'); ?></button></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
-                <div class="tfp-meeting-notes-export"><button type="button" class="tfp-meeting-notes-action" data-notes-export><?php esc_html_e('Export', 'tfp-dashboard'); ?></button></div>
             </section>
 
             <form method="post" class="tfp-meeting-notes-reflections">
