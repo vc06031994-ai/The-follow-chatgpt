@@ -3761,3 +3761,53 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
 @media (max-width: 600px) {
     .tfp-meeting-closed-demo-control { margin: 16px 12px -12px; }
 }
+
+
+/* Closed Session audit: match existing facilitator tables with horizontal rules only. */
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    border: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    table-layout: fixed !important;
+    background: transparent !important;
+    color: #171717 !important;
+    font-family: var(--tfp-dash-font, inherit) !important;
+    font-size: 11px !important;
+}
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table thead,
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table tbody,
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table tr,
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th,
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table td {
+    background: transparent !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    box-shadow: none !important;
+}
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th,
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table td {
+    padding: 8px 18px !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid #e7e7e7 !important;
+    text-align: left !important;
+    vertical-align: middle !important;
+    line-height: 1.45 !important;
+}
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th {
+    color: #151411 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+}
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th:nth-child(1) { width: 16% !important; }
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th:nth-child(2) { width: 18% !important; }
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table th:nth-child(3) { width: 66% !important; }
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table td:first-child strong {
+    color: #171717 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+body .tfp-meeting-closed-page .tfp-meeting-closed-audit .tfp-meeting-closed-table tbody tr:hover {
+    background: transparent !important;
+}
