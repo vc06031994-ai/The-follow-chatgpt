@@ -628,6 +628,7 @@ function tfp_facilitator_meetings_render_attendance($cohort, $course_id, $weeks,
             <a href="<?php echo esc_url($tests_url); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url((int) $cohort->ID, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url((int) $cohort->ID, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url((int) $cohort->ID, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
         </nav>
 
         <?php if ($saved_message !== ''): ?><div class="tfp-course-attendance-notice is-success" role="status"><?php echo esc_html($saved_message); ?></div><?php endif; ?>
@@ -897,6 +898,7 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
             <a href="<?php echo esc_url($tests_url); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
         </nav>
 
         <section class="tfp-meeting-homework-surface">
@@ -1133,6 +1135,7 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests')); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
         </nav>
 
         <section class="tfp-meeting-attendance-panel">
@@ -1501,6 +1504,7 @@ function tfp_facilitator_meetings_render_session_exercise($cohort, $week_number)
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests')); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <span class="is-active" aria-current="page"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></span>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes')); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
         </nav>
 
         <section class="tfp-meeting-homework-surface tfp-meeting-exercise-surface">
@@ -2063,6 +2067,7 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests')); ?>"><?php esc_html_e('Tests', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'exercise')); ?>"><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></a>
             <a href="<?php echo esc_url($notes_url); ?>"><?php esc_html_e('Notes', 'tfp-dashboard'); ?></a>
+            <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
             <a class="is-active" aria-current="page" href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'closed-session')); ?>"><?php esc_html_e('Closed Session', 'tfp-dashboard'); ?></a>
         </nav>
 
