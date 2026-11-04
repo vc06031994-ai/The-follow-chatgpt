@@ -3600,3 +3600,48 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     justify-content: flex-end !important;
     padding-right: 18px !important;
 }
+
+
+/* Notes reference match: keep the action alert red and restore the observation card surface. */
+.tfp-meeting-notes-page .tfp-meeting-notes-alert,
+.tfp-meeting-notes-page .tfp-meeting-notes-alert.is-complete {
+    border: 1px solid #e37b82 !important;
+    background: #fbeaec !important;
+    color: #171717 !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-alert__icon,
+.tfp-meeting-notes-page .tfp-meeting-notes-alert.is-complete .tfp-meeting-notes-alert__icon {
+    background: #b51f31 !important;
+    color: #fff !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-alert p,
+.tfp-meeting-notes-page .tfp-meeting-notes-alert.is-complete p {
+    color: #b51f31 !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-review {
+    border: 1px solid #d0d0d0 !important;
+    border-radius: 11px !important;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .06) !important;
+    padding: 18px 0 12px !important;
+}
+/* Keep the table itself borderless and transparent inside the bordered card. */
+.tfp-meeting-notes-page .tfp-meeting-notes-table,
+.tfp-meeting-notes-page .tfp-meeting-notes-table thead,
+.tfp-meeting-notes-page .tfp-meeting-notes-table tbody,
+.tfp-meeting-notes-page .tfp-meeting-notes-table th,
+.tfp-meeting-notes-page .tfp-meeting-notes-table td {
+    background: transparent !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-table {
+    border: 0 !important;
+    outline: 0 !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-reflections {
+    border: 1px solid #dedede !important;
+    border-radius: 7px !important;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .04) !important;
+}
