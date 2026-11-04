@@ -811,7 +811,9 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
                 if (!$question_id) {
                     continue;
                 }
-                $submitted = (($student_index + $question_index) % 7) !== 0;
+                // Keep the first sample student populated so the initial preview
+                // demonstrates the submitted-answer panel immediately.
+                $submitted = (($student_index + $question_index + 1) % 7) !== 0;
                 $student_questions[$question_id] = [
                     'answer' => $submitted ? $demo_answers[($student_index + $question_index) % count($demo_answers)] : __('Not submitted', 'tfp-dashboard'),
                     'has_answer' => $submitted,
@@ -861,7 +863,8 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         ['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number],
         tfp_dashboard_get_url('tfp-dashboard-facilitator-tests')
     );
-    $first_student = !empty($students) ? (int) $students[0]['id'] : 0;
+    // Demo IDs are strings (demo-1, demo-2); preserve them for JS selection.
+    $first_student = !empty($students) ? (string) $students[0]['id'] : '';
     $first_question = !empty($questions) ? sanitize_key((string) ($questions[0]['id'] ?? '')) : '';
     $nonce = wp_create_nonce('tfp_facilitator_student_ajax');
     $question_payload = [];
@@ -870,13 +873,24 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         if (!$question_id) {
             continue;
         }
+        $correct_answer = function_exists('tfp_facilitator_homework_correct_answer') ? tfp_facilitator_homework_correct_answer($question) : '';
+        $explanation = function_exists('tfp_facilitator_homework_question_explanation') ? tfp_facilitator_homework_question_explanation($question) : '';
+        $scripture = function_exists('tfp_facilitator_homework_question_scripture') ? tfp_facilitator_homework_question_scripture($question) : '';
+
+        // Fill missing curriculum copy only in demo preview; real course content is untouched.
+        if ($demo_mode && $index === 0) {
+            $correct_answer = $correct_answer ?: "True obedience requires hearing God’s instruction and responding with trust, surrender, and action.";
+            $explanation = $explanation ?: "Biblical obedience is not simply following rules. It begins with a heart that trusts God’s character and submits to His authority. Obedience reflects love, faith, and alignment with God’s will—even when the instruction is difficult or inconvenient. Scripture teaches that obedience is better than sacrifice because it reveals loyalty and genuine relationship.";
+            $scripture = $scripture ?: "1 Samuel 15:22 (HCSB) — “To obey is better than sacrifice, to pay attention is better than the fat of rams.”";
+        }
+
         $question_payload[] = [
             'id' => $question_id,
             'number' => $index + 1,
             'prompt' => (string) ($question['prompt'] ?? ''),
-            'correct' => function_exists('tfp_facilitator_homework_correct_answer') ? tfp_facilitator_homework_correct_answer($question) : '',
-            'explanation' => function_exists('tfp_facilitator_homework_question_explanation') ? tfp_facilitator_homework_question_explanation($question) : '',
-            'scripture' => function_exists('tfp_facilitator_homework_question_scripture') ? tfp_facilitator_homework_question_scripture($question) : '',
+            'correct' => $correct_answer,
+            'explanation' => $explanation,
+            'scripture' => $scripture,
             'wrong' => $question_stats[$question_id]['wrong'] ?? 0,
             'answered' => $question_stats[$question_id]['answered'] ?? 0,
             'percent' => $question_stats[$question_id]['percent'] ?? null,
