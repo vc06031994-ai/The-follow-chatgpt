@@ -3727,3 +3727,37 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
     .tfp-meeting-closed-footer button { width: 100%; justify-content: center; }
     .tfp-meeting-closed-notice { margin: 24px 12px; }
 }
+
+
+/* Closed Session demo preview controls (staging only). */
+.tfp-meeting-closed-demo-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 18px 44px -28px;
+}
+.tfp-meeting-closed-demo-control > span {
+    color: #00717a;
+    font-size: 12px;
+}
+.tfp-meeting-closed-demo-control .tfp-dash-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid #006b73;
+    border-radius: 7px;
+    background: #fff;
+    color: #006b73;
+    font-size: 12px;
+    text-decoration: none;
+}
+@media (max-width: 900px) {
+    .tfp-meeting-closed-demo-control { margin-right: 22px; margin-left: 22px; }
+}
+@media (max-width: 600px) {
+    .tfp-meeting-closed-demo-control { margin: 16px 12px -12px; }
+}
