@@ -204,12 +204,6 @@ function tfp_facilitator_meetings_rows($cohorts)
 
     foreach ((array) $cohorts as $cohort) {
         $cohort_id = absint($cohort->ID);
-    // Demo preview is restricted to staging and only changes rendered values in memory.
-    $demo_allowed = wp_get_environment_type() === 'staging'
-        || strpos((string) home_url('/'), 'staging') !== false;
-    $demo_mode = $demo_allowed
-        && isset($_GET['tfp_meeting_demo'])
-        && sanitize_text_field(wp_unslash($_GET['tfp_meeting_demo'])) === '1';
         $course_id = (int) get_post_meta($cohort_id, '_related_course', true);
         $schedule = (string) get_post_meta($cohort_id, '_schedule_text', true);
         $start_date = (string) get_post_meta($cohort_id, '_start_date', true);
@@ -1355,6 +1349,13 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
         tfp_facilitator_meetings_render_session_homework($cohort, absint($_GET['tfp_meeting_week'] ?? 1));
         return;
     }
+
+    // Demo preview is restricted to staging and only changes rendered values in memory.
+    $demo_allowed = wp_get_environment_type() === 'staging'
+        || strpos((string) home_url('/'), 'staging') !== false;
+    $demo_mode = $demo_allowed
+        && isset($_GET['tfp_meeting_demo'])
+        && sanitize_text_field(wp_unslash($_GET['tfp_meeting_demo'])) === '1';
 
     $cohort_id = absint($cohort->ID);
     $course_id = function_exists('tfp_facilitator_cohort_course_id') ? (int) tfp_facilitator_cohort_course_id($cohort_id) : 0;
