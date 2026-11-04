@@ -1968,7 +1968,7 @@ function tfp_facilitator_meetings_render_closed_session($cohort, $week_number)
         wp_die(esc_html__('The selected course week could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
     }
 
-    $allowed_cohorts = array_map('absint', wp_list_pluck(tfp_facilitator_meetings_cohorts_safe(), 'ID'));
+    $allowed_cohorts = array_map('absint', wp_list_pluck(tfp_facilitator_meetings_cohorts(), 'ID'));
     if (!in_array($cohort_id, $allowed_cohorts, true)) {
         wp_die(esc_html__('You do not have access to this cohort.', 'tfp-dashboard'), '', ['response' => 403]);
     }
