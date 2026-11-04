@@ -2012,7 +2012,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                             $action_url = add_query_arg(['tfp_homework_course' => $course_id, 'tfp_homework_cohort_filter' => $cohort_id], tfp_dashboard_get_url('tfp-dashboard-facilitator-homework'));
                             $action_label = __('Review Homework', 'tfp-dashboard');
                         } elseif (in_array($row['test_tone'], ['warning', 'danger'], true)) {
-                            $action_url = add_query_arg(['tfp_qt_cohort' => $cohort_id, 'tfp_qt_week' => $week_number], tfp_dashboard_get_url('tfp-dashboard-facilitator-tests'));
+                            $action_url = tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests');
                             $action_label = __('Review Test', 'tfp-dashboard');
                         }
                         ?>
