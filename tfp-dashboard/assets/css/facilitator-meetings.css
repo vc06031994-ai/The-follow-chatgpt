@@ -3474,3 +3474,31 @@ body .tfp-meeting-homework-page .tfp-meeting-homework-metrics > button.tfp-meeti
 .tfp-meeting-notes-demo-control .tfp-meeting-homework-demo-toggle {
     text-decoration: none;
 }
+
+
+/* Notes page: override theme pink button borders with dashboard teal. */
+.tfp-meeting-notes-page .tfp-meeting-notes-action,
+.tfp-meeting-notes-page .tfp-meeting-notes-action:visited,
+.tfp-meeting-notes-page .tfp-meeting-notes-action:focus,
+.tfp-meeting-notes-page .tfp-meeting-notes-action:active {
+    border: 1px solid #00666e !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-action {
+    background: #00666e !important;
+    color: #fff !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-action.is-danger {
+    background: #fff !important;
+    color: #00666e !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-action:hover {
+    border-color: #004e55 !important;
+    background: #004e55 !important;
+    color: #fff !important;
+}
+.tfp-meeting-notes-page .tfp-meeting-notes-action:disabled {
+    border-color: #00666e !important;
+    opacity: .55;
+}
