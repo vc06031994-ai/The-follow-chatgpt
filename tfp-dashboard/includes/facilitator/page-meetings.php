@@ -1642,18 +1642,22 @@ function tfp_facilitator_meetings_render_session_notes($cohort, $week_number)
                 ]);
                 $feedback = __('Internal reflections saved.', 'tfp-dashboard');
             } elseif ($action === 'finish_session') {
-                $missing = array_filter($student_ids, static function ($id) use ($logs) {
-                    return empty(trim((string) ($logs[$id]['text'] ?? '')));
-                });
-                if ($missing) {
-                    $feedback = sprintf(__('Cannot post session: %d mandatory exercise log(s) are missing.', 'tfp-dashboard'), count($missing));
+                if (!$student_ids) {
+                    $feedback = __('Cannot post session: no students are currently assigned to this cohort.', 'tfp-dashboard');
                 } else {
+                    $missing = array_filter($student_ids, static function ($id) use ($logs) {
+                        return empty(trim((string) ($logs[$id]['text'] ?? '')));
+                    });
+                    if ($missing) {
+                        $feedback = sprintf(__('Cannot post session: %d mandatory exercise log(s) are missing.', 'tfp-dashboard'), count($missing));
+                    } else {
                     update_post_meta($lesson->ID, 'tfp_meeting_session_posted_' . $cohort_id, [
                         'posted' => 1,
                         'author_id' => get_current_user_id(),
                         'posted_at' => current_time('mysql'),
                     ]);
-                    $feedback = __('Session posted successfully.', 'tfp-dashboard');
+                        $feedback = __('Session posted successfully.', 'tfp-dashboard');
+                    }
                 }
             } elseif ($student_id && $action === 'save_log') {
                 $note = sanitize_textarea_field(wp_unslash($_POST['exercise_note'] ?? ''));
