@@ -323,3 +323,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+/* Cohort session test review interactions and facilitator note persistence. */
+document.addEventListener('DOMContentLoaded',function(){
+ var root=document.querySelector('[data-tfp-session-tests]'); if(!root)return;
+ var dataNode=root.querySelector('[data-test-note-data]'),payload={};
+ try{payload=JSON.parse(dataNode?dataNode.textContent:'{}')}catch(e){}
+ var activeQuestion=(payload.questions||[])[0]?.id||'',activeStudent=root.querySelector('[data-test-note-student]')?.value||'';
+ var studentSelect=root.querySelector('[data-test-note-student]'),noteField=root.querySelector('[data-test-note-text]'),feedback=root.querySelector('[data-test-note-feedback]');
+ var notes=payload.notes||{};
+ function showQuestion(id){
+  activeQuestion=id;
+  root.querySelectorAll('[data-test-question]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.testQuestion===id?'true':'false')});
+  root.querySelectorAll('[data-test-tab]').forEach(function(b){b.setAttribute('aria-selected',b.dataset.testTab===id?'true':'false')});
+  root.querySelectorAll('[data-test-panel]').forEach(function(p){p.hidden=p.dataset.testPanel!==id});
+  renderNote();
+ }
+ function renderNote(){
+  activeStudent=studentSelect?studentSelect.value:'';
+  var entry=notes[activeStudent]&&notes[activeStudent][activeQuestion];
+  if(noteField)noteField.value=entry&&entry.text?entry.text:'';
+  if(feedback)feedback.textContent=entry?'Previously saved note loaded.':'';
+  root.querySelectorAll('[data-test-student]').forEach(function(b){b.classList.toggle('is-active',b.dataset.testStudent===activeStudent)});
+ }
+ root.querySelectorAll('[data-test-question],[data-test-tab]').forEach(function(b){b.addEventListener('click',function(){showQuestion(b.dataset.testQuestion||b.dataset.testTab)})});
+ root.querySelectorAll('[data-test-student]').forEach(function(b){b.addEventListener('click',function(){if(studentSelect){studentSelect.value=b.dataset.testStudent;renderNote()}})});
+ if(studentSelect)studentSelect.addEventListener('change',renderNote);
+ var form=root.querySelector('[data-test-note-form]');
+ if(form)form.addEventListener('submit',function(e){
+  e.preventDefault(); if(!activeQuestion||!activeStudent){if(feedback)feedback.textContent='Select a student and question first.';return}
+  var btn=form.querySelector('button[type=submit]'); if(btn)btn.disabled=true;
+  var body=new FormData(); body.append('action','tfp_facilitator_meeting_save_test_note');body.append('nonce',root.dataset.nonce||'');body.append('cohort_id',root.dataset.cohortId||'');body.append('lesson_id',root.dataset.lessonId||'');body.append('student_id',activeStudent);body.append('question_id',activeQuestion);body.append('note',noteField?noteField.value:'');
+  if(feedback)feedback.textContent='Saving…';
+  fetch(root.dataset.ajaxUrl,{method:'POST',credentials:'same-origin',body:body}).then(function(r){return r.json()}).then(function(r){if(!r||!r.success)throw new Error(r&&r.data&&r.data.message?r.data.message:'Unable to save note.');notes[activeStudent]=notes[activeStudent]||{};notes[activeStudent][activeQuestion]={text:noteField?noteField.value:'',updated_at:new Date().toISOString()};if(feedback)feedback.textContent='Notes saved.'}).catch(function(err){if(feedback)feedback.textContent=err.message||'Unable to save note.'}).finally(function(){if(btn)btn.disabled=false});
+ });
+ if(activeQuestion)showQuestion(activeQuestion);
+});
