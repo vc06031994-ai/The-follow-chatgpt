@@ -56,11 +56,11 @@ function tfp_facilitator_meetings_schedule($schedule)
         'sat' => 6,
     ];
 
-    if (preg_match("/\x08(sunday|sun|monday|mon|tuesday|tue|wednesday|wed|thursday|thu|friday|fri|saturday|sat)\x08/i", $schedule, $m)) {
+    if (preg_match('/\b(sunday|sun|monday|mon|tuesday|tue|wednesday|wed|thursday|thu|friday|fri|saturday|sat)\b/i', $schedule, $m)) {
         $out['weekday'] = $days[strtolower($m[1])] ?? 0;
     }
 
-    if (preg_match("/(d{1,2})(?::(d{2}))?s*:?s*(am|pm)\x08/i", $schedule, $m)) {
+    if (preg_match('/(\d{1,2})(?::(\d{2}))?\s*:?\s*(am|pm)\b/i', $schedule, $m)) {
         $out['time'] = max(1, min(12, (int) $m[1])) . ':' . (isset($m[2]) && $m[2] !== '' ? str_pad($m[2], 2, '0', STR_PAD_LEFT) : '00') . ' ' . strtoupper($m[3]);
     }
 
@@ -80,7 +80,7 @@ function tfp_facilitator_meetings_schedule($schedule)
         'utc' => ['UTC', 'UTC'],
         'gmt' => ['UTC', 'UTC'],
     ] as $needle => $zone) {
-        if (preg_match("/\x08" . preg_quote($needle, '/') . "\x08/i", $schedule)) {
+        if (preg_match('/\b' . preg_quote($needle, '/') . '\b/i', $schedule)) {
             $out['timezone'] = new DateTimeZone($zone[0]);
             $out['label'] = $zone[1];
             break;
@@ -102,7 +102,7 @@ function tfp_facilitator_meetings_timestamp($start_date, $schedule, $week_index)
         $days_until = ($parts['weekday'] - (int) $date->format('w') + 7) % 7;
         $date = $date->modify('+' . $days_until . ' days')->modify('+' . max(0, (int) $week_index) . ' weeks');
 
-        if (preg_match('/^(d{1,2}):(d{2})s+(AM|PM)$/', $parts['time'], $m)) {
+        if (preg_match('/^(\d{1,2}):(\d{2})\s+(AM|PM)$/', $parts['time'], $m)) {
             $hour = (int) $m[1];
             if (strtoupper($m[3]) === 'PM' && $hour < 12)
                 $hour += 12;
@@ -185,7 +185,7 @@ function tfp_facilitator_meetings_attendance($student_ids, $lesson_id)
 function tfp_facilitator_meetings_status($timestamp, $attendance = null, $now = null)
 {
     $timestamp = (int) $timestamp;
-    $now = $now !== null ? (int) $now : current_time('timestamp');
+    $now = $now !== null ? (int) $now : current_time('timestamp', true);
 
     if ($timestamp > $now) {
         return 'upcoming';
@@ -1623,7 +1623,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                         <?php endforeach; ?>
                     </select>
                 </form>
-                <a class="tfp-dash-btn tfp-dash-btn--primary tfp-meeting-attendance-open" href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_view' => 'attendance'], $base_url)); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
+                <a class="tfp-dash-btn tfp-dash-btn--primary tfp-meeting-attendance-open" href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_session_view' => 'attendance'], $base_url)); ?>"><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></a>
                 <button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-tfp-export-meeting-report><?php echo tfp_dashboard_icon('doc'); ?><span><?php esc_html_e('Export Report', 'tfp-dashboard'); ?></span></button>
             </div>
         </div>
@@ -1775,14 +1775,14 @@ function tfp_facilitator_meetings_render()
         $selected_week_number = $selected_weeks ? min(max(1, $selected_week_number), count($selected_weeks)) : 0;
         if (sanitize_key($_GET['tfp_meeting_view'] ?? '') === 'attendance' && $selected_week_number > 0) {
             $selected_students = function_exists('tfp_facilitator_cohort_students') ? array_values(array_map('absint', (array) tfp_facilitator_cohort_students($selected_cohort_id))) : [];
-            tfp_facilitator_meetings_render_attendance($selected_cohort, $selected_course_id, $selected_weeks, $selected_week_number, $selected_weeks[$selected_week_number - 1], $selected_students);
+            tfp_facilitator_meetings_render_session_attendance($selected_cohort, $selected_week_number);
         } else {
             tfp_facilitator_meetings_render_cohort_dashboard($selected_cohort);
         }
         return;
     }
     $rows = tfp_facilitator_meetings_rows($cohorts);
-    $now = current_time('timestamp');
+    $now = current_time('timestamp', true);
 
     $upcoming_all = array_values(array_filter($rows, static fn($row) => (int) $row['timestamp'] >= $now));
     $past_all = array_values(array_filter($rows, static fn($row) => (int) $row['timestamp'] < $now));
