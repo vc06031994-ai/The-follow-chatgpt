@@ -785,102 +785,12 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
     }
 
 
-    // Visual demo data is isolated to staging and never written to student records.
-    $demo_allowed = wp_get_environment_type() === 'staging'
-        || strpos((string) home_url('/'), 'staging') !== false;
-    $demo_mode = $demo_allowed
-        && isset($_GET['tfp_homework_demo'])
-        && sanitize_text_field(wp_unslash($_GET['tfp_homework_demo'])) === '1';
-
-    if ($demo_mode) {
-        if (!$questions) {
-            $questions = [
-                ['id' => 'demo_q1', 'type' => 'free_text', 'prompt' => 'Breakdown the process of sin in it’s conception. Does this process give you a stronger grasp of how to reject sin?'],
-                ['id' => 'demo_q2', 'type' => 'free_text', 'prompt' => 'How does obedience reflect trust, surrender, and action in daily life?'],
-                ['id' => 'demo_q3', 'type' => 'free_text', 'prompt' => 'What does Scripture teach about choosing wisdom over personal understanding?'],
-                ['id' => 'demo_q4', 'type' => 'free_text', 'prompt' => 'Describe one practical way to apply this week’s lesson in your community.'],
-                ['id' => 'demo_q5', 'type' => 'free_text', 'prompt' => 'What question or topic would you like to discuss in the next session?'],
-            ];
-            foreach ($questions as $index => $question) {
-                $question_stats[$question['id']] = [
-                    'index' => $index,
-                    'prompt' => $question['prompt'],
-                    'wrong' => 0,
-                    'answered' => 0,
-                    'percent' => null,
-                ];
-            }
-        }
-
-        // Demo metrics are calculated only from the sample responses, not mixed with live submissions.
-        foreach ($question_stats as &$demo_stat) {
-            $demo_stat['wrong'] = 0;
-            $demo_stat['answered'] = 0;
-            $demo_stat['percent'] = null;
-        }
-        unset($demo_stat);
-
-        $demo_names = [
-            'Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett',
-            'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell',
-            'Henry Cooper', 'Isabella Reed', 'Jack Peterson', 'Liam Anderson',
-            'Mia Collins', 'Noah Bailey', 'Olivia Parker', 'Samuel Hayes',
-            'Sophia Turner', 'Theodore Ward', 'Victoria Price', 'William Scott',
-        ];
-        $demo_answers = [
-            'I understand that sin begins with a choice and grows when a person ignores God’s direction. Recognising the first step helps me choose a better response.',
-            'Obedience means trusting God even when the next step is difficult. It calls for consistent action, not only good intentions.',
-            'The lesson reminds me to seek God’s wisdom first and remain open to correction through Scripture and prayer.',
-            'I can put this into practice by listening carefully, responding with patience, and supporting someone who needs guidance.',
-            'I would like to explore practical examples and discuss how this teaching applies to everyday decisions.',
-        ];
-        $students = [];
-        foreach ($demo_names as $student_index => $demo_name) {
-            $student_questions = [];
-            foreach ($questions as $question_index => $question) {
-                $question_id = sanitize_key((string) ($question['id'] ?? ''));
-                if (!$question_id) {
-                    continue;
-                }
-                // Keep the first sample student populated so the initial preview
-                // demonstrates the submitted-answer panel immediately.
-                $submitted = (($student_index + $question_index + 1) % 7) !== 0;
-                $student_questions[$question_id] = [
-                    'answer' => $submitted ? $demo_answers[($student_index + $question_index) % count($demo_answers)] : __('Not submitted', 'tfp-dashboard'),
-                    'has_answer' => $submitted,
-                    'decision' => '',
-                    'feedback' => $submitted && (($student_index + $question_index) % 4 === 0)
-                        ? 'Good reflection. Please add one practical example from your week.'
-                        : '',
-                    'mastery' => [],
-                ];
-                if ($submitted && isset($question_stats[$question_id])) {
-                    $question_stats[$question_id]['answered']++;
-                    if ((($student_index + $question_index) % 5) === 0) {
-                        $question_stats[$question_id]['wrong']++;
-                    }
-                }
-            }
-            $students[] = [
-                'id' => 'demo-' . ($student_index + 1),
-                'name' => $demo_name,
-                'questions' => $student_questions,
-            ];
-        }
-    }
-
     foreach ($question_stats as &$stat) {
         $stat['percent'] = $stat['answered'] > 0 ? (int) round(($stat['wrong'] / $stat['answered']) * 100) : null;
     }
     unset($stat);
 
     $base_url = tfp_facilitator_meetings_url();
-    $demo_url = add_query_arg([
-        'tfp_meeting_cohort_id' => $cohort_id,
-        'tfp_meeting_week' => $week_number,
-        'tfp_meeting_session_view' => 'homework',
-        'tfp_homework_demo' => $demo_mode ? '0' : '1',
-    ], $base_url);
     $attendance_url = add_query_arg([
         'tfp_meeting_cohort_id' => $cohort_id,
         'tfp_meeting_week' => $week_number,
@@ -891,7 +801,6 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         $base_url
     );
     $tests_url = tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'tests');
-    // Demo IDs are strings (demo-1, demo-2); preserve them for JS selection.
     $first_student = !empty($students) ? (string) $students[0]['id'] : '';
     $first_question = !empty($questions) ? sanitize_key((string) ($questions[0]['id'] ?? '')) : '';
     $nonce = wp_create_nonce('tfp_facilitator_student_ajax');
@@ -904,13 +813,6 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         $correct_answer = function_exists('tfp_facilitator_homework_correct_answer') ? tfp_facilitator_homework_correct_answer($question) : '';
         $explanation = function_exists('tfp_facilitator_homework_question_explanation') ? tfp_facilitator_homework_question_explanation($question) : '';
         $scripture = function_exists('tfp_facilitator_homework_question_scripture') ? tfp_facilitator_homework_question_scripture($question) : '';
-
-        // Fill missing curriculum copy only in demo preview; real course content is untouched.
-        if ($demo_mode && $index === 0) {
-            $correct_answer = $correct_answer ?: "True obedience requires hearing God’s instruction and responding with trust, surrender, and action.";
-            $explanation = $explanation ?: "Biblical obedience is not simply following rules. It begins with a heart that trusts God’s character and submits to His authority. Obedience reflects love, faith, and alignment with God’s will—even when the instruction is difficult or inconvenient. Scripture teaches that obedience is better than sacrifice because it reveals loyalty and genuine relationship.";
-            $scripture = $scripture ?: "1 Samuel 15:22 (HCSB) — “To obey is better than sacrifice, to pay attention is better than the fat of rams.”";
-        }
 
         $question_payload[] = [
             'id' => $question_id,
@@ -952,13 +854,7 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
         <section class="tfp-meeting-homework-surface">
             <header class="tfp-meeting-homework-surface__head">
                 <h2><?php esc_html_e('Homework', 'tfp-dashboard'); ?></h2>
-                <?php if ($demo_allowed): ?>
-                    <a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? __('Exit Demo Preview', 'tfp-dashboard') : __('Load Demo Preview', 'tfp-dashboard')); ?></a>
-                <?php endif; ?>
             </header>
-            <?php if ($demo_mode): ?>
-                <div class="tfp-meeting-homework-demo-notice" role="status"><?php esc_html_e('DEMO PREVIEW — 20 sample students and sample responses. Changes are temporary and will not be saved to the database.', 'tfp-dashboard'); ?></div>
-            <?php endif; ?>
             <?php if (!$questions): ?>
                 <div class="tfp-meeting-homework-empty"><h3><?php esc_html_e('No homework content available', 'tfp-dashboard'); ?></h3><p><?php printf(esc_html__('There are no homework questions configured for Week %d.', 'tfp-dashboard'), $week_number); ?></p></div>
             <?php else: ?>
@@ -995,8 +891,7 @@ function tfp_facilitator_meetings_render_session_homework($cohort, $week_number)
                         <section class="tfp-meeting-homework-note-card">
                             <label for="tfp-meeting-homework-feedback"><?php esc_html_e('Facilitator Notes', 'tfp-dashboard'); ?></label>
                             <textarea id="tfp-meeting-homework-feedback" data-homework-feedback placeholder="<?php esc_attr_e('Add a note about this student’s response...', 'tfp-dashboard'); ?>"></textarea>
-                            <button type="button" data-homework-save-note <?php disabled($demo_mode); ?>><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
-                            <?php if ($demo_mode): ?><small><?php esc_html_e('Saving is disabled in demo preview.', 'tfp-dashboard'); ?></small><?php endif; ?>
+                            <button type="button" data-homework-save-note><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
                             <small data-homework-save-feedback role="status" aria-live="polite"></small>
                         </section>
                         <h4><?php printf(esc_html__('All Students (%d)', 'tfp-dashboard'), count($students)); ?></h4>
@@ -1117,30 +1012,6 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         return strcasecmp($a['name'], $b['name']);
     });
 
-    // Demo preview is available only on staging and never writes to real user records.
-    $demo_allowed = wp_get_environment_type() === 'staging'
-        || strpos((string) home_url('/'), 'staging') !== false;
-    $demo_mode = $demo_allowed && isset($_GET['tfp_attendance_demo'])
-        && sanitize_text_field(wp_unslash($_GET['tfp_attendance_demo'])) === '1';
-    if ($demo_mode) {
-        $demo_names = [
-            'Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett',
-            'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell',
-            'Henry Cooper', 'Isabella Reed', 'Jack Peterson', 'Liam Anderson',
-            'Mia Collins', 'Noah Bailey', 'Olivia Parker', 'Samuel Hayes',
-            'Sophia Turner', 'Theodore Ward', 'Victoria Price', 'William Scott',
-        ];
-        foreach ($demo_names as $index => $demo_name) {
-            $demo_statuses = ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'UA', 'UA', 'UA', 'UA', 'UA', 'EA', 'EA', 'EA', '', ''];
-            $students[] = [
-                'id' => 0,
-                'name' => $demo_name,
-                'status' => $demo_statuses[$index],
-                'note' => $index % 3 === 0 ? 'Demo session note for layout testing' : '',
-            ];
-        }
-    }
-
     $base_url = tfp_facilitator_meetings_url();
     $back_url = add_query_arg([
         'tfp_meeting_cohort_id' => $cohort_id,
@@ -1158,13 +1029,6 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
     $schedule = (string) get_post_meta($cohort_id, '_schedule_text', true);
     $course_title = $course_id ? get_the_title($course_id) : __('Course', 'tfp-dashboard');
     $nonce = wp_create_nonce('tfp_facilitator_meeting_attendance');
-    $demo_url = add_query_arg([
-        'tfp_meeting_cohort_id' => $cohort_id,
-        'tfp_meeting_week' => $week_number,
-        'tfp_meeting_session_view' => 'attendance',
-        'tfp_attendance_demo' => '1',
-    ], $base_url);
-    $live_url = remove_query_arg('tfp_attendance_demo', $demo_url);
     ?>
     <div class="tfp-meeting-attendance-page" data-tfp-session-attendance>
         <nav class="tfp-meeting-attendance-breadcrumb" aria-label="<?php esc_attr_e('Breadcrumb', 'tfp-dashboard'); ?>">
@@ -1198,22 +1062,12 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
         <section class="tfp-meeting-attendance-panel">
             <header class="tfp-meeting-attendance-panel__head">
                 <h2><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></h2>
-                <?php if ($demo_allowed): ?>
-                    <a class="tfp-meeting-attendance-demo-toggle" href="<?php echo esc_url($demo_mode ? $live_url : $demo_url); ?>">
-                        <?php echo esc_html($demo_mode ? __('Exit Demo Preview', 'tfp-dashboard') : __('Load 20 Demo Students', 'tfp-dashboard')); ?>
-                    </a>
-                <?php endif; ?>
                 <label class="tfp-meeting-attendance-search">
                     <span class="screen-reader-text"><?php esc_html_e('Search by name', 'tfp-dashboard'); ?></span>
                     <?php echo tfp_dashboard_icon('search'); ?>
                     <input type="search" placeholder="<?php esc_attr_e('Search by Name', 'tfp-dashboard'); ?>" data-tfp-attendance-search>
                 </label>
             </header>
-            <?php if ($demo_mode): ?>
-                <div class="tfp-meeting-attendance-demo-notice" role="status">
-                    <?php esc_html_e('DEMO PREVIEW — 20 sample students. Changes are temporary and will not be saved to the database.', 'tfp-dashboard'); ?>
-                </div>
-            <?php endif; ?>
 
             <div class="tfp-meeting-attendance-table-wrap">
                 <table class="tfp-meeting-attendance-table">
@@ -1255,7 +1109,7 @@ function tfp_facilitator_meetings_render_session_attendance($cohort, $week_numbe
             <footer class="tfp-meeting-attendance-panel__footer">
                 <span class="tfp-meeting-attendance-feedback" role="status" aria-live="polite" data-tfp-attendance-feedback></span>
                 <div>
-                    <button type="button" class="tfp-dash-btn-second tfp-meeting-attendance-save" data-tfp-attendance-save <?php disabled($demo_mode); ?> title="<?php echo esc_attr($demo_mode ? __('Saving is disabled in demo preview.', 'tfp-dashboard') : ''); ?>"><?php esc_html_e('Save Attendance', 'tfp-dashboard'); ?></button>
+                    <button type="button" class="tfp-dash-btn-second tfp-meeting-attendance-save" data-tfp-attendance-save><?php esc_html_e('Save Attendance', 'tfp-dashboard'); ?></button>
                     <a href="<?php echo esc_url($homework_url); ?>" class="tfp-dash-btn tfp-dash-btn--primary"><?php esc_html_e('Next: Open Homework', 'tfp-dashboard'); ?><span aria-hidden="true">→</span></a>
                 </div>
             </footer>
@@ -1656,13 +1510,6 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
         return;
     }
 
-    // Demo preview is restricted to staging and only changes rendered values in memory.
-    $demo_allowed = wp_get_environment_type() === 'staging'
-        || strpos((string) home_url('/'), 'staging') !== false;
-    $demo_mode = $demo_allowed
-        && isset($_GET['tfp_meeting_demo'])
-        && sanitize_text_field(wp_unslash($_GET['tfp_meeting_demo'])) === '1';
-
     $cohort_id = absint($cohort->ID);
     $course_id = function_exists('tfp_facilitator_cohort_course_id') ? (int) tfp_facilitator_cohort_course_id($cohort_id) : 0;
     $weeks = $course_id && function_exists('tfp_ld_get_weeks') ? array_values((array) tfp_ld_get_weeks($course_id)) : [];
@@ -1794,76 +1641,6 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
         'button_icon' => 'doc',
         'url' => tfp_facilitator_meetings_session_url($cohort_id, $week_number, 'notes'),
     ];
-    if ($demo_mode) {
-        // Keep sample data separate from real users, submissions, and stored progress.
-        $demo_names = [
-            'Alex Morgan', 'Ava Thompson', 'Benjamin Carter', 'Chloe Bennett',
-            'Daniel Foster', 'Ella Richardson', 'Ethan Brooks', 'Grace Mitchell',
-            'Henry Cooper', 'Isabella Reed', 'Jack Peterson', 'Liam Anderson',
-            'Mia Collins', 'Noah Bailey', 'Olivia Parker', 'Samuel Hayes',
-            'Sophia Turner', 'Theodore Ward', 'Victoria Price', 'William Scott',
-        ];
-        $performance = [];
-        foreach ($demo_names as $index => $name) {
-            $homework_tone = ($index % 6 === 1 || $index % 6 === 4) ? 'warning' : 'success';
-            $test_tone = ($index % 7 === 2) ? 'danger' : 'success';
-            $performance[] = [
-                'id' => 0,
-                'is_demo' => true,
-                'name' => $name,
-                'reading' => ($index % 5 === 0) ? __('Not Started', 'tfp-dashboard') : __('Completed', 'tfp-dashboard'),
-                'reading_tone' => ($index % 5 === 0) ? 'neutral' : 'success',
-                'homework' => ($homework_tone === 'warning') ? __('Needs Review', 'tfp-dashboard') : tfp_facilitator_meetings_letter(72 + (($index * 7) % 27)),
-                'homework_tone' => $homework_tone,
-                'quiz' => tfp_facilitator_meetings_letter(68 + (($index * 9) % 31)),
-                'quiz_tone' => 'success',
-                'test' => ($test_tone === 'danger') ? __('Needs Review', 'tfp-dashboard') : tfp_facilitator_meetings_letter(70 + (($index * 5) % 29)),
-                'test_tone' => $test_tone,
-                'grade' => ($index % 4 === 0) ? __('Upcoming', 'tfp-dashboard') : tfp_facilitator_meetings_letter(74 + (($index * 3) % 25)),
-            ];
-        }
-        $queue_display_items = [
-            [
-                'title' => __('Test Review Required', 'tfp-dashboard'),
-                'student' => __('Omar Delgado', 'tfp-dashboard'),
-                'button' => __('Review Test', 'tfp-dashboard'),
-                'icon' => 'action-warning',
-                'button_icon' => 'unlock',
-                'url' => '#',
-            ],
-            [
-                'title' => __('Grade Homework', 'tfp-dashboard'),
-                'student' => __('Barry Bromid', 'tfp-dashboard'),
-                'button' => __('Grade Now', 'tfp-dashboard'),
-                'icon' => 'action-warning',
-                'button_icon' => 'grades',
-                'url' => '#',
-            ],
-            [
-                'title' => __('Publish & Submit Weekly Meeting Notes', 'tfp-dashboard'),
-                'student' => sprintf(__('Week %d: Close Meeting Tasks to Post Official Grades', 'tfp-dashboard'), $week_number),
-                'button' => __('Publish', 'tfp-dashboard'),
-                'icon' => 'action-publish',
-                'button_icon' => 'doc',
-                'url' => '#',
-            ],
-        ];
-        $mastery = [
-            ['title' => __('Origin of Evil', 'tfp-dashboard'), 'percent' => 92, 'grade' => 'A'],
-            ['title' => __('God’s Authority', 'tfp-dashboard'), 'percent' => 84, 'grade' => 'B'],
-            ['title' => __('Love', 'tfp-dashboard'), 'percent' => 76, 'grade' => 'B'],
-            ['title' => __('Worry', 'tfp-dashboard'), 'percent' => 38, 'grade' => 'D'],
-        ];
-        $strongest = array_slice($mastery, 0, 2);
-        $weakest = array_slice(array_reverse($mastery), 0, 2);
-    }
-
-    $demo_url = add_query_arg([
-        'tfp_meeting_cohort_id' => $cohort_id,
-        'tfp_meeting_week' => $week_number,
-        'tfp_meeting_demo' => $demo_mode ? '0' : '1',
-    ], $base_url);
-
     $student_page = max(1, absint($_GET['tfp_meeting_student_page'] ?? 1));
     $per_page = 7;
     $total_students = count($performance);
@@ -1907,7 +1684,6 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
             <div class="tfp-meeting-cohort__controls">
                 <form method="get" class="tfp-meeting-cohort__week-form">
                     <input type="hidden" name="tfp_meeting_cohort_id" value="<?php echo esc_attr($cohort_id); ?>">
-                    <?php if ($demo_mode): ?><input type="hidden" name="tfp_meeting_demo" value="1"><?php endif; ?>
                     <label class="screen-reader-text" for="tfp-meeting-week"><?php esc_html_e('Select week', 'tfp-dashboard'); ?></label>
                     <select id="tfp-meeting-week" name="tfp_meeting_week" data-tfp-meeting-week>
                         <?php foreach ($weeks as $index => $week): ?>
@@ -1919,15 +1695,6 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                 <button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-tfp-export-meeting-report><?php echo tfp_dashboard_icon('doc'); ?><span><?php esc_html_e('Export Report', 'tfp-dashboard'); ?></span></button>
             </div>
         </div>
-
-        <?php if ($demo_allowed): ?>
-            <div class="tfp-meeting-cohort-demo-tools">
-                <a class="tfp-meeting-cohort-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? __('Exit Demo Preview', 'tfp-dashboard') : __('Load Demo Preview', 'tfp-dashboard')); ?></a>
-            </div>
-        <?php endif; ?>
-        <?php if ($demo_mode): ?>
-            <div class="tfp-meeting-cohort-demo-notice" role="status"><?php esc_html_e('DEMO PREVIEW — 20 sample students and sample performance data. No student records or grades are changed.', 'tfp-dashboard'); ?></div>
-        <?php endif; ?>
 
         <div class="tfp-meeting-cohort__top-grid">
             <section class="tfp-dash-panel tfp-meeting-session-card">
@@ -2005,7 +1772,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                     </tr></thead>
                     <tbody>
                     <?php foreach ($visible_students as $row):
-                        $profile_url = !empty($row['is_demo']) ? '#' : add_query_arg('tfp_student_id', $row['id'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'));
+                        $profile_url = add_query_arg('tfp_student_id', $row['id'], tfp_dashboard_get_url('tfp-dashboard-facilitator-student'));
                         $action_url = $profile_url;
                         $action_label = __('View Profile', 'tfp-dashboard');
                         if (in_array($row['homework_tone'], ['warning', 'danger'], true)) {
@@ -2021,7 +1788,7 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
                             <td><span class="tfp-meeting-work-status tfp-meeting-work-status--<?php echo esc_attr($row['reading_tone']); ?>"><?php echo esc_html($row['reading']); ?></span></td>
                             <?php foreach (['homework', 'quiz', 'test'] as $key): ?><td><span class="tfp-meeting-grade tfp-meeting-grade--<?php echo esc_attr($row[$key . '_tone']); ?>"><?php echo esc_html($row[$key]); ?></span></td><?php endforeach; ?>
                             <td><span class="tfp-meeting-grade"><?php echo esc_html($row['grade'] ?: __('Upcoming', 'tfp-dashboard')); ?></span></td>
-                            <td><?php if ($demo_mode): ?><span class="tfp-dash-btn-small tfp-dash-btn--primary is-demo-disabled" aria-disabled="true"><?php echo esc_html__('Preview Only', 'tfp-dashboard'); ?></span><?php else: ?><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url($action_url); ?>"><?php echo esc_html($action_label); ?></a><?php endif; ?></td>
+                            <td><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url($action_url); ?>"><?php echo esc_html($action_label); ?></a></td>
                         </tr>
                     <?php endforeach; ?>
                     <?php if (!$visible_students): ?><tr><td colspan="7"><div class="tfp-facilitator-empty"><?php esc_html_e('No disciples are assigned to this cohort.', 'tfp-dashboard'); ?></div></td></tr><?php endif; ?>
@@ -2031,8 +1798,8 @@ function tfp_facilitator_meetings_render_cohort_dashboard($cohort)
             <footer class="tfp-meeting-performance-pagination">
                 <span><?php echo esc_html($from . ' - ' . $to . ' of ' . $total_students . ' items'); ?></span>
                 <div>
-                    <?php if ($student_page > 1): ?><a href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page - 1, 'tfp_meeting_demo' => $demo_mode ? '1' : null], $base_url)); ?>"><?php esc_html_e('‹ Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
-                    <?php if ($student_page < $total_pages): ?><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page + 1, 'tfp_meeting_demo' => $demo_mode ? '1' : null], $base_url)); ?>"><?php esc_html_e('Next ›', 'tfp-dashboard'); ?></a><?php endif; ?>
+                    <?php if ($student_page > 1): ?><a href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page - 1], $base_url)); ?>"><?php esc_html_e('‹ Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
+                    <?php if ($student_page < $total_pages): ?><a class="tfp-dash-btn-small tfp-dash-btn--primary" href="<?php echo esc_url(add_query_arg(['tfp_meeting_cohort_id' => $cohort_id, 'tfp_meeting_week' => $week_number, 'tfp_meeting_student_page' => $student_page + 1], $base_url)); ?>"><?php esc_html_e('Next ›', 'tfp-dashboard'); ?></a><?php endif; ?>
                 </div>
             </footer>
         </section>
