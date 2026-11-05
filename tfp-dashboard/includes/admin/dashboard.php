@@ -68,7 +68,7 @@ function tfp_admin_dashboard_get_data() {
             'limit' => 9,
             'orderby' => 'date',
             'order' => 'DESC',
-            'status' => ['processing', 'completed', 'on-hold', 'failed', 'refunded'],
+            'status' => ['processing', 'completed'],
         ]);
         $payment_total = (float) wc_get_total_sales();
         $failed_orders = (int) wc_orders_count('failed');
@@ -122,7 +122,8 @@ function tfp_admin_dashboard_get_data() {
         ],
     ];
 
-    $system_alerts = $pending_aid_count + $failed_orders;
+    // Pending applications are workflow items, not system outages.
+    $system_alerts = $failed_orders;
     foreach ($checks as $check) {
         if (!$check['ok']) {
             $system_alerts++;
