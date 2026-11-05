@@ -16,6 +16,10 @@ if (!defined('ABSPATH'))
 function tfp_dashboard_template_map()
 {
     return [
+        'tfp-dashboard-admin-home' => [
+            'label' => __('TFP Admin Dashboard — Home', 'tfp-dashboard'),
+            'file' => 'templates/template-admin-home.php',
+        ],
         'tfp-dashboard-home' => [
             'label' => __('TFP Dashboard — Home', 'tfp-dashboard'),
             'file' => 'templates/template-home.php',
