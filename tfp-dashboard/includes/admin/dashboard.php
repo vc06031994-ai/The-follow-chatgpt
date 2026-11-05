@@ -61,8 +61,37 @@ function tfp_admin_dashboard_get_data() {
             'order' => 'DESC',
             'status' => ['processing', 'completed'],
         ]);
-        $payment_total = (float) wc_get_total_sales();
-        $failed_orders = (int) wc_orders_count('failed');
+        // Calculate collected revenue using WooCommerce's order API.
+        // wc_get_total_sales() is not a public WooCommerce function and causes a fatal error.
+        $payment_total = 0.0;
+        $page = 1;
+        do {
+            $sales_batch = wc_get_orders([
+                'type'     => 'shop_order',
+                'status'   => ['processing', 'completed'],
+                'limit'    => 100,
+                'page'     => $page,
+                'paginate' => true,
+                'return'   => 'objects',
+            ]);
+
+            $batch_orders = (is_object($sales_batch) && isset($sales_batch->orders))
+                ? $sales_batch->orders
+                : (is_array($sales_batch) ? $sales_batch : []);
+
+            foreach ($batch_orders as $sales_order) {
+                if ($sales_order instanceof WC_Order) {
+                    $payment_total += (float) $sales_order->get_total();
+                }
+            }
+
+            $max_pages = (is_object($sales_batch) && isset($sales_batch->max_num_pages))
+                ? (int) $sales_batch->max_num_pages
+                : 0;
+            $page++;
+        } while ($max_pages >= $page);
+
+        $failed_orders = function_exists('wc_orders_count') ? (int) wc_orders_count('failed') : 0;
     }
 
     $pending_aid = [];
