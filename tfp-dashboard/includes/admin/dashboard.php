@@ -58,7 +58,6 @@ function tfp_admin_dashboard_get_data() {
         'number' => 9,
         'orderby' => 'registered',
         'order' => 'DESC',
-        'fields' => ['ID', 'display_name', 'user_registered', 'user_email', 'roles'],
     ]);
 
     $orders = [];
@@ -78,14 +77,21 @@ function tfp_admin_dashboard_get_data() {
     $pending_aid = [];
     $pending_aid_count = 0;
     if (post_type_exists('tfp_financial_aid')) {
-        $pending_aid_count = tfp_admin_dashboard_count_posts('tfp_financial_aid', 'pending');
-        $pending_aid = get_posts([
+        // Financial-aid workflow status is stored in post meta, not WP post_status.
+        $pending_aid_query = new WP_Query([
             'post_type' => 'tfp_financial_aid',
-            'post_status' => 'pending',
+            'post_status' => 'any',
             'posts_per_page' => 7,
             'orderby' => 'date',
             'order' => 'ASC',
+            'meta_query' => [[
+                'key' => '_tfp_status',
+                'value' => 'pending',
+                'compare' => '=',
+            ]],
         ]);
+        $pending_aid = $pending_aid_query->posts;
+        $pending_aid_count = (int) $pending_aid_query->found_posts;
     }
 
     $checks = [
