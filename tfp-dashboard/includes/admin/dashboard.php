@@ -339,6 +339,14 @@ function tfp_admin_dashboard_shortcode() {
 }
 add_shortcode('tfp_admin_dashboard', 'tfp_admin_dashboard_shortcode');
 
+/** Add a body class so the dashboard styles can safely scope page-level layout. */
+add_filter('body_class', function ($classes) {
+    if (is_singular() && is_a(get_post(), 'WP_Post') && has_shortcode(get_post()->post_content, 'tfp_admin_dashboard')) {
+        $classes[] = 'tfp-admin-dashboard-view';
+    }
+    return $classes;
+});
+
 /** Load assets only on the WordPress page containing the dashboard shortcode. */
 add_action('wp_enqueue_scripts', function () {
     if (!is_singular() || !is_a(get_post(), 'WP_Post') || !has_shortcode(get_post()->post_content, 'tfp_admin_dashboard')) {
