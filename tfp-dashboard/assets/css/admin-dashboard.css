@@ -103,6 +103,58 @@ body.tfp-admin-dashboard-view p { font-family: var(--tfp-dash-font-alt, Georgia)
 .tfp-admin-approval-row>a:hover,.tfp-admin-view-btn:hover { background:var(--tfp-admin-teal-dark); color:#fff; }
 .tfp-admin-table-wrap { width:100%; }
 /* The cohort table uses the same .tfp-dash-table component as Student and Facilitator dashboards. */
+/* Keep theme/page-builder table borders from overriding the shared dashboard table component. */
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table {
+    width:100%;
+    min-width:650px;
+    margin:0;
+    border:0 !important;
+    border-collapse:collapse !important;
+    border-spacing:0 !important;
+    background:#fff !important;
+    text-align:left;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th,
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td {
+    border-top:0 !important;
+    border-left:0 !important;
+    border-right:0 !important;
+    border-bottom:1px solid #E2E5E6 !important;
+    border-radius:0 !important;
+    vertical-align:middle;
+    text-align:left;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th {
+    padding:12px 14px !important;
+    background:#DFE3E4 !important;
+    color:var(--tfp-dash-text) !important;
+    font:700 13px/130% var(--tfp-dash-font) !important;
+    white-space:nowrap;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td {
+    padding:12px 14px !important;
+    background:#fff !important;
+    color:var(--tfp-dash-text) !important;
+    font:500 11px/140% var(--tfp-dash-font-alt) !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table tbody tr:last-child td {
+    border-bottom:0 !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td strong.tfp-dash-table__primary {
+    display:block;
+    font:700 13px/140% var(--tfp-dash-font) !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td small.tfp-dash-table__muted {
+    display:block;
+    margin-top:3px;
+    color:var(--tfp-dash-muted) !important;
+    font:400 10px/140% var(--tfp-dash-font-alt) !important;
+}
+@media(max-width:767px) {
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table { min-width:640px; }
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th,
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td { padding:10px 12px !important; }
+}
 /* Reuse the exact shared .tfp-dash-table / .tfp-dash-table-wrap component. */
 .tfp-admin-table-wrap { width:100%; }
 .tfp-admin-table { min-width:650px; }
