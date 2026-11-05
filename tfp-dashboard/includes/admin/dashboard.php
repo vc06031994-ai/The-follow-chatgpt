@@ -157,7 +157,7 @@ function tfp_admin_dashboard_nav_items() {
         ['label' => __('Facilitators', 'tfp-dashboard'), 'icon' => '♧', 'url' => admin_url('users.php?role=facilitator')],
         ['label' => __('Payments', 'tfp-dashboard'), 'icon' => '▤', 'url' => admin_url('edit.php?post_type=shop_order')],
         ['label' => __('Documents', 'tfp-dashboard'), 'icon' => '▣', 'url' => admin_url('upload.php')],
-        ['label' => __('Communication', 'tfp-dashboard'), 'icon' => '➤', 'url' => admin_url('admin.php?page=tfp-weekly-submissions')],
+        ['label' => __('Communication', 'tfp-dashboard'), 'icon' => '➤', 'url' => admin_url('edit.php?post_type=tfp_ticket')],
         ['label' => __('Verification', 'tfp-dashboard'), 'icon' => '◇', 'url' => admin_url('edit.php?post_type=tfp_financial_aid')],
         ['label' => __('Calendar', 'tfp-dashboard'), 'icon' => '▦', 'url' => admin_url('admin.php?page=tfp-attendance-history')],
         ['label' => __('Reports', 'tfp-dashboard'), 'icon' => '▥', 'url' => admin_url('admin.php?page=tfp-weekly-submissions')],
