@@ -1,13 +1,13 @@
 /* The Follow Project — Admin Console */
 body.tfp-admin-dashboard-view {
-    --tfp-admin-teal: #00666e;
-    --tfp-admin-teal-dark: #00535a;
-    --tfp-admin-maroon: #570506;
-    --tfp-admin-gold: #847230;
-    --tfp-admin-text: #171717;
-    --tfp-admin-muted: #777b80;
-    --tfp-admin-line: #e5e7eb;
-    --tfp-admin-soft: #f0f0f0;
+    --tfp-admin-teal: var(--tfp-dash-teal, #00666e);
+    --tfp-admin-teal-dark: var(--tfp-dash-teal-dark, #00505a);
+    --tfp-admin-maroon: var(--tfp-dash-maroon, #570506);
+    --tfp-admin-gold: var(--tfp-dash-golden, #847230);
+    --tfp-admin-text: var(--tfp-dash-text, #151411);
+    --tfp-admin-muted: var(--tfp-dash-muted, #2e2e2e);
+    --tfp-admin-line: var(--tfp-dash-border, rgba(0,0,0,.08));
+    --tfp-admin-soft: var(--tfp-dash-bg-soft, #efefef);
     margin: 0;
     background: #fff;
     color: var(--tfp-admin-text);
@@ -19,7 +19,7 @@ body.tfp-admin-dashboard-view p { font-family: var(--tfp-dash-font-alt, Georgia)
 .tfp-admin-sidebar {
     position:sticky; top:0; display:flex; flex:0 0 220px; flex-direction:column;
     width:220px; height:100vh; padding:12px 0 18px; background:#fff;
-    border-right:2px solid var(--tfp-admin-maroon); z-index:100; overflow-y:auto;
+    border-right:3px solid var(--tfp-admin-maroon); z-index:100; overflow-y:auto;
 }
 .tfp-admin-brand-row { display:flex; align-items:center; justify-content:space-between; min-height:105px; padding:12px 18px 20px 26px; }
 .tfp-admin-brand { display:flex; align-items:center; min-width:0; }
@@ -102,7 +102,18 @@ body.tfp-admin-dashboard-view p { font-family: var(--tfp-dash-font-alt, Georgia)
 .tfp-admin-approval-row>a,.tfp-admin-view-btn { display:inline-flex; align-items:center; justify-content:center; min-width:70px; min-height:32px; padding:6px 12px; border-radius:7px; background:var(--tfp-admin-teal); color:#fff; text-decoration:none; font-size:10px; font-weight:650; }
 .tfp-admin-approval-row>a:hover,.tfp-admin-view-btn:hover { background:var(--tfp-admin-teal-dark); color:#fff; }
 .tfp-admin-table-wrap { width:100%; }
-/* Table typography, borders and responsive overflow inherit from .tfp-dash-table. */
+/* The cohort table uses the same .tfp-dash-table component as Student and Facilitator dashboards. */
+.tfp-admin-table-wrap { overflow-x:auto; }
+.tfp-admin-table { width:100%; min-width:620px; border-collapse:collapse; }
+.tfp-admin-table th,.tfp-admin-table td { padding:12px 14px; border-bottom:1px solid var(--tfp-dash-border); text-align:left; vertical-align:middle; }
+.tfp-admin-table th { color:var(--tfp-dash-text); font:700 13px/130% var(--tfp-dash-font); }
+.tfp-admin-table td { color:var(--tfp-dash-text); font:500 11px/140% var(--tfp-dash-font-alt); }
+.tfp-admin-table tbody tr:last-child td { border-bottom:0; }
+.tfp-admin-table tbody tr:nth-child(odd) td,.tfp-admin-table tbody tr:nth-child(even) td { background:transparent; }
+.tfp-admin-table a { color:var(--tfp-dash-teal); }
+.tfp-admin-table td strong { display:block; font:700 13px/140% var(--tfp-dash-font); }
+.tfp-admin-table td small { display:block; margin-top:3px; color:var(--tfp-dash-muted); font:400 10px/140% var(--tfp-dash-font-alt); }
+@media(max-width:760px) { .tfp-admin-table { min-width:580px; } .tfp-admin-table th,.tfp-admin-table td { padding:10px 9px; } }
 .tfp-admin-status-pill { display:inline-flex; padding:5px 9px; border:1px solid #d8b65e; border-radius:20px; background:#f8edcf; color:#4a3b16; font-size:9px; }
 .tfp-admin-status-pill.is-active { border-color:#8bc3b9; background:#e8f5f1; color:#00666e; }
 .tfp-admin-status-pill.is-scheduled { border-color:#d8b65e; background:#f8edcf; color:#4a3b16; }
@@ -122,7 +133,7 @@ body.tfp-admin-dashboard-view p { font-family: var(--tfp-dash-font-alt, Georgia)
     .tfp-admin-health-list { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:0 12px; }
 }
 @media(max-width:1050px) {
-    .tfp-admin-sidebar { flex-basis:205px; width:205px; }
+    .tfp-admin-sidebar { flex-basis:var(--tfp-dash-sidebar-width, 240px); width:var(--tfp-dash-sidebar-width, 240px); }
     .tfp-admin-top-grid { grid-template-columns:1fr 1fr; }
     .tfp-admin-activity { grid-column:1/-1; }
     .tfp-admin-health { grid-column:auto; }
