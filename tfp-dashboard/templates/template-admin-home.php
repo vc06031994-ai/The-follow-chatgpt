@@ -31,7 +31,11 @@ nocache_headers();
 <body <?php body_class('tfp-admin-dashboard-view'); ?>>
 <?php
 wp_body_open();
-tfp_admin_dashboard_render();
+if (function_exists('tfp_admin_dashboard_render')) {
+    tfp_admin_dashboard_render();
+} else {
+    echo '<main style="padding:40px;font:16px sans-serif">' . esc_html__('Admin Dashboard renderer is not loaded. Please check the TFP Dashboard plugin files.', 'tfp-dashboard') . '</main>';
+}
 wp_footer();
 ?>
 </body>
