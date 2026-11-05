@@ -265,3 +265,63 @@ body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td smal
     body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th,
     body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td { padding:11px 12px !important; }
 }
+
+
+/* Figma-matched type scale: align with Student/Facilitator dashboard readability. */
+body.tfp-admin-dashboard-view .tfp-admin-nav-link { font-size:16px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-profile strong { font-size:14px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-profile small { font-size:12px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-breadcrumb { font-size:15px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-page-header h1 { font-size:clamp(36px,3.2vw,46px) !important; line-height:1.12; letter-spacing:-.7px; }
+body.tfp-admin-dashboard-view .tfp-admin-page-header p { font-size:17px !important; line-height:1.55; }
+body.tfp-admin-dashboard-view .tfp-admin-operational-status { font-size:13px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-stat-card small { font-size:13px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-stat-card strong { font-size:28px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-stat-card p { font-size:14px !important; line-height:1.45; }
+body.tfp-admin-dashboard-view .tfp-admin-panel-heading { min-height:72px; padding:17px 18px 12px; }
+body.tfp-admin-dashboard-view .tfp-admin-panel-heading h2 { font-size:18px !important; line-height:1.35; }
+body.tfp-admin-dashboard-view .tfp-admin-panel-heading p { font-size:14px !important; line-height:1.45; }
+body.tfp-admin-dashboard-view .tfp-admin-panel-heading>a { font-size:13px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-row { min-height:48px; gap:10px; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-row strong,
+body.tfp-admin-dashboard-view .tfp-admin-payment-row strong,
+body.tfp-admin-dashboard-view .tfp-admin-health-row strong { font-size:14px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-row small,
+body.tfp-admin-dashboard-view .tfp-admin-payment-row small,
+body.tfp-admin-dashboard-view .tfp-admin-health-row small { font-size:12px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-secondary { font-size:13px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-row time { font-size:12px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-payment-row { min-height:54px; }
+body.tfp-admin-dashboard-view .tfp-admin-payment-row>b { font-size:13px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-health-row { min-height:52px; }
+body.tfp-admin-dashboard-view .tfp-admin-health-row>b { font-size:12px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-approval-row { min-height:60px; }
+body.tfp-admin-dashboard-view .tfp-admin-approval-row strong { font-size:15px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-approval-row small { font-size:12px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-approval-row>a,
+body.tfp-admin-dashboard-view .tfp-admin-view-btn { font-size:14px !important; min-height:38px; }
+body.tfp-admin-dashboard-view .tfp-admin-status-pill { font-size:13px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th { font-size:15px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td { font-size:14px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td strong.tfp-dash-table__primary { font-size:16px !important; }
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td small.tfp-dash-table__muted { font-size:12px !important; }
+
+@media(max-width:760px) {
+    body.tfp-admin-dashboard-view .tfp-admin-nav-link { font-size:15px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header h1 { font-size:32px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header p { font-size:15px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-stat-card small { font-size:12px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-stat-card strong { font-size:24px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-stat-card p { font-size:13px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-panel-heading h2 { font-size:17px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-panel-heading p { font-size:13px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-activity-row strong,
+    body.tfp-admin-dashboard-view .tfp-admin-payment-row strong,
+    body.tfp-admin-dashboard-view .tfp-admin-health-row strong { font-size:13px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-activity-row small,
+    body.tfp-admin-dashboard-view .tfp-admin-payment-row small,
+    body.tfp-admin-dashboard-view .tfp-admin-health-row small { font-size:11px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th { font-size:14px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td { font-size:13px !important; }
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td strong.tfp-dash-table__primary { font-size:14px !important; }
+}
