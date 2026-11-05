@@ -330,8 +330,8 @@ function tfp_admin_dashboard_render() {
 
                     <article class="tfp-admin-panel tfp-admin-cohorts">
                         <div class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Active Cohort Overview', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Current cohorts and their assigned facilitators.', 'tfp-dashboard'); ?></p></div><a href="<?php echo esc_url(admin_url('edit.php?post_type=tfp_cohort')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
-                        <div class="tfp-admin-table-wrap">
-                            <table class="tfp-admin-table"><thead><tr><th><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead><tbody>
+                        <div class="tfp-admin-table-wrap tfp-dash-table-wrap">
+                            <table class="tfp-admin-table tfp-dash-table"><thead><tr><th><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead><tbody>
                                 <?php if ($data['cohorts']) : foreach ($data['cohorts'] as $cohort) :
                                     $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id') ? tfp_cohort_get_facilitator_user_id($cohort->ID) : 0;
                                     $facilitator = $facilitator_id ? get_userdata($facilitator_id) : false;
@@ -357,7 +357,11 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
+    // Reuse the shared dashboard foundation and table system used by Student/Facilitator.
     wp_enqueue_style('dashicons');
-    wp_enqueue_style('tfp-admin-dashboard', TFP_DASH_URL . 'assets/css/admin-dashboard.css', [], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-dashboard-base', TFP_DASH_URL . 'assets/css/core.css', [], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-dashboard-core', TFP_DASH_URL . 'assets/css/dashboard.css', ['tfp-dashboard-base'], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-dashboard-components', TFP_DASH_URL . 'assets/css/components.css', ['tfp-dashboard-core'], TFP_DASH_VERSION);
+    wp_enqueue_style('tfp-admin-dashboard', TFP_DASH_URL . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], TFP_DASH_VERSION);
     wp_enqueue_script('tfp-admin-dashboard', TFP_DASH_URL . 'assets/js/admin-dashboard.js', [], TFP_DASH_VERSION, true);
 });
