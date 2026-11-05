@@ -103,17 +103,10 @@ body.tfp-admin-dashboard-view p { font-family: var(--tfp-dash-font-alt, Georgia)
 .tfp-admin-approval-row>a:hover,.tfp-admin-view-btn:hover { background:var(--tfp-admin-teal-dark); color:#fff; }
 .tfp-admin-table-wrap { width:100%; }
 /* The cohort table uses the same .tfp-dash-table component as Student and Facilitator dashboards. */
-.tfp-admin-table-wrap { overflow-x:auto; }
-.tfp-admin-table { width:100%; min-width:620px; border-collapse:collapse; }
-.tfp-admin-table th,.tfp-admin-table td { padding:12px 14px; border-bottom:1px solid var(--tfp-dash-border); text-align:left; vertical-align:middle; }
-.tfp-admin-table th { color:var(--tfp-dash-text); font:700 13px/130% var(--tfp-dash-font); }
-.tfp-admin-table td { color:var(--tfp-dash-text); font:500 11px/140% var(--tfp-dash-font-alt); }
-.tfp-admin-table tbody tr:last-child td { border-bottom:0; }
-.tfp-admin-table tbody tr:nth-child(odd) td,.tfp-admin-table tbody tr:nth-child(even) td { background:transparent; }
-.tfp-admin-table a { color:var(--tfp-dash-teal); }
-.tfp-admin-table td strong { display:block; font:700 13px/140% var(--tfp-dash-font); }
-.tfp-admin-table td small { display:block; margin-top:3px; color:var(--tfp-dash-muted); font:400 10px/140% var(--tfp-dash-font-alt); }
-@media(max-width:760px) { .tfp-admin-table { min-width:580px; } .tfp-admin-table th,.tfp-admin-table td { padding:10px 9px; } }
+/* Reuse the exact shared .tfp-dash-table / .tfp-dash-table-wrap component. */
+.tfp-admin-table-wrap { width:100%; }
+.tfp-admin-table { min-width:650px; }
+.tfp-admin-table td a { color:var(--tfp-dash-teal); }
 .tfp-admin-status-pill { display:inline-flex; padding:5px 9px; border:1px solid #d8b65e; border-radius:20px; background:#f8edcf; color:#4a3b16; font-size:9px; }
 .tfp-admin-status-pill.is-active { border-color:#8bc3b9; background:#e8f5f1; color:#00666e; }
 .tfp-admin-status-pill.is-scheduled { border-color:#d8b65e; background:#f8edcf; color:#4a3b16; }
