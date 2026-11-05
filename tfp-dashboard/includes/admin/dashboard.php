@@ -7,15 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/** Register the dashboard route and query variable. */
-add_action('init', function () {
-    add_rewrite_rule('^tfp-admin-dashboard/?$', 'index.php?tfp_admin_dashboard=1', 'top');
-});
-add_filter('query_vars', function ($vars) {
-    $vars[] = 'tfp_admin_dashboard';
-    return $vars;
-});
-
 /** Check whether a plugin is active without relying on admin-only includes. */
 function tfp_admin_dashboard_plugin_active($plugin_file) {
     $active = (array) get_option('active_plugins', []);
@@ -149,7 +140,7 @@ function tfp_admin_dashboard_get_data() {
 /** Build a safe URL to an existing WordPress management screen. */
 function tfp_admin_dashboard_nav_items() {
     return [
-        ['label' => __('Dashboard', 'tfp-dashboard'), 'icon' => '▦', 'url' => home_url('/tfp-admin-dashboard'), 'active' => true],
+        ['label' => __('Dashboard', 'tfp-dashboard'), 'icon' => '▦', 'url' => (get_permalink(get_queried_object_id()) ?: admin_url('index.php')), 'active' => true],
         ['label' => __('Users', 'tfp-dashboard'), 'icon' => '♙', 'url' => admin_url('users.php')],
         ['label' => __('Courses', 'tfp-dashboard'), 'icon' => '▣', 'url' => admin_url('edit.php?post_type=sfwd-courses')],
         ['label' => __('Curriculum', 'tfp-dashboard'), 'icon' => '◈', 'url' => admin_url('edit.php?post_type=sfwd-lessons')],
@@ -330,42 +321,30 @@ function tfp_admin_dashboard_render() {
     <?php
 }
 
-/** Load dashboard styles and scripts only for this route. */
+/**
+ * Shortcode: [tfp_admin_dashboard]
+ * Place this shortcode on a normal WordPress page to render the admin console.
+ */
+function tfp_admin_dashboard_shortcode() {
+    if (!is_user_logged_in()) {
+        return '<div class="tfp-admin-access-message">' . esc_html__('Please log in to access the admin dashboard.', 'tfp-dashboard') . '</div>';
+    }
+    if (!current_user_can('manage_options')) {
+        return '<div class="tfp-admin-access-message">' . esc_html__('You do not have permission to access this dashboard.', 'tfp-dashboard') . '</div>';
+    }
+
+    ob_start();
+    tfp_admin_dashboard_render();
+    return ob_get_clean();
+}
+add_shortcode('tfp_admin_dashboard', 'tfp_admin_dashboard_shortcode');
+
+/** Load assets only on the WordPress page containing the dashboard shortcode. */
 add_action('wp_enqueue_scripts', function () {
-    if ((int) get_query_var('tfp_admin_dashboard') !== 1) {
+    if (!is_singular() || !is_a(get_post(), 'WP_Post') || !has_shortcode(get_post()->post_content, 'tfp_admin_dashboard')) {
         return;
     }
     wp_enqueue_style('dashicons');
     wp_enqueue_style('tfp-admin-dashboard', TFP_DASH_URL . 'assets/css/admin-dashboard.css', [], TFP_DASH_VERSION);
     wp_enqueue_script('tfp-admin-dashboard', TFP_DASH_URL . 'assets/js/admin-dashboard.js', [], TFP_DASH_VERSION, true);
 });
-
-/** Render a standalone app shell to avoid the public website header/footer. */
-add_action('template_redirect', function () {
-    if ((int) get_query_var('tfp_admin_dashboard') !== 1) {
-        return;
-    }
-    if (!is_user_logged_in()) {
-        auth_redirect();
-    }
-    if (!current_user_can('manage_options')) {
-        wp_die(esc_html__('You do not have permission to access this page.', 'tfp-dashboard'), '', ['response' => 403]);
-    }
-
-    status_header(200);
-    nocache_headers();
-    ?><!doctype html>
-    <html <?php language_attributes(); ?>>
-    <head>
-        <meta charset="<?php bloginfo('charset'); ?>">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <?php wp_head(); ?>
-    </head>
-    <body <?php body_class('tfp-admin-dashboard-view'); ?>>
-        <?php wp_body_open(); ?>
-        <?php tfp_admin_dashboard_render(); ?>
-        <?php wp_footer(); ?>
-    </body>
-    </html><?php
-    exit;
-}, 1);
