@@ -214,3 +214,54 @@ body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td smal
     .tfp-admin-page-header h1 { font-size:25px; }
     .tfp-admin-panel-heading { padding-inline:12px; }
 }
+
+
+/* Admin Dashboard typography scale — match the larger, clearer Figma hierarchy. */
+body.tfp-admin-dashboard-view .tfp-admin-breadcrumb { font-size:14px; }
+body.tfp-admin-dashboard-view .tfp-admin-page-header h1 { font-size:clamp(32px,3vw,44px); }
+body.tfp-admin-dashboard-view .tfp-admin-page-header p { font-size:16px; }
+body.tfp-admin-dashboard-view .tfp-admin-operational-status { font-size:12px; }
+body.tfp-admin-dashboard-view .tfp-admin-stat-card small { font-size:12px; }
+body.tfp-admin-dashboard-view .tfp-admin-stat-card strong { font-size:26px; }
+body.tfp-admin-dashboard-view .tfp-admin-stat-card p { font-size:13px; }
+body.tfp-admin-dashboard-view .tfp-admin-panel-heading h2 { font-size:17px; }
+body.tfp-admin-dashboard-view .tfp-admin-panel-heading p { font-size:13px; }
+body.tfp-admin-dashboard-view .tfp-admin-panel-heading>a { font-size:12px; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-row strong,
+body.tfp-admin-dashboard-view .tfp-admin-payment-row strong { font-size:13px; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-row small,
+body.tfp-admin-dashboard-view .tfp-admin-payment-row small { font-size:11px; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-secondary { font-size:12px; }
+body.tfp-admin-dashboard-view .tfp-admin-activity-row time { font-size:11px; }
+body.tfp-admin-dashboard-view .tfp-admin-payment-row>b { font-size:13px; }
+body.tfp-admin-dashboard-view .tfp-admin-health-row strong { font-size:13px; }
+body.tfp-admin-dashboard-view .tfp-admin-health-row small { font-size:11px; }
+body.tfp-admin-dashboard-view .tfp-admin-health-row>b { font-size:11px; }
+body.tfp-admin-dashboard-view .tfp-admin-approval-row strong { font-size:14px; }
+body.tfp-admin-dashboard-view .tfp-admin-approval-row small { font-size:11px; }
+body.tfp-admin-dashboard-view .tfp-admin-approval-row>a,
+body.tfp-admin-dashboard-view .tfp-admin-view-btn { min-height:36px; font-size:13px; }
+body.tfp-admin-dashboard-view .tfp-admin-status-pill { font-size:12px; padding:6px 11px; }
+
+/* Cohort table: retain shared dashboard structure, increase readability to Figma scale. */
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th {
+    font-size:14px !important;
+    padding:14px 16px !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td {
+    font-size:13px !important;
+    padding:14px 16px !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td strong.tfp-dash-table__primary {
+    font-size:15px !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td small.tfp-dash-table__muted {
+    font-size:11px !important;
+}
+@media(max-width:760px) {
+    body.tfp-admin-dashboard-view .tfp-admin-page-header h1 { font-size:29px; }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header p { font-size:14px; }
+    body.tfp-admin-dashboard-view .tfp-admin-stat-card strong { font-size:22px; }
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table th,
+    body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td { padding:11px 12px !important; }
+}
