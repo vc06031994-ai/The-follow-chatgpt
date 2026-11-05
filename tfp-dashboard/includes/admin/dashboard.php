@@ -321,3 +321,14 @@ function tfp_admin_dashboard_render() {
     <?php
 }
 
+
+/** Load Admin Dashboard assets only when its page template is active. */
+add_action('wp_enqueue_scripts', function () {
+    if (!function_exists('tfp_dashboard_current_template_slug') || tfp_dashboard_current_template_slug() !== 'tfp-dashboard-admin-home') {
+        return;
+    }
+
+    wp_enqueue_style('dashicons');
+    wp_enqueue_style('tfp-admin-dashboard', TFP_DASH_URL . 'assets/css/admin-dashboard.css', [], TFP_DASH_VERSION);
+    wp_enqueue_script('tfp-admin-dashboard', TFP_DASH_URL . 'assets/js/admin-dashboard.js', [], TFP_DASH_VERSION, true);
+});
