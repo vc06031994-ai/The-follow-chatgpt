@@ -136,3 +136,65 @@ function tfp_admin_dashboard_render() {
     </div>
     <?php
 }
+
+
+/**
+ * Register the public-facing URL alias for the admin dashboard.
+ * The page itself remains restricted to site administrators.
+ */
+add_action('init', function () {
+    add_rewrite_rule('^tfp-admin-dashboard/?$', 'index.php?tfp_admin_dashboard=1', 'top');
+});
+
+add_filter('query_vars', function ($vars) {
+    $vars[] = 'tfp_admin_dashboard';
+    return $vars;
+});
+
+/** Enqueue dashboard assets on the frontend route only. */
+add_action('wp_enqueue_scripts', function () {
+    if ((int) get_query_var('tfp_admin_dashboard') !== 1) {
+        return;
+    }
+
+    wp_enqueue_style('dashicons');
+    wp_enqueue_style(
+        'tfp-admin-dashboard-frontend',
+        TFP_DASH_URL . 'assets/css/admin-dashboard.css',
+        [],
+        TFP_DASH_VERSION
+    );
+
+    // Remove theme content width constraints for this dedicated dashboard view.
+    wp_add_inline_style(
+        'tfp-admin-dashboard-frontend',
+        '.tfp-admin-dashboard-page{max-width:1440px;margin:0 auto;padding:28px 24px 48px;box-sizing:border-box}.tfp-admin-dashboard-page .tfp-admin-wrap{margin:0}@media(max-width:600px){.tfp-admin-dashboard-page{padding:18px 14px 32px}}'
+    );
+});
+
+/** Render the pretty URL while preserving administrator-only access. */
+add_action('template_redirect', function () {
+    if ((int) get_query_var('tfp_admin_dashboard') !== 1) {
+        return;
+    }
+
+    if (!is_user_logged_in()) {
+        auth_redirect();
+    }
+
+    if (!current_user_can('manage_options')) {
+        wp_die(
+            esc_html__('You do not have permission to access this page.', 'tfp-dashboard'),
+            esc_html__('Access denied', 'tfp-dashboard'),
+            ['response' => 403]
+        );
+    }
+
+    nocache_headers();
+    get_header();
+    echo '<main class="tfp-admin-dashboard-page">';
+    tfp_admin_dashboard_render();
+    echo '</main>';
+    get_footer();
+    exit;
+}, 1);
