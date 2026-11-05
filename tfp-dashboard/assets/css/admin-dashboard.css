@@ -18,9 +18,9 @@ body.tfp-admin-dashboard-view p { font-family: var(--tfp-dash-font-alt, Georgia)
 .tfp-admin-app {
     display:flex;
     width:100%;
-    max-width:1314px;
+    max-width:none;
     min-height:100vh;
-    margin:0 auto;
+    margin:0;
     background:#fff;
 }
 .tfp-admin-sidebar {
@@ -336,7 +336,7 @@ body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td smal
 
 /* Figma artboard geometry and component proportions (desktop). */
 @media(min-width:1101px) {
-    body.tfp-admin-dashboard-view .tfp-admin-app { max-width:1314px; }
+    body.tfp-admin-dashboard-view .tfp-admin-app { width:100%; max-width:none; margin:0; }
     body.tfp-admin-dashboard-view .tfp-admin-sidebar { flex:0 0 237px; width:237px; min-width:237px; }
     body.tfp-admin-dashboard-view .tfp-admin-content { padding:24px 50px 42px; }
     body.tfp-admin-dashboard-view .tfp-admin-breadcrumb { padding-inline:50px; }
@@ -351,4 +351,56 @@ body.tfp-admin-dashboard-view .tfp-admin-table-wrap table.tfp-dash-table td smal
     body.tfp-admin-dashboard-view .tfp-admin-content { padding-inline:28px; }
     body.tfp-admin-dashboard-view .tfp-admin-breadcrumb,
     body.tfp-admin-dashboard-view .tfp-admin-page-header { padding-inline:30px; }
+}
+
+
+/* Full-viewport dashboard canvas: do not constrain the Admin Dashboard to a centered artboard. */
+html:has(body.tfp-admin-dashboard-view),
+body.tfp-admin-dashboard-view {
+    width:100%;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+body.tfp-admin-dashboard-view #page,
+body.tfp-admin-dashboard-view .site,
+body.tfp-admin-dashboard-view .site-content,
+body.tfp-admin-dashboard-view .content-area,
+body.tfp-admin-dashboard-view .site-main,
+body.tfp-admin-dashboard-view .entry-content,
+body.tfp-admin-dashboard-view .elementor,
+body.tfp-admin-dashboard-view .elementor-section-wrap {
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-app {
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+}
+
+/* Remove theme's pink focus/border treatment from the sidebar collapse control. */
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle,
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle:hover,
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle:focus,
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle:active {
+    width:34px;
+    height:34px;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    outline:0 !important;
+    box-shadow:none !important;
+    background:transparent !important;
+    color:var(--tfp-admin-teal) !important;
+    -webkit-appearance:none;
+    appearance:none;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-icon {
+    color:#171717 !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-link.is-active .tfp-admin-nav-icon {
+    color:#fff !important;
 }
