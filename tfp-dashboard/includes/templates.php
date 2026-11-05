@@ -998,3 +998,22 @@ function tfp_dashboard_require_login()
     }
 }
 
+
+
+/**
+ * Keep the Admin Dashboard template authoritative even when a theme or
+ * page-builder plugin filters template_include later in the request.
+ */
+add_filter('template_include', function ($template) {
+    if (!is_page()) {
+        return $template;
+    }
+
+    $assigned_template = get_page_template_slug(get_queried_object_id());
+    if ($assigned_template !== 'tfp-dashboard-admin-home') {
+        return $template;
+    }
+
+    $admin_template = TFP_DASH_PATH . 'templates/template-admin-home.php';
+    return is_readable($admin_template) ? $admin_template : $template;
+}, 99);
