@@ -404,3 +404,93 @@ body.tfp-admin-dashboard-view .tfp-admin-nav-icon {
 body.tfp-admin-dashboard-view .tfp-admin-nav-link.is-active .tfp-admin-nav-icon {
     color:#fff !important;
 }
+
+
+/* Reference image 1: fluidly scale the full-width dashboard to the reference proportions. */
+body.tfp-admin-dashboard-view {
+    --tfp-admin-sidebar-width: clamp(168px, 12.35vw, 237px);
+    --tfp-admin-breadcrumb-height: clamp(39px, 2.86vw, 55px);
+    --tfp-admin-header-height: clamp(87px, 6.3vw, 121px);
+    --tfp-admin-horizontal-space: clamp(38px, 2.6vw, 50px);
+    --tfp-admin-nav-height: clamp(36px, 2.55vw, 49px);
+    --tfp-admin-nav-gap: clamp(7px, .52vw, 10px);
+    --tfp-admin-nav-font: clamp(13px, .84vw, 16px);
+    --tfp-admin-title-font: clamp(30px, 2.4vw, 46px);
+    --tfp-admin-description-font: clamp(13px, .9vw, 17px);
+}
+body.tfp-admin-dashboard-view .tfp-admin-app {
+    width:100% !important;
+    max-width:none !important;
+    min-height:100vh;
+    margin:0 !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-sidebar {
+    flex:0 0 var(--tfp-admin-sidebar-width);
+    width:var(--tfp-admin-sidebar-width);
+    min-width:var(--tfp-admin-sidebar-width);
+    padding-top:clamp(8px,.63vw,12px);
+}
+body.tfp-admin-dashboard-view .tfp-admin-brand-row {
+    min-height:clamp(100px,6.72vw,129px);
+    padding:clamp(8px,.63vw,12px) clamp(12px,.94vw,18px) clamp(14px,1.04vw,20px) clamp(18px,1.35vw,26px);
+}
+body.tfp-admin-dashboard-view .tfp-admin-brand img {
+    max-width:clamp(136px,9.9vw,190px);
+    max-height:clamp(44px,3.23vw,62px);
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav {
+    gap:var(--tfp-admin-nav-gap);
+    padding:clamp(6px,.42vw,8px) clamp(10px,.73vw,14px) 18px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-link {
+    min-height:var(--tfp-admin-nav-height);
+    padding:clamp(7px,.52vw,10px) clamp(11px,.84vw,16px);
+    gap:clamp(8px,.63vw,12px);
+    font-size:var(--tfp-admin-nav-font) !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-icon {
+    flex-basis:clamp(16px,1.04vw,20px);
+    font-size:clamp(15px,1.04vw,20px);
+}
+body.tfp-admin-dashboard-view .tfp-admin-breadcrumb {
+    height:var(--tfp-admin-breadcrumb-height);
+    padding-inline:var(--tfp-admin-horizontal-space);
+    font-size:clamp(11px,.78vw,15px) !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header {
+    min-height:var(--tfp-admin-header-height);
+    padding:clamp(12px,.83vw,16px) var(--tfp-admin-horizontal-space) clamp(14px,1.04vw,20px);
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
+    font-size:var(--tfp-admin-title-font) !important;
+    letter-spacing:-.45px;
+    margin-bottom:clamp(5px,.47vw,9px);
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header p {
+    font-size:var(--tfp-admin-description-font) !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-operational-status {
+    padding:clamp(8px,.63vw,12px) clamp(10px,.78vw,15px);
+    font-size:clamp(9px,.68vw,13px) !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-content {
+    padding:clamp(18px,1.25vw,24px) var(--tfp-admin-horizontal-space) 42px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle,
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle:hover,
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle:focus,
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle:active {
+    border:0 !important;
+    outline:0 !important;
+    box-shadow:none !important;
+    color:var(--tfp-admin-teal) !important;
+    background:transparent !important;
+}
+@media(max-width:760px) {
+    body.tfp-admin-dashboard-view {
+        --tfp-admin-sidebar-width:260px;
+        --tfp-admin-horizontal-space:18px;
+        --tfp-admin-title-font:29px;
+        --tfp-admin-description-font:14px;
+    }
+}
