@@ -1017,3 +1017,26 @@ add_filter('template_include', function ($template) {
     $admin_template = TFP_DASH_PATH . 'templates/template-admin-home.php';
     return is_readable($admin_template) ? $admin_template : $template;
 }, 99);
+
+
+/**
+ * Directly load the selected Admin Dashboard template before the theme's
+ * template loader runs. This prevents Elementor/theme template overrides
+ * from returning an empty page for this custom dashboard.
+ */
+add_action('template_redirect', function () {
+    if (!is_page()) {
+        return;
+    }
+
+    $page_id = get_queried_object_id();
+    if (!$page_id || get_page_template_slug($page_id) !== 'tfp-dashboard-admin-home') {
+        return;
+    }
+
+    $admin_template = TFP_DASH_PATH . 'templates/template-admin-home.php';
+    if (is_readable($admin_template)) {
+        include $admin_template;
+        exit;
+    }
+}, 2);
