@@ -130,7 +130,7 @@ function tfp_admin_dashboard_render() {
                 <?php if (function_exists('wc_get_orders')) : ?>
                     <a href="<?php echo esc_url(admin_url('edit.php?post_type=shop_order')); ?>"><span class="dashicons dashicons-cart"></span><span><?php esc_html_e('Manage Orders', 'tfp-dashboard'); ?></span><span class="tfp-admin-arrow">→</span></a>
                 <?php endif; ?>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=tfp-financial-aid')); ?>"><span class="dashicons dashicons-clipboard"></span><span><?php esc_html_e('Financial Aid', 'tfp-dashboard'); ?></span><span class="tfp-admin-arrow">→</span></a>
+                <a href="<?php echo esc_url(admin_url('edit.php?post_type=tfp_financial_aid')); ?>"><span class="dashicons dashicons-clipboard"></span><span><?php esc_html_e('Financial Aid', 'tfp-dashboard'); ?></span><span class="tfp-admin-arrow">→</span></a>
             </div>
         </section>
     </div>
