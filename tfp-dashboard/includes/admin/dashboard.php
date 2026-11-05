@@ -321,38 +321,3 @@ function tfp_admin_dashboard_render() {
     <?php
 }
 
-/**
- * Shortcode: [tfp_admin_dashboard]
- * Place this shortcode on a normal WordPress page to render the admin console.
- */
-function tfp_admin_dashboard_shortcode() {
-    if (!is_user_logged_in()) {
-        return '<div class="tfp-admin-access-message">' . esc_html__('Please log in to access the admin dashboard.', 'tfp-dashboard') . '</div>';
-    }
-    if (!current_user_can('manage_options')) {
-        return '<div class="tfp-admin-access-message">' . esc_html__('You do not have permission to access this dashboard.', 'tfp-dashboard') . '</div>';
-    }
-
-    ob_start();
-    tfp_admin_dashboard_render();
-    return ob_get_clean();
-}
-add_shortcode('tfp_admin_dashboard', 'tfp_admin_dashboard_shortcode');
-
-/** Add a body class so the dashboard styles can safely scope page-level layout. */
-add_filter('body_class', function ($classes) {
-    if (is_singular() && is_a(get_post(), 'WP_Post') && has_shortcode(get_post()->post_content, 'tfp_admin_dashboard')) {
-        $classes[] = 'tfp-admin-dashboard-view';
-    }
-    return $classes;
-});
-
-/** Load assets only on the WordPress page containing the dashboard shortcode. */
-add_action('wp_enqueue_scripts', function () {
-    if (!is_singular() || !is_a(get_post(), 'WP_Post') || !has_shortcode(get_post()->post_content, 'tfp_admin_dashboard')) {
-        return;
-    }
-    wp_enqueue_style('dashicons');
-    wp_enqueue_style('tfp-admin-dashboard', TFP_DASH_URL . 'assets/css/admin-dashboard.css', [], TFP_DASH_VERSION);
-    wp_enqueue_script('tfp-admin-dashboard', TFP_DASH_URL . 'assets/js/admin-dashboard.js', [], TFP_DASH_VERSION, true);
-});
