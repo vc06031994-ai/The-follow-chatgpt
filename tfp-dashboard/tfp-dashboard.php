@@ -33,9 +33,6 @@ register_activation_hook(__FILE__, function () {
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql);
 
-    // Register the admin dashboard route before flushing rewrite rules.
-    add_rewrite_rule('^tfp-admin-dashboard/?$', 'index.php?tfp_admin_dashboard=1', 'top');
-    flush_rewrite_rules();
 });
 
 require_once TFP_DASH_PATH . 'includes/helpers.php';
