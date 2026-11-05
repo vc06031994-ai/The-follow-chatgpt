@@ -19,6 +19,8 @@ if (!current_user_can('manage_options')) {
     );
 }
 
+// Hide the WordPress toolbar on this full-screen dashboard to match the Figma canvas.
+show_admin_bar(false);
 status_header(200);
 nocache_headers();
 ?><!doctype html>
