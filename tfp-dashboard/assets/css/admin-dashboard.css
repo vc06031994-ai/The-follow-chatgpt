@@ -1475,3 +1475,37 @@ body.tfp-admin-dashboard-view .entry-content {
         gap: 10px;
     }
 }
+
+
+/* Separate Admin Users landing page */
+.tfp-admin-users-home .tfp-admin-page-header .tfp-admin-add-user-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 15px;
+    border: 1px solid #00666e;
+    border-radius: 7px;
+    background: #00666e;
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.tfp-admin-users-home .tfp-admin-page-header .tfp-admin-add-user-btn:hover {
+    background: #00505a;
+}
+.tfp-admin-users-home .tfp-admin-content {
+    padding-top: 28px;
+}
+@media (max-width: 560px) {
+    .tfp-admin-users-home .tfp-admin-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .tfp-admin-users-home .tfp-admin-content {
+        padding: 16px 12px 28px;
+    }
+}
