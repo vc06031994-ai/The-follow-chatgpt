@@ -600,49 +600,31 @@ function tfp_admin_dashboard_render() {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $sample_cohorts = [
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'C. Soloc', 'status' => 'Needs Review', 'type' => 'needs-review'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Sin - The Beginning', 'status' => 'In Progress', 'type' => 'in-progress'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Echoes of Tomorrow', 'status' => 'Completed', 'type' => 'completed'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Midnight Reverie', 'status' => 'On Hold', 'type' => 'on-hold'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Celestial Drift', 'status' => 'Cancelled', 'type' => 'cancelled'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Fragments of Light', 'status' => 'Pending Approval', 'type' => 'pending-approval'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Neon Horizon', 'status' => 'Awaiting Feedback', 'type' => 'awaiting-feedback'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Whispers of the Void', 'status' => 'Scheduled', 'type' => 'scheduled'],
-                                        ['cohort' => '12DP-SP-25', 'week' => 'Week 12 of 58', 'fac' => 'Veil of Shadows', 'status' => 'Deferred', 'type' => 'deferred'],
-                                    ];
-
                                     $cohort_list = [];
-                                    if ($data['cohorts']) {
-                                        $statuses = ['Needs Review', 'In Progress', 'Completed', 'On Hold', 'Cancelled', 'Pending Approval', 'Awaiting Feedback', 'Scheduled'];
-                                        $types = ['needs-review', 'in-progress', 'completed', 'on-hold', 'cancelled', 'pending-approval', 'awaiting-feedback', 'scheduled'];
-                                        $idx = 0;
-                                        foreach ($data['cohorts'] as $c) {
-                                            $fac_id = function_exists('tfp_cohort_get_facilitator_user_id') ? tfp_cohort_get_facilitator_user_id($c->ID) : 0;
-                                            $fac_user = $fac_id ? get_userdata($fac_id) : false;
-                                            $cohort_list[] = [
-                                                'cohort' => get_the_title($c),
-                                                'week' => 'Week 12 of 58',
-                                                'fac' => $fac_user ? $fac_user->display_name : ($sample_cohorts[$idx % count($sample_cohorts)]['fac']),
-                                                'status' => $statuses[$idx % count($statuses)],
-                                                'type' => $types[$idx % count($types)],
-                                                'url' => get_edit_post_link($c->ID),
-                                            ];
-                                            $idx++;
+                                    foreach ($data['cohorts'] as $cohort_post) {
+                                        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id')
+                                            ? absint(tfp_cohort_get_facilitator_user_id($cohort_post->ID))
+                                            : absint(get_post_meta($cohort_post->ID, 'tfp_facilitator_id', true));
+                                        $facilitator = $facilitator_id ? get_userdata($facilitator_id) : false;
+                                        $stored_status = get_post_meta($cohort_post->ID, 'tfp_status', true);
+                                        if ($stored_status === '') {
+                                            $stored_status = get_post_meta($cohort_post->ID, '_tfp_status', true);
                                         }
-                                    }
-                                    if (count($cohort_list) < 9) {
-                                        for ($i = count($cohort_list); $i < 9; $i++) {
-                                            $s = $sample_cohorts[$i % count($sample_cohorts)];
-                                            $cohort_list[] = [
-                                                'cohort' => $s['cohort'],
-                                                'week' => $s['week'],
-                                                'fac' => $s['fac'],
-                                                'status' => $s['status'],
-                                                'type' => $s['type'],
-                                                'url' => admin_url('edit.php?post_type=tfp_cohort'),
-                                            ];
-                                        }
+                                        $status_label = $stored_status !== '' ? sanitize_text_field((string) $stored_status) : get_post_status_object($cohort_post->post_status)->label;
+                                        $status_type = sanitize_html_class(strtolower(str_replace([' ', '_'], '-', $status_label)));
+                                        $current_week = get_post_meta($cohort_post->ID, 'tfp_current_week', true);
+                                        $total_weeks = get_post_meta($cohort_post->ID, 'tfp_total_weeks', true);
+                                        $week_label = ($current_week !== '' && $total_weeks !== '')
+                                            ? sprintf(__('Week %1$s of %2$s', 'tfp-dashboard'), absint($current_week), absint($total_weeks))
+                                            : '—';
+                                        $cohort_list[] = [
+                                            'cohort' => get_the_title($cohort_post),
+                                            'week' => $week_label,
+                                            'fac' => $facilitator ? $facilitator->display_name : '—',
+                                            'status' => $status_label,
+                                            'type' => $status_type,
+                                            'url' => get_edit_post_link($cohort_post->ID),
+                                        ];
                                     }
 
                                     foreach ($cohort_list as $row) :
