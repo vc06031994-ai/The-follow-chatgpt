@@ -375,15 +375,15 @@ function tfp_admin_dashboard_render() {
                         <small><?php esc_html_e('Total Students Enrolled', 'tfp-dashboard'); ?></small>
                         <div class="tfp-admin-stat-value">
                             <strong><?php echo esc_html(number_format_i18n($data['students'])); ?></strong>
-                            <span class="tfp-admin-stat-trend">↑ 3.5%</span>
+                            
                         </div>
                         <p><?php esc_html_e('Active students in cohorts', 'tfp-dashboard'); ?></p>
                     </article>
                     <article class="tfp-admin-stat-card">
                         <small><?php esc_html_e('Total Payments Collected', 'tfp-dashboard'); ?></small>
                         <div class="tfp-admin-stat-value">
-                            <strong>$<?php echo esc_html(number_format($data['payments'], 0)); ?></strong>
-                            <span class="tfp-admin-stat-trend">↑ 3.1%</span>
+                            <strong><?php echo wp_kses_post(function_exists('wc_price') ? wc_price($data['payments']) : number_format_i18n($data['payments'], 2)); ?></strong>
+                            
                         </div>
                         <p><?php esc_html_e('Gross collected (excl. refunds)', 'tfp-dashboard'); ?></p>
                     </article>
@@ -391,7 +391,7 @@ function tfp_admin_dashboard_render() {
                         <small><?php esc_html_e('Active Cohorts', 'tfp-dashboard'); ?></small>
                         <div class="tfp-admin-stat-value">
                             <strong><?php echo esc_html($data['all_cohorts']); ?></strong>
-                            <span class="tfp-admin-stat-trend">↑ 4</span>
+                            
                         </div>
                         <p><?php esc_html_e('Cohorts with status Active', 'tfp-dashboard'); ?></p>
                     </article>
@@ -547,17 +547,8 @@ function tfp_admin_dashboard_render() {
                                     $app_title = $student ? $student->display_name . ', Skip week request' : get_the_title($app);
                                     $approval_rows[] = [
                                         'title' => $app_title,
-                                        'meta' => 'Week 12 of 58',
+                                        'meta' => get_post_meta($app->ID, '_tfp_week_label', true) ?: get_the_date('', $app),
                                         'url' => get_edit_post_link($app->ID),
-                                    ];
-                                }
-                            }
-                            if (count($approval_rows) < 7) {
-                                for ($i = count($approval_rows); $i < 7; $i++) {
-                                    $approval_rows[] = [
-                                        'title' => 'Sarah Jenkins, Skip week request',
-                                        'meta' => 'Week 12 of 58',
-                                        'url' => admin_url('edit.php?post_type=tfp_financial_aid'),
                                     ];
                                 }
                             }
