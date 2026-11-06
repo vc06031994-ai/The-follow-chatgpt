@@ -1,7 +1,16 @@
 /* Admin → Users → System Health — scoped styles matching the supplied reference. */
 .tfp-admin-system-health .tfp-admin-main { min-width: 0; }
+.tfp-admin-system-health .tfp-admin-breadcrumb {
+    height: 50px;
+    padding-right: 50px;
+    padding-left: 50px;
+}
 .tfp-admin-system-health .tfp-admin-system-health-header {
-    min-height: 112px;
+    box-sizing: border-box;
+    height: 113px;
+    min-height: 113px;
+    padding-right: 50px;
+    padding-left: 50px;
     align-items: center;
     border-bottom: 1px solid #650d12;
 }
@@ -37,7 +46,9 @@
 .tfp-admin-system-health .tfp-admin-health-refresh:hover,
 .tfp-admin-system-health .tfp-admin-system-health-view:hover { background: #00585e; color: #fff; }
 .tfp-admin-system-health .tfp-admin-health-refresh span { font-size: 22px; line-height: 1; }
-.tfp-admin-system-health-content { padding-top: 30px; }
+.tfp-admin-system-health-content {
+    padding: 30px 50px 42px;
+}
 .tfp-admin-system-health-filters {
     display: flex;
     flex-wrap: wrap;
@@ -103,15 +114,43 @@
 }
 .tfp-admin-system-health-table-panel .tfp-admin-overview-table {
     min-width: 850px;
-    table-layout: auto;
+    table-layout: fixed;
+    border: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.tfp-admin-system-health-table-panel .tfp-admin-overview-table th,
+.tfp-admin-system-health-table-panel .tfp-admin-overview-table td {
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid #e6e7e8;
+    border-left: 0;
+    padding: 6px 20px;
+    text-align: left;
+    vertical-align: middle;
+}
+.tfp-admin-system-health-table-panel .tfp-admin-overview-table thead th {
+    height: 37px;
+    background: #fcfcfc;
+    font-size: 12px;
+    font-weight: 700;
+}
+.tfp-admin-system-health-table-panel .tfp-admin-overview-table tbody td {
+    height: 37px;
+    font-size: 10px;
+    font-weight: 500;
+}
+.tfp-admin-system-health-table-panel .tfp-admin-overview-table tbody td:first-child strong {
+    font-size: 12px;
+    font-weight: 700;
 }
 .tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(1) { width: 20%; }
-.tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(2) { width: 9%; }
+.tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(2) { width: 10%; }
 .tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(3) { width: 11%; }
 .tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(4) { width: 11%; }
 .tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(5) { width: 22%; }
 .tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(6) { width: 15%; }
-.tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(7) { width: 12%; }
+.tfp-admin-system-health-table-panel .tfp-admin-overview-table th:nth-child(7) { width: 11%; }
 .tfp-admin-system-health-table-panel .tfp-admin-overview-table td {
     white-space: normal;
 }
@@ -136,15 +175,24 @@
 }
 @media (max-width: 860px) {
     .tfp-admin-system-health .tfp-admin-system-health-header { align-items: flex-start; gap: 16px; }
-    .tfp-admin-system-health-content { padding-top: 22px; }
+    .tfp-admin-system-health .tfp-admin-breadcrumb { padding-right: 24px; padding-left: 24px; }
+    .tfp-admin-system-health .tfp-admin-system-health-header { height: auto; min-height: 112px; padding-right: 24px; padding-left: 24px; }
+    .tfp-admin-system-health-content { padding: 22px 24px 32px; }
     .tfp-admin-system-health-filters { margin-right: 0; margin-left: 0; }
 }
 @media (max-width: 600px) {
-    .tfp-admin-system-health .tfp-admin-system-health-header { flex-direction: column; }
+    .tfp-admin-system-health .tfp-admin-system-health-header { height: auto; flex-direction: column; }
     .tfp-admin-system-health .tfp-admin-health-refresh { align-self: flex-start; }
     .tfp-admin-system-health-filters > select,
     .tfp-admin-system-health-filters .tfp-admin-health-search { width: 100%; }
     .tfp-admin-system-health-filters .tfp-admin-filter-submit { width: 100%; }
-    .tfp-admin-system-health-pagination { align-items: flex-start; flex-direction: column; }
-    .tfp-admin-system-health-pagination nav { width: 100%; justify-content: space-between; }
+    /* Pagination reuses the same Admin directory pagination component. */
+.tfp-admin-system-health-pagination {
+    min-height: 82px;
+    padding: 14px 20px;
 }
+.tfp-admin-system-health-pagination .tfp-admin-overview-next {
+    min-width: 98px;
+    min-height: 31px;
+}
+

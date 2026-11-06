@@ -899,11 +899,11 @@ function tfp_admin_system_health_render() {
                             </tbody>
                         </table>
                     </div>
-                    <footer class="tfp-admin-system-health-pagination">
+                    <footer class="tfp-admin-overview-pagination tfp-admin-system-health-pagination">
                         <span><?php $from = $total ? (($page - 1) * $per_page) + 1 : 0; $to = min($page * $per_page, $total); printf(esc_html__('%1$s - %2$s of %3$s records', 'tfp-dashboard'), number_format_i18n($from), number_format_i18n($to), number_format_i18n($total)); ?></span>
                         <nav aria-label="<?php esc_attr_e('System health pagination', 'tfp-dashboard'); ?>">
-                            <?php if ($page > 1) : ?><a class="tfp-admin-system-health-prev" href="<?php echo esc_url(add_query_arg('health_page', $page - 1)); ?>">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></a><?php else : ?><span class="tfp-admin-system-health-prev is-disabled">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></span><?php endif; ?>
-                            <?php if ($page < $total_pages) : ?><a class="tfp-admin-system-health-next" href="<?php echo esc_url(add_query_arg('health_page', $page + 1)); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</a><?php else : ?><span class="tfp-admin-system-health-next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span><?php endif; ?>
+                            <?php if ($page > 1) : ?><a class="tfp-admin-overview-prev tfp-admin-system-health-prev" href="<?php echo esc_url(add_query_arg('health_page', $page - 1)); ?>">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></a><?php else : ?><span class="tfp-admin-system-health-prev is-disabled">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></span><?php endif; ?>
+                            <?php if ($page < $total_pages) : ?><a class="tfp-admin-overview-next tfp-admin-system-health-next" href="<?php echo esc_url(add_query_arg('health_page', $page + 1)); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</a><?php else : ?><span class="tfp-admin-system-health-next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span><?php endif; ?>
                         </nav>
                     </footer>
                 </section>
