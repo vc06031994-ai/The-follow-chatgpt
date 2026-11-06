@@ -96,11 +96,13 @@ function tfp_admin_dashboard_page_url() {
 /** Build standard navigation items for Admin Dashboard matching the reference design. */
 function tfp_admin_dashboard_nav_items() {
     $dashboard_url = tfp_admin_dashboard_page_url();
-    $users_url = function_exists('tfp_admin_users_page_url') ? tfp_admin_users_page_url() : add_query_arg('view', 'users', $dashboard_url);
+    // Users is a section within the existing Admin Dashboard, not the full User Overview page.
+    $users_url = add_query_arg('section', 'users', $dashboard_url);
+    $users_section_active = isset($_GET['section']) && sanitize_key(wp_unslash($_GET['section'])) === 'users';
 
     return [
-        ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url, 'active' => true],
-        ['slug' => 'users', 'label' => __('Users', 'tfp-dashboard'), 'url' => $users_url, 'active' => false],
+        ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url, 'active' => !$users_section_active],
+        ['slug' => 'users', 'label' => __('Users', 'tfp-dashboard'), 'url' => $users_url, 'active' => $users_section_active],
         ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-courses')],
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-lessons')],
         ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_cohort')],
