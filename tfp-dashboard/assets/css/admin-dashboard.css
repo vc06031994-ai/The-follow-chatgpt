@@ -2157,3 +2157,27 @@ body.tfp-admin-dashboard-view .entry-content {
     background: #f1f2f3;
     color: #343a40;
 }
+
+
+/* Consistent supplied PNG for all Admin search fields. */
+.tfp-admin-search-png {
+    display: inline-flex;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+}
+.tfp-admin-search-png img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+.tfp-admin-overview-search .tfp-admin-search-png {
+    flex-basis: 16px;
+}
+.tfp-admin-users-home-view .tfp-admin-users-home-search .tfp-admin-search-png {
+    flex-basis: 16px;
+}

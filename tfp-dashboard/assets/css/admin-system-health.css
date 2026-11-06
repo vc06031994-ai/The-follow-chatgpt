@@ -196,3 +196,9 @@
     min-height: 31px;
 }
 
+
+
+/* Keep System Health search icon identical to other Admin search fields. */
+.tfp-admin-system-health-filters .tfp-admin-search-png {
+    flex-basis: 16px;
+}

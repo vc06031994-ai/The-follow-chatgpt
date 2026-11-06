@@ -393,7 +393,7 @@ function tfp_admin_users_home_render() {
                 <div><h1><?php esc_html_e('Users', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Manage students, facilitators, and administrators', 'tfp-dashboard'); ?></p></div>
                 <div class="tfp-admin-users-home-actions">
                     <form class="tfp-admin-users-home-search" method="get" action="<?php echo esc_url($all_users_url); ?>">
-                        <span aria-hidden="true">⌕</span>
+                        <span class="tfp-admin-search-png" aria-hidden="true"><img src="<?php echo esc_url('https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Note_Search-2.png'); ?>" alt=""></span>
                         <input type="search" name="user_search" value="<?php echo esc_attr($search_value); ?>" placeholder="<?php esc_attr_e('Search Users...', 'tfp-dashboard'); ?>">
                     </form>
                     <a class="tfp-admin-add-user-btn" href="<?php echo esc_url(admin_url('user-new.php')); ?>">＋ <?php esc_html_e('Add User', 'tfp-dashboard'); ?></a>
@@ -603,7 +603,7 @@ function tfp_admin_users_render() {
                     </select>
 
                     <label class="tfp-admin-overview-search">
-                        <span aria-hidden="true">⌕</span>
+                        <span class="tfp-admin-search-png" aria-hidden="true"><img src="<?php echo esc_url('https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Note_Search-2.png'); ?>" alt=""></span>
                         <input type="search" name="user_search" value="<?php echo esc_attr($data['search']); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>">
                     </label>
                     <button class="tfp-admin-filter-submit" type="submit"><?php esc_html_e('Apply filters', 'tfp-dashboard'); ?></button>
