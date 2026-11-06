@@ -267,10 +267,38 @@ function tfp_admin_users_home_render() {
     if (function_exists('tfp_admin_dashboard_enqueue_assets')) {
         tfp_admin_dashboard_enqueue_assets();
     }
+
     $current_user = wp_get_current_user();
-    $users = get_users(['number' => 5, 'orderby' => 'registered', 'order' => 'DESC']);
     $all_users_url = tfp_admin_users_page_url();
     $nav = tfp_admin_users_nav_items();
+    $total_users = count_users();
+    $total = (int) ($total_users['total_users'] ?? 0);
+    $student_count = count(get_users(['role' => 'subscriber', 'fields' => 'ID', 'number' => -1]));
+    $facilitator_count = count(get_users(['role' => 'facilitator', 'fields' => 'ID', 'number' => -1]));
+    $active_count = 0;
+    $recent_users = get_users(['number' => 4, 'orderby' => 'registered', 'order' => 'DESC']);
+    $all_user_ids = get_users(['fields' => 'ID', 'number' => -1]);
+    foreach ($all_user_ids as $user_id) {
+        $last_login = get_user_meta($user_id, '_tfp_last_login', true);
+        if ($last_login && strtotime($last_login) >= strtotime('-30 days')) {
+            $active_count++;
+        }
+    }
+    $search_value = isset($_GET['user_search']) ? sanitize_text_field(wp_unslash($_GET['user_search'])) : '';
+    $activity_users = get_users(['number' => 8, 'orderby' => 'registered', 'order' => 'DESC']);
+    $payments = [];
+    if (function_exists('wc_get_orders')) {
+        $payments = wc_get_orders(['limit' => 5, 'orderby' => 'date', 'order' => 'DESC', 'return' => 'objects']);
+    }
+
+    $systems = [
+        ['label' => __('Billing', 'tfp-dashboard'), 'detail' => function_exists('wc_get_orders') ? __('WooCommerce payment records available', 'tfp-dashboard') : __('WooCommerce is not active', 'tfp-dashboard'), 'good' => function_exists('wc_get_orders')],
+        ['label' => __('Authentication', 'tfp-dashboard'), 'detail' => __('WordPress user authentication', 'tfp-dashboard'), 'good' => true],
+        ['label' => __('Discord Sync', 'tfp-dashboard'), 'detail' => __('Integration status depends on connection settings', 'tfp-dashboard'), 'good' => false],
+        ['label' => __('Documents', 'tfp-dashboard'), 'detail' => __('WordPress media library', 'tfp-dashboard'), 'good' => true],
+        ['label' => __('Attendance', 'tfp-dashboard'), 'detail' => __('Attendance records module', 'tfp-dashboard'), 'good' => post_type_exists('tfp_attendance')],
+        ['label' => __('Password', 'tfp-dashboard'), 'detail' => __('WordPress account security', 'tfp-dashboard'), 'good' => true],
+    ];
     ?>
     <div class="tfp-admin-app tfp-admin-users-home">
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -293,29 +321,102 @@ function tfp_admin_users_home_render() {
         </aside>
         <div class="tfp-admin-main">
             <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><strong><?php esc_html_e('Users', 'tfp-dashboard'); ?></strong></div>
-            <header class="tfp-admin-page-header">
-                <div><h1><?php esc_html_e('Users', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Manage project users and access the complete user directory.', 'tfp-dashboard'); ?></p></div>
-                <a class="tfp-admin-add-user-btn" href="<?php echo esc_url(admin_url('user-new.php')); ?>">＋ <?php esc_html_e('Add User', 'tfp-dashboard'); ?></a>
+            <header class="tfp-admin-page-header tfp-admin-users-home-header">
+                <div><h1><?php esc_html_e('Users', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Manage students, facilitators, and administrators', 'tfp-dashboard'); ?></p></div>
+                <div class="tfp-admin-users-home-actions">
+                    <form class="tfp-admin-users-home-search" method="get" action="<?php echo esc_url($all_users_url); ?>">
+                        <span aria-hidden="true">⌕</span>
+                        <input type="search" name="user_search" value="<?php echo esc_attr($search_value); ?>" placeholder="<?php esc_attr_e('Search Users...', 'tfp-dashboard'); ?>">
+                    </form>
+                    <a class="tfp-admin-add-user-btn" href="<?php echo esc_url(admin_url('user-new.php')); ?>">＋ <?php esc_html_e('Add User', 'tfp-dashboard'); ?></a>
+                </div>
             </header>
-            <main class="tfp-admin-content">
-                <section class="tfp-admin-panel tfp-admin-overview-table-panel">
-                    <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Recent Users', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+            <main class="tfp-admin-content tfp-admin-users-home-content">
+                <section class="tfp-admin-stat-grid tfp-admin-users-home-stats" aria-label="<?php esc_attr_e('User statistics', 'tfp-dashboard'); ?>">
+                    <article class="tfp-admin-stat-card"><small><?php esc_html_e('Total Users', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($total)); ?></strong></div><p><?php esc_html_e('Students | Facilitators | Admins', 'tfp-dashboard'); ?></p></article>
+                    <article class="tfp-admin-stat-card"><small><?php esc_html_e('Active Users', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($active_count)); ?></strong></div><p><?php esc_html_e('Last login within 30 days', 'tfp-dashboard'); ?></p></article>
+                    <article class="tfp-admin-stat-card"><small><?php esc_html_e('Students Enrolled', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($student_count)); ?></strong></div><p><?php esc_html_e('Student accounts', 'tfp-dashboard'); ?></p></article>
+                    <article class="tfp-admin-stat-card"><small><?php esc_html_e('Facilitators Active', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($facilitator_count)); ?></strong></div><p><?php esc_html_e('Facilitator accounts', 'tfp-dashboard'); ?></p></article>
+                </section>
+
+                <section class="tfp-admin-users-home-panels">
+                    <article class="tfp-admin-panel tfp-admin-users-activity">
+                        <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Recent User Activity', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+                        <div class="tfp-admin-activity-list">
+                            <?php if ($activity_users) : foreach ($activity_users as $person) :
+                                $cohort_id = absint(get_user_meta($person->ID, 'tfp_cohort_choice', true));
+                                $cohort = $cohort_id ? get_the_title($cohort_id) : __('No cohort assigned', 'tfp-dashboard');
+                            ?>
+                                <a class="tfp-admin-activity-row" href="<?php echo esc_url(get_edit_user_link($person->ID)); ?>">
+                                    <span class="tfp-admin-activity-col1"><strong><?php echo esc_html($person->display_name ?: $person->user_login); ?></strong><time><?php echo esc_html($person->user_registered ? wp_date('Y-m-d H:i', strtotime($person->user_registered)) : '—'); ?></time></span>
+                                    <span class="tfp-admin-activity-col2"><span><?php echo esc_html($cohort); ?></span></span>
+                                    <i class="tfp-admin-chevron" aria-hidden="true">›</i>
+                                </a>
+                            <?php endforeach; else : ?><p class="tfp-admin-users-empty"><?php esc_html_e('No user activity available.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                        </div>
+                    </article>
+
+                    <article class="tfp-admin-panel tfp-admin-users-health">
+                        <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('User System Health', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(admin_url('site-health.php')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+                        <div class="tfp-admin-health-list">
+                            <?php foreach ($systems as $system) : ?>
+                                <div class="tfp-admin-health-row">
+                                    <span class="tfp-admin-health-icon" aria-hidden="true">◉</span>
+                                    <span class="tfp-admin-health-info"><strong><?php echo esc_html($system['label']); ?></strong><small><?php echo esc_html($system['detail']); ?></small></span>
+                                    <span class="tfp-admin-health-status <?php echo $system['good'] ? 'is-good' : 'is-attention'; ?>"><?php echo $system['good'] ? esc_html__('Good', 'tfp-dashboard') : esc_html__('Review', 'tfp-dashboard'); ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </article>
+
+                    <article class="tfp-admin-panel tfp-admin-users-payments">
+                        <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Recent Payments', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(admin_url('edit.php?post_type=shop_order')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+                        <div class="tfp-admin-payment-list">
+                            <?php if ($payments) : foreach ($payments as $order) :
+                                $billing_name = trim($order->get_formatted_billing_full_name());
+                                $payment_status = wc_get_order_status_name($order->get_status());
+                                $attention = in_array($order->get_status(), ['failed', 'cancelled', 'on-hold'], true);
+                            ?>
+                                <div class="tfp-admin-payment-row">
+                                    <span class="tfp-admin-payment-info"><strong><?php echo esc_html($billing_name ?: __('Customer', 'tfp-dashboard')); ?></strong><small><?php echo esc_html(sprintf(__('Order #%s · %s', 'tfp-dashboard'), $order->get_order_number(), $order->get_total() . ' ' . $order->get_currency())); ?></small></span>
+                                    <span class="tfp-admin-payment-status <?php echo $attention ? 'is-attention' : 'is-good'; ?>"><?php echo esc_html($payment_status); ?></span>
+                                </div>
+                            <?php endforeach; else : ?><p class="tfp-admin-users-empty"><?php esc_html_e('No payment records available.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="tfp-admin-panel tfp-admin-overview-table-panel tfp-admin-users-home-table">
+                    <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('User Overview', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
                     <div class="tfp-admin-overview-table-wrap">
                         <table class="tfp-admin-overview-table">
-                            <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Role', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Registered', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                            <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Role', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Flags', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Activity', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
                             <tbody>
-                            <?php if ($users) : foreach ($users as $person) :
+                            <?php if ($recent_users) : foreach ($recent_users as $person) :
                                 $roles = (array) $person->roles;
-                                $role = $roles ? translate_user_role(reset($roles)) : __('Unassigned', 'tfp-dashboard');
+                                $role_slug = $roles ? reset($roles) : '';
+                                $role_label = $role_slug === 'administrator' ? __('Admin', 'tfp-dashboard') : ($role_slug === 'subscriber' ? __('Student', 'tfp-dashboard') : ($role_slug ? translate_user_role(wp_roles()->roles[$role_slug]['name'] ?? ucfirst($role_slug)) : __('Unassigned', 'tfp-dashboard')));
+                                $cohort_id = absint(get_user_meta($person->ID, 'tfp_cohort_choice', true));
+                                $cohort = $cohort_id ? get_the_title($cohort_id) : '—';
+                                $deactivated = (bool) get_user_meta($person->ID, '_tfp_deactivated', true);
+                                $flags = get_user_meta($person->ID, 'tfp_flags', true);
+                                if ($flags === '' || $flags === false) { $flags = get_user_meta($person->ID, '_tfp_flags', true); }
+                                $flag_count = is_array($flags) ? count($flags) : absint($flags);
+                                $last_login = get_user_meta($person->ID, '_tfp_last_login', true);
                             ?>
-                                <tr><td><strong><?php echo esc_html($person->display_name ?: $person->user_login); ?></strong></td><td><?php echo esc_html($role); ?></td><td><?php echo esc_html($person->user_registered ? wp_date(get_option('date_format'), strtotime($person->user_registered)) : '—'); ?></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(get_edit_user_link($person->ID)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
-                            <?php endforeach; else : ?>
-                                <tr><td colspan="4" class="tfp-admin-overview-empty"><?php esc_html_e('No users found.', 'tfp-dashboard'); ?></td></tr>
-                            <?php endif; ?>
+                                <tr>
+                                    <td><strong><?php echo esc_html($person->display_name ?: $person->user_login); ?></strong></td>
+                                    <td><?php echo esc_html($role_label); ?></td>
+                                    <td><span class="tfp-admin-user-status <?php echo $deactivated ? 'is-deactivated' : 'is-active'; ?>"><?php echo $deactivated ? esc_html__('Deactivated', 'tfp-dashboard') : esc_html__('Active', 'tfp-dashboard'); ?></span></td>
+                                    <td><?php echo esc_html($cohort ?: '—'); ?></td>
+                                    <td><?php echo esc_html(number_format_i18n($flag_count)); ?></td>
+                                    <td><?php echo esc_html($last_login ? wp_date('M j, g:ia', strtotime($last_login)) : '—'); ?></td>
+                                    <td><a class="tfp-admin-overview-view" href="<?php echo esc_url(get_edit_user_link($person->ID)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                                </tr>
+                            <?php endforeach; else : ?><tr><td colspan="7" class="tfp-admin-overview-empty"><?php esc_html_e('No users found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
                             </tbody>
                         </table>
                     </div>
-                    <div class="tfp-admin-overview-pagination"><span><?php printf(esc_html__('%s recent users', 'tfp-dashboard'), number_format_i18n(count($users))); ?></span><a class="tfp-admin-overview-next" href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All Users', 'tfp-dashboard'); ?> ›</a></div>
                 </section>
             </main>
         </div>
