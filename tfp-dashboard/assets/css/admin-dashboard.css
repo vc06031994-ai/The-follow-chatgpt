@@ -2096,3 +2096,20 @@ body.tfp-admin-dashboard-view .entry-content {
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+
+
+/* Flag count marker used in both Users overview tables. */
+.tfp-admin-overview-flags {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: #171717;
+    font-size: 12px;
+    line-height: 1;
+}
+.tfp-admin-overview-flags .tfp-admin-flag-icon {
+    display: block;
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+}
