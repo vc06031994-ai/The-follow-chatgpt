@@ -1778,3 +1778,53 @@ body.tfp-admin-dashboard-view .entry-content {
         width: 100%;
     }
 }
+
+
+/* Users landing-page overview table: match the reference's clean row separators. */
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    border: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th,
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td {
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid #e6e7e8;
+    border-left: 0;
+    padding: 6px 20px;
+    text-align: left;
+    vertical-align: middle;
+}
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table thead th {
+    height: 36px;
+    background: #fcfcfc;
+    font-size: 11px;
+    font-weight: 700;
+}
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table tbody td {
+    height: 37px;
+    font-size: 10px;
+    font-weight: 500;
+}
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table tbody td:first-child strong {
+    font-size: 11px;
+    font-weight: 700;
+}
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th:nth-child(1),
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td:nth-child(1) { width: 20%; }
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th:nth-child(2),
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td:nth-child(2) { width: 10%; }
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th:nth-child(3),
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td:nth-child(3) { width: 12%; }
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th:nth-child(4),
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td:nth-child(4) { width: 18%; }
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th:nth-child(5),
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td:nth-child(5) { width: 10%; }
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th:nth-child(6),
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td:nth-child(6) { width: 15%; }
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table th:nth-child(7),
+.tfp-admin-users-home-view .tfp-admin-users-home-table .tfp-admin-overview-table td:nth-child(7) { width: 15%; }
