@@ -34,6 +34,11 @@ add_action('template_redirect', function () {
     status_header(200);
     nocache_headers();
     $file = TFP_DASH_PATH . 'templates/template-admin-system-health.php';
+    if (isset($_GET['refresh_health'])) {
+        check_admin_referer('tfp_refresh_system_health');
+        wp_safe_redirect(remove_query_arg(['refresh_health', '_wpnonce']));
+        exit;
+    }
     if (is_readable($file)) {
         include $file;
         exit;
@@ -694,10 +699,7 @@ function tfp_admin_system_health_get_rows() {
             $role_label = __('Student', 'tfp-dashboard');
         }
 
-        $last_login = get_user_meta($person->ID, '_tfp_last_login', true);
-        $last_check = $last_login && strtotime($last_login)
-            ? wp_date(get_option('date_format') . ', ' . get_option('time_format'), strtotime($last_login))
-            : __('Not recorded', 'tfp-dashboard');
+        $last_check = wp_date(get_option('date_format') . ', ' . get_option('time_format'));
 
         // Account access is based on the project's existing deactivation flag.
         $deactivated = (bool) get_user_meta($person->ID, '_tfp_deactivated', true);
@@ -786,13 +788,6 @@ function tfp_admin_system_health_render() {
     $status_filter = isset($_GET['health_status']) ? sanitize_key(wp_unslash($_GET['health_status'])) : '';
     $system_filter = isset($_GET['health_system']) ? sanitize_text_field(wp_unslash($_GET['health_system'])) : '';
     $search = isset($_GET['health_search']) ? sanitize_text_field(wp_unslash($_GET['health_search'])) : '';
-
-    // Refresh is a cache-free re-read of live records, protected against CSRF.
-    if (isset($_GET['refresh_health'])) {
-        check_admin_referer('tfp_refresh_system_health');
-        wp_safe_redirect(remove_query_arg(['refresh_health', '_wpnonce']));
-        exit;
-    }
 
     $all_rows = tfp_admin_system_health_get_rows();
     $role_options = [];
