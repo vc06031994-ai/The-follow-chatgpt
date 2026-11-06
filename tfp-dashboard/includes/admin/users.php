@@ -390,7 +390,7 @@ function tfp_admin_users_home_render() {
                                 $payment_class = strtolower($payment_label);
                             ?>
                                 <a class="tfp-admin-payment-row" href="<?php echo esc_url($order->get_edit_order_url()); ?>">
-                                    <span class="tfp-admin-payment-info"><strong><?php echo esc_html($billing_name ?: __('Customer', 'tfp-dashboard')); ?></strong><small><?php echo esc_html(sprintf(__('Order #%s · %s %s', 'tfp-dashboard'), $order->get_order_number(), wc_price($order->get_total(), ['currency' => $order->get_currency()]), '')); ?></small></span>
+                                    <span class="tfp-admin-payment-info"><strong><?php echo esc_html($billing_name ?: __('Customer', 'tfp-dashboard')); ?></strong><small><?php echo esc_html(sprintf(__('Order #%s · %s %s', 'tfp-dashboard'), $order->get_order_number(), number_format_i18n((float) $order->get_total(), 2) . ' ' . $order->get_currency(), '')); ?></small></span>
                                     <span class="tfp-admin-payment-status is-<?php echo esc_attr($payment_class); ?>"><?php echo esc_html($payment_label); ?></span>
                                     <i class="tfp-admin-chevron" aria-hidden="true">›</i>
                                 </a>
