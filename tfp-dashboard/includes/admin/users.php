@@ -44,7 +44,7 @@ add_action('template_redirect', function () {
     global $wp_query;
     $request_path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
     $last_segment = basename($request_path);
-    $is_virtual_users = in_array($last_segment, ['admin-users', 'tfp-admin-users'], true) ||
+    $is_virtual_users = in_array($last_segment, ['user-overview', 'tfp-admin-users'], true) ||
         (isset($_GET['tfp_admin_page']) && sanitize_key(wp_unslash($_GET['tfp_admin_page'])) === 'users');
 
     if ($is_virtual_users) {
@@ -60,6 +60,30 @@ add_action('template_redirect', function () {
         }
     }
 }, 2);
+
+/** Route the separate Users landing page. */
+add_action('template_redirect', function () {
+    $path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    if (basename($path) !== 'admin-users') {
+        return;
+    }
+    status_header(200);
+    nocache_headers();
+    $file = TFP_DASH_PATH . 'templates/template-admin-users-home.php';
+    if (is_readable($file)) {
+        include $file;
+        exit;
+    }
+}, 1);
+
+/** Resolve the Users landing page URL. */
+function tfp_admin_users_home_url() {
+    $page = get_page_by_path('admin-users', OBJECT, 'page');
+    if ($page instanceof WP_Post && $page->post_status === 'publish') {
+        return get_permalink($page->ID);
+    }
+    return home_url('/admin-users/');
+}
 
 /** Resolve the Admin Users page URL. */
 function tfp_admin_users_page_url() {
@@ -93,7 +117,7 @@ function tfp_admin_users_nav_items() {
         : home_url('/tfp-admin-dashboard/');
     return [
         ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url],
-        ['slug' => 'users', 'label' => __('Users', 'tfp-dashboard'), 'url' => tfp_admin_users_page_url(), 'active' => true],
+        ['slug' => 'users', 'label' => __('Users', 'tfp-dashboard'), 'url' => tfp_admin_users_home_url(), 'active' => true],
         ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-courses')],
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-lessons')],
         ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_cohort')],
@@ -230,6 +254,73 @@ function tfp_admin_users_get_data() {
         'roles' => $role_options,
         'systems' => $systems,
     ];
+}
+
+/** Render the separate Users landing page with a live user preview. */
+function tfp_admin_users_home_render() {
+    if (!is_user_logged_in()) {
+        auth_redirect();
+    }
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('You do not have permission to access this page.', 'tfp-dashboard'), esc_html__('Access denied', 'tfp-dashboard'), ['response' => 403]);
+    }
+    if (function_exists('tfp_admin_dashboard_enqueue_assets')) {
+        tfp_admin_dashboard_enqueue_assets();
+    }
+    $current_user = wp_get_current_user();
+    $users = get_users(['number' => 5, 'orderby' => 'registered', 'order' => 'DESC']);
+    $all_users_url = tfp_admin_users_page_url();
+    $nav = tfp_admin_users_nav_items();
+    ?>
+    <div class="tfp-admin-app tfp-admin-users-home">
+        <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
+            <div class="tfp-admin-brand-row">
+                <a class="tfp-admin-brand" href="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>"><img src="<?php echo esc_url(TFP_DASH_URL . 'assets/images/logo-expanded.svg'); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>"></a>
+                <button class="tfp-admin-sidebar-toggle" type="button" aria-label="<?php esc_attr_e('Toggle navigation', 'tfp-dashboard'); ?>" data-tfp-admin-toggle><span aria-hidden="true">☰</span></button>
+            </div>
+            <nav class="tfp-admin-nav" aria-label="<?php esc_attr_e('Admin navigation', 'tfp-dashboard'); ?>">
+                <?php foreach ($nav as $item) : ?>
+                    <a class="tfp-admin-nav-link<?php echo !empty($item['active']) ? ' is-active' : ''; ?>" href="<?php echo esc_url($item['url']); ?>">
+                        <span class="tfp-admin-nav-icon" aria-hidden="true"><?php echo function_exists('tfp_admin_dashboard_nav_icon') ? tfp_admin_dashboard_nav_icon($item['slug']) : '•'; ?></span>
+                        <span class="tfp-admin-nav-label"><?php echo esc_html($item['label']); ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+            <div class="tfp-admin-sidebar-bottom">
+                <div class="tfp-admin-profile"><img src="<?php echo esc_url(get_avatar_url($current_user->ID, ['size' => 96])); ?>" alt=""><span><strong><?php echo esc_html($current_user->display_name); ?></strong><small><?php esc_html_e('Administrator', 'tfp-dashboard'); ?></small></span></div>
+                <a class="tfp-admin-logout" href="<?php echo esc_url(wp_logout_url(home_url('/'))); ?>"><span aria-hidden="true">✕</span><?php esc_html_e('Logout', 'tfp-dashboard'); ?></a>
+            </div>
+        </aside>
+        <div class="tfp-admin-main">
+            <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><strong><?php esc_html_e('Users', 'tfp-dashboard'); ?></strong></div>
+            <header class="tfp-admin-page-header">
+                <div><h1><?php esc_html_e('Users', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Manage project users and access the complete user directory.', 'tfp-dashboard'); ?></p></div>
+                <a class="tfp-admin-add-user-btn" href="<?php echo esc_url(admin_url('user-new.php')); ?>">＋ <?php esc_html_e('Add User', 'tfp-dashboard'); ?></a>
+            </header>
+            <main class="tfp-admin-content">
+                <section class="tfp-admin-panel tfp-admin-overview-table-panel">
+                    <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Recent Users', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+                    <div class="tfp-admin-overview-table-wrap">
+                        <table class="tfp-admin-overview-table">
+                            <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Role', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Registered', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                            <tbody>
+                            <?php if ($users) : foreach ($users as $person) :
+                                $roles = (array) $person->roles;
+                                $role = $roles ? translate_user_role(reset($roles)) : __('Unassigned', 'tfp-dashboard');
+                            ?>
+                                <tr><td><strong><?php echo esc_html($person->display_name ?: $person->user_login); ?></strong></td><td><?php echo esc_html($role); ?></td><td><?php echo esc_html($person->user_registered ? wp_date(get_option('date_format'), strtotime($person->user_registered)) : '—'); ?></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(get_edit_user_link($person->ID)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                            <?php endforeach; else : ?>
+                                <tr><td colspan="4" class="tfp-admin-overview-empty"><?php esc_html_e('No users found.', 'tfp-dashboard'); ?></td></tr>
+                            <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tfp-admin-overview-pagination"><span><?php printf(esc_html__('%s recent users', 'tfp-dashboard'), number_format_i18n(count($users))); ?></span><a class="tfp-admin-overview-next" href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All Users', 'tfp-dashboard'); ?> ›</a></div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <?php
 }
 
 /** Render the responsive User Overview screen. */
