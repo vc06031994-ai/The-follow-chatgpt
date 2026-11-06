@@ -272,13 +272,17 @@ function tfp_admin_dashboard_enqueue_assets() {
 
     $dash_url = defined('TFP_DASH_URL') ? TFP_DASH_URL : plugin_dir_url(dirname(dirname(__FILE__)));
     $dash_ver = defined('TFP_DASH_VERSION') ? TFP_DASH_VERSION : '1.0.0';
+    $css_file = dirname(__DIR__, 2) . '/assets/css/admin-dashboard.css';
+    $js_file = dirname(__DIR__, 2) . '/assets/js/admin-dashboard.js';
+    $css_ver = file_exists($css_file) ? (string) filemtime($css_file) : $dash_ver;
+    $js_ver = file_exists($js_file) ? (string) filemtime($js_file) : $dash_ver;
 
     wp_enqueue_style('dashicons');
     wp_enqueue_style('tfp-dashboard-base', $dash_url . 'assets/css/core.css', [], $dash_ver);
     wp_enqueue_style('tfp-dashboard-core', $dash_url . 'assets/css/dashboard.css', ['tfp-dashboard-base'], $dash_ver);
     wp_enqueue_style('tfp-dashboard-components', $dash_url . 'assets/css/components.css', ['tfp-dashboard-core'], $dash_ver);
-    wp_enqueue_style('tfp-admin-dashboard', $dash_url . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], $dash_ver);
-    wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], $dash_ver, true);
+    wp_enqueue_style('tfp-admin-dashboard', $dash_url . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], $css_ver);
+    wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], $js_ver, true);
 }
 
 /** Render the complete custom Admin Dashboard view. */
