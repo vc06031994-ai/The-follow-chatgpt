@@ -102,7 +102,7 @@ function tfp_admin_dashboard_nav_items() {
         : home_url('/admin-users/');
 
     return [
-        ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url, 'active' => false],
+        ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url, 'active' => true],
         ['slug' => 'users', 'label' => __('Users', 'tfp-dashboard'), 'url' => $users_url, 'active' => false],
         ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-courses')],
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-lessons')],
@@ -434,7 +434,7 @@ function tfp_admin_dashboard_render() {
                             <div>
                                 <h2><?php esc_html_e('Recent User Activity', 'tfp-dashboard'); ?></h2>
                             </div>
-                            <a href="<?php echo esc_url(admin_url('users.php')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
+                            <a href="<?php echo esc_url(tfp_admin_users_home_url()); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
                         </div>
                         <div class="tfp-admin-activity-list">
                             <?php
