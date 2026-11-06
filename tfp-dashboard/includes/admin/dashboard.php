@@ -124,10 +124,13 @@ function tfp_admin_dashboard_get_data() {
     $user_counts = count_users();
     $roles = (array) ($user_counts['avail_roles'] ?? []);
     $student_roles = ['subscriber', 'student'];
-    $students = 0;
-    foreach ($student_roles as $role) {
-        $students += (int) ($roles[$role] ?? 0);
-    }
+    $students = count(get_users([
+        'role__in' => $student_roles,
+        'meta_key' => 'tfp_cohort_choice',
+        'meta_compare' => 'EXISTS',
+        'fields' => 'ID',
+        'number' => -1,
+    ]));
 
     $cohort_posts = get_posts([
         'post_type' => 'tfp_cohort',
@@ -231,8 +234,7 @@ function tfp_admin_dashboard_get_data() {
         'class' => 'is-good',
     ];
 
-    $all_cohorts_count = tfp_admin_dashboard_count_posts('tfp_cohort', 'publish')
-        + tfp_admin_dashboard_count_posts('tfp_cohort', 'private');
+    $all_cohorts_count = tfp_admin_dashboard_count_posts('tfp_cohort', 'publish');
     $system_alerts = $failed_orders + $pending_orders + $pending_aid_count;
 
     return [
