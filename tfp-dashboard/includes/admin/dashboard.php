@@ -154,7 +154,7 @@ function tfp_admin_dashboard_get_data() {
             'limit' => 9,
             'orderby' => 'date',
             'order' => 'DESC',
-            'status' => array_keys(wc_get_order_statuses()),
+            'status' => array_map(static function ($status) { return preg_replace('/^wc-/', '', $status); }, array_keys(wc_get_order_statuses())),
         ]);
         $page = 1;
         do {
