@@ -44,10 +44,6 @@ wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
-    <link rel="stylesheet" href="<?php echo esc_url($dash_url . 'assets/css/core.css?ver=' . $dash_ver); ?>">
-    <link rel="stylesheet" href="<?php echo esc_url($dash_url . 'assets/css/dashboard.css?ver=' . $dash_ver); ?>">
-    <link rel="stylesheet" href="<?php echo esc_url($dash_url . 'assets/css/components.css?ver=' . $dash_ver); ?>">
-    <link rel="stylesheet" href="<?php echo esc_url($dash_url . 'assets/css/admin-dashboard.css?ver=' . $admin_css_ver); ?>">
 </head>
 <body <?php body_class('tfp-admin-dashboard-view tfp-admin-users-home-view'); ?>>
 <?php
@@ -59,6 +55,5 @@ if (function_exists('tfp_admin_users_home_render')) {
 }
 wp_footer();
 ?>
-<script src="<?php echo esc_url($dash_url . 'assets/js/admin-dashboard.js?ver=' . $dash_ver); ?>"></script>
 </body>
 </html>
