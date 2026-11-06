@@ -451,10 +451,10 @@ function tfp_admin_dashboard_render() {
                                     </div>
                                     <b class="tfp-admin-chevron" aria-hidden="true">›</b>
                                 </a>
+                            <?php endforeach; ?>
                             <?php if (empty($activity_rows)) : ?>
                                 <p class="tfp-admin-empty-state"><?php esc_html_e('No recent user activity found.', 'tfp-dashboard'); ?></p>
                             <?php endif; ?>
-                            <?php endforeach; ?>
                         </div>
                     </article>
 
@@ -493,10 +493,10 @@ function tfp_admin_dashboard_render() {
                                         <i class="tfp-admin-chevron" aria-hidden="true">›</i>
                                     </div>
                                 </a>
+                            <?php endforeach; ?>
                             <?php if (empty($payment_rows)) : ?>
                                 <p class="tfp-admin-empty-state"><?php esc_html_e('No payment records found.', 'tfp-dashboard'); ?></p>
                             <?php endif; ?>
-                            <?php endforeach; ?>
                         </div>
                     </article>
 
@@ -576,10 +576,10 @@ function tfp_admin_dashboard_render() {
                                         <?php esc_html_e('Review', 'tfp-dashboard'); ?>
                                     </a>
                                 </div>
+                            <?php endforeach; ?>
                             <?php if (empty($approval_rows)) : ?>
                                 <p class="tfp-admin-empty-state"><?php esc_html_e('No pending approvals.', 'tfp-dashboard'); ?></p>
                             <?php endif; ?>
-                            <?php endforeach; ?>
                         </div>
                     </article>
 
@@ -653,10 +653,10 @@ function tfp_admin_dashboard_render() {
                                                 </a>
                                             </td>
                                         </tr>
+                                    <?php endforeach; ?>
                                     <?php if (empty($cohort_list)) : ?>
                                         <tr><td colspan="4" class="tfp-admin-empty-state"><?php esc_html_e('No cohorts found.', 'tfp-dashboard'); ?></td></tr>
                                     <?php endif; ?>
-                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
