@@ -96,10 +96,10 @@ function tfp_admin_dashboard_page_url() {
 /** Build standard navigation items for Admin Dashboard matching the reference design. */
 function tfp_admin_dashboard_nav_items() {
     $dashboard_url = tfp_admin_dashboard_page_url();
-    // Clicking Users in the sidebar opens the dedicated User Overview page.
-    $users_url = function_exists('tfp_admin_users_page_url')
-        ? tfp_admin_users_page_url()
-        : home_url('/user-overview/');
+    // Sidebar Users opens the Users landing page; its View All opens User Overview.
+    $users_url = function_exists('tfp_admin_users_home_url')
+        ? tfp_admin_users_home_url()
+        : home_url('/admin-users/');
 
     return [
         ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url, 'active' => false],
