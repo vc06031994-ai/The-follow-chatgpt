@@ -2534,3 +2534,63 @@ body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout .tfp-admin-logout-label {
         display: inline;
     }
 }
+
+
+/* Keep the mobile off-canvas menu fully expanded even if the desktop
+   collapsed preference class is still present after a viewport resize. */
+@media (max-width: 991px) {
+    .tfp-admin-app .tfp-admin-sidebar {
+        box-sizing: border-box;
+        flex: 0 0 min(260px, 82vw) !important;
+        width: min(260px, 82vw) !important;
+        min-width: min(260px, 82vw) !important;
+        max-width: 82vw !important;
+        padding: 16px 14px !important;
+        overflow-x: hidden;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-sidebar {
+        flex-basis: min(260px, 82vw) !important;
+        width: min(260px, 82vw) !important;
+        min-width: min(260px, 82vw) !important;
+        padding: 16px 14px !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand-row {
+        justify-content: flex-start !important;
+        padding: 4px 8px 20px !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand {
+        justify-content: flex-start !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand img.tfp-admin-logo-expanded {
+        display: block !important;
+        width: auto !important;
+        height: auto !important;
+        max-width: 100% !important;
+        max-height: 40px !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand img.tfp-admin-logo-collapsed {
+        display: none !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-nav-link {
+        justify-content: flex-start !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-nav-label,
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-profile span {
+        display: flex !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-profile {
+        justify-content: flex-start !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout {
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        padding: 11px 12px !important;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout .tfp-admin-logout-label {
+        display: inline !important;
+    }
+}
