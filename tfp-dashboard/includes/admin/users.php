@@ -361,17 +361,17 @@ function tfp_admin_users_home_render() {
                         <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('User System Health', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(admin_url('site-health.php')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
                         <div class="tfp-admin-health-list">
                             <?php foreach ($systems as $system) :
-                                $health_icon = [
-                                    'Billing' => '▤',
-                                    'Authentication' => '☷',
-                                    'Discord Sync' => '◉',
-                                    'Documents' => '▣',
-                                    'Attendance' => '♧',
-                                    'Password' => '▢',
-                                ][$system['label']] ?? '•';
+                                $health_icon_paths = [
+                                    'Billing' => '<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18M7 15h3"></path>',
+                                    'Authentication' => '<path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"></path><path d="m9 12 2 2 4-4"></path>',
+                                    'Discord Sync' => '<path d="M8 7c2.5-1.2 5.5-1.2 8 0l2 9c-2 1.5-4 2-6 2s-4-.5-6-2l2-9Z"></path><path d="M9 8 7 6m8 2 2-2M9.5 13h.01M14.5 13h.01M9 16c2 1 4 1 6 0"></path>',
+                                    'Documents' => '<path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path>',
+                                    'Attendance' => '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18M8 15l2 2 5-5"></path>',
+                                    'Password' => '<rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3M12 14v3"></path>',
+                                ][$system['label']] ?? '<circle cx="12" cy="12" r="8"></circle>';
                             ?>
                                 <div class="tfp-admin-health-row">
-                                    <span class="tfp-admin-health-icon" aria-hidden="true"><?php echo esc_html($health_icon); ?></span>
+                                    <span class="tfp-admin-health-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false" xmlns="http://www.w3.org/2000/svg"><?php echo $health_icon_paths; ?></svg></span>
                                     <span class="tfp-admin-health-info"><strong><?php echo esc_html($system['label']); ?></strong><small><?php echo esc_html($system['detail']); ?></small></span>
                                     <span class="tfp-admin-health-status <?php echo $system['good'] ? 'is-good' : 'is-attention'; ?>"><?php echo $system['good'] ? esc_html__('Good', 'tfp-dashboard') : esc_html__('Degraded', 'tfp-dashboard'); ?></span>
                                     <i class="tfp-admin-chevron" aria-hidden="true">›</i>
