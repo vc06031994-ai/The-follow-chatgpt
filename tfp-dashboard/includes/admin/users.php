@@ -881,17 +881,17 @@ function tfp_admin_system_health_render() {
                     <label class="tfp-admin-health-search"><span aria-hidden="true">⌕</span><input type="search" name="health_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>"></label>
                     <button class="tfp-admin-filter-submit" type="submit"><?php esc_html_e('Apply filters', 'tfp-dashboard'); ?></button>
                 </form>
-                <section class="tfp-admin-panel tfp-admin-system-health-table-panel" aria-label="<?php esc_attr_e('User system health records', 'tfp-dashboard'); ?>">
-                    <div class="tfp-admin-system-health-table-wrap">
-                        <table class="tfp-admin-system-health-table">
+                <section class="tfp-admin-panel tfp-admin-overview-table-panel tfp-admin-system-health-table-panel" aria-label="<?php esc_attr_e('User system health records', 'tfp-dashboard'); ?>">
+                    <div class="tfp-admin-overview-table-wrap">
+                        <table class="tfp-admin-overview-table">
                             <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Role', 'tfp-dashboard'); ?></th><th><?php esc_html_e('System', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Issue', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Check', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
                             <tbody>
                             <?php if ($page_rows) : foreach ($page_rows as $row) : ?>
                                 <tr>
                                     <td><strong><?php echo esc_html($row['user']); ?></strong></td><td><?php echo esc_html($row['role']); ?></td><td><?php echo esc_html($row['system']); ?></td>
-                                    <td><span class="tfp-admin-health-pill is-<?php echo esc_attr($row['status']); ?>"><?php echo $row['status'] === 'attention' ? esc_html__('Attention', 'tfp-dashboard') : esc_html__('Good', 'tfp-dashboard'); ?></span></td>
+                                    <td><span class="tfp-admin-overview-status<?php echo $row['status'] === 'good' ? ' is-active' : ''; ?>"><?php echo $row['status'] === 'attention' ? esc_html__('Attention', 'tfp-dashboard') : esc_html__('Good', 'tfp-dashboard'); ?></span></td>
                                     <td><?php echo esc_html($row['issue']); ?></td><td><?php echo esc_html($row['last_check']); ?></td>
-                                    <td><a class="tfp-admin-system-health-view" href="<?php echo esc_url($row['url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                                    <td><a class="tfp-admin-overview-view" href="<?php echo esc_url($row['url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                                 </tr>
                             <?php endforeach; else : ?>
                                 <tr><td colspan="7" class="tfp-admin-system-health-empty"><?php esc_html_e('No matching system health records found.', 'tfp-dashboard'); ?></td></tr>
