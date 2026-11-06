@@ -339,7 +339,7 @@ function tfp_admin_users_render() {
                 <section class="tfp-admin-panel tfp-admin-overview-table-panel" aria-labelledby="tfp-user-overview-title">
                     <div class="tfp-admin-panel-heading">
                         <h2 id="tfp-user-overview-title"><?php esc_html_e('User Overview', 'tfp-dashboard'); ?></h2>
-                        <a href="<?php echo esc_url(admin_url('users.php')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
+                        <a href="<?php echo esc_url(tfp_admin_users_page_url()); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a>
                     </div>
                     <div class="tfp-admin-overview-table-wrap">
                         <table class="tfp-admin-overview-table">
