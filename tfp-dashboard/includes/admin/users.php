@@ -28,7 +28,7 @@ add_filter('template_include', function ($template) {
 add_filter('pre_handle_404', function ($preempt, $wp_query) {
     $request_path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
     $last_segment = basename($request_path);
-    if (in_array($last_segment, ['admin-users', 'tfp-admin-users'], true) ||
+    if (in_array($last_segment, ['admin-users', 'tfp-admin-users', 'user-overview'], true) ||
         (isset($_GET['tfp_admin_page']) && sanitize_key(wp_unslash($_GET['tfp_admin_page'])) === 'users')) {
         if ($wp_query) {
             $wp_query->is_404 = false;
@@ -63,6 +63,13 @@ add_action('template_redirect', function () {
 
 /** Resolve the Admin Users page URL. */
 function tfp_admin_users_page_url() {
+    // Prefer the actual WordPress page with the requested user-overview slug.
+    $overview_page = get_page_by_path('user-overview', OBJECT, 'page');
+    if ($overview_page instanceof WP_Post && $overview_page->post_status === 'publish') {
+        return get_permalink($overview_page->ID);
+    }
+
+    // Backward compatibility for sites that assigned the dedicated page template.
     $pages = get_posts([
         'post_type' => 'page',
         'post_status' => 'publish',
@@ -74,10 +81,9 @@ function tfp_admin_users_page_url() {
     if (!empty($pages)) {
         return get_permalink($pages[0]);
     }
-    if (function_exists('tfp_admin_dashboard_page_url')) {
-        return add_query_arg('view', 'users', tfp_admin_dashboard_page_url());
-    }
-    return home_url('/tfp-admin-dashboard/?view=users');
+
+    // Use the explicit user-overview route, never the generic Dashboard ?view=users route.
+    return home_url('/user-overview/');
 }
 
 /** Shared Admin navigation with Users active. */
