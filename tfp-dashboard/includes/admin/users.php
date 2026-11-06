@@ -422,7 +422,7 @@ function tfp_admin_users_home_render() {
                                     <td><?php echo esc_html($role_label); ?></td>
                                     <td><span class="tfp-admin-user-status <?php echo $deactivated ? 'is-deactivated' : 'is-active'; ?>"><?php echo $deactivated ? esc_html__('Deactivated', 'tfp-dashboard') : esc_html__('Active', 'tfp-dashboard'); ?></span></td>
                                     <td><?php echo esc_html($cohort ?: '—'); ?></td>
-                                    <td><?php echo esc_html(number_format_i18n($flag_count)); ?></td>
+                                    <td><span class="tfp-admin-overview-flags"><svg class="tfp-admin-flag-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 2v12" fill="none" stroke="#171717" stroke-width="1.2"/><path d="M3.8 2.5 13.5 5.1 3.8 7.8Z" fill="#c51f30"/></svg><?php echo esc_html(number_format_i18n($flag_count)); ?></span></td>
                                     <td><?php echo esc_html($last_login ? wp_date('M j, g:ia', strtotime($last_login)) : '—'); ?></td>
                                     <td><a class="tfp-admin-overview-view" href="<?php echo esc_url(get_edit_user_link($person->ID)); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                                 </tr>
@@ -565,7 +565,7 @@ function tfp_admin_users_render() {
                                         <td><?php echo esc_html($row['role']); ?></td>
                                         <td><span class="tfp-admin-overview-status <?php echo esc_attr($row['status_class']); ?>"><?php echo esc_html($row['status']); ?></span></td>
                                         <td><?php echo esc_html($row['cohort']); ?></td>
-                                        <td><span class="tfp-admin-overview-flags"><span aria-hidden="true">⚑</span><?php echo esc_html(number_format_i18n($row['flags'])); ?></span></td>
+                                        <td><span class="tfp-admin-overview-flags"><svg class="tfp-admin-flag-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 2v12" fill="none" stroke="#171717" stroke-width="1.2"/><path d="M3.8 2.5 13.5 5.1 3.8 7.8Z" fill="#c51f30"/></svg><?php echo esc_html(number_format_i18n($row['flags'])); ?></span></td>
                                         <td><?php echo esc_html($row['last_activity']); ?></td>
                                         <td><a class="tfp-admin-overview-view" href="<?php echo esc_url($row['url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                                     </tr>
