@@ -123,24 +123,19 @@ function tfp_admin_dashboard_nav_items() {
 function tfp_admin_dashboard_get_data() {
     $user_counts = count_users();
     $roles = (array) ($user_counts['avail_roles'] ?? []);
-    $staff_roles = ['administrator', 'editor', 'author', 'contributor', 'facilitator', 'group_leader', 'shop_manager'];
-    $staff = 0;
-    foreach ($staff_roles as $role) {
-        $staff += (int) ($roles[$role] ?? 0);
-    }
-    $students = max(0, (int) ($user_counts['total_users'] ?? 0) - $staff);
-    if ($students === 0) {
-        $students = 3254; // Design preview fallback
+    $student_roles = ['subscriber', 'student'];
+    $students = 0;
+    foreach ($student_roles as $role) {
+        $students += (int) ($roles[$role] ?? 0);
     }
 
     $cohort_posts = get_posts([
         'post_type' => 'tfp_cohort',
-        'post_status' => 'publish',
-        'posts_per_page' => 8,
+        'post_status' => ['publish', 'private'],
+        'posts_per_page' => 9,
         'orderby' => 'date',
         'order' => 'DESC',
     ]);
-
     $recent_users = get_users([
         'number' => 9,
         'orderby' => 'registered',
@@ -148,49 +143,37 @@ function tfp_admin_dashboard_get_data() {
     ]);
 
     $orders = [];
-    $payment_total = 0;
+    $payment_total = 0.0;
     $failed_orders = 0;
+    $pending_orders = 0;
     if (function_exists('wc_get_orders')) {
         $orders = wc_get_orders([
             'limit' => 9,
             'orderby' => 'date',
             'order' => 'DESC',
-            'status' => ['processing', 'completed'],
+            'status' => array_keys(wc_get_order_statuses()),
         ]);
-
-        $payment_total = 0.0;
+        $payment_total = (float) wc_get_customer_total_spent(0);
         $page = 1;
         do {
             $sales_batch = wc_get_orders([
-                'type'     => 'shop_order',
-                'status'   => ['processing', 'completed'],
-                'limit'    => 100,
-                'page'     => $page,
+                'status' => ['processing', 'completed'],
+                'limit' => 100,
+                'page' => $page,
                 'paginate' => true,
-                'return'   => 'objects',
+                'return' => 'objects',
             ]);
-
-            $batch_orders = (is_object($sales_batch) && isset($sales_batch->orders))
-                ? $sales_batch->orders
-                : (is_array($sales_batch) ? $sales_batch : []);
-
+            $batch_orders = (is_object($sales_batch) && isset($sales_batch->orders)) ? $sales_batch->orders : [];
             foreach ($batch_orders as $sales_order) {
                 if ($sales_order instanceof WC_Order) {
                     $payment_total += (float) $sales_order->get_total();
                 }
             }
-
-            $max_pages = (is_object($sales_batch) && isset($sales_batch->max_num_pages))
-                ? (int) $sales_batch->max_num_pages
-                : 0;
+            $max_pages = (is_object($sales_batch) && isset($sales_batch->max_num_pages)) ? (int) $sales_batch->max_num_pages : 0;
             $page++;
-        } while ($max_pages >= $page);
-
+        } while ($page <= $max_pages);
         $failed_orders = function_exists('wc_orders_count') ? (int) wc_orders_count('failed') : 0;
-    }
-
-    if ($payment_total <= 0) {
-        $payment_total = 35790.00; // Design preview fallback
+        $pending_orders = function_exists('wc_orders_count') ? (int) wc_orders_count('pending') : 0;
     }
 
     $pending_aid = [];
@@ -198,7 +181,7 @@ function tfp_admin_dashboard_get_data() {
     if (post_type_exists('tfp_financial_aid')) {
         $pending_aid_query = new WP_Query([
             'post_type' => 'tfp_financial_aid',
-            'post_status' => 'any',
+            'post_status' => ['publish', 'private', 'pending'],
             'posts_per_page' => 7,
             'orderby' => 'date',
             'order' => 'ASC',
@@ -212,55 +195,51 @@ function tfp_admin_dashboard_get_data() {
         $pending_aid_count = (int) $pending_aid_query->found_posts;
     }
 
-    $checks = [
-        [
-            'type' => 'user',
-            'label' => __('John Doe', 'tfp-dashboard'),
-            'detail' => '2025-12-16, 10:30',
-            'status' => 'Good',
-            'class' => 'is-good',
-        ],
-        [
-            'type' => 'email',
-            'label' => __('Emails', 'tfp-dashboard'),
-            'detail' => 'SMTP error: Connection timeout',
-            'status' => 'Degraded',
-            'class' => 'is-degraded',
-        ],
-        [
-            'type' => 'billing',
-            'label' => __('Billing', 'tfp-dashboard'),
-            'detail' => '2025-12-16, 11:30',
-            'status' => 'Down',
-            'class' => 'is-down',
-        ],
-        [
-            'type' => 'documents',
-            'label' => __('Documents', 'tfp-dashboard'),
-            'detail' => '2025-12-16, 12:00',
-            'status' => 'Good',
-            'class' => 'is-good',
-        ],
-        [
-            'type' => 'passwords',
-            'label' => __('Passwords', 'tfp-dashboard'),
-            'detail' => 'Last Checked 2025-12-16, 10:30',
-            'status' => 'Good',
-            'class' => 'is-good',
-        ],
+    $checks = [];
+    $checks[] = [
+        'type' => 'user',
+        'label' => __('User Accounts', 'tfp-dashboard'),
+        'detail' => sprintf(_n('%s registered account', '%s registered accounts', (int) ($user_counts['total_users'] ?? 0), 'tfp-dashboard'), number_format_i18n((int) ($user_counts['total_users'] ?? 0))),
+        'status' => __('Good', 'tfp-dashboard'),
+        'class' => 'is-good',
+    ];
+    $checks[] = [
+        'type' => 'email',
+        'label' => __('Email Configuration', 'tfp-dashboard'),
+        'detail' => __('Delivery provider is not tested by this dashboard.', 'tfp-dashboard'),
+        'status' => __('Not Tested', 'tfp-dashboard'),
+        'class' => 'is-degraded',
+    ];
+    $checks[] = [
+        'type' => 'billing',
+        'label' => __('Billing', 'tfp-dashboard'),
+        'detail' => function_exists('wc_get_orders') ? sprintf(__('WooCommerce active · %s failed orders', 'tfp-dashboard'), number_format_i18n($failed_orders)) : __('WooCommerce is not active.', 'tfp-dashboard'),
+        'status' => function_exists('wc_get_orders') ? ($failed_orders > 0 ? __('Review', 'tfp-dashboard') : __('Good', 'tfp-dashboard')) : __('Unavailable', 'tfp-dashboard'),
+        'class' => function_exists('wc_get_orders') ? ($failed_orders > 0 ? 'is-degraded' : 'is-good') : 'is-down',
+    ];
+    $checks[] = [
+        'type' => 'documents',
+        'label' => __('Documents', 'tfp-dashboard'),
+        'detail' => wp_upload_dir()['error'] ? __('WordPress uploads directory reports an error.', 'tfp-dashboard') : __('WordPress uploads directory is available.', 'tfp-dashboard'),
+        'status' => wp_upload_dir()['error'] ? __('Review', 'tfp-dashboard') : __('Good', 'tfp-dashboard'),
+        'class' => wp_upload_dir()['error'] ? 'is-degraded' : 'is-good',
+    ];
+    $checks[] = [
+        'type' => 'passwords',
+        'label' => __('Password Security', 'tfp-dashboard'),
+        'detail' => __('WordPress authentication is enabled.', 'tfp-dashboard'),
+        'status' => __('Good', 'tfp-dashboard'),
+        'class' => 'is-good',
     ];
 
-    $all_cohorts_count = tfp_admin_dashboard_count_posts('tfp_cohort');
-    if ($all_cohorts_count === 0) {
-        $all_cohorts_count = 12; // Design preview fallback
-    }
-
-    $system_alerts = 2; // Matches reference image "2" items needing review
+    $all_cohorts_count = tfp_admin_dashboard_count_posts('tfp_cohort', 'publish')
+        + tfp_admin_dashboard_count_posts('tfp_cohort', 'private');
+    $system_alerts = $failed_orders + $pending_orders + $pending_aid_count;
 
     return [
         'students' => $students,
         'payments' => $payment_total,
-        'cohort_count' => count($cohort_posts) ?: 12,
+        'cohort_count' => count($cohort_posts),
         'all_cohorts' => $all_cohorts_count,
         'alerts' => $system_alerts,
         'users' => $recent_users,
