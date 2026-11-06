@@ -2438,3 +2438,99 @@ body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout {
         justify-content: flex-start;
     }
 }
+
+
+/* Final collapsed-sidebar fixes: use the dedicated compact mark and keep
+   the logout control fully inside the sidebar's available width. */
+.tfp-admin-brand {
+    width: 100%;
+}
+.tfp-admin-brand img.tfp-admin-logo-expanded {
+    display: block;
+}
+.tfp-admin-brand img.tfp-admin-logo-collapsed {
+    display: none;
+}
+.tfp-admin-sidebar-bottom {
+    flex: 0 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+.tfp-admin-logout {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    overflow: hidden;
+}
+.tfp-admin-logout .tfp-admin-logout-icon {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+}
+.tfp-admin-logout .tfp-admin-logout-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+}
+.tfp-admin-logout .tfp-admin-logout-label {
+    min-width: 0;
+    white-space: nowrap;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand-row {
+    width: 100%;
+    padding: 4px 0 20px;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand {
+    width: 100%;
+    justify-content: center;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand img.tfp-admin-logo-expanded {
+    display: none;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-brand img.tfp-admin-logo-collapsed {
+    display: block;
+    width: 36px;
+    height: 36px;
+    max-width: 36px;
+    max-height: 36px;
+    object-fit: contain;
+    object-position: center;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-sidebar-bottom {
+    width: 100%;
+    padding-top: 14px;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 10px 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    box-sizing: border-box;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout .tfp-admin-logout-icon {
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+}
+body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout .tfp-admin-logout-label {
+    display: none;
+}
+@media (max-width: 991px) {
+    .tfp-admin-brand img.tfp-admin-logo-expanded {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        max-height: 40px;
+    }
+    .tfp-admin-brand img.tfp-admin-logo-collapsed {
+        display: none;
+    }
+    .tfp-admin-logout .tfp-admin-logout-label {
+        display: inline;
+    }
+}
