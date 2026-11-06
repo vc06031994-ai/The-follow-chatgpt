@@ -2594,3 +2594,44 @@ body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout .tfp-admin-logout-label {
         display: inline !important;
     }
 }
+
+
+/* Keep the Admin sidebar anchored to the viewport while page content scrolls. */
+@media (min-width: 992px) {
+    .tfp-admin-app > .tfp-admin-sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .tfp-admin-app > .tfp-admin-main {
+        margin-left: 240px;
+        width: calc(100% - 240px);
+        min-width: 0;
+        transition: margin-left .2s ease, width .2s ease;
+    }
+    body.tfp-admin-sidebar-is-collapsed .tfp-admin-app > .tfp-admin-main {
+        margin-left: 76px;
+        width: calc(100% - 76px);
+    }
+}
+@media (max-width: 991px) {
+    .tfp-admin-app > .tfp-admin-sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100vh;
+    }
+    .tfp-admin-app > .tfp-admin-main {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+}
