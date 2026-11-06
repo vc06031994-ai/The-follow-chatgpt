@@ -1,0 +1,201 @@
+/* Admin → Users → System Health — scoped styles matching the supplied reference. */
+.tfp-admin-system-health .tfp-admin-main { min-width: 0; }
+.tfp-admin-system-health .tfp-admin-system-health-header {
+    min-height: 112px;
+    align-items: center;
+    border-bottom: 1px solid #650d12;
+}
+.tfp-admin-system-health .tfp-admin-system-health-header h1 {
+    margin: 0 0 10px;
+    color: #171717;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 700;
+    line-height: 1.12;
+}
+.tfp-admin-system-health .tfp-admin-system-health-header p {
+    margin: 0;
+    color: #282828;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.45;
+}
+.tfp-admin-system-health .tfp-admin-health-refresh {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 16px;
+    border-radius: 7px;
+    background: #006c72;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.tfp-admin-system-health .tfp-admin-health-refresh:hover,
+.tfp-admin-system-health .tfp-admin-system-health-view:hover { background: #00585e; color: #fff; }
+.tfp-admin-system-health .tfp-admin-health-refresh span { font-size: 22px; line-height: 1; }
+.tfp-admin-system-health-content { padding-top: 30px; }
+.tfp-admin-system-health-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 5px 19px;
+}
+.tfp-admin-system-health-filters select,
+.tfp-admin-system-health-filters input {
+    box-sizing: border-box;
+    height: 35px;
+    border: 1px solid #dedede;
+    border-radius: 7px;
+    background-color: #fff;
+    color: #222;
+    font-family: inherit;
+    font-size: 12px;
+}
+.tfp-admin-system-health-filters select { width: 137px; padding: 0 28px 0 10px; }
+.tfp-admin-system-health-filters .tfp-admin-health-search {
+    display: flex;
+    width: 202px;
+    height: 35px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    border: 1px solid #dedede;
+    border-radius: 7px;
+    color: #111;
+}
+.tfp-admin-system-health-filters .tfp-admin-health-search span { font-size: 20px; line-height: 1; }
+.tfp-admin-system-health-filters .tfp-admin-health-search input {
+    width: 100%;
+    min-width: 0;
+    height: 31px;
+    padding: 0;
+    border: 0;
+    outline: 0;
+}
+.tfp-admin-system-health-filters .tfp-admin-filter-submit {
+    min-height: 35px;
+    padding: 0 13px;
+    border: 0;
+    border-radius: 6px;
+    background: #006c72;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+}
+.tfp-admin-system-health-table-panel {
+    overflow: hidden;
+    margin: 0;
+    border: 1px solid #d0d0d0;
+    border-radius: 11px;
+    background: #fff;
+    box-shadow: none;
+}
+.tfp-admin-system-health-table-wrap { width: 100%; overflow-x: auto; }
+.tfp-admin-system-health-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    color: #111;
+    font-size: 10px;
+}
+.tfp-admin-system-health-table th,
+.tfp-admin-system-health-table td {
+    height: 37px;
+    padding: 5px 14px;
+    border-bottom: 1px solid #e6e8eb;
+    text-align: left;
+    vertical-align: middle;
+    line-height: 1.3;
+}
+.tfp-admin-system-health-table th {
+    height: 52px;
+    background: #fcfcfd;
+    font-size: 12px;
+    font-weight: 700;
+}
+.tfp-admin-system-health-table th:nth-child(1) { width: 20%; }
+.tfp-admin-system-health-table th:nth-child(2) { width: 9%; }
+.tfp-admin-system-health-table th:nth-child(3) { width: 11%; }
+.tfp-admin-system-health-table th:nth-child(4) { width: 11%; }
+.tfp-admin-system-health-table th:nth-child(5) { width: 22%; }
+.tfp-admin-system-health-table th:nth-child(6) { width: 15%; }
+.tfp-admin-system-health-table th:nth-child(7) { width: 12%; }
+.tfp-admin-system-health-table td:first-child strong { font-size: 12px; font-weight: 700; }
+.tfp-admin-system-health-table tr:last-child td { border-bottom: 0; }
+.tfp-admin-health-pill {
+    display: inline-flex;
+    min-width: 58px;
+    min-height: 23px;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 9px;
+    border: 1px solid #d5a21b;
+    border-radius: 999px;
+    background: #f8ebc9;
+    color: #191919;
+    font-size: 10px;
+    white-space: nowrap;
+}
+.tfp-admin-health-pill.is-good {
+    border-color: #168b79;
+    background: #e2f2ee;
+    color: #075c50;
+}
+.tfp-admin-system-health-view {
+    display: inline-flex;
+    min-width: 66px;
+    min-height: 27px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: #006c72;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.tfp-admin-system-health-empty { height: 110px !important; color: #747474; text-align: center !important; font-size: 13px; }
+.tfp-admin-system-health-pagination {
+    display: flex;
+    min-height: 82px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    color: #354052;
+    font-size: 12px;
+}
+.tfp-admin-system-health-pagination nav { display: flex; align-items: center; gap: 26px; }
+.tfp-admin-system-health-pagination a { color: #333; text-decoration: none; font-size: 14px; font-weight: 600; }
+.tfp-admin-system-health-pagination .tfp-admin-system-health-next {
+    display: inline-flex;
+    min-width: 96px;
+    min-height: 31px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 7px;
+    background: #006c72;
+    color: #fff;
+}
+.tfp-admin-system-health-pagination .is-disabled { opacity: .4; }
+@media (max-width: 860px) {
+    .tfp-admin-system-health .tfp-admin-system-health-header { align-items: flex-start; gap: 16px; }
+    .tfp-admin-system-health-content { padding-top: 22px; }
+    .tfp-admin-system-health-filters { margin-right: 0; margin-left: 0; }
+}
+@media (max-width: 600px) {
+    .tfp-admin-system-health .tfp-admin-system-health-header { flex-direction: column; }
+    .tfp-admin-system-health .tfp-admin-health-refresh { align-self: flex-start; }
+    .tfp-admin-system-health-filters > select,
+    .tfp-admin-system-health-filters .tfp-admin-health-search { width: 100%; }
+    .tfp-admin-system-health-filters .tfp-admin-filter-submit { width: 100%; }
+    .tfp-admin-system-health-pagination { align-items: flex-start; flex-direction: column; }
+    .tfp-admin-system-health-pagination nav { width: 100%; justify-content: space-between; }
+}

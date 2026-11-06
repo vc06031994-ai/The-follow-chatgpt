@@ -7,6 +7,39 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/** Resolve the dedicated System Health page URL. */
+function tfp_admin_system_health_page_url() {
+    return home_url('/admin-system-health/');
+}
+
+/** Route the dedicated System Health page without requiring a WordPress page record. */
+add_filter('pre_handle_404', function ($preempt, $wp_query) {
+    $path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    if (basename($path) === 'admin-system-health') {
+        if ($wp_query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_page = true;
+        }
+        status_header(200);
+        return true;
+    }
+    return $preempt;
+}, 11, 2);
+
+add_action('template_redirect', function () {
+    $path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    if (basename($path) !== 'admin-system-health') {
+        return;
+    }
+    status_header(200);
+    nocache_headers();
+    $file = TFP_DASH_PATH . 'templates/template-admin-system-health.php';
+    if (is_readable($file)) {
+        include $file;
+        exit;
+    }
+}, 3);
+
 /** Register the Admin Users page template. */
 add_filter('theme_page_templates', function ($templates) {
     $templates['tfp-dashboard-admin-users'] = __('TFP Admin Dashboard — Users', 'tfp-dashboard');
@@ -388,7 +421,7 @@ function tfp_admin_users_home_render() {
                     </article>
 
                     <article class="tfp-admin-panel tfp-admin-users-health">
-                        <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('User System Health', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(admin_url('site-health.php')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+                        <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('User System Health', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(tfp_admin_system_health_page_url()); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
                         <div class="tfp-admin-health-list">
                             <?php foreach ($systems as $system) :
                                 $health_icon_paths = [
@@ -628,6 +661,254 @@ function tfp_admin_users_render() {
                             <?php else : ?>
                                 <span class="tfp-admin-overview-next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span>
                             <?php endif; ?>
+                        </nav>
+                    </footer>
+                </section>
+            </main>
+        </div>
+    </div>
+    <?php
+}
+
+
+/**
+ * Build verifiable per-user health rows from live WordPress and WooCommerce data.
+ * Only report issues supported by stored account/order state; never invent integration state.
+ */
+function tfp_admin_system_health_get_rows() {
+    $users = get_users([
+        'number' => -1,
+        'orderby' => 'display_name',
+        'order' => 'ASC',
+        'fields' => 'all',
+    ]);
+    $rows = [];
+
+    foreach ($users as $person) {
+        $roles = (array) $person->roles;
+        $role_slug = !empty($roles) ? reset($roles) : '';
+        $role_label = $role_slug ? translate_user_role(wp_roles()->roles[$role_slug]['name'] ?? ucfirst($role_slug)) : __('Unassigned', 'tfp-dashboard');
+        if ($role_slug === 'administrator') {
+            $role_label = __('Admin', 'tfp-dashboard');
+        } elseif ($role_slug === 'subscriber' || $role_slug === 'student') {
+            $role_label = __('Student', 'tfp-dashboard');
+        }
+
+        $last_login = get_user_meta($person->ID, '_tfp_last_login', true);
+        $last_check = $last_login && strtotime($last_login)
+            ? wp_date(get_option('date_format') . ', ' . get_option('time_format'), strtotime($last_login))
+            : __('Not recorded', 'tfp-dashboard');
+
+        // Account access is based on the project's existing deactivation flag.
+        $deactivated = (bool) get_user_meta($person->ID, '_tfp_deactivated', true);
+        $rows[] = [
+            'user_id' => $person->ID,
+            'user' => $person->display_name ?: $person->user_login,
+            'role' => $role_label,
+            'system' => __('Access', 'tfp-dashboard'),
+            'status' => $deactivated ? 'attention' : 'good',
+            'issue' => $deactivated ? __('Account paused by admin', 'tfp-dashboard') : __('No access restriction recorded', 'tfp-dashboard'),
+            'last_check' => $last_check,
+            'url' => get_edit_user_link($person->ID),
+        ];
+
+        // WooCommerce order statuses are the source of truth for billing alerts.
+        if (function_exists('wc_get_orders')) {
+            $orders = wc_get_orders([
+                'customer_id' => $person->ID,
+                'status' => ['pending', 'failed', 'on-hold'],
+                'limit' => 10,
+                'orderby' => 'date',
+                'order' => 'DESC',
+                'return' => 'objects',
+            ]);
+            foreach ($orders as $order) {
+                $status = $order->get_status();
+                $issue = $status === 'failed'
+                    ? __('Payment failed on last attempt', 'tfp-dashboard')
+                    : ($status === 'on-hold'
+                        ? __('Payment is on hold', 'tfp-dashboard')
+                        : __('Payment is awaiting completion', 'tfp-dashboard'));
+                $date = $order->get_date_modified() ?: $order->get_date_created();
+                $rows[] = [
+                    'user_id' => $person->ID,
+                    'user' => $person->display_name ?: $person->user_login,
+                    'role' => $role_label,
+                    'system' => __('Billing', 'tfp-dashboard'),
+                    'status' => 'attention',
+                    'issue' => $issue,
+                    'last_check' => $date ? $date->date_i18n(get_option('date_format') . ', ' . get_option('time_format')) : __('Not recorded', 'tfp-dashboard'),
+                    'url' => function_exists('wc_get_endpoint_url') ? admin_url('post.php?post=' . absint($order->get_id()) . '&action=edit') : get_edit_user_link($person->ID),
+                ];
+            }
+        }
+
+        // Existing project flag metadata is included only when it contains a real flag.
+        $flags = get_user_meta($person->ID, 'tfp_flags', true);
+        if ($flags === '' || $flags === false) {
+            $flags = get_user_meta($person->ID, '_tfp_flags', true);
+        }
+        $flag_count = is_array($flags) ? count($flags) : absint($flags);
+        if ($flag_count > 0) {
+            $rows[] = [
+                'user_id' => $person->ID,
+                'user' => $person->display_name ?: $person->user_login,
+                'role' => $role_label,
+                'system' => __('Compliance', 'tfp-dashboard'),
+                'status' => 'attention',
+                'issue' => sprintf(_n('%s account flag requires review', '%s account flags require review', $flag_count, 'tfp-dashboard'), number_format_i18n($flag_count)),
+                'last_check' => $last_check,
+                'url' => get_edit_user_link($person->ID),
+            ];
+        }
+    }
+
+    return $rows;
+}
+
+/** Render the responsive System Health directory. */
+function tfp_admin_system_health_render() {
+    if (!is_user_logged_in()) {
+        auth_redirect();
+    }
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('You do not have permission to access this page.', 'tfp-dashboard'), esc_html__('Access denied', 'tfp-dashboard'), ['response' => 403]);
+    }
+
+    if (function_exists('tfp_admin_dashboard_enqueue_assets')) {
+        tfp_admin_dashboard_enqueue_assets();
+    }
+    $css_path = TFP_DASH_PATH . 'assets/css/admin-system-health.css';
+    wp_enqueue_style('tfp-admin-system-health', TFP_DASH_URL . 'assets/css/admin-system-health.css', ['tfp-admin-dashboard'], file_exists($css_path) ? (string) filemtime($css_path) : TFP_DASH_VERSION);
+
+    $page = max(1, absint($_GET['health_page'] ?? 1));
+    $role_filter = isset($_GET['health_role']) ? sanitize_key(wp_unslash($_GET['health_role'])) : '';
+    $status_filter = isset($_GET['health_status']) ? sanitize_key(wp_unslash($_GET['health_status'])) : '';
+    $system_filter = isset($_GET['health_system']) ? sanitize_text_field(wp_unslash($_GET['health_system'])) : '';
+    $search = isset($_GET['health_search']) ? sanitize_text_field(wp_unslash($_GET['health_search'])) : '';
+
+    // Refresh is a cache-free re-read of live records, protected against CSRF.
+    if (isset($_GET['refresh_health'])) {
+        check_admin_referer('tfp_refresh_system_health');
+        wp_safe_redirect(remove_query_arg(['refresh_health', '_wpnonce']));
+        exit;
+    }
+
+    $all_rows = tfp_admin_system_health_get_rows();
+    $role_options = [];
+    foreach (wp_roles()->roles as $slug => $details) {
+        $role_options[$slug] = translate_user_role($details['name']);
+    }
+    $systems = [];
+    foreach ($all_rows as $row) {
+        $systems[$row['system']] = $row['system'];
+    }
+    natcasesort($systems);
+
+    $filtered = array_values(array_filter($all_rows, function ($row) use ($role_filter, $status_filter, $system_filter, $search) {
+        if ($role_filter !== '' && sanitize_key($row['role']) !== $role_filter) {
+            $role_slug = $role_filter === 'subscriber' ? 'student' : $role_filter;
+            $user = get_userdata($row['user_id']);
+            if (!$user || !in_array($role_slug, (array) $user->roles, true)) {
+                return false;
+            }
+        }
+        if ($status_filter !== '' && $row['status'] !== $status_filter) {
+            return false;
+        }
+        if ($system_filter !== '' && $row['system'] !== $system_filter) {
+            return false;
+        }
+        if ($search !== '' && stripos($row['user'], $search) === false) {
+            $cohort_id = absint(get_user_meta($row['user_id'], 'tfp_cohort_choice', true));
+            $cohort = $cohort_id ? get_the_title($cohort_id) : '';
+            if (!$cohort || stripos($cohort, $search) === false) {
+                return false;
+            }
+        }
+        return true;
+    }));
+
+    $per_page = 20;
+    $total = count($filtered);
+    $total_pages = max(1, (int) ceil($total / $per_page));
+    $page = min($page, $total_pages);
+    $page_rows = array_slice($filtered, ($page - 1) * $per_page, $per_page);
+    $current_user = wp_get_current_user();
+    $nav = tfp_admin_users_nav_items();
+    $base_url = remove_query_arg(['health_page', 'health_role', 'health_status', 'health_system', 'health_search', 'refresh_health', '_wpnonce']);
+    ?>
+    <div class="tfp-admin-app tfp-admin-system-health">
+        <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
+            <div class="tfp-admin-brand-row">
+                <a class="tfp-admin-brand" href="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>"><img src="<?php echo esc_url(TFP_DASH_URL . 'assets/images/logo-expanded.svg'); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>"></a>
+                <button class="tfp-admin-sidebar-toggle" type="button" aria-label="<?php esc_attr_e('Toggle navigation', 'tfp-dashboard'); ?>" data-tfp-admin-toggle><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="14" height="14" rx="2"></rect><path d="M6 2v14"></path></svg></button>
+            </div>
+            <nav class="tfp-admin-nav" aria-label="<?php esc_attr_e('Admin navigation', 'tfp-dashboard'); ?>">
+                <?php foreach ($nav as $item) : ?>
+                    <a class="tfp-admin-nav-link<?php echo !empty($item['active']) ? ' is-active' : ''; ?>" href="<?php echo esc_url($item['url']); ?>">
+                        <span class="tfp-admin-nav-icon" aria-hidden="true"><?php echo function_exists('tfp_admin_dashboard_nav_icon') ? tfp_admin_dashboard_nav_icon($item['slug']) : '•'; ?></span>
+                        <span class="tfp-admin-nav-label"><?php echo esc_html($item['label']); ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+            <div class="tfp-admin-sidebar-bottom">
+                <div class="tfp-admin-profile"><img src="<?php echo esc_url(get_avatar_url($current_user->ID, ['size' => 96])); ?>" alt=""><span><strong><?php echo esc_html($current_user->display_name); ?></strong><small><?php esc_html_e('Administrator', 'tfp-dashboard'); ?></small></span></div>
+                <a class="tfp-admin-logout" href="<?php echo esc_url(wp_logout_url(home_url('/'))); ?>"><span aria-hidden="true">✕</span><?php esc_html_e('Logout', 'tfp-dashboard'); ?></a>
+            </div>
+        </aside>
+        <div class="tfp-admin-main">
+            <div class="tfp-admin-mobilebar"><button type="button" data-tfp-admin-toggle aria-label="<?php esc_attr_e('Open menu', 'tfp-dashboard'); ?>">☰</button><span><?php esc_html_e('Admin / Users / System Health', 'tfp-dashboard'); ?></span></div>
+            <div class="tfp-admin-breadcrumb">
+                <a href="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b>
+                <a href="<?php echo esc_url(tfp_admin_users_home_url()); ?>"><?php esc_html_e('Users', 'tfp-dashboard'); ?></a><b>/</b>
+                <strong><?php esc_html_e('System Health', 'tfp-dashboard'); ?></strong>
+            </div>
+            <header class="tfp-admin-page-header tfp-admin-system-health-header">
+                <div><h1><?php esc_html_e('Users System Health', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Connection status and system-level requirements for users', 'tfp-dashboard'); ?></p></div>
+                <a class="tfp-admin-health-refresh" href="<?php echo esc_url(wp_nonce_url(add_query_arg('refresh_health', '1'), 'tfp_refresh_system_health')); ?>"><span aria-hidden="true">↻</span><?php esc_html_e('Refresh All Systems', 'tfp-dashboard'); ?></a>
+            </header>
+            <main class="tfp-admin-content tfp-admin-system-health-content">
+                <form class="tfp-admin-system-health-filters" method="get" action="<?php echo esc_url($base_url); ?>">
+                    <label class="screen-reader-text" for="tfp-health-role"><?php esc_html_e('Filter by role', 'tfp-dashboard'); ?></label>
+                    <select id="tfp-health-role" name="health_role"><option value=""><?php esc_html_e('All Roles', 'tfp-dashboard'); ?></option>
+                        <?php foreach ($role_options as $slug => $label) : ?><option value="<?php echo esc_attr($slug); ?>" <?php selected($role_filter, $slug); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?>
+                    </select>
+                    <label class="screen-reader-text" for="tfp-health-status"><?php esc_html_e('Filter by status', 'tfp-dashboard'); ?></label>
+                    <select id="tfp-health-status" name="health_status"><option value=""><?php esc_html_e('All Statuses', 'tfp-dashboard'); ?></option>
+                        <option value="attention" <?php selected($status_filter, 'attention'); ?>><?php esc_html_e('Attention', 'tfp-dashboard'); ?></option>
+                        <option value="good" <?php selected($status_filter, 'good'); ?>><?php esc_html_e('Good', 'tfp-dashboard'); ?></option>
+                    </select>
+                    <label class="screen-reader-text" for="tfp-health-system"><?php esc_html_e('Filter by system', 'tfp-dashboard'); ?></label>
+                    <select id="tfp-health-system" name="health_system"><option value=""><?php esc_html_e('All Systems', 'tfp-dashboard'); ?></option>
+                        <?php foreach ($systems as $system) : ?><option value="<?php echo esc_attr($system); ?>" <?php selected($system_filter, $system); ?>><?php echo esc_html($system); ?></option><?php endforeach; ?>
+                    </select>
+                    <label class="tfp-admin-health-search"><span aria-hidden="true">⌕</span><input type="search" name="health_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>"></label>
+                    <button class="tfp-admin-filter-submit" type="submit"><?php esc_html_e('Apply filters', 'tfp-dashboard'); ?></button>
+                </form>
+                <section class="tfp-admin-panel tfp-admin-system-health-table-panel" aria-label="<?php esc_attr_e('User system health records', 'tfp-dashboard'); ?>">
+                    <div class="tfp-admin-system-health-table-wrap">
+                        <table class="tfp-admin-system-health-table">
+                            <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Role', 'tfp-dashboard'); ?></th><th><?php esc_html_e('System', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Issue', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Check', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                            <tbody>
+                            <?php if ($page_rows) : foreach ($page_rows as $row) : ?>
+                                <tr>
+                                    <td><strong><?php echo esc_html($row['user']); ?></strong></td><td><?php echo esc_html($row['role']); ?></td><td><?php echo esc_html($row['system']); ?></td>
+                                    <td><span class="tfp-admin-health-pill is-<?php echo esc_attr($row['status']); ?>"><?php echo $row['status'] === 'attention' ? esc_html__('Attention', 'tfp-dashboard') : esc_html__('Good', 'tfp-dashboard'); ?></span></td>
+                                    <td><?php echo esc_html($row['issue']); ?></td><td><?php echo esc_html($row['last_check']); ?></td>
+                                    <td><a class="tfp-admin-system-health-view" href="<?php echo esc_url($row['url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                                </tr>
+                            <?php endforeach; else : ?>
+                                <tr><td colspan="7" class="tfp-admin-system-health-empty"><?php esc_html_e('No matching system health records found.', 'tfp-dashboard'); ?></td></tr>
+                            <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <footer class="tfp-admin-system-health-pagination">
+                        <span><?php $from = $total ? (($page - 1) * $per_page) + 1 : 0; $to = min($page * $per_page, $total); printf(esc_html__('%1$s - %2$s of %3$s records', 'tfp-dashboard'), number_format_i18n($from), number_format_i18n($to), number_format_i18n($total)); ?></span>
+                        <nav aria-label="<?php esc_attr_e('System health pagination', 'tfp-dashboard'); ?>">
+                            <?php if ($page > 1) : ?><a class="tfp-admin-system-health-prev" href="<?php echo esc_url(add_query_arg('health_page', $page - 1)); ?>">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></a><?php else : ?><span class="tfp-admin-system-health-prev is-disabled">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></span><?php endif; ?>
+                            <?php if ($page < $total_pages) : ?><a class="tfp-admin-system-health-next" href="<?php echo esc_url(add_query_arg('health_page', $page + 1)); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</a><?php else : ?><span class="tfp-admin-system-health-next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span><?php endif; ?>
                         </nav>
                     </footer>
                 </section>
