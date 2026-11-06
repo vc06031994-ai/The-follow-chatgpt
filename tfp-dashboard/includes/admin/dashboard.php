@@ -153,7 +153,6 @@ function tfp_admin_dashboard_get_data() {
             'order' => 'DESC',
             'status' => array_keys(wc_get_order_statuses()),
         ]);
-        $payment_total = (float) wc_get_customer_total_spent(0);
         $page = 1;
         do {
             $sales_batch = wc_get_orders([
@@ -423,22 +422,11 @@ function tfp_admin_dashboard_render() {
                                     $user_roles = (array) $person->roles;
                                     $role_label = $user_roles ? translate_user_role(reset($user_roles)) : __('Student', 'tfp-dashboard');
                                     $activity_rows[] = [
-                                        'event' => $person->display_name ?: __('Event Name', 'tfp-dashboard'),
-                                        'date' => tfp_admin_dashboard_date($person->user_registered, 'Y-m-d, 10:30'),
+                                        'event' => $person->display_name ?: $person->user_login,
+                                        'date' => tfp_admin_dashboard_date($person->user_registered, 'Y-m-d, H:i'),
                                         'who' => $role_label,
-                                        'what' => 'cohort/course/week',
+                                        'what' => get_user_meta($person->ID, 'tfp_cohort_choice', true) ? get_the_title(absint(get_user_meta($person->ID, 'tfp_cohort_choice', true))) : __('No cohort assigned', 'tfp-dashboard'),
                                         'link' => get_edit_user_link($person->ID),
-                                    ];
-                                }
-                            }
-                            if (count($activity_rows) < 9) {
-                                for ($i = count($activity_rows); $i < 9; $i++) {
-                                    $activity_rows[] = [
-                                        'event' => 'Event Name',
-                                        'date' => '2025-12-16, 10:30',
-                                        'who' => 'Who/What',
-                                        'what' => 'cohort/course/week',
-                                        'link' => admin_url('users.php'),
                                     ];
                                 }
                             }
@@ -478,21 +466,9 @@ function tfp_admin_dashboard_render() {
                                     $order_date = $order->get_date_created();
                                     $payment_rows[] = [
                                         'name' => $customer,
-                                        'date' => $order_date ? $order_date->date_i18n('Y-m-d, H:i') : '2025-12-16, 10:30',
-                                        'amount' => '$' . number_format((float) $order->get_total(), 2),
+                                        'date' => $order_date ? $order_date->date_i18n('Y-m-d, H:i') : '—',
+                                        'amount' => wp_strip_all_tags(wc_price((float) $order->get_total(), ['currency' => $order->get_currency()])),
                                         'link' => $order->get_edit_order_url(),
-                                    ];
-                                }
-                            }
-                            $sample_names = ['John Doe', 'Jane Smith', 'Carlos Ruiz', 'Mei Wong', 'Fatima Al-Farsi', 'Lars Johansson', 'Amina Ndlovu', 'John Doe', 'John Doe'];
-                            $sample_amounts = ['$1,200.00', '$950.00', '$1,450.00', '$1,100.00', '$1,300.00', '$1,250.00', '$1,180.00', '$1,200.00', '$1,200.00'];
-                            if (count($payment_rows) < 9) {
-                                for ($i = count($payment_rows); $i < 9; $i++) {
-                                    $payment_rows[] = [
-                                        'name' => $sample_names[$i % count($sample_names)],
-                                        'date' => '2025-12-16, 10:30',
-                                        'amount' => $sample_amounts[$i % count($sample_amounts)],
-                                        'link' => admin_url('edit.php?post_type=shop_order'),
                                     ];
                                 }
                             }
