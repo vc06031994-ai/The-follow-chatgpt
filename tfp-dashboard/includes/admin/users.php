@@ -121,17 +121,21 @@ function tfp_admin_users_get_data() {
     if ($role !== '') {
         $args['role'] = $role;
     }
+    $meta_query = ['relation' => 'AND'];
     if ($status === 'deactivated') {
-        $args['meta_query'][] = ['key' => '_tfp_deactivated', 'value' => '1', 'compare' => '='];
+        $meta_query[] = ['key' => '_tfp_deactivated', 'value' => '1', 'compare' => '='];
     } elseif ($status === 'active') {
-        $args['meta_query'] = [
+        $meta_query[] = [
             'relation' => 'OR',
             ['key' => '_tfp_deactivated', 'compare' => 'NOT EXISTS'],
             ['key' => '_tfp_deactivated', 'value' => ['', '0'], 'compare' => 'IN'],
         ];
     }
     if ($system !== '') {
-        $args['meta_query'][] = ['key' => 'tfp_system', 'value' => $system, 'compare' => '='];
+        $meta_query[] = ['key' => 'tfp_system', 'value' => $system, 'compare' => '='];
+    }
+    if (count($meta_query) > 1) {
+        $args['meta_query'] = $meta_query;
     }
 
     $users = get_users($args);
