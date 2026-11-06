@@ -308,13 +308,26 @@ function tfp_admin_users_home_render() {
         $payments = wc_get_orders(['limit' => 5, 'orderby' => 'date', 'order' => 'DESC', 'return' => 'objects']);
     }
 
+    $upload_info = wp_upload_dir();
+    $active_plugins = (array) get_option('active_plugins', []);
+    $discord_plugin_detected = false;
+    $attendance_plugin_detected = post_type_exists('tfp_attendance');
+    foreach ($active_plugins as $plugin_file) {
+        if (stripos($plugin_file, 'discord') !== false) {
+            $discord_plugin_detected = true;
+        }
+        if (stripos($plugin_file, 'attendance') !== false) {
+            $attendance_plugin_detected = true;
+        }
+    }
+    $documents_ready = empty($upload_info['error']) && !empty($upload_info['basedir']) && wp_is_writable($upload_info['basedir']);
     $systems = [
-        ['label' => __('Billing', 'tfp-dashboard'), 'detail' => function_exists('wc_get_orders') ? __('WooCommerce payment records available', 'tfp-dashboard') : __('WooCommerce is not active', 'tfp-dashboard'), 'good' => function_exists('wc_get_orders')],
-        ['label' => __('Authentication', 'tfp-dashboard'), 'detail' => __('WordPress user authentication', 'tfp-dashboard'), 'good' => true],
-        ['label' => __('Discord Sync', 'tfp-dashboard'), 'detail' => __('Integration status depends on connection settings', 'tfp-dashboard'), 'good' => false],
-        ['label' => __('Documents', 'tfp-dashboard'), 'detail' => __('WordPress media library', 'tfp-dashboard'), 'good' => true],
-        ['label' => __('Attendance', 'tfp-dashboard'), 'detail' => __('Attendance records module', 'tfp-dashboard'), 'good' => post_type_exists('tfp_attendance')],
-        ['label' => __('Password', 'tfp-dashboard'), 'detail' => __('WordPress account security', 'tfp-dashboard'), 'good' => true],
+        ['label' => __('Billing', 'tfp-dashboard'), 'detail' => function_exists('wc_get_orders') ? __('WooCommerce order service is available', 'tfp-dashboard') : __('WooCommerce is not active', 'tfp-dashboard'), 'good' => function_exists('wc_get_orders')],
+        ['label' => __('Authentication', 'tfp-dashboard'), 'detail' => function_exists('wp_check_password') ? __('WordPress authentication functions are available', 'tfp-dashboard') : __('WordPress authentication service is unavailable', 'tfp-dashboard'), 'good' => function_exists('wp_check_password')],
+        ['label' => __('Discord Sync', 'tfp-dashboard'), 'detail' => $discord_plugin_detected ? __('Discord integration plugin detected; live connection has not been tested', 'tfp-dashboard') : __('No Discord integration plugin detected', 'tfp-dashboard'), 'good' => false],
+        ['label' => __('Documents', 'tfp-dashboard'), 'detail' => $documents_ready ? __('WordPress uploads directory is writable', 'tfp-dashboard') : __('WordPress uploads directory is unavailable or not writable', 'tfp-dashboard'), 'good' => $documents_ready],
+        ['label' => __('Attendance', 'tfp-dashboard'), 'detail' => $attendance_plugin_detected ? __('Attendance module detected', 'tfp-dashboard') : __('Attendance module is not detected', 'tfp-dashboard'), 'good' => $attendance_plugin_detected],
+        ['label' => __('Password', 'tfp-dashboard'), 'detail' => function_exists('wp_check_password') ? __('WordPress password verification is available', 'tfp-dashboard') : __('Password verification is unavailable', 'tfp-dashboard'), 'good' => function_exists('wp_check_password')],
     ];
     ?>
     <div class="tfp-admin-app tfp-admin-users-home">
