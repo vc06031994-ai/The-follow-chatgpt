@@ -30,13 +30,15 @@ $dash_url = defined('TFP_DASH_URL') ? TFP_DASH_URL : plugin_dir_url(dirname(__DI
 $dash_ver = defined('TFP_DASH_VERSION') ? TFP_DASH_VERSION : '1.0.0';
 $admin_css_path = dirname(__DIR__) . '/assets/css/admin-dashboard.css';
 $admin_css_ver = file_exists($admin_css_path) ? (string) filemtime($admin_css_path) : $dash_ver;
+$admin_js_path = dirname(__DIR__) . '/assets/js/admin-dashboard.js';
+$admin_js_ver = file_exists($admin_js_path) ? (string) filemtime($admin_js_path) : $dash_ver;
 
 wp_enqueue_style('dashicons');
 wp_enqueue_style('tfp-dashboard-base', $dash_url . 'assets/css/core.css', [], $dash_ver);
 wp_enqueue_style('tfp-dashboard-core', $dash_url . 'assets/css/dashboard.css', ['tfp-dashboard-base'], $dash_ver);
 wp_enqueue_style('tfp-dashboard-components', $dash_url . 'assets/css/components.css', ['tfp-dashboard-core'], $dash_ver);
 wp_enqueue_style('tfp-admin-dashboard', $dash_url . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], $admin_css_ver);
-wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], $dash_ver, true);
+wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], $admin_js_ver, true);
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
