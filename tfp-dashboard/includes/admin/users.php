@@ -346,9 +346,10 @@ function tfp_admin_users_home_render() {
                             <?php if ($activity_users) : foreach ($activity_users as $person) :
                                 $cohort_id = absint(get_user_meta($person->ID, 'tfp_cohort_choice', true));
                                 $cohort = $cohort_id ? get_the_title($cohort_id) : __('No cohort assigned', 'tfp-dashboard');
+                                $activity_date = $person->user_registered ? wp_date('Y-m-d H:i', strtotime($person->user_registered)) : '—';
                             ?>
                                 <a class="tfp-admin-activity-row" href="<?php echo esc_url(get_edit_user_link($person->ID)); ?>">
-                                    <span class="tfp-admin-activity-col1"><strong><?php echo esc_html($person->display_name ?: $person->user_login); ?></strong><time><?php echo esc_html($person->user_registered ? wp_date('Y-m-d H:i', strtotime($person->user_registered)) : '—'); ?></time></span>
+                                    <span class="tfp-admin-activity-col1"><strong><?php echo esc_html($person->display_name ?: $person->user_login); ?></strong><time><?php echo esc_html($activity_date); ?></time></span>
                                     <span class="tfp-admin-activity-col2"><span><?php echo esc_html($cohort); ?></span></span>
                                     <i class="tfp-admin-chevron" aria-hidden="true">›</i>
                                 </a>
@@ -359,11 +360,21 @@ function tfp_admin_users_home_render() {
                     <article class="tfp-admin-panel tfp-admin-users-health">
                         <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('User System Health', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(admin_url('site-health.php')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
                         <div class="tfp-admin-health-list">
-                            <?php foreach ($systems as $system) : ?>
+                            <?php foreach ($systems as $system) :
+                                $health_icon = [
+                                    'Billing' => '▤',
+                                    'Authentication' => '☷',
+                                    'Discord Sync' => '◉',
+                                    'Documents' => '▣',
+                                    'Attendance' => '♧',
+                                    'Password' => '▢',
+                                ][$system['label']] ?? '•';
+                            ?>
                                 <div class="tfp-admin-health-row">
-                                    <span class="tfp-admin-health-icon" aria-hidden="true">◉</span>
+                                    <span class="tfp-admin-health-icon" aria-hidden="true"><?php echo esc_html($health_icon); ?></span>
                                     <span class="tfp-admin-health-info"><strong><?php echo esc_html($system['label']); ?></strong><small><?php echo esc_html($system['detail']); ?></small></span>
-                                    <span class="tfp-admin-health-status <?php echo $system['good'] ? 'is-good' : 'is-attention'; ?>"><?php echo $system['good'] ? esc_html__('Good', 'tfp-dashboard') : esc_html__('Review', 'tfp-dashboard'); ?></span>
+                                    <span class="tfp-admin-health-status <?php echo $system['good'] ? 'is-good' : 'is-attention'; ?>"><?php echo $system['good'] ? esc_html__('Good', 'tfp-dashboard') : esc_html__('Degraded', 'tfp-dashboard'); ?></span>
+                                    <i class="tfp-admin-chevron" aria-hidden="true">›</i>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -374,13 +385,15 @@ function tfp_admin_users_home_render() {
                         <div class="tfp-admin-payment-list">
                             <?php if ($payments) : foreach ($payments as $order) :
                                 $billing_name = trim($order->get_formatted_billing_full_name());
-                                $payment_status = wc_get_order_status_name($order->get_status());
-                                $attention = in_array($order->get_status(), ['failed', 'cancelled', 'on-hold'], true);
+                                $order_status = $order->get_status();
+                                $payment_label = in_array($order_status, ['failed', 'cancelled'], true) ? __('Fail', 'tfp-dashboard') : (in_array($order_status, ['blocked'], true) ? __('Blocked', 'tfp-dashboard') : (in_array($order_status, ['on-hold', 'pending'], true) ? __('Attention', 'tfp-dashboard') : __('Good', 'tfp-dashboard')));
+                                $payment_class = strtolower($payment_label);
                             ?>
-                                <div class="tfp-admin-payment-row">
-                                    <span class="tfp-admin-payment-info"><strong><?php echo esc_html($billing_name ?: __('Customer', 'tfp-dashboard')); ?></strong><small><?php echo esc_html(sprintf(__('Order #%s · %s', 'tfp-dashboard'), $order->get_order_number(), $order->get_total() . ' ' . $order->get_currency())); ?></small></span>
-                                    <span class="tfp-admin-payment-status <?php echo $attention ? 'is-attention' : 'is-good'; ?>"><?php echo esc_html($payment_status); ?></span>
-                                </div>
+                                <a class="tfp-admin-payment-row" href="<?php echo esc_url($order->get_edit_order_url()); ?>">
+                                    <span class="tfp-admin-payment-info"><strong><?php echo esc_html($billing_name ?: __('Customer', 'tfp-dashboard')); ?></strong><small><?php echo esc_html(sprintf(__('Order #%s · %s %s', 'tfp-dashboard'), $order->get_order_number(), wc_price($order->get_total(), ['currency' => $order->get_currency()]), '')); ?></small></span>
+                                    <span class="tfp-admin-payment-status is-<?php echo esc_attr($payment_class); ?>"><?php echo esc_html($payment_label); ?></span>
+                                    <i class="tfp-admin-chevron" aria-hidden="true">›</i>
+                                </a>
                             <?php endforeach; else : ?><p class="tfp-admin-users-empty"><?php esc_html_e('No payment records available.', 'tfp-dashboard'); ?></p><?php endif; ?>
                         </div>
                     </article>
