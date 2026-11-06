@@ -273,14 +273,31 @@ function tfp_admin_users_home_render() {
     $nav = tfp_admin_users_nav_items();
     $total_users = count_users();
     $total = (int) ($total_users['total_users'] ?? 0);
-    $student_count = count(get_users(['role' => 'subscriber', 'fields' => 'ID', 'number' => -1]));
-    $facilitator_count = count(get_users(['role' => 'facilitator', 'fields' => 'ID', 'number' => -1]));
+    $student_ids = get_users([
+        'role__in' => ['subscriber', 'student'],
+        'meta_key' => 'tfp_cohort_choice',
+        'meta_compare' => 'EXISTS',
+        'fields' => 'ID',
+        'number' => -1,
+    ]);
+    $student_count = count($student_ids);
+    $facilitator_ids = get_users([
+        'role' => 'facilitator',
+        'meta_query' => [
+            'relation' => 'OR',
+            ['key' => '_tfp_deactivated', 'compare' => 'NOT EXISTS'],
+            ['key' => '_tfp_deactivated', 'value' => ['', '0'], 'compare' => 'IN'],
+        ],
+        'fields' => 'ID',
+        'number' => -1,
+    ]);
+    $facilitator_count = count($facilitator_ids);
     $active_count = 0;
     $recent_users = get_users(['number' => 4, 'orderby' => 'registered', 'order' => 'DESC']);
     $all_user_ids = get_users(['fields' => 'ID', 'number' => -1]);
     foreach ($all_user_ids as $user_id) {
         $last_login = get_user_meta($user_id, '_tfp_last_login', true);
-        if ($last_login && strtotime($last_login) >= strtotime('-30 days')) {
+        if ($last_login && strtotime($last_login) >= strtotime('-30 days') && !get_user_meta($user_id, '_tfp_deactivated', true)) {
             $active_count++;
         }
     }
