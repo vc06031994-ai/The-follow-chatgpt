@@ -184,7 +184,7 @@ body.tfp-admin-dashboard-view .entry-content {
 .tfp-admin-profile small {
     margin-top: 1px;
     color: #666;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
 }
 
@@ -287,7 +287,7 @@ body.tfp-admin-dashboard-view .entry-content {
     padding: 10px 16px;
     border: 1px solid;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: .4px;
     text-transform: uppercase;
@@ -339,7 +339,7 @@ body.tfp-admin-dashboard-view .entry-content {
 
 .tfp-admin-stat-card small {
     color: #333;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     line-height: 1.3;
 }
@@ -359,7 +359,7 @@ body.tfp-admin-dashboard-view .entry-content {
 }
 
 .tfp-admin-stat-trend {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #00666e;
 }
@@ -367,7 +367,7 @@ body.tfp-admin-dashboard-view .entry-content {
 .tfp-admin-stat-card p {
     margin: 4px 0 0;
     color: #444;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.35;
     font-family: var(--tfp-dash-font-alt, Georgia), serif;
 }
@@ -411,7 +411,7 @@ body.tfp-admin-dashboard-view .entry-content {
 .tfp-admin-panel-heading h2 {
     margin: 0;
     color: #171717;
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.3;
     font-weight: 700;
 }
@@ -419,20 +419,20 @@ body.tfp-admin-dashboard-view .entry-content {
 .tfp-admin-panel-heading p {
     margin: 3px 0 0;
     color: #555;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1.4;
     font-family: var(--tfp-dash-font-alt, Georgia), serif;
 }
 
-.tfp-admin-panel-heading > a {
+.tfp-admin-panel-heading>a {
     flex: 0 0 auto;
     color: #00666e;
     text-decoration: none !important;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
 }
 
-.tfp-admin-panel-heading > a:hover {
+.tfp-admin-panel-heading>a:hover {
     text-decoration: underline !important;
 }
 
@@ -484,25 +484,25 @@ body.tfp-admin-dashboard-view .entry-content {
     color: #151411;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
 }
 
 .tfp-admin-activity-col1 time {
     margin-top: 1px;
     color: #888;
-    font-size: 9px;
+    font-size: 10px;
     white-space: nowrap;
 }
 
 .tfp-admin-activity-col2 span,
 .tfp-admin-activity-col3 span {
     overflow: hidden;
-    color: #333;
+    color: #151411;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 10px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 /* =========================================================================
@@ -531,14 +531,15 @@ body.tfp-admin-dashboard-view .entry-content {
     color: #151411;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
 }
 
 .tfp-admin-payment-info small {
     margin-top: 1px;
     color: #888;
-    font-size: 9px;
+    font-size: 10px;
+    font-weight: 500;
 }
 
 .tfp-admin-payment-meta {
@@ -550,8 +551,8 @@ body.tfp-admin-dashboard-view .entry-content {
 
 .tfp-admin-payment-meta b {
     color: #00666e;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 500;
     white-space: nowrap;
 }
 
@@ -607,7 +608,7 @@ body.tfp-admin-dashboard-view .entry-content {
 }
 
 .tfp-admin-health-info strong {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: #151411;
 }
@@ -616,7 +617,7 @@ body.tfp-admin-dashboard-view .entry-content {
     margin-top: 1px;
     overflow: hidden;
     color: #888;
-    font-size: 9px;
+    font-size: 10px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -667,7 +668,7 @@ body.tfp-admin-dashboard-view .entry-content {
     color: #151411;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -681,10 +682,10 @@ body.tfp-admin-dashboard-view .entry-content {
 /* =========================================================================
    STRICT BUTTON STYLING: EXACT MATCH TO STUDENT & FACULTY DASHBOARDS
    ========================================================================= */
-body.tfp-admin-dashboard-view .tfp-grade-btn,
-body.tfp-admin-dashboard-view .tfp-grade-btn--view,
-body.tfp-admin-dashboard-view .tfp-admin-approval-row a,
-body.tfp-admin-dashboard-view .tfp-admin-view-btn {
+.tfp-grade-btn,
+.tfp-grade-btn--view,
+.tfp-admin-approval-row a,
+.tfp-admin-view-btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -710,10 +711,10 @@ body.tfp-admin-dashboard-view .tfp-admin-view-btn {
     border: 1px solid #00666e !important;
 }
 
-body.tfp-admin-dashboard-view .tfp-grade-btn:hover,
-body.tfp-admin-dashboard-view .tfp-grade-btn--view:hover,
-body.tfp-admin-dashboard-view .tfp-admin-approval-row a:hover,
-body.tfp-admin-dashboard-view .tfp-admin-view-btn:hover {
+.tfp-grade-btn:hover,
+.tfp-grade-btn--view:hover,
+.tfp-admin-approval-row a:hover,
+.tfp-admin-view-btn:hover {
     background: transparent !important;
     border-color: #00666e !important;
     color: #00666e !important;
@@ -722,13 +723,13 @@ body.tfp-admin-dashboard-view .tfp-admin-view-btn:hover {
 /* =========================================================================
    STRICT TABLE STYLING: EXACT MATCH TO STUDENT & FACULTY .tfp-dash-table
    ========================================================================= */
-body.tfp-admin-dashboard-view .tfp-dash-table-wrap {
+.tfp-dash-table-wrap {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table {
+.tfp-dash-table {
     width: 100%;
     min-width: 580px;
     border-collapse: collapse !important;
@@ -739,8 +740,8 @@ body.tfp-admin-dashboard-view .tfp-dash-table {
     border: 0 !important;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table th,
-body.tfp-admin-dashboard-view .tfp-dash-table td {
+.tfp-dash-table th,
+.tfp-dash-table td {
     border-top: 0 !important;
     border-left: 0 !important;
     border-right: 0 !important;
@@ -751,39 +752,45 @@ body.tfp-admin-dashboard-view .tfp-dash-table td {
     padding: 12px 14px !important;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table th {
-    background: #DFE3E4 !important;
-    color: var(--tfp-dash-text, #151411) !important;
-    font: 700 13px/130% var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+.tfp-dash-table th {
+    background-color: #DFE3E4 !important;
+    color: #151411 !important;
+    font-family: "Eudoxus Sans", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    line-height: 130% !important;
     white-space: nowrap;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table td {
+.tfp-dash-table td {
     background: #fff !important;
     color: var(--tfp-dash-text, #151411) !important;
-    font: 500 11px/140% var(--tfp-dash-font-alt, Georgia, serif) !important;
+    font: 500 10px/140% var(--tfp-dash-font-alt, Georgia, serif) !important;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table tbody tr:last-child td {
+.tfp-dash-table tbody tr:last-child td {
     border-bottom: 0 !important;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table tbody tr:nth-child(odd) td,
-body.tfp-admin-dashboard-view .tfp-dash-table tbody tr:nth-child(even) td {
+.tfp-dash-table tbody tr:nth-child(odd) td,
+.tfp-dash-table tbody tr:nth-child(even) td {
     background: #fff !important;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table a {
+.tfp-dash-table a {
     color: inherit;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table .tfp-dash-table__primary {
+.tfp-dash-table .tfp-dash-table__primary {
     display: block;
-    font: 700 13px/140% var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
-    color: var(--tfp-dash-text, #151411) !important;
+    font-family: "Eudoxus Sans", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 140% !important;
+    color: #151411 !important;
 }
 
-body.tfp-admin-dashboard-view .tfp-dash-table .tfp-dash-table__muted {
+.tfp-dash-table .tfp-dash-table__muted {
     display: block;
     margin-top: 3px;
     color: var(--tfp-dash-muted, #777) !important;
@@ -793,14 +800,14 @@ body.tfp-admin-dashboard-view .tfp-dash-table .tfp-dash-table__muted {
 /* =========================================================================
    Status Pills in Cohort Table
    ========================================================================= */
-body.tfp-admin-dashboard-view .tfp-admin-status-pill {
+.tfp-admin-status-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 3px 10px;
     border-radius: 9999px;
     font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     line-height: 1.4;
     white-space: nowrap;
@@ -809,57 +816,57 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill {
     color: #4a3b16;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill.is-active,
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--completed {
+.tfp-admin-status-pill.is-active,
+.tfp-admin-status-pill--completed {
     border-color: #8bc3b9;
     background: #e8f5f1;
     color: #00666e;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill.is-scheduled,
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--in-progress {
+.tfp-admin-status-pill.is-scheduled,
+.tfp-admin-status-pill--in-progress {
     border-color: #d8b65e;
     background: #f8edcf;
     color: #4a3b16;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--needs-review {
+.tfp-admin-status-pill--needs-review {
     border-color: #e7a0a5;
     background: #fdf2f2;
     color: #842029;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--on-hold {
+.tfp-admin-status-pill--on-hold {
     border-color: #e0c8a8;
     background: #faf4ed;
     color: #735128;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--cancelled {
+.tfp-admin-status-pill--cancelled {
     border-color: #dcdcdc;
     background: #f5f5f5;
     color: #737373;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--pending-approval {
+.tfp-admin-status-pill--pending-approval {
     border-color: #f2c7a5;
     background: #fff4eb;
     color: #8a4816;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--awaiting-feedback {
+.tfp-admin-status-pill--awaiting-feedback {
     border-color: #e8b8c2;
     background: #fdf1f4;
     color: #782638;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--scheduled {
+.tfp-admin-status-pill--scheduled {
     border-color: #e2d2a4;
     background: #fbf7ec;
     color: #5c4b1a;
 }
 
-body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
+.tfp-admin-status-pill--deferred {
     border-color: #e2bcc4;
     background: #fdf3f5;
     color: #6d2d3c;
@@ -872,9 +879,11 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
     .tfp-admin-top-grid {
         grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     }
+
     .tfp-admin-health {
         grid-column: 1 / -1;
     }
+
     .tfp-admin-bottom-grid {
         grid-template-columns: 1fr;
     }
@@ -893,9 +902,11 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
         box-shadow: 8px 0 28px rgba(0, 0, 0, .15);
         transition: transform .22s ease;
     }
+
     .tfp-admin-app.is-menu-open .tfp-admin-sidebar {
         transform: translateX(0);
     }
+
     .tfp-admin-app.is-menu-open:after {
         position: fixed;
         inset: 0;
@@ -903,9 +914,11 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
         background: rgba(0, 0, 0, .35);
         content: "";
     }
+
     .tfp-admin-main {
         width: 100%;
     }
+
     .tfp-admin-mobilebar {
         display: flex;
         align-items: center;
@@ -916,6 +929,7 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
         font-size: 13px;
         font-weight: 750;
     }
+
     .tfp-admin-mobilebar button {
         border: 0;
         background: transparent;
@@ -923,23 +937,29 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
         font-size: 22px;
         cursor: pointer;
     }
+
     .tfp-admin-page-header {
         flex-direction: column;
         align-items: flex-start;
         padding: 16px 20px;
     }
+
     .tfp-admin-page-header h1 {
         font-size: 28px;
     }
+
     .tfp-admin-content {
         padding: 16px 16px 32px;
     }
+
     .tfp-admin-stat-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
     .tfp-admin-top-grid {
         grid-template-columns: 1fr;
     }
+
     .tfp-admin-bottom-grid {
         grid-template-columns: 1fr;
     }
@@ -1063,7 +1083,7 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
 }
 
 .tfp-admin-user-role {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     color: #333;
 }
@@ -1078,7 +1098,7 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #b4232f;
 }
@@ -1090,7 +1110,7 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
 
 .tfp-admin-last-activity {
     color: #555;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .tfp-admin-table-section {
@@ -1103,14 +1123,17 @@ body.tfp-admin-dashboard-view .tfp-admin-status-pill--deferred {
         align-items: flex-start;
         gap: 14px;
     }
+
     .tfp-admin-users-actions {
         width: 100%;
         flex-wrap: wrap;
     }
+
     .tfp-admin-search-form {
         flex: 1;
         min-width: 180px;
     }
+
     .tfp-admin-search-form input {
         width: 100%;
         min-width: 0;
