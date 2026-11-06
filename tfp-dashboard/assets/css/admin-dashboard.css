@@ -2113,3 +2113,16 @@ body.tfp-admin-dashboard-view .entry-content {
     height: 13px;
     flex: 0 0 13px;
 }
+
+
+/* Empty states for data-driven Admin Dashboard lists and tables. */
+.tfp-admin-dashboard-view .tfp-admin-empty-state {
+    margin: 0;
+    padding: 18px 14px;
+    color: #777;
+    font-size: 12px;
+    line-height: 1.5;
+}
+.tfp-admin-dashboard-view td.tfp-admin-empty-state {
+    text-align: center;
+}
