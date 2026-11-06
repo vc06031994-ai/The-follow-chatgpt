@@ -878,7 +878,7 @@ function tfp_admin_system_health_render() {
                     <select id="tfp-health-system" name="health_system"><option value=""><?php esc_html_e('All Systems', 'tfp-dashboard'); ?></option>
                         <?php foreach ($systems as $system) : ?><option value="<?php echo esc_attr($system); ?>" <?php selected($system_filter, $system); ?>><?php echo esc_html($system); ?></option><?php endforeach; ?>
                     </select>
-                    <label class="tfp-admin-health-search"><span aria-hidden="true">⌕</span><input type="search" name="health_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>"></label>
+                    <label class="tfp-admin-health-search"><span class="tfp-admin-search-png" aria-hidden="true"><img src="<?php echo esc_url('https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Note_Search-2.png'); ?>" alt=""></span><input type="search" name="health_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>"></label>
                     <button class="tfp-admin-filter-submit" type="submit"><?php esc_html_e('Apply filters', 'tfp-dashboard'); ?></button>
                 </form>
                 <section class="tfp-admin-panel tfp-admin-overview-table-panel tfp-admin-system-health-table-panel" aria-label="<?php esc_attr_e('User system health records', 'tfp-dashboard'); ?>">
