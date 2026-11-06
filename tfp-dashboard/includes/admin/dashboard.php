@@ -314,16 +314,15 @@ function tfp_admin_dashboard_render() {
     <div class="tfp-admin-app">
         <!-- Sidebar Navigation -->
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
+            <div class="tfp-admin-sidebar-top">
+                <button class="tfp-admin-sidebar-toggle" type="button" aria-label="<?php esc_attr_e('Toggle navigation', 'tfp-dashboard'); ?>" data-tfp-admin-toggle>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="14" height="14" rx="2"></rect><path d="M6 2v14"></path></svg>
+                </button>
+            </div>
             <div class="tfp-admin-brand-row">
                 <a class="tfp-admin-brand" href="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>">
                     <img src="<?php echo esc_url(TFP_DASH_URL . 'assets/images/logo-expanded.svg'); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
                 </a>
-                <button class="tfp-admin-sidebar-toggle" type="button" aria-label="<?php esc_attr_e('Toggle navigation', 'tfp-dashboard'); ?>" data-tfp-admin-toggle>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#570506" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="14" height="14" rx="2"></rect>
-                        <path d="M6 2v14"></path>
-                    </svg>
-                </button>
             </div>
             <nav class="tfp-admin-nav" aria-label="<?php esc_attr_e('Admin navigation', 'tfp-dashboard'); ?>">
                 <?php foreach ($nav as $item) : ?>

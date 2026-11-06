@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Desktop sidebar collapse and mobile off-canvas navigation.
         document.querySelectorAll('[data-tfp-admin-toggle]').forEach(function (button) {
             button.addEventListener('click', function () {
-                if (window.matchMedia('(max-width: 860px)').matches) {
+                if (window.matchMedia('(max-width: 991px)').matches) {
                     app.classList.toggle('is-menu-open');
                 } else {
                     document.body.classList.toggle('tfp-admin-sidebar-is-collapsed');
