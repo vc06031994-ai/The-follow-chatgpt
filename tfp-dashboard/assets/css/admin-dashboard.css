@@ -2126,3 +2126,34 @@ body.tfp-admin-dashboard-view .entry-content {
 .tfp-admin-dashboard-view td.tfp-admin-empty-state {
     text-align: center;
 }
+
+
+/* Admin UI color consistency: keep breadcrumb links teal and remove pink accents. */
+.tfp-admin-app .tfp-admin-breadcrumb a,
+.tfp-admin-app .tfp-admin-breadcrumb a:visited,
+.tfp-admin-app .tfp-admin-breadcrumb a:hover,
+.tfp-admin-app .tfp-admin-breadcrumb a:focus {
+    color: #006c72 !important;
+    text-decoration: none;
+}
+.tfp-admin-app .tfp-admin-breadcrumb a:focus-visible {
+    outline: 2px solid #006c72;
+    outline-offset: 3px;
+}
+
+/* Replace pink-tinted warning/error surfaces with neutral admin styling. */
+.tfp-admin-app .tfp-admin-operational-status.is-disrupted,
+.tfp-admin-app .tfp-admin-status-pill--needs-review,
+.tfp-admin-app .tfp-admin-status-pill--awaiting-feedback,
+.tfp-admin-app .tfp-admin-status-pill--deferred,
+.tfp-admin-app .tfp-admin-payment-pill.is-fail,
+.tfp-admin-app .tfp-admin-payment-pill.is-blocked,
+.tfp-admin-app .tfp-admin-status-pill.is-deactivated,
+.tfp-admin-app .tfp-admin-overview-status.is-deactivated,
+.tfp-admin-app .tfp-admin-user-status.is-deactivated,
+.tfp-admin-app .tfp-admin-payment-status.is-fail,
+.tfp-admin-app .tfp-admin-payment-status.is-blocked {
+    border-color: #c9cdd1;
+    background: #f1f2f3;
+    color: #343a40;
+}
