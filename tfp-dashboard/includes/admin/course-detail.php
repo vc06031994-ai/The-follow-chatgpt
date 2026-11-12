@@ -225,10 +225,11 @@ function tfp_admin_course_detail_render() {
                 <a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a>
                 <b>/</b><a href="<?php echo esc_url(tfp_admin_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
                 <b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo esc_html($course_title); ?></strong>
+                <?php if ($is_plan_tab) : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php esc_html_e('Plan', 'tfp-dashboard'); ?></strong><?php endif; ?>
             </div>
 
             <header class="tfp-admin-page-header tfp-admin-course-detail-header">
-                <div><h1><?php echo esc_html($course_title); ?></h1><p><?php esc_html_e('Course details and week mapping', 'tfp-dashboard'); ?></p></div>
+                <div><h1><?php echo esc_html($course_title); ?></h1><p><?php echo $is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard'); ?></p></div>
                 <div class="tfp-admin-course-header-actions">
                     <?php if ($is_plan_tab) : ?>
                         <a class="tfp-admin-course-edit" href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>"><span aria-hidden="true">✎</span><?php esc_html_e('Edit Course', 'tfp-dashboard'); ?></a>
