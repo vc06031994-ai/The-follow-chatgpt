@@ -436,3 +436,94 @@ body.tfp-admin-dashboard-view .tfp-admin-activity-app .tfp-admin-sidebar {
   .tfp-admin-activity-app .tfp-admin-activity-table { min-width: 760px !important; }
   .tfp-admin-activity-app .tfp-admin-activity-pagination { flex-wrap: wrap !important; gap: 10px !important; }
 }
+
+
+/* Reuse the exact shared Admin Users Overview table typography and treatment. */
+.tfp-admin-activity-app .tfp-admin-overview-table-wrap {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+.tfp-admin-activity-app table.tfp-admin-overview-table,
+.tfp-admin-activity-app table.tfp-admin-activity-table {
+    width: 100% !important;
+    min-width: 740px !important;
+    border: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    table-layout: auto !important;
+    text-align: left !important;
+    background: #fff !important;
+    margin: 0 !important;
+}
+.tfp-admin-activity-app .tfp-admin-overview-table th,
+.tfp-admin-activity-app .tfp-admin-overview-table td,
+.tfp-admin-activity-app .tfp-admin-activity-table th,
+.tfp-admin-activity-app .tfp-admin-activity-table td {
+    height: 37px !important;
+    padding: 6px 20px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #E2E5E6 !important;
+    border-radius: 0 !important;
+    vertical-align: middle !important;
+    text-align: left !important;
+    color: #151411 !important;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+}
+.tfp-admin-activity-app .tfp-admin-overview-table th,
+.tfp-admin-activity-app .tfp-admin-activity-table th {
+    background: #DFE3E4 !important;
+    color: #151411 !important;
+    font-family: "Eudoxus Sans", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    line-height: 130% !important;
+}
+.tfp-admin-activity-app .tfp-admin-overview-table td,
+.tfp-admin-activity-app .tfp-admin-activity-table td {
+    background: #fff !important;
+    color: var(--tfp-dash-text, #151411) !important;
+    font-family: var(--tfp-dash-font-alt, Georgia, serif) !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    line-height: 140% !important;
+}
+.tfp-admin-activity-app .tfp-admin-overview-table tbody tr:last-child td,
+.tfp-admin-activity-app .tfp-admin-activity-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+.tfp-admin-activity-app .tfp-admin-overview-table td:nth-child(2) strong,
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(2) strong {
+    display: block !important;
+    color: #151411 !important;
+    font-family: "Eudoxus Sans", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 140% !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-view {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    padding: 0 !important;
+    border: 1px solid #00666e !important;
+    border-radius: 8px !important;
+    background: #00666e !important;
+    color: #fff !important;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 130% !important;
+    text-align: center !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-view:hover {
+    background: #00505a !important;
+    border-color: #00505a !important;
+}
