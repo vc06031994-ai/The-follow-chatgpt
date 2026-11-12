@@ -60,7 +60,7 @@ function tfp_user_activity_log($user_id, $event_type, $event_label, $context = '
 }
 
 add_action('wp_login', function ($login, $user) {
-    if ($user instanceof WP_User) { tfp_user_activity_log($user->ID, 'login', 'Logged in', 'Successful authentication', 'Student/Facilitator'); }
+    if ($user instanceof WP_User) { tfp_user_activity_log($user->ID, 'login', 'Logged in', 'Successful WordPress authentication', 'WordPress'); }
 }, 10, 2);
 
 add_action('wp_logout', function () {
