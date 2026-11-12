@@ -181,6 +181,8 @@ function tfp_admin_course_detail_render() {
     $first_item = $total_rows ? (($page_number - 1) * $per_page) + 1 : 0;
     $last_item = min($page_number * $per_page, $total_rows);
     $tabs = ['Overview' => '', 'Plan' => 'plan', 'Rules' => 'rules', 'Cohorts' => 'cohorts', 'Insights' => 'insights', 'Access' => 'access', 'Health' => 'health'];
+    $active_tab = isset($_GET['course_tab']) ? sanitize_key(wp_unslash($_GET['course_tab'])) : '';
+    $is_plan_tab = ($active_tab === 'plan');
     ?>
     <div class="tfp-admin-app tfp-admin-course-detail-app">
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -227,16 +229,72 @@ function tfp_admin_course_detail_render() {
 
             <header class="tfp-admin-page-header tfp-admin-course-detail-header">
                 <div><h1><?php echo esc_html($course_title); ?></h1><p><?php esc_html_e('Course details and week mapping', 'tfp-dashboard'); ?></p></div>
-                <a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a>
+                <div class="tfp-admin-course-header-actions">
+                    <?php if ($is_plan_tab) : ?>
+                        <a class="tfp-admin-course-edit" href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>"><span aria-hidden="true">✎</span><?php esc_html_e('Edit Course', 'tfp-dashboard'); ?></a>
+                    <?php endif; ?>
+                    <a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a>
+                </div>
             </header>
 
             <nav class="tfp-admin-course-tabs" aria-label="<?php esc_attr_e('Course sections', 'tfp-dashboard'); ?>">
                 <?php foreach ($tabs as $label => $tab) : ?>
-                    <a class="<?php echo $tab === '' ? 'is-active' : 'is-inactive'; ?>" href="<?php echo esc_url($tab === '' ? tfp_admin_course_detail_url($course_id) : add_query_arg('course_tab', $tab, tfp_admin_course_detail_url($course_id))); ?>"><?php echo esc_html($label); ?></a>
+                    <a class="<?php echo $active_tab === $tab ? 'is-active' : 'is-inactive'; ?>" href="<?php echo esc_url($tab === '' ? tfp_admin_course_detail_url($course_id) : add_query_arg('course_tab', $tab, tfp_admin_course_detail_url($course_id))); ?>"><?php echo esc_html($label); ?></a>
                 <?php endforeach; ?>
             </nav>
 
             <main class="tfp-admin-content tfp-admin-course-detail-content">
+                <?php if ($is_plan_tab) : ?>
+                    <section class="tfp-admin-panel tfp-admin-course-plan">
+                        <div class="tfp-admin-course-plan-toolbar">
+                            <h2><?php esc_html_e('Course Plan', 'tfp-dashboard'); ?></h2>
+                            <div class="tfp-admin-course-plan-actions">
+                                <a href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>" class="tfp-admin-course-plan-action"><span aria-hidden="true">⇧</span><?php esc_html_e('Import', 'tfp-dashboard'); ?></a>
+                                <a href="<?php echo esc_url(add_query_arg(['tfp_course_plan_export' => $course_id, '_wpnonce' => wp_create_nonce('tfp_course_plan_export_' . $course_id)], home_url('/'))); ?>" class="tfp-admin-course-plan-action"><span aria-hidden="true">⇩</span><?php esc_html_e('Export', 'tfp-dashboard'); ?></a>
+                                <a href="#tfp-course-plan-sync-log" class="tfp-admin-course-plan-sync"><span aria-hidden="true">···</span><?php esc_html_e('Sync Log', 'tfp-dashboard'); ?></a>
+                            </div>
+                        </div>
+                        <div class="tfp-admin-course-plan-scroll">
+                            <table>
+                                <thead><tr><th><?php esc_html_e('Week', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Module Name', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Gate Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Exercise ID', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Content Summary', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Attention', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                                <tbody>
+                                <?php foreach ($data['week_rows'] as $row) :
+                                    $lesson_id = (int) $row['id'];
+                                    $video_count = get_post_meta($lesson_id, 'tfp_week_video_url', true) ? 1 : 0;
+                                    $lesson_post = get_post($lesson_id);
+                                    $reading_count = ($lesson_post && (trim(wp_strip_all_tags($lesson_post->post_content)) !== '' || trim((string) $lesson_post->post_excerpt) !== '')) ? 1 : 0;
+                                    $quiz_questions = function_exists('tfp_week_get_quiz_questions') ? (array) tfp_week_get_quiz_questions($lesson_id, false) : [];
+                                    $test_questions = function_exists('tfp_week_get_test_questions') ? (array) tfp_week_get_test_questions($lesson_id, false) : [];
+                                    $question_count = count($quiz_questions) + count($test_questions);
+                                    $exercise_id = '';
+                                    foreach (['tfp_week_exercise_id', '_tfp_week_exercise_id', 'exercise_id'] as $exercise_key) {
+                                        $exercise_id = trim((string) get_post_meta($lesson_id, $exercise_key, true));
+                                        if ($exercise_id !== '') break;
+                                    }
+                                    $needs_attention = ($row['status'] !== 'Published' || empty($row['items']));
+                                    $summary_parts = [];
+                                    if ($video_count) $summary_parts[] = sprintf(_n('%s Video', '%s Videos', $video_count, 'tfp-dashboard'), number_format_i18n($video_count));
+                                    if ($reading_count) $summary_parts[] = sprintf(_n('%s Reading', '%s Readings', $reading_count, 'tfp-dashboard'), number_format_i18n($reading_count));
+                                    if ($question_count) $summary_parts[] = sprintf(_n('%s Question', '%s Questions', $question_count, 'tfp-dashboard'), number_format_i18n($question_count));
+                                    if (empty($summary_parts)) $summary_parts[] = __('No mapped content', 'tfp-dashboard');
+                                ?>
+                                    <tr>
+                                        <td><?php echo esc_html(sprintf(__('Week %s', 'tfp-dashboard'), $row['number'])); ?></td>
+                                        <td><?php echo esc_html($row['title']); ?></td>
+                                        <td><span class="tfp-admin-course-pill is-strict"><?php esc_html_e('Strict', 'tfp-dashboard'); ?></span></td>
+                                        <td><?php echo esc_html($exercise_id !== '' ? $exercise_id : '—'); ?></td>
+                                        <td><?php echo esc_html(implode(' | ', $summary_parts)); ?></td>
+                                        <td><span class="tfp-admin-course-plan-attention <?php echo $needs_attention ? 'is-attention' : 'is-good'; ?>"><?php echo $needs_attention ? esc_html__('Attention', 'tfp-dashboard') : esc_html__('Good', 'tfp-dashboard'); ?></span></td>
+                                        <td><a class="tfp-admin-course-week-view" href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php if (empty($data['week_rows'])) : ?><tr><td colspan="7" class="tfp-admin-course-no-weeks"><?php esc_html_e('No weeks are mapped to this course yet.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tfp-admin-course-plan-sync-note" id="tfp-course-plan-sync-log"><?php esc_html_e('Sync log is not available yet.', 'tfp-dashboard'); ?></div>
+                    </section>
+                <?php else : ?>
                 <section class="tfp-admin-course-detail-stats">
                     <article><small><?php esc_html_e('Total Weeks', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['total_weeks'])); ?></strong><p><?php esc_html_e('Number of weeks in course', 'tfp-dashboard'); ?></p></article>
                     <article><small><?php esc_html_e('Modules Mapped', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['modules_mapped'])); ?></strong><p><?php esc_html_e('Total mapped items in course weeks', 'tfp-dashboard'); ?></p></article>
@@ -308,6 +366,7 @@ function tfp_admin_course_detail_render() {
                         </div>
                     </div>
                 </section>
+                <?php endif; ?>
             </main>
         </div>
     </div>
