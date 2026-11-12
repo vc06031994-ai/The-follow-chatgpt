@@ -515,9 +515,10 @@
     flex: 0 0 30px;
     width: 30px;
     height: 30px;
-    padding: 0;
+    box-sizing: border-box;
+    padding: 6px;
     border: 0;
-    border-radius: 0;
-    background: transparent;
+    border-radius: 50%;
+    background: #e5e8e8;
     object-fit: contain;
 }
