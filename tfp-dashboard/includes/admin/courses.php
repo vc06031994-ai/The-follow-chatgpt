@@ -147,8 +147,8 @@ function tfp_admin_courses_get_data() {
 
     $content_status = $total > 0 ? ($alerts > 0 ? 'Attention' : 'Good') : 'Unknown';
     $content_class = $alerts > 0 ? 'is-attention' : ($total > 0 ? 'is-good' : 'is-unknown');
-    $assessment_status = function_exists('learndash_get_course_steps') ? 'Review' : 'Unknown';
-    $assessment_class = function_exists('learndash_get_course_steps') ? 'is-attention' : 'is-unknown';
+    $assessment_status = 'Unknown';
+    $assessment_class = 'is-unknown';
     $updates_7d = 0;
     $week_ago = current_time('timestamp') - WEEK_IN_SECONDS;
     foreach ($activity as $item) {
@@ -162,7 +162,7 @@ function tfp_admin_courses_get_data() {
         'published' => $published,
         'draft' => $draft,
         'alerts' => $alerts,
-        'courses' => $courses,
+        'courses' => $all_courses,
         'rows' => $filtered_rows,
         'activity' => array_slice($activity, 0, 8),
         'weeks' => $weeks,
@@ -305,7 +305,7 @@ function tfp_admin_courses_render() {
                         <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Course Health', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(admin_url('edit.php?post_type=sfwd-courses')); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
                         <div class="tfp-admin-courses-health-list">
                             <div class="tfp-admin-courses-health-row"><span class="tfp-admin-courses-health-icon dashicons dashicons-media-document"></span><div><strong><?php esc_html_e('Content Health', 'tfp-dashboard'); ?></strong><small><?php echo esc_html(sprintf(_n('%s course without mapped content', '%s courses without mapped content', $data['alerts'], 'tfp-dashboard'), number_format_i18n($data['alerts']))); ?></small></div><em class="<?php echo esc_attr($data['content_class']); ?>"><?php echo esc_html($data['content_status']); ?></em><b>›</b></div>
-                            <div class="tfp-admin-courses-health-row"><span class="tfp-admin-courses-health-icon dashicons dashicons-clipboard"></span><div><strong><?php esc_html_e('Assessment Health', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Assessment mapping requires review', 'tfp-dashboard'); ?></small></div><em class="<?php echo esc_attr($data['assessment_class']); ?>"><?php echo esc_html($data['assessment_status']); ?></em><b>›</b></div>
+                            <div class="tfp-admin-courses-health-row"><span class="tfp-admin-courses-health-icon dashicons dashicons-clipboard"></span><div><strong><?php esc_html_e('Assessment Health', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Assessment mapping is not yet reported in this overview', 'tfp-dashboard'); ?></small></div><em class="<?php echo esc_attr($data['assessment_class']); ?>"><?php echo esc_html($data['assessment_status']); ?></em><b>›</b></div>
                             <div class="tfp-admin-courses-health-row"><span class="tfp-admin-courses-health-icon dashicons dashicons-admin-generic"></span><div><strong><?php esc_html_e('Gating & Rules', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Course access follows published and draft states', 'tfp-dashboard'); ?></small></div><em class="is-good"><?php esc_html_e('Good', 'tfp-dashboard'); ?></em><b>›</b></div>
                             <div class="tfp-admin-courses-health-row"><span class="tfp-admin-courses-health-icon dashicons dashicons-admin-links"></span><div><strong><?php esc_html_e('Cohort Sync', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('No verified course-to-cohort sync source', 'tfp-dashboard'); ?></small></div><em class="is-unknown"><?php esc_html_e('Unknown', 'tfp-dashboard'); ?></em><b>›</b></div>
                             <div class="tfp-admin-courses-health-row"><span class="tfp-admin-courses-health-icon dashicons dashicons-update"></span><div><strong><?php esc_html_e('Content Updates', 'tfp-dashboard'); ?></strong><small><?php echo esc_html(sprintf(_n('%s update in the last 7 days', '%s updates in the last 7 days', $data['updates_7d'], 'tfp-dashboard'), number_format_i18n($data['updates_7d']))); ?></small></div><em class="is-good"><?php esc_html_e('Good', 'tfp-dashboard'); ?></em><b>›</b></div>
