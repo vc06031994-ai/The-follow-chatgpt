@@ -8,13 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 function tfp_admin_course_detail_url($course_id) {
-    $course = get_post(absint($course_id));
-    if (!$course || $course->post_type !== 'sfwd-courses') {
-        return home_url('/admin-course/' . absint($course_id) . '/');
-    }
-
-    $slug = sanitize_title($course->post_title);
-    return home_url('/admin-course/' . $slug . '/');
+    return home_url('/admin-course/' . absint($course_id) . '/');
 }
 
 function tfp_admin_course_detail_route_id() {
