@@ -822,6 +822,9 @@ function tfp_dashboard_is_dashboard_page()
     if ($last === 'admin-courses') {
         return true;
     }
+    if (preg_match('~(?:^|/)admin-course/\\d+/?$~', $req_path)) {
+        return true;
+    }
 
     // The public site homepage is never a dashboard page. This also prevents
     // the guest -> homepage redirect from becoming a redirect loop when an
@@ -865,6 +868,9 @@ function tfp_dashboard_current_template_slug()
     }
     if ($last === 'admin-courses') {
         return 'tfp-dashboard-admin-courses';
+    }
+    if (preg_match('~(?:^|/)admin-course/\\d+/?$~', $req_path)) {
+        return 'tfp-dashboard-admin-course-detail';
     }
 
     // Keep the real public homepage outside dashboard template resolution.
