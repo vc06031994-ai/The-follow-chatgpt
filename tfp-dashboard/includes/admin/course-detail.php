@@ -163,7 +163,7 @@ function tfp_admin_course_detail_render() {
     $course_title = get_the_title($course_id);
     $cohorts_url = admin_url('edit.php?post_type=tfp_cohort');
     $page_number = isset($_GET['week_page']) ? max(1, absint($_GET['week_page'])) : 1;
-    $per_page = 12;
+    $per_page = 6;
     $total_rows = count($data['week_rows']);
     $total_pages = max(1, (int) ceil($total_rows / $per_page));
     $page_number = min($page_number, $total_pages);
@@ -284,9 +284,17 @@ function tfp_admin_course_detail_render() {
                     </div>
                     <div class="tfp-admin-course-weeks-footer">
                         <span><?php echo esc_html(sprintf(__('%1$s - %2$s of %3$s weeks', 'tfp-dashboard'), number_format_i18n($first_item), number_format_i18n($last_item), number_format_i18n($total_rows))); ?></span>
-                        <div>
-                            <?php if ($page_number > 1) : ?><a href="<?php echo esc_url(add_query_arg('week_page', $page_number - 1, tfp_admin_course_detail_url($course_id)) . '#tfp-course-weeks'); ?>"><?php esc_html_e('‹ Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
-                            <?php if ($page_number < $total_pages) : ?><a class="is-next" href="<?php echo esc_url(add_query_arg('week_page', $page_number + 1, tfp_admin_course_detail_url($course_id)) . '#tfp-course-weeks'); ?>"><?php esc_html_e('Next ›', 'tfp-dashboard'); ?></a><?php endif; ?>
+                        <div class="tfp-admin-course-pagination-actions">
+                            <?php if ($page_number > 1) : ?>
+                                <a class="is-previous" href="<?php echo esc_url(add_query_arg('week_page', $page_number - 1, tfp_admin_course_detail_url($course_id)) . '#tfp-course-weeks'); ?>"><span aria-hidden="true">‹</span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></a>
+                            <?php else : ?>
+                                <span class="is-previous is-disabled"><span aria-hidden="true">‹</span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span>
+                            <?php endif; ?>
+                            <?php if ($page_number < $total_pages) : ?>
+                                <a class="is-next" href="<?php echo esc_url(add_query_arg('week_page', $page_number + 1, tfp_admin_course_detail_url($course_id)) . '#tfp-course-weeks'); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span></a>
+                            <?php else : ?>
+                                <span class="is-next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span></span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </section>
