@@ -2,10 +2,88 @@
    Shared layout, typography, spacing, panel, table, and pagination rules are
    inherited from admin-dashboard.css through the matching Overview classes. */
 
-/* The Overview breadcrumb has no second search control; the Activity search
-   remains available in the matching filter row below. */
+/* Header search: match the Figma breadcrumb control and keep it functional. */
+.tfp-admin-activity-app .tfp-admin-breadcrumb {
+    gap: 12px;
+}
+
 .tfp-admin-activity-app .tfp-admin-activity-top-search {
-    display: none !important;
+    display: flex !important;
+    flex: 0 0 235px;
+    width: 235px;
+    height: 38px;
+    box-sizing: border-box;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: 9px;
+    margin: 0 0 0 auto;
+    padding: 0 10px;
+    border: 1px solid #252525;
+    border-radius: 0;
+    background: #fff;
+}
+
+.tfp-admin-activity-app .tfp-admin-activity-top-search input {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: #171717;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.tfp-admin-activity-app .tfp-admin-activity-top-search input::placeholder {
+    color: #171717;
+    opacity: 1;
+}
+
+.tfp-admin-activity-app .tfp-admin-activity-top-search button {
+    display: inline-flex;
+    flex: 0 0 19px;
+    width: 19px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    border: 0 !important;
+    background: transparent !important;
+    color: #171717 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.tfp-admin-activity-app .tfp-admin-activity-top-search button .dashicons {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+}
+
+@media (max-width: 700px) {
+    .tfp-admin-activity-app .tfp-admin-breadcrumb {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 48px;
+        row-gap: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .tfp-admin-activity-app .tfp-admin-activity-top-search {
+        flex: 1 1 100%;
+        width: 100%;
+        margin-left: 0;
+    }
 }
 
 /* Match Overview filter dimensions while keeping Activity's own field names. */
