@@ -60,7 +60,7 @@ function tfp_admin_course_detail_get_data($course_id) {
 
     foreach ($weeks as $index => $week) {
         $items = tfp_admin_course_detail_week_items($week->ID);
-        $modules_mapped += count($items);
+        $modules_mapped = count($weeks);
         $is_published = $week->post_status === 'publish';
         if (!$is_published || empty($items)) {
             $alerts++;
@@ -238,7 +238,7 @@ function tfp_admin_course_detail_render() {
                     <article class="tfp-admin-panel tfp-admin-course-summary">
                         <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Course Summary', 'tfp-dashboard'); ?></h2></div>
                         <dl>
-                            <div><dt><?php esc_html_e('Status', 'tfp-dashboard'); ?></dt><dd><span class="tfp-admin-course-pill is-published"><?php echo esc_html($data['status']); ?></span></dd></div>
+                            <div><dt><?php esc_html_e('Status', 'tfp-dashboard'); ?></dt><dd><span class="tfp-admin-course-pill <?php echo $data['course']->post_status === 'publish' ? 'is-published' : 'is-attention'; ?>"><?php echo esc_html($data['status']); ?></span></dd></div>
                             <div><dt><?php esc_html_e('Course Type', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['course_type']); ?></dd></div>
                             <div><dt><?php esc_html_e('Created', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['created']); ?></dd></div>
                             <div><dt><?php esc_html_e('Last Updated', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['updated']); ?></dd></div>
