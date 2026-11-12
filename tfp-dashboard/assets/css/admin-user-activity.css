@@ -672,3 +672,32 @@ body.tfp-admin-dashboard-view .tfp-admin-activity-app .tfp-admin-sidebar {
         font-size: 14px !important;
     }
 }
+
+
+/* Match the two desktop layout regions highlighted on User Overview:
+   same overall canvas width, sidebar width and remaining main-content width. */
+@media (min-width: 1200px) {
+    body.tfp-admin-dashboard-view .tfp-admin-app.tfp-admin-activity-app {
+        width: 90vw !important;
+        max-width: 90vw !important;
+        margin: 0 !important;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-app.tfp-admin-activity-app > .tfp-admin-sidebar {
+        flex: 0 0 clamp(180px, 11.1vw, 214px) !important;
+        width: clamp(180px, 11.1vw, 214px) !important;
+        min-width: clamp(180px, 11.1vw, 214px) !important;
+        max-width: clamp(180px, 11.1vw, 214px) !important;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-app.tfp-admin-activity-app > .tfp-admin-main {
+        flex: 1 1 0 !important;
+        width: calc(90vw - clamp(180px, 11.1vw, 214px)) !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+}
+@media (max-width: 1199px) {
+    body.tfp-admin-dashboard-view .tfp-admin-app.tfp-admin-activity-app {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
