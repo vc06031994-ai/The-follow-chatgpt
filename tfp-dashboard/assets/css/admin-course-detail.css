@@ -846,3 +846,49 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         min-width: 76px;
     }
 }
+
+
+/* Compact mobile Weeks table: reduce excess horizontal space between columns. */
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks-scroll {
+        scroll-padding-inline: 0;
+        scrollbar-width: thin;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks table {
+        width: 620px !important;
+        min-width: 620px !important;
+        table-layout: fixed;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+        padding: 6px 8px !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(1),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(1) { width: 11% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(2),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(2) { width: 27% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(3),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(3) { width: 27% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(4),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(4) { width: 16% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(5),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(5) { width: 19% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items {
+        gap: 3px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items span {
+        padding: 2px 5px;
+        font-size: 8px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-pill.is-strict {
+        min-height: 23px;
+        padding: 2px 8px;
+        font-size: 9px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-week-view {
+        min-width: 54px;
+        min-height: 27px;
+        padding: 4px 9px;
+        font-size: 11px;
+    }
+}
