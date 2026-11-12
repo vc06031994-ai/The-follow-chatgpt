@@ -330,3 +330,54 @@
         grid-template-columns: 50px minmax(0, 1fr) auto;
     }
 }
+/* Weeks table pagination — match supplied reference footer. */
+.tfp-admin-course-detail-app .tfp-admin-course-weeks-footer {
+    min-height: 48px;
+    padding: 6px 23px;
+    font-size: 14px;
+    line-height: 1.3;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions a,
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions span {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #42464a;
+    text-decoration: none;
+    font: 500 15px/1 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    white-space: nowrap;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions .is-previous {
+    padding: 0 4px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions .is-next {
+    min-width: 115px;
+    padding: 0 16px;
+    border-radius: 7px;
+    background: #006b73;
+    color: #fff;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions .is-disabled {
+    opacity: .45;
+    cursor: default;
+}
+@media (max-width: 560px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks-footer {
+        padding: 8px 12px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-pagination-actions {
+        width: 100%;
+        justify-content: flex-end;
+        gap: 16px;
+    }
+}
