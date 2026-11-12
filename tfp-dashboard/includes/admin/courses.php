@@ -122,7 +122,7 @@ function tfp_admin_courses_get_data() {
             'steps' => $steps,
             'completion' => '—',
             'date' => get_post_modified_time('M j, g:i A', false, $course->ID, true),
-            'url' => get_edit_post_link($course->ID, 'raw'),
+            'url' => function_exists('tfp_admin_course_detail_url') ? tfp_admin_course_detail_url($course->ID) : get_edit_post_link($course->ID, 'raw'),
         ];
     }
     usort($activity, static function ($a, $b) {
