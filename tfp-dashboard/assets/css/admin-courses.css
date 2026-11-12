@@ -509,3 +509,15 @@
         padding-right: 20px;
     }
 }
+/* Use the supplied Course Health PNG assets at their natural proportions. */
+.tfp-admin-courses-app .tfp-admin-courses-health-icon {
+    display: block;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    object-fit: contain;
+}
