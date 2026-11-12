@@ -275,3 +275,164 @@ body.tfp-admin-dashboard-view .tfp-admin-activity-app .tfp-admin-sidebar {
  .tfp-admin-activity-app .tfp-admin-activity-pagination{flex-wrap:wrap;gap:10px;padding:18px 8px}
  .tfp-admin-activity-app .tfp-admin-activity-pagination nav{gap:12px}
 }
+
+
+/* Screenshot-matched styling for Admin > Users > Activity. */
+body.tfp-admin-dashboard-view .tfp-admin-activity-app {
+  font-family: var(--tfp-dash-font, "Eudoxus Sans"), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important;
+  color: #171717;
+}
+body.tfp-admin-dashboard-view .tfp-admin-activity-app .tfp-admin-sidebar {
+  flex: 0 0 260px !important; width: 260px !important; min-width: 260px !important;
+}
+.tfp-admin-activity-app .tfp-admin-breadcrumb {
+  height: 52px !important; min-height: 52px !important;
+  padding: 0 50px !important; gap: 12px !important;
+  background: #ededed !important; font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+.tfp-admin-activity-app .tfp-admin-breadcrumb a { color: #00666e !important; }
+.tfp-admin-activity-app .tfp-admin-activity-top-search {
+  width: 202px !important; height: 33px !important;
+  border: 1px solid #899096 !important; border-radius: 0 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-top-search input {
+  font: 11px var(--tfp-dash-font, "Eudoxus Sans"), Arial, sans-serif !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-header {
+  height: 116px !important; min-height: 116px !important;
+  padding: 14px 50px 12px !important;
+  border-bottom: 1px solid #8a1515 !important; background: #fff !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-header h1 {
+  margin: 0 0 7px !important; color: #171717 !important;
+  font-size: 28px !important; line-height: 1.25 !important;
+  font-weight: 700 !important; letter-spacing: -.45px !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-header p {
+  margin: 0 !important; color: #242424 !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 12px !important; line-height: 1.4 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-content {
+  min-height: calc(100vh - 168px) !important;
+  padding: 30px 28px 34px 50px !important;
+  background: #fff !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-filters {
+  display: flex !important; align-items: center !important;
+  gap: 7px !important; margin: 0 0 13px !important;
+  flex-wrap: nowrap !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-filters label { margin: 0 !important; }
+.tfp-admin-activity-app .tfp-admin-activity-filters select,
+.tfp-admin-activity-app .tfp-admin-activity-inline-search {
+  height: 24px !important; min-height: 24px !important;
+  border: 1px solid #d8dadd !important; border-radius: 6px !important;
+  background: #fff !important; color: #171717 !important;
+  font-family: var(--tfp-dash-font, "Eudoxus Sans"), Arial, sans-serif !important;
+  font-size: 9px !important; line-height: 1.2 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-filters select {
+  width: 140px !important; min-width: 0 !important; padding: 0 8px !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-inline-search {
+  width: 205px !important; padding: 0 8px !important; gap: 6px !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-inline-search input {
+  font: 9px var(--tfp-dash-font, "Eudoxus Sans"), Arial, sans-serif !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-filter-submit {
+  height: 24px !important; min-width: 55px !important;
+  padding: 0 10px !important; border-radius: 5px !important;
+  background: #00666e !important; color: #fff !important;
+  font-size: 9px !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table-wrap {
+  width: 100% !important; min-height: 605px !important;
+  padding: 10px 5px 0 !important; margin: 0 !important;
+  border: 1px solid #d2d2d2 !important; border-radius: 9px !important;
+  background: #fff !important; box-shadow: none !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-card-title { display: none !important; }
+.tfp-admin-activity-app .tfp-admin-activity-table-scroll {
+  flex: 1 1 auto !important; width: 100% !important; overflow-x: auto !important;
+}
+.tfp-admin-activity-app table.tfp-admin-activity-table {
+  width: 100% !important; min-width: 0 !important;
+  table-layout: fixed !important; border-collapse: collapse !important;
+  border-spacing: 0 !important; background: #fff !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table th,
+.tfp-admin-activity-app .tfp-admin-activity-table td {
+  height: 27px !important; min-height: 27px !important;
+  padding: 4px 12px !important; border: 0 !important;
+  border-bottom: 1px solid #e8e9ea !important;
+  border-radius: 0 !important; text-align: left !important;
+  vertical-align: middle !important; overflow-wrap: anywhere !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table th {
+  height: 27px !important; background: #fafafa !important;
+  color: #151515 !important; font-size: 9px !important;
+  font-weight: 700 !important; line-height: 1.25 !important;
+  white-space: nowrap !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table td {
+  background: #fff !important; color: #171717 !important;
+  font-size: 8px !important; font-weight: 400 !important;
+  line-height: 1.25 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(2) strong {
+  display: block !important; color: #171717 !important;
+  font-size: 9px !important; font-weight: 700 !important; line-height: 1.25 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(1),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(1) { width: 14.5% !important; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(2),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(2) { width: 23% !important; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(3),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(3) { width: 14% !important; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(4),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(4) { width: 24% !important; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(5),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(5) { width: 10% !important; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(6),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(6) { width: 8.5% !important; }
+.tfp-admin-activity-app .tfp-admin-activity-view {
+  min-width: 45px !important; height: 18px !important;
+  padding: 0 9px !important; border-radius: 5px !important;
+  background: #00666e !important; color: #fff !important;
+  font-size: 9px !important; font-weight: 600 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-pagination {
+  padding: 24px 10px 8px !important; font-size: 10px !important;
+  color: #26364d !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-pagination nav { gap: 22px !important; }
+.tfp-admin-activity-app .tfp-admin-activity-pagination a { font-size: 10px !important; }
+.tfp-admin-activity-app .tfp-admin-activity-pagination a.next,
+.tfp-admin-activity-app .tfp-admin-activity-pagination .next {
+  min-width: 67px !important; padding: 6px 12px !important;
+  border-radius: 6px !important; background: #00666e !important;
+  color: #fff !important;
+}
+@media (max-width: 1100px) {
+  .tfp-admin-activity-app .tfp-admin-activity-content { padding: 26px 22px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-table { min-width: 760px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-filters { flex-wrap: wrap !important; }
+}
+@media (max-width: 767px) {
+  .tfp-admin-activity-app .tfp-admin-sidebar { flex-basis: 260px !important; width: 260px !important; min-width: 260px !important; }
+  .tfp-admin-activity-app .tfp-admin-breadcrumb { padding: 0 16px !important; height: 48px !important; min-height: 48px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-top-search { width: 112px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-header { height: auto !important; min-height: 105px !important; padding: 16px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-header h1 { font-size: 25px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-content { min-height: 0 !important; padding: 20px 12px 24px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-filters { flex-wrap: wrap !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-filters label { flex: 1 1 42% !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-filters select { width: 100% !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-inline-search { width: 100% !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-table-wrap { min-height: 500px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-table { min-width: 760px !important; }
+  .tfp-admin-activity-app .tfp-admin-activity-pagination { flex-wrap: wrap !important; gap: 10px !important; }
+}
