@@ -8,15 +8,28 @@ if (!defined('ABSPATH')) {
 }
 
 function tfp_admin_course_detail_url($course_id) {
-    return home_url('/admin-course/' . absint($course_id) . '/');
+    $course = get_post(absint($course_id));
+    if (!$course || $course->post_type !== 'sfwd-courses') {
+        return home_url('/admin-course/' . absint($course_id) . '/');
+    }
+
+    $slug = sanitize_title($course->post_title);
+    return home_url('/admin-course/' . $slug . '/');
 }
 
 function tfp_admin_course_detail_route_id() {
     $path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
-    if (preg_match('~(?:^|/)admin-course/(\d+)/?$~', $path, $matches)) {
-        return absint($matches[1]);
+    if (!preg_match('~(?:^|/)admin-course/([^/]+)/?$~', $path, $matches)) {
+        return 0;
     }
-    return 0;
+
+    $route = sanitize_title(rawurldecode($matches[1]));
+    if (ctype_digit($route)) {
+        return absint($route); // Preserve compatibility with previously shared numeric URLs.
+    }
+
+    $course = get_page_by_path($route, OBJECT, 'sfwd-courses');
+    return ($course instanceof WP_Post) ? (int) $course->ID : 0;
 }
 
 function tfp_admin_course_detail_week_items($lesson_id) {
