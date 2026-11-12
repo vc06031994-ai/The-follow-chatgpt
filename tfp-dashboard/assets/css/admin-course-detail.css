@@ -402,3 +402,41 @@
         padding: 15px 16px 30px;
     }
 }
+
+
+/* Shared Admin page heading standard — match the Users page reference. */
+body.tfp-admin-dashboard-view .tfp-admin-page-header {
+    min-height: 112px;
+    align-items: flex-end;
+    padding: 14px clamp(24px, 2.6vw, 42px) 16px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
+    margin: 0 0 8px;
+    color: #171717;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 40px;
+    line-height: 1.1;
+    font-weight: 750;
+    letter-spacing: -.6px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header p {
+    margin: 0;
+    color: #333;
+    font-family: var(--tfp-dash-font-alt, Georgia), serif;
+    font-size: 15px;
+    line-height: 1.45;
+}
+@media (max-width: 700px) {
+    body.tfp-admin-dashboard-view .tfp-admin-page-header {
+        min-height: 96px;
+        padding: 14px 16px 15px;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
+        font-size: clamp(28px, 7vw, 36px);
+        line-height: 1.1;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+}
