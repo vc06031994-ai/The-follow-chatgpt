@@ -113,7 +113,7 @@ function tfp_admin_courses_get_data() {
             'event' => $course->post_status === 'publish' ? __('Course updated', 'tfp-dashboard') : sprintf(__('Course %s', 'tfp-dashboard'), ucfirst($course->post_status)),
             'date' => get_post_modified_time('M j, g:i A', false, $course->ID, true),
             'timestamp' => get_post_modified_time('U', false, $course->ID, true),
-            'url' => get_edit_post_link($course->ID, 'raw'),
+            'url' => function_exists('tfp_admin_course_detail_url') ? tfp_admin_course_detail_url($course->ID) : get_edit_post_link($course->ID, 'raw'),
         ];
         $course_rows[$course->ID] = [
             'title' => get_the_title($course->ID),
