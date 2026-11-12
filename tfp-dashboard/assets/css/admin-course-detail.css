@@ -892,3 +892,60 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         font-size: 11px;
     }
 }
+
+
+/* Mobile: fit all Weeks columns into the card with balanced spacing. */
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks-scroll {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks table {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+        box-sizing: border-box;
+        padding: 6px 4px !important;
+        font-size: 8px !important;
+        white-space: nowrap !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(1),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(1) { width: 13% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(2),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(2) { width: 25% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(3),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(3) { width: 25% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(4),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(4) { width: 16% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(5),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(5) { width: 21% !important; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(2) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items {
+        min-width: 0;
+        gap: 2px;
+        flex-wrap: wrap !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items span {
+        max-width: 100%;
+        padding: 2px 4px;
+        font-size: 7px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-pill.is-strict {
+        min-height: 20px;
+        padding: 2px 5px;
+        font-size: 8px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-week-view {
+        min-width: 42px;
+        min-height: 24px;
+        padding: 3px 6px;
+        font-size: 9px;
+    }
+}
