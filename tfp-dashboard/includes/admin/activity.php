@@ -161,7 +161,44 @@ function tfp_admin_user_activity_query() {
     $rows_sql = "SELECT a.*, u.display_name, u.user_email FROM {$table} a INNER JOIN {$wpdb->users} u ON u.ID = a.user_id" . $condition . " ORDER BY a.created_at DESC, a.id DESC LIMIT %d OFFSET %d";
     $row_args = array_merge($args, [$per_page, $offset]);
     $rows = $wpdb->get_results($wpdb->prepare($rows_sql, $row_args));
-    return ['rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => max(1, (int) ceil($total / $per_page)), 'per_page' => $per_page];
+
+    // Show clearly-labelled preview rows only on a brand-new activity feed.
+    // Once the first real event is recorded, demo rows disappear permanently.
+    $has_real_activity = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table}") > 0;
+    $demo_preview = false;
+    if (!$has_real_activity && !$role && !$event && !$search && in_array($date, ['today', 'all'], true)) {
+        $demo_preview = true;
+        $now_gmt = current_time('mysql', true);
+        $samples = [
+            ['login', 'Logged in', 'Successful account sign-in', 'Student'],
+            ['homework', 'Homework submitted', 'Week 1 · Introduction assignment', 'Student'],
+            ['quiz', 'Quiz passed', 'Week 1 · Score: 92%', 'Student'],
+            ['test', 'Test failed', 'Week 2 · Score: 48%', 'Student'],
+            ['payment', 'Payment completed', 'Order #DEMO-1042 · Preview only', 'WooCommerce'],
+            ['course', 'Course completed', 'Financial Life Skills · Preview only', 'LearnDash'],
+        ];
+        foreach ($samples as $index => $sample) {
+            $rows[] = (object) [
+                'id' => 0,
+                'user_id' => 0,
+                'display_name' => 'Demo Student',
+                'event_type' => $sample[0],
+                'event_label' => $sample[1],
+                'context' => $sample[2],
+                'source' => 'Demo',
+                'created_at' => gmdate('Y-m-d H:i:s', time() - ($index * 3600)),
+                'is_demo' => true,
+            ];
+        }
+    }
+    return [
+        'rows' => $rows,
+        'total' => $demo_preview ? count($rows) : $total,
+        'page' => $page,
+        'pages' => $demo_preview ? 1 : max(1, (int) ceil($total / $per_page)),
+        'per_page' => $per_page,
+        'demo_preview' => $demo_preview,
+    ];
 }
 
 /** Render the activity page. */
@@ -200,11 +237,12 @@ function tfp_admin_user_activity_render() {
           </form>
           <section class="tfp-admin-activity-table-wrap">
             <div class="tfp-admin-activity-table-scroll"><table class="tfp-admin-activity-table"><thead><tr><th>Time</th><th>User</th><th>Event</th><th>Context</th><th>Source</th><th>Action</th></tr></thead><tbody>
-            <?php if ($data['rows']) : foreach ($data['rows'] as $row) : $user_obj = get_userdata($row->user_id); $roles = $user_obj ? array_map('translate_user_role', (array) $user_obj->roles) : []; ?>
-              <tr><td><time datetime="<?php echo esc_attr(mysql2date('c', get_date_from_gmt($row->created_at))); ?>"><?php echo esc_html(wp_date('M j, g:i A T', strtotime(get_date_from_gmt($row->created_at)))); ?></time></td><td><strong><?php echo esc_html($row->display_name); ?></strong></td><td><?php echo esc_html($row->event_label); ?></td><td><?php echo esc_html($row->context ?: '—'); ?></td><td><?php echo esc_html($row->source); ?></td><td><a class="tfp-admin-activity-view" href="<?php echo esc_url(add_query_arg(['user_id' => $row->user_id], tfp_admin_users_page_url())); ?>">View</a></td></tr>
+            <?php if (!empty($data['demo_preview'])) : ?><tr class="tfp-admin-activity-demo-notice"><td colspan="6"><?php esc_html_e('DEMO PREVIEW — Sample rows only. These are not real user activity and will disappear when the first real event is recorded.','tfp-dashboard'); ?></td></tr><?php endif; ?>
+            <?php if ($data['rows']) : foreach ($data['rows'] as $row) : $is_demo = !empty($row->is_demo); ?>
+              <tr<?php echo $is_demo ? ' class="tfp-admin-activity-demo-row"' : ''; ?>><td><time><?php echo esc_html($is_demo ? wp_date('M j, g:i A T', strtotime($row->created_at . ' UTC')) : wp_date('M j, g:i A T', strtotime(get_date_from_gmt($row->created_at)))); ?></time></td><td><strong><?php echo esc_html($row->display_name); ?></strong></td><td><?php echo esc_html($row->event_label); ?></td><td><?php echo esc_html($row->context ?: '—'); ?></td><td><?php echo esc_html($row->source); ?></td><td><?php if ($is_demo) : ?><span class="tfp-admin-activity-demo-label"><?php esc_html_e('Preview','tfp-dashboard'); ?></span><?php else : ?><a class="tfp-admin-activity-view" href="<?php echo esc_url(add_query_arg(['user_id' => $row->user_id], tfp_admin_users_page_url())); ?>">View</a><?php endif; ?></td></tr>
             <?php endforeach; else : ?><tr><td colspan="6" class="tfp-admin-activity-empty"><?php esc_html_e('No recorded user activity matches these filters. New events will appear here as users interact with the site.','tfp-dashboard'); ?></td></tr><?php endif; ?>
             </tbody></table></div>
-            <footer class="tfp-admin-activity-pagination"><span><?php echo esc_html(sprintf(__('%1$s–%2$s of %3$s events','tfp-dashboard'), $data['total'] ? (($data['page']-1)*$data['per_page']+1) : 0, min($data['page']*$data['per_page'],$data['total']), number_format_i18n($data['total']))); ?></span><nav aria-label="Activity pages"><?php if ($data['page'] > 1) : ?><a href="<?php echo esc_url(add_query_arg('activity_page',$data['page']-1,$base)); ?>">‹ <span>Previous</span></a><?php else : ?><span class="is-disabled">‹ Previous</span><?php endif; ?><?php if ($data['page'] < $data['pages']) : ?><a class="next" href="<?php echo esc_url(add_query_arg('activity_page',$data['page']+1,$base)); ?>">Next <span>›</span></a><?php else : ?><span class="next is-disabled">Next ›</span><?php endif; ?></nav></footer>
+            <footer class="tfp-admin-activity-pagination"><span><?php echo !empty($data['demo_preview']) ? esc_html__('6 sample rows · Demo preview only','tfp-dashboard') : esc_html(sprintf(__('%1$s–%2$s of %3$s events','tfp-dashboard'), $data['total'] ? (($data['page']-1)*$data['per_page']+1) : 0, min($data['page']*$data['per_page'],$data['total']), number_format_i18n($data['total']))); ?></span><nav aria-label="Activity pages"><?php if ($data['page'] > 1) : ?><a href="<?php echo esc_url(add_query_arg('activity_page',$data['page']-1,$base)); ?>">‹ <span>Previous</span></a><?php else : ?><span class="is-disabled">‹ Previous</span><?php endif; ?><?php if ($data['page'] < $data['pages']) : ?><a class="next" href="<?php echo esc_url(add_query_arg('activity_page',$data['page']+1,$base)); ?>">Next <span>›</span></a><?php else : ?><span class="next is-disabled">Next ›</span><?php endif; ?></nav></footer>
           </section>
         </main>
       </div>
