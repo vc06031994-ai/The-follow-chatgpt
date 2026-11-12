@@ -602,3 +602,122 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         padding: 7px 2px;
     }
 }
+
+
+/* Weeks table — match the supplied reference layout and proportions. */
+.tfp-admin-course-detail-app .tfp-admin-course-weeks {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #d0d0d0;
+    border-radius: 11px;
+    background: #fff;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks > .tfp-admin-panel-heading {
+    display: flex;
+    min-height: 50px;
+    align-items: center;
+    padding: 12px 19px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks > .tfp-admin-panel-heading h2 {
+    margin: 0;
+    font: 700 14px/1.35 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks table {
+    width: 100%;
+    min-width: 720px;
+    table-layout: fixed;
+    border-collapse: collapse !important;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+    height: 36px;
+    padding: 7px 18px !important;
+    vertical-align: middle;
+    border-bottom: 1px solid #e6e9eb !important;
+    white-space: nowrap;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th {
+    height: 36px;
+    background: #dfe3e4 !important;
+    color: #151515;
+    font: 700 12px/1.35 var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+    background: #fff !important;
+    color: #171717;
+    font: 400 11px/1.4 var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(1),
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(1) { width: 9%; }
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(2),
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(2) { width: 27%; }
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(3),
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(3) { width: 39%; }
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(4),
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(4) { width: 12%; text-align: center; }
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(5),
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(5) { width: 13%; text-align: center; }
+.tfp-admin-course-detail-app .tfp-admin-course-required-items {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 5px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-required-items span {
+    min-height: 18px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font: 500 9px/1.25 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pill.is-strict {
+    min-height: 26px;
+    padding: 3px 12px;
+    border-radius: 15px;
+    font: 500 10px/1.25 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-week-view {
+    min-width: 62px;
+    min-height: 30px;
+    padding: 5px 14px;
+    border-radius: 7px;
+    font: 600 12px/1.2 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks-footer {
+    min-height: 47px;
+    padding: 6px 18px;
+    border-top: 1px solid #e6e9eb;
+    font: 500 13px/1.35 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions {
+    gap: 22px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions a,
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions span {
+    min-height: 36px;
+    font: 500 14px/1 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions .is-next {
+    min-width: 92px;
+    border-radius: 7px;
+}
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks > .tfp-admin-panel-heading {
+        min-height: 46px;
+        padding: 10px 14px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+        padding: 7px 10px !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks-footer {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
