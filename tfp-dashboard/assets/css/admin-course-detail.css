@@ -381,3 +381,24 @@
         gap: 16px;
     }
 }
+/* Match Course Detail title, description and content spacing to Admin Courses page. */
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header {
+    min-height: 84px;
+    padding-top: 12px;
+    padding-bottom: 13px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header h1 {
+    font-size: clamp(27px, 2.15vw, 36px);
+    margin-bottom: 5px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header p {
+    font-size: 13px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-content {
+    padding: 15px clamp(24px, 2.6vw, 42px) 42px;
+}
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-content {
+        padding: 15px 16px 30px;
+    }
+}
