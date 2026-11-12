@@ -283,7 +283,7 @@ function tfp_admin_courses_render() {
                     <article class="tfp-admin-courses-stat"><small><?php esc_html_e('Total Courses', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['total'])); ?></strong><p><?php esc_html_e('Templates in the system', 'tfp-dashboard'); ?></p></article>
                     <article class="tfp-admin-courses-stat"><small><?php esc_html_e('Published', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['published'])); ?></strong><p><?php esc_html_e('Available to learners', 'tfp-dashboard'); ?></p></article>
                     <article class="tfp-admin-courses-stat"><small><?php esc_html_e('Draft / Paused', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['draft'])); ?></strong><p><?php esc_html_e('Not currently active', 'tfp-dashboard'); ?></p></article>
-                    <article class="tfp-admin-courses-stat"><small><?php esc_html_e('Course Alerts', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['alerts'])); ?></strong><p><?php esc_html_e('Courses with no mapped content', 'tfp-dashboard'); ?></p></article>
+                    <article class="tfp-admin-courses-stat"><small><?php esc_html_e('Course Alerts', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['alerts'])); ?></strong><p><?php esc_html_e('Needs Attention', 'tfp-dashboard'); ?></p></article>
                 </section>
 
                 <section class="tfp-admin-courses-panels">
