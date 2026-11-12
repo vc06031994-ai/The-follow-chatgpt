@@ -236,6 +236,7 @@ function tfp_admin_user_activity_render() {
             <button type="submit" class="tfp-admin-filter-submit tfp-admin-activity-filter-submit">Apply</button>
           </form>
           <section class="tfp-admin-panel tfp-admin-overview-table-panel tfp-admin-activity-table-wrap">
+            <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('User Activity', 'tfp-dashboard'); ?></h2></div>
             <div class="tfp-admin-overview-table-wrap tfp-admin-activity-table-scroll"><table class="tfp-admin-overview-table tfp-admin-activity-table"><thead><tr><th>Time</th><th>User</th><th>Event</th><th>Context</th><th>Source</th><th>Action</th></tr></thead><tbody>
             <?php if (!empty($data['demo_preview'])) : ?><tr class="tfp-admin-activity-demo-notice"><td colspan="6"><?php esc_html_e('DEMO PREVIEW — Sample rows only. These are not real user activity and will disappear when the first real event is recorded.','tfp-dashboard'); ?></td></tr><?php endif; ?>
             <?php if ($data['rows']) : foreach ($data['rows'] as $row) : $is_demo = !empty($row->is_demo); ?>
