@@ -156,7 +156,7 @@ function tfp_admin_users_nav_items() {
     return [
         ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url],
         ['slug' => 'users', 'label' => __('Users', 'tfp-dashboard'), 'url' => tfp_admin_users_home_url(), 'active' => true],
-        ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-courses')],
+        ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_courses_page_url') ? tfp_admin_courses_page_url() : home_url('/admin-courses/')],
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-lessons')],
         ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_cohort')],
         ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => admin_url('users.php?role=facilitator')],
