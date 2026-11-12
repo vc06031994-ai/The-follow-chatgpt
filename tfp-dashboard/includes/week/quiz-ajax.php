@@ -129,6 +129,9 @@ add_action('wp_ajax_tfp_week_submit_quiz', function () {
     // Any submitted quiz completes the gated `quiz` step so the Test tab
     // unlocks whether the student passed or failed.
     tfp_ld_mark_step_complete($user_id, $lesson_id, 'quiz');
+    if (function_exists('tfp_user_activity_log')) {
+        tfp_user_activity_log($user_id, 'quiz', !empty($grade['passed']) ? 'Quiz passed' : 'Quiz failed', get_the_title($lesson_id) . ' · Score: ' . (float) ($grade['score'] ?? 0) . '%', 'Student', $lesson_id);
+    }
 
     wp_send_json([
         'success'         => true,

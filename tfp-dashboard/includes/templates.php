@@ -16,6 +16,10 @@ if (!defined('ABSPATH'))
 function tfp_dashboard_template_map()
 {
     return [
+        'tfp-dashboard-admin-home' => [
+            'label' => __('TFP Admin Dashboard — Home', 'tfp-dashboard'),
+            'file' => 'templates/template-admin-home.php',
+        ],
         'tfp-dashboard-home' => [
             'label' => __('TFP Dashboard — Home', 'tfp-dashboard'),
             'file' => 'templates/template-home.php',
@@ -994,3 +998,45 @@ function tfp_dashboard_require_login()
     }
 }
 
+
+
+/**
+ * Keep the Admin Dashboard template authoritative even when a theme or
+ * page-builder plugin filters template_include later in the request.
+ */
+add_filter('template_include', function ($template) {
+    if (!is_page()) {
+        return $template;
+    }
+
+    $assigned_template = get_page_template_slug(get_queried_object_id());
+    if ($assigned_template !== 'tfp-dashboard-admin-home') {
+        return $template;
+    }
+
+    $admin_template = TFP_DASH_PATH . 'templates/template-admin-home.php';
+    return is_readable($admin_template) ? $admin_template : $template;
+}, 99);
+
+
+/**
+ * Directly load the selected Admin Dashboard template before the theme's
+ * template loader runs. This prevents Elementor/theme template overrides
+ * from returning an empty page for this custom dashboard.
+ */
+add_action('template_redirect', function () {
+    if (!is_page()) {
+        return;
+    }
+
+    $page_id = get_queried_object_id();
+    if (!$page_id || get_page_template_slug($page_id) !== 'tfp-dashboard-admin-home') {
+        return;
+    }
+
+    $admin_template = TFP_DASH_PATH . 'templates/template-admin-home.php';
+    if (is_readable($admin_template)) {
+        include $admin_template;
+        exit;
+    }
+}, 2);

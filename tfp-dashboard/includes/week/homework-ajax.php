@@ -99,6 +99,9 @@ add_action('wp_ajax_tfp_week_submit_homework', function () {
     }
 
     tfp_ld_mark_step_complete($user_id, $lesson_id, 'homework');
+    if (function_exists('tfp_user_activity_log')) {
+        tfp_user_activity_log($user_id, 'homework', 'Homework submitted', get_the_title($lesson_id), 'Student', $lesson_id);
+    }
 
     wp_send_json([
         'success' => true,
