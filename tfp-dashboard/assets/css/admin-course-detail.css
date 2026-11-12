@@ -537,3 +537,68 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         line-height: 1.45;
     }
 }
+
+
+/* Course Summary and User System Health — spacing matched to supplied reference. */
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels {
+    column-gap: 16px;
+    row-gap: 16px;
+    margin-bottom: 14px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels > .tfp-admin-panel {
+    min-width: 0;
+    border-radius: 9px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels .tfp-admin-panel-heading {
+    min-height: 52px;
+    padding: 15px 22px 12px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dl {
+    padding: 0 14px 12px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dl > div {
+    min-height: 36px;
+    padding: 8px 4px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-list {
+    padding: 0 16px 12px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-row {
+    min-height: 39px;
+    padding: 8px 2px;
+    gap: 10px;
+    grid-template-columns: 82px minmax(0, 1fr) auto;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dt,
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-row strong {
+    line-height: 1.4;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dd,
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-row > span {
+    line-height: 1.45;
+}
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-panels {
+        gap: 12px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-panels .tfp-admin-panel-heading {
+        min-height: 46px;
+        padding: 13px 15px 10px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-summary dl {
+        padding: 0 12px 10px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-summary dl > div {
+        min-height: 34px;
+        padding: 7px 3px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-week-health-list {
+        padding: 0 12px 10px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-week-health-row {
+        min-height: 38px;
+        grid-template-columns: 64px minmax(0, 1fr) auto;
+        gap: 7px;
+        padding: 7px 2px;
+    }
+}
