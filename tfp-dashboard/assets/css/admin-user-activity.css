@@ -100,3 +100,95 @@
     font-size: 11px;
     font-weight: 700;
 }
+
+
+/* Match the shared Admin Users / Overview table system and page canvas. */
+.tfp-admin-activity-app .tfp-admin-activity-content {
+    background: #ededed !important;
+    min-height: calc(100vh - 163px);
+}
+.tfp-admin-activity-app .tfp-admin-activity-table-wrap {
+    background: #ffffff !important;
+    border: 1px solid #d0d0d0 !important;
+    border-radius: 11px !important;
+    box-shadow: none !important;
+    padding: 15px 5px 0 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.tfp-admin-activity-app table.tfp-admin-activity-table {
+    width: 100% !important;
+    min-width: 900px;
+    margin: 0 !important;
+    border: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    table-layout: auto !important;
+    background: #ffffff !important;
+    text-align: left;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table th,
+.tfp-admin-activity-app .tfp-admin-activity-table td {
+    height: 37px !important;
+    padding: 6px 20px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #e6e7e8 !important;
+    border-radius: 0 !important;
+    color: #171717 !important;
+    text-align: left !important;
+    vertical-align: middle !important;
+    white-space: normal;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table th {
+    height: 37px !important;
+    background: #fcfcfc !important;
+    color: #151411 !important;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    white-space: nowrap;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table td {
+    background: #ffffff !important;
+    color: var(--tfp-dash-text, #151411) !important;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(2) strong {
+    display: block;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    color: #151411 !important;
+}
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(1),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(1) { width: 14%; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(2),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(2) { width: 24%; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(3),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(3) { width: 15%; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(4),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(4) { width: 24%; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(5),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(5) { width: 11%; }
+.tfp-admin-activity-app .tfp-admin-activity-table th:nth-child(6),
+.tfp-admin-activity-app .tfp-admin-activity-table td:nth-child(6) { width: 12%; }
+@media (max-width: 767px) {
+    .tfp-admin-activity-app .tfp-admin-activity-content {
+        background: #ededed !important;
+        padding: 18px 12px !important;
+    }
+    .tfp-admin-activity-app .tfp-admin-activity-table-wrap {
+        padding: 10px 5px 0 !important;
+    }
+}
