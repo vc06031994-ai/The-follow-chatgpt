@@ -781,3 +781,68 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         flex: 0 0 auto;
     }
 }
+
+
+/* Mobile Weeks table: keep the page within the viewport and scroll the table itself. */
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks {
+        min-width: 0;
+        max-width: 100%;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks {
+        overflow: hidden;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks-scroll {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks table {
+        width: 760px !important;
+        min-width: 760px !important;
+        table-layout: fixed;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+        box-sizing: border-box;
+        white-space: nowrap !important;
+        padding: 7px 10px !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(2) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items {
+        display: flex;
+        min-width: 0;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        gap: 4px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items span {
+        flex: 0 0 auto;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks-footer {
+        display: flex;
+        min-height: 48px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 12px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-pagination-actions {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 10px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-pagination-actions .is-next {
+        min-width: 76px;
+    }
+}
