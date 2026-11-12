@@ -250,7 +250,7 @@ function tfp_admin_course_detail_render() {
                             <h2><?php esc_html_e('Course Plan', 'tfp-dashboard'); ?></h2>
                             <div class="tfp-admin-course-plan-actions">
                                 <a href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>" class="tfp-admin-course-plan-action"><span aria-hidden="true">⇧</span><?php esc_html_e('Import', 'tfp-dashboard'); ?></a>
-                                <a href="<?php echo esc_url(add_query_arg(['tfp_course_plan_export' => $course_id, '_wpnonce' => wp_create_nonce('tfp_course_plan_export_' . $course_id)], home_url('/'))); ?>" class="tfp-admin-course-plan-action"><span aria-hidden="true">⇩</span><?php esc_html_e('Export', 'tfp-dashboard'); ?></a>
+                                <a href="<?php echo esc_url(add_query_arg(['action' => 'tfp_course_plan_export', 'course_id' => $course_id, '_wpnonce' => wp_create_nonce('tfp_course_plan_export_' . $course_id)], admin_url('admin-post.php'))); ?>" class="tfp-admin-course-plan-action"><span aria-hidden="true">⇩</span><?php esc_html_e('Export', 'tfp-dashboard'); ?></a>
                                 <a href="#tfp-course-plan-sync-log" class="tfp-admin-course-plan-sync"><span aria-hidden="true">···</span><?php esc_html_e('Sync Log', 'tfp-dashboard'); ?></a>
                             </div>
                         </div>
@@ -397,3 +397,48 @@ add_action('template_redirect', function () {
         exit;
     }
 }, 2);
+
+
+/**
+ * Export the mapped course plan as CSV.
+ */
+function tfp_admin_course_plan_export() {
+    if (!is_user_logged_in() || (!current_user_can('manage_options') && !current_user_can('administrator'))) {
+        wp_die(esc_html__('You do not have permission to export this course plan.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+    $course_id = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
+    check_admin_referer('tfp_course_plan_export_' . $course_id);
+    $data = tfp_admin_course_detail_get_data($course_id);
+    if (!$data) {
+        wp_die(esc_html__('The requested course could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+    nocache_headers();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="course-plan-' . $course_id . '.csv"');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, ['Week', 'Module Name', 'Gate Status', 'Exercise ID', 'Content Summary', 'Attention']);
+    foreach ($data['week_rows'] as $row) {
+        $lesson_id = (int) $row['id'];
+        $video_count = get_post_meta($lesson_id, 'tfp_week_video_url', true) ? 1 : 0;
+        $lesson_post = get_post($lesson_id);
+        $reading_count = ($lesson_post && (trim(wp_strip_all_tags($lesson_post->post_content)) !== '' || trim((string) $lesson_post->post_excerpt) !== '')) ? 1 : 0;
+        $quiz_questions = function_exists('tfp_week_get_quiz_questions') ? (array) tfp_week_get_quiz_questions($lesson_id, false) : [];
+        $test_questions = function_exists('tfp_week_get_test_questions') ? (array) tfp_week_get_test_questions($lesson_id, false) : [];
+        $question_count = count($quiz_questions) + count($test_questions);
+        $exercise_id = '';
+        foreach (['tfp_week_exercise_id', '_tfp_week_exercise_id', 'exercise_id'] as $exercise_key) {
+            $exercise_id = trim((string) get_post_meta($lesson_id, $exercise_key, true));
+            if ($exercise_id !== '') break;
+        }
+        $summary = [];
+        if ($video_count) $summary[] = $video_count . ' Video';
+        if ($reading_count) $summary[] = $reading_count . ' Reading';
+        if ($question_count) $summary[] = $question_count . ' Question';
+        if (!$summary) $summary[] = 'No mapped content';
+        $attention = ($row['status'] !== 'Published' || empty($row['items'])) ? 'Attention' : 'Good';
+        fputcsv($output, ['Week ' . $row['number'], $row['title'], 'Strict', $exercise_id, implode(' | ', $summary), $attention]);
+    }
+    fclose($output);
+    exit;
+}
+add_action('admin_post_tfp_course_plan_export', 'tfp_admin_course_plan_export');
