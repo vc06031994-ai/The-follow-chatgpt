@@ -42,3 +42,22 @@
 .tfp-admin-activity-pagination .is-disabled{color:#a0a0a0}
 @media(max-width:1100px){.tfp-admin-activity-content{padding:24px}.tfp-admin-activity-table{min-width:850px}}
 @media(max-width:767px){.tfp-admin-activity-app .tfp-admin-breadcrumb{padding:0 18px;gap:8px}.tfp-admin-activity-top-search{width:120px}.tfp-admin-activity-header{padding:18px}.tfp-admin-activity-header h1{font-size:30px}.tfp-admin-activity-content{padding:18px 12px}.tfp-admin-activity-filters>*{flex:1 1 45%}.tfp-admin-activity-filters select{width:100%;min-width:0!important}.tfp-admin-activity-inline-search{width:auto}.tfp-admin-activity-filter-submit{flex:0 0 auto}.tfp-admin-activity-table-wrap{min-height:500px}.tfp-admin-activity-pagination{padding:18px 8px;gap:10px;flex-wrap:wrap}.tfp-admin-activity-pagination nav{gap:12px}}
+
+
+/* Keep the Activity filter button on the project's teal brand color. */
+.tfp-admin-activity-app .tfp-admin-activity-filters .tfp-admin-activity-filter-submit,
+.tfp-admin-activity-app .tfp-admin-activity-filters button[type="submit"] {
+    background: #00666e !important;
+    border: 1px solid #00666e !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    outline: none;
+}
+.tfp-admin-activity-app .tfp-admin-activity-filters .tfp-admin-activity-filter-submit:hover,
+.tfp-admin-activity-app .tfp-admin-activity-filters button[type="submit"]:hover,
+.tfp-admin-activity-app .tfp-admin-activity-filters .tfp-admin-activity-filter-submit:focus,
+.tfp-admin-activity-app .tfp-admin-activity-filters button[type="submit"]:focus {
+    background: #004f55 !important;
+    border-color: #004f55 !important;
+    color: #ffffff !important;
+}
