@@ -62,11 +62,12 @@
     cursor: pointer;
 }
 
-.tfp-admin-activity-app .tfp-admin-activity-top-search button .dashicons {
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    line-height: 18px;
+.tfp-admin-activity-app .tfp-activity-search-icon {
+    display: block;
+    flex: 0 0 14px;
+    width: 14px;
+    height: 14px;
+    color: #171717;
 }
 
 @media (max-width: 700px) {
@@ -123,10 +124,11 @@
     border-radius: 7px;
     background: #fff;
 }
-.tfp-admin-activity-app .tfp-admin-overview-search .dashicons {
-    flex: 0 0 auto;
+.tfp-admin-activity-app .tfp-admin-overview-search .tfp-activity-search-icon {
+    flex: 0 0 14px;
+    width: 14px;
+    height: 14px;
     color: #151411;
-    font-size: 16px;
 }
 .tfp-admin-activity-app .tfp-admin-overview-search input {
     width: 100%;
