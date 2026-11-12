@@ -440,3 +440,100 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         line-height: 1.45;
     }
 }
+
+/* Course Detail typography — match Admin Courses overview scale. */
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header h1 {
+    font-size: clamp(28px, 2.3vw, 40px);
+    line-height: 1.15;
+    font-weight: 750;
+    letter-spacing: -.6px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header p {
+    font-size: clamp(13px, .9vw, 15px);
+    line-height: 1.45;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-view-cohorts,
+.tfp-admin-course-detail-app .tfp-admin-course-tabs a {
+    font-size: 12px;
+    line-height: 1.3;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-stats small {
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-stats strong {
+    font-size: clamp(20px, 1.5vw, 24px);
+    line-height: 1.15;
+    font-weight: 800;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-stats p {
+    font-size: 12px;
+    line-height: 1.35;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels .tfp-admin-panel-heading h2,
+.tfp-admin-course-detail-app .tfp-admin-course-weeks .tfp-admin-panel-heading h2 {
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 700;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels .tfp-admin-panel-heading a {
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dt,
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-row strong {
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dd,
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-row > span {
+    font-size: 10px;
+    line-height: 1.35;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pill {
+    font-size: 10px;
+    line-height: 1.2;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-no-weeks {
+    font-size: 11px;
+    line-height: 1.4;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th {
+    font-size: 13px !important;
+    line-height: 130% !important;
+    font-weight: 700 !important;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+    font-size: 10px !important;
+    line-height: 140% !important;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-required-items span {
+    font-size: 9px;
+    line-height: 1.2;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-week-view {
+    font-size: 9px;
+    line-height: 1.3;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks-footer {
+    font-size: 14px;
+    line-height: 1.3;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions a,
+.tfp-admin-course-detail-app .tfp-admin-course-pagination-actions span {
+    font-size: 15px;
+    line-height: 1;
+}
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-header h1 {
+        font-size: clamp(28px, 7vw, 36px);
+        line-height: 1.1;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-header p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+}
