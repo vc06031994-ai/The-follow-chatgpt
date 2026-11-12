@@ -721,3 +721,22 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         font-size: 12px;
     }
 }
+
+
+/* Keep every View action on one consistent horizontal line at the right edge. */
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th:last-child,
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td:last-child {
+    text-align: right !important;
+    padding-right: 20px !important;
+    white-space: nowrap;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td:last-child .tfp-admin-course-week-view {
+    display: inline-flex;
+    float: none;
+    vertical-align: middle;
+    white-space: nowrap;
+    margin: 0;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th:last-child {
+    padding-right: 34px !important;
+}
