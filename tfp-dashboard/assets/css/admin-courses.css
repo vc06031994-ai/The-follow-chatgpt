@@ -72,18 +72,23 @@
 }
 .tfp-admin-courses-search {
     display: flex;
+    flex: 0 0 190px;
     align-items: center;
-    gap: 7px;
-    width: 160px;
+    gap: 8px;
+    width: 190px;
+    padding: 0 10px;
+    overflow: hidden;
 }
-.tfp-admin-courses-search .dashicons {
-    flex: 0 0 auto;
-    width: 15px;
-    height: 15px;
-    font-size: 15px;
+.tfp-admin-courses-search-icon {
+    display: block;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
     color: #171717;
 }
 .tfp-admin-courses-search input {
+    display: block;
+    flex: 1 1 auto;
     width: 100%;
     min-width: 0;
     height: 31px;
@@ -95,20 +100,11 @@
     background: transparent !important;
     color: #252525;
     font: 500 11px/1.2 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    text-overflow: clip;
 }
 .tfp-admin-courses-search input::placeholder {
     color: #252525;
     opacity: 1;
-}
-.tfp-admin-courses-filter-submit {
-    min-height: 35px;
-    padding: 0 12px;
-    border: 1px solid #d8d8d8;
-    border-radius: 7px;
-    background: #f5f5f5;
-    color: #252525;
-    font: 600 11px var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
-    cursor: pointer;
 }
 .tfp-admin-courses-stat-grid {
     display: grid;
@@ -380,6 +376,8 @@
     }
     .tfp-admin-courses-search {
         grid-column: 1 / -1;
+        width: 100%;
+        flex-basis: auto;
     }
     .tfp-admin-courses-filter-submit {
         grid-column: 1 / -1;
