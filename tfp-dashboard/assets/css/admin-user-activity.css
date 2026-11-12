@@ -701,3 +701,21 @@ body.tfp-admin-dashboard-view .tfp-admin-activity-app .tfp-admin-sidebar {
         max-width: 100% !important;
     }
 }
+
+
+/* User Overview reference: fixed 240px desktop sidebar width. */
+@media (min-width: 1200px) {
+    body.tfp-admin-dashboard-view .tfp-admin-app.tfp-admin-activity-app > .tfp-admin-sidebar,
+    body.tfp-admin-dashboard-view .tfp-admin-app.tfp-admin-activity-app .tfp-admin-sidebar {
+        flex: 0 0 240px !important;
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+        box-sizing: border-box !important;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-app.tfp-admin-activity-app > .tfp-admin-main {
+        flex: 1 1 calc(100% - 240px) !important;
+        width: calc(100% - 240px) !important;
+        min-width: 0 !important;
+    }
+}
