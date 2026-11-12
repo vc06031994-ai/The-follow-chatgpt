@@ -136,7 +136,7 @@ function tfp_admin_user_activity_query() {
     $args = [];
 
     if ($role !== '') {
-        $where[] = 'u.ID IN (SELECT user_id FROM ' . $wpdb->usermeta . ' WHERE meta_key = %s AND meta_value = %s)';
+        $where[] = 'u.ID IN (SELECT user_id FROM ' . $wpdb->usermeta . ' WHERE meta_key = %s AND meta_value LIKE %s)';
         $args[] = $wpdb->get_blog_prefix() . 'capabilities';
         $args[] = '%' . $wpdb->esc_like('"' . $role . '"') . '%';
     }
