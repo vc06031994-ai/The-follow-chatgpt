@@ -446,3 +446,65 @@
     line-height: 140%;
     font-weight: 700;
 }
+
+/* Recent Course Activity + Course Health spacing — aligned to the supplied Figma reference. */
+.tfp-admin-courses-app .tfp-admin-courses-panels {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 30px;
+    align-items: stretch;
+}
+.tfp-admin-courses-app .tfp-admin-courses-activity .tfp-admin-panel-heading {
+    padding: 16px 20px 10px;
+    min-height: 56px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-activity-list {
+    padding: 0 20px 18px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-activity-row {
+    min-height: 39px;
+    padding: 6px 0;
+    gap: 12px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-activity-row strong {
+    line-height: 1.4;
+}
+.tfp-admin-courses-app .tfp-admin-courses-activity-row small {
+    margin-top: 3px;
+    line-height: 1.35;
+}
+.tfp-admin-courses-app .tfp-admin-courses-health .tfp-admin-panel-heading {
+    padding: 16px 32px 10px;
+    min-height: 56px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-health-list {
+    padding: 0 24px 14px 32px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-health-row {
+    min-height: 73px;
+    padding: 10px 0;
+    grid-template-columns: 30px minmax(0, 1fr) auto 12px;
+    gap: 10px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-health-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-health-row small {
+    margin-top: 4px;
+    line-height: 1.4;
+}
+@media (max-width: 1050px) {
+    .tfp-admin-courses-app .tfp-admin-courses-panels {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+    .tfp-admin-courses-app .tfp-admin-courses-health .tfp-admin-panel-heading {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .tfp-admin-courses-app .tfp-admin-courses-health-list {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
