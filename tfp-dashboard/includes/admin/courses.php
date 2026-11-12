@@ -60,8 +60,8 @@ function tfp_admin_courses_get_data() {
 
     $counts = post_type_exists('sfwd-courses') ? wp_count_posts('sfwd-courses') : (object) [];
     $published = (int) ($counts->publish ?? 0);
-    $draft = (int) ($counts->draft ?? 0) + (int) ($counts->pending ?? 0) + (int) ($counts->private ?? 0);
-    $total = $published + $draft + (int) ($counts->future ?? 0) + (int) ($counts->trash ?? 0);
+    $draft = (int) ($counts->draft ?? 0) + (int) ($counts->pending ?? 0) + (int) ($counts->private ?? 0) + (int) ($counts->future ?? 0);
+    $total = $published + $draft;
 
     $query_args = [
         'post_type' => 'sfwd-courses',
