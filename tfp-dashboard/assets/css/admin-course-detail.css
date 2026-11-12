@@ -949,3 +949,42 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         font-size: 9px;
     }
 }
+
+
+/* Course Plan tab — same dashboard shell and typography scale. */
+.tfp-admin-course-detail-app .tfp-admin-course-header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tfp-admin-course-detail-app .tfp-admin-course-edit,
+.tfp-admin-course-detail-app .tfp-admin-course-plan-action{display:inline-flex;min-height:34px;align-items:center;justify-content:center;gap:7px;padding:0 12px;border:1px solid #006b73;border-radius:5px;background:#006b73;color:#fff!important;text-decoration:none!important;font:600 11px/1.2 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-course-detail-app .tfp-admin-course-edit:hover,
+.tfp-admin-course-detail-app .tfp-admin-course-plan-action:hover{background:#00535b}
+.tfp-admin-course-detail-app .tfp-admin-course-plan{width:100%;overflow:hidden;border:1px solid #d0d0d0;border-radius:11px;background:#fff;box-shadow:none}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-toolbar{display:flex;min-height:52px;align-items:center;justify-content:space-between;gap:14px;padding:10px 18px}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-toolbar h2{margin:0;color:#171717;font:700 14px/1.35 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-action{min-height:30px;padding:0 10px;font-size:10px}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-sync{display:inline-flex;min-height:30px;align-items:center;gap:6px;padding:0 8px;color:#222;text-decoration:none;font:500 10px/1.2 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tfp-admin-course-detail-app .tfp-admin-course-plan table{width:100%;min-width:850px;margin:0!important;border:0!important;border-collapse:collapse!important;border-spacing:0!important;table-layout:fixed}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th,
+.tfp-admin-course-detail-app .tfp-admin-course-plan td{height:36px;padding:7px 12px!important;border:0!important;border-bottom:1px solid #e6e9eb!important;color:#171717;text-align:left;vertical-align:middle;white-space:nowrap}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th{background:#dfe3e4!important;font:700 11px/1.35 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)!important}
+.tfp-admin-course-detail-app .tfp-admin-course-plan td{background:#fff!important;font:400 10px/1.4 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)!important}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th:nth-child(1),.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(1){width:8%}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th:nth-child(2),.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(2){width:19%}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th:nth-child(3),.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(3){width:12%;text-align:center}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th:nth-child(4),.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(4){width:11%}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th:nth-child(5),.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(5){width:25%}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th:nth-child(6),.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(6){width:12%;text-align:center}
+.tfp-admin-course-detail-app .tfp-admin-course-plan th:nth-child(7),.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(7){width:13%;text-align:center}
+.tfp-admin-course-detail-app .tfp-admin-course-plan td:nth-child(2){overflow:hidden;text-overflow:ellipsis}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-attention{display:inline-flex;min-height:19px;align-items:center;justify-content:center;padding:2px 9px;border:1px solid #00818a;border-radius:12px;background:#eaf8f8;color:#00656d;font:500 9px/1.2 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-attention.is-attention{border-color:#d59a28;background:#fff5d9;color:#8b6416}
+.tfp-admin-course-detail-app .tfp-admin-course-plan .tfp-admin-course-week-view{min-width:54px;min-height:25px;font-size:10px}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-sync-note{padding:8px 18px;border-top:1px solid #e6e9eb;color:#777;font:400 9px/1.4 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+@media(max-width:700px){
+ .tfp-admin-course-detail-app .tfp-admin-course-header-actions{width:100%}
+ .tfp-admin-course-detail-app .tfp-admin-course-plan-toolbar{align-items:flex-start;flex-direction:column;padding:12px 14px}
+ .tfp-admin-course-detail-app .tfp-admin-course-plan-actions{width:100%;gap:6px}
+ .tfp-admin-course-detail-app .tfp-admin-course-plan-action{flex:0 0 auto}
+ .tfp-admin-course-detail-app .tfp-admin-course-plan table{min-width:850px}
+}
