@@ -385,3 +385,66 @@
         grid-column: 1 / -1;
     }
 }
+
+/* Typography alignment: match the Admin Dashboard title hierarchy. */
+.tfp-admin-courses-app .tfp-admin-courses-header h1 {
+    font-size: clamp(28px, 2.3vw, 40px);
+    line-height: 1.15;
+    font-weight: 750;
+    letter-spacing: -.6px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-header p {
+    font-size: clamp(13px, .9vw, 15px);
+    line-height: 1.45;
+}
+.tfp-admin-courses-app .tfp-admin-courses-stat small {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+.tfp-admin-courses-app .tfp-admin-courses-stat strong {
+    font-size: clamp(20px, 1.5vw, 24px);
+    line-height: 1.15;
+    font-weight: 800;
+}
+.tfp-admin-courses-app .tfp-admin-courses-stat p {
+    font-size: 12px;
+    line-height: 1.35;
+}
+.tfp-admin-courses-app .tfp-admin-courses-panels .tfp-admin-panel-heading h2,
+.tfp-admin-courses-app .tfp-admin-courses-overview .tfp-admin-panel-heading h2 {
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 700;
+}
+.tfp-admin-courses-app .tfp-admin-courses-panels .tfp-admin-panel-heading > a {
+    font-size: 12px;
+    font-weight: 600;
+}
+.tfp-admin-courses-app .tfp-admin-courses-activity-row strong,
+.tfp-admin-courses-app .tfp-admin-courses-health-row strong {
+    font-size: 12px;
+    font-weight: 700;
+}
+.tfp-admin-courses-app .tfp-admin-courses-activity-row small,
+.tfp-admin-courses-app .tfp-admin-courses-activity-row time,
+.tfp-admin-courses-app .tfp-admin-courses-health-row small {
+    font-size: 10px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-health-row em {
+    font-size: 10px;
+}
+.tfp-admin-courses-app .tfp-admin-courses-table th {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    line-height: 130% !important;
+}
+.tfp-admin-courses-app .tfp-admin-courses-table td {
+    font-size: 10px !important;
+    line-height: 140% !important;
+}
+.tfp-admin-courses-app .tfp-admin-courses-table td:first-child strong {
+    font-size: 14px;
+    line-height: 140%;
+    font-weight: 700;
+}
