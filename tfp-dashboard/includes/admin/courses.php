@@ -274,10 +274,7 @@ function tfp_admin_courses_render() {
                         <?php endforeach; ?>
                     </select>
                     <label class="tfp-admin-courses-search">
-                        <svg class="tfp-admin-courses-search-icon" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
-                            <circle cx="8.8" cy="8.8" r="5.8" stroke="currentColor" stroke-width="1.8"></circle>
-                            <path d="M13.2 13.2L17.2 17.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
-                        </svg>
+                        <img class="tfp-admin-courses-search-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Note_Search-2.png" alt="" aria-hidden="true" width="16" height="16">
                         <input type="search" name="course_search" value="<?php echo esc_attr($data['search']); ?>" placeholder="<?php esc_attr_e('Search Courses', 'tfp-dashboard'); ?>">
                     </label>
                 </form>
