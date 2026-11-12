@@ -819,6 +819,9 @@ function tfp_dashboard_is_dashboard_page()
     if ($last === 'calendar' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'calendar')) {
         return true;
     }
+    if ($last === 'admin-courses') {
+        return true;
+    }
 
     // The public site homepage is never a dashboard page. This also prevents
     // the guest -> homepage redirect from becoming a redirect loop when an
@@ -859,6 +862,9 @@ function tfp_dashboard_current_template_slug()
     }
     if ($last === 'calendar' || (isset($_GET['tfp_page']) && $_GET['tfp_page'] === 'calendar')) {
         return 'tfp-dashboard-calendar';
+    }
+    if ($last === 'admin-courses') {
+        return 'tfp-dashboard-admin-courses';
     }
 
     // Keep the real public homepage outside dashboard template resolution.
