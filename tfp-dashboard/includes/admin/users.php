@@ -416,7 +416,7 @@ function tfp_admin_users_home_render() {
 
                 <section class="tfp-admin-users-home-panels">
                     <article class="tfp-admin-panel tfp-admin-users-activity">
-                        <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Recent User Activity', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+                        <div class="tfp-admin-panel-heading"><h2><?php esc_html_e('Recent User Activity', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(tfp_admin_user_activity_url()); ?>"><?php esc_html_e('Activity', 'tfp-dashboard'); ?></a><a href="<?php echo esc_url($all_users_url); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
                         <div class="tfp-admin-activity-list">
                             <?php if ($activity_users) : foreach ($activity_users as $person) :
                                 $cohort_id = absint(get_user_meta($person->ID, 'tfp_cohort_choice', true));
