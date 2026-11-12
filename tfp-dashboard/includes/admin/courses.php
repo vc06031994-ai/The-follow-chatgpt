@@ -274,10 +274,12 @@ function tfp_admin_courses_render() {
                         <?php endforeach; ?>
                     </select>
                     <label class="tfp-admin-courses-search">
-                        <span class="dashicons dashicons-search" aria-hidden="true"></span>
+                        <svg class="tfp-admin-courses-search-icon" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
+                            <circle cx="8.8" cy="8.8" r="5.8" stroke="currentColor" stroke-width="1.8"></circle>
+                            <path d="M13.2 13.2L17.2 17.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                        </svg>
                         <input type="search" name="course_search" value="<?php echo esc_attr($data['search']); ?>" placeholder="<?php esc_attr_e('Search Courses', 'tfp-dashboard'); ?>">
                     </label>
-                    <button type="submit" class="tfp-admin-courses-filter-submit"><?php esc_html_e('Apply', 'tfp-dashboard'); ?></button>
                 </form>
 
                 <section class="tfp-admin-courses-stat-grid" aria-label="<?php esc_attr_e('Course metrics', 'tfp-dashboard'); ?>">
