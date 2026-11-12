@@ -740,3 +740,44 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
 .tfp-admin-course-detail-app .tfp-admin-course-weeks th:last-child {
     padding-right: 34px !important;
 }
+
+
+/* Laptop-width fix: prevent Module text and Required Items badges from overlapping. */
+@media (min-width: 701px) and (max-width: 1200px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks table {
+        min-width: 0;
+        width: 100%;
+        table-layout: fixed;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+        padding-right: 10px !important;
+        padding-left: 10px !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(1),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(1) { width: 10%; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(2),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(2) { width: 34%; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(3),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(3) { width: 29%; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(4),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(4) { width: 13%; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th:nth-child(5),
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(5) { width: 14%; }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td:nth-child(2) {
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        line-height: 1.4 !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items {
+        display: flex;
+        min-width: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-required-items span {
+        flex: 0 0 auto;
+    }
+}
