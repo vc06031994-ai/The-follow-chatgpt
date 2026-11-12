@@ -13,6 +13,9 @@ if (!current_user_can('manage_options') && !current_user_can('administrator')) {
 }
 
 show_admin_bar(false);
+if (!defined('DONOTCACHEPAGE')) {
+    define('DONOTCACHEPAGE', true);
+}
 status_header(200);
 nocache_headers();
 
