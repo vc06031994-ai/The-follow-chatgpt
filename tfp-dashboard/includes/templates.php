@@ -822,7 +822,7 @@ function tfp_dashboard_is_dashboard_page()
     if ($last === 'admin-courses') {
         return true;
     }
-    if (preg_match('~(?:^|/)admin-course/\\d+/?$~', $req_path)) {
+    if (preg_match('~(?:^|/)admin-course/[^/]+/?$~', $req_path)) {
         return true;
     }
 
@@ -869,7 +869,7 @@ function tfp_dashboard_current_template_slug()
     if ($last === 'admin-courses') {
         return 'tfp-dashboard-admin-courses';
     }
-    if (preg_match('~(?:^|/)admin-course/\\d+/?$~', $req_path)) {
+    if (preg_match('~(?:^|/)admin-course/[^/]+/?$~', $req_path)) {
         return 'tfp-dashboard-admin-course-detail';
     }
 
