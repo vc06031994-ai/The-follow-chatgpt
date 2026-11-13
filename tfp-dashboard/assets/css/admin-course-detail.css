@@ -1544,3 +1544,11 @@ body.tfp-course-identity-modal-open{overflow:hidden}
         max-height:calc(100vh - 24px);
     }
 }
+
+/* Keep dropdown hover and active option states on the dashboard teal. */
+.tfp-admin-course-detail-app .tfp-course-identity-field>select option:hover,
+.tfp-admin-course-detail-app .tfp-course-identity-field>select option:focus,
+.tfp-admin-course-detail-app .tfp-course-identity-field>select option:active{
+    background-color:#006B73 !important;
+    color:#fff !important;
+}
