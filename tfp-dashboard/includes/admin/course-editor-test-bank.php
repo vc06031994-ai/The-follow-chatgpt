@@ -64,6 +64,7 @@ if ('POST' === strtoupper($_SERVER['REQUEST_METHOD'] ?? '') && isset($_POST['tfp
                     'written_prompt' => $written_prompt,
                     'options' => $options,
                     'correct_answer' => $correct_answer,
+                    'written_correct_answer' => isset($_POST['test_written_correct_answer']) ? sanitize_text_field(wp_unslash($_POST['test_written_correct_answer'])) : '',
                     'correct_index' => $correct_index,
                     'explanation' => isset($_POST['test_explanation']) ? sanitize_textarea_field(wp_unslash($_POST['test_explanation'])) : '',
                     'written_explanation' => isset($_POST['test_written_explanation']) ? sanitize_textarea_field(wp_unslash($_POST['test_written_explanation'])) : '',
@@ -142,8 +143,9 @@ if ('POST' === strtoupper($_SERVER['REQUEST_METHOD'] ?? '') && isset($_POST['tfp
                 </div>
                 <div data-test-written <?php echo in_array($test_type, ['written','both'], true) ? '' : 'hidden'; ?>>
                     <label><?php echo $test_type === 'both' ? esc_html__('Written Response Question Prompt', 'tfp-dashboard') : esc_html__('Question / Prompt', 'tfp-dashboard'); ?><textarea name="test_written_prompt" rows="3"><?php echo esc_textarea($written_prompt_value !== '' ? $written_prompt_value : ($test_type === 'written' ? $test_prompt : '')); ?></textarea></label>
+                    <label data-test-written-correct <?php echo $test_type === 'both' ? 'hidden' : ''; ?>><?php esc_html_e('Correct Answer', 'tfp-dashboard'); ?><input type="text" name="test_written_correct_answer" value="<?php echo esc_attr((string) ($selected_test['written_correct_answer'] ?? ($test_type === 'written' ? ($selected_test['correct_answer'] ?? '') : ''))); ?>"></label>
                 </div>
-                <div data-test-explanation>
+                <div data-test-explanation <?php echo $test_type === 'both' ? 'hidden' : ''; ?>>
                     <label><?php echo $test_type === 'both' ? esc_html__('Answer Explanation (for feedback)', 'tfp-dashboard') : esc_html__('Explanation / Support', 'tfp-dashboard'); ?><textarea name="test_explanation" rows="2"><?php echo esc_textarea((string) ($selected_test['explanation'] ?? '')); ?></textarea></label>
                 </div>
                 <div data-test-written-explanation <?php echo $test_type === 'both' ? '' : 'hidden'; ?>>
@@ -169,12 +171,16 @@ document.addEventListener('DOMContentLoaded', function () {
     var mc = form.querySelector('[data-test-mc]');
     var written = form.querySelector('[data-test-written]');
     var writtenExplanation = form.querySelector('[data-test-written-explanation]');
+    var explanation = form.querySelector('[data-test-explanation]');
+    var writtenCorrect = form.querySelector('[data-test-written-correct]');
     function toggle() {
         var selected = form.querySelector('input[name="test_type"]:checked');
         var type = selected ? selected.value : 'multiple_choice';
         if (mc) mc.hidden = !(type === 'multiple_choice' || type === 'both');
         if (written) written.hidden = !(type === 'written' || type === 'both');
         if (writtenExplanation) writtenExplanation.hidden = type !== 'both';
+        if (explanation) explanation.hidden = type === 'both';
+        if (writtenCorrect) writtenCorrect.hidden = type === 'both';
         var mcLabel = mc ? mc.querySelector('label') : null;
         var writtenLabel = written ? written.querySelector('label') : null;
         if (mcLabel) mcLabel.firstChild.textContent = type === 'both' ? '<?php echo esc_js(__('Multiple Choice Question', 'tfp-dashboard')); ?>' : '<?php echo esc_js(__('Question / Prompt', 'tfp-dashboard')); ?>';
