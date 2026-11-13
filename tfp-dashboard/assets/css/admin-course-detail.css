@@ -1391,3 +1391,23 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
     grid-column:1;grid-row:3;margin:0;justify-content:flex-start
   }
 }
+
+
+/* Course Rules Edit actions — supplied pencil icon and requested typography. */
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.35;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit img {
+    display: block;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    object-fit: contain;
+}
