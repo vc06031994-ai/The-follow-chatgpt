@@ -1896,3 +1896,75 @@ body.tfp-course-learning-flow-open{overflow:hidden}
     box-shadow: none !important;
     outline: none !important;
 }
+
+
+/* Unified Course Rules drawers: identical panel shell and close-button states. */
+.tfp-admin-course-detail-app .tfp-course-identity-modal-panel,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-panel,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-panel,
+.tfp-admin-course-detail-app .tfp-course-completion-panel {
+    width: min(680px, 100%) !important;
+    height: min(800px, calc(100vh - 48px)) !important;
+    max-height: calc(100vh - 48px) !important;
+    padding: 28px 24px !important;
+    border: 1px solid #c7cccd !important;
+    border-radius: 7px !important;
+    background: #dfe3e4 !important;
+    box-shadow: 0 18px 48px rgba(0,0,0,.30), 0 4px 12px rgba(0,0,0,.12) !important;
+    box-sizing: border-box !important;
+}
+
+/* All drawer close buttons use one consistent, neutral appearance.
+   No pink/colored fill on hover, focus, keyboard focus or active. */
+.tfp-admin-course-detail-app .tfp-course-identity-close,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-close,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-close,
+.tfp-admin-course-detail-app .tfp-course-completion-close,
+.tfp-admin-course-detail-app .tfp-course-identity-close:hover,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-close:hover,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-close:hover,
+.tfp-admin-course-detail-app .tfp-course-completion-close:hover,
+.tfp-admin-course-detail-app .tfp-course-identity-close:focus,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-close:focus,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-close:focus,
+.tfp-admin-course-detail-app .tfp-course-completion-close:focus,
+.tfp-admin-course-detail-app .tfp-course-identity-close:focus-visible,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-close:focus-visible,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-close:focus-visible,
+.tfp-admin-course-detail-app .tfp-course-completion-close:focus-visible,
+.tfp-admin-course-detail-app .tfp-course-identity-close:active,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-close:active,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-close:active,
+.tfp-admin-course-detail-app .tfp-course-completion-close:active {
+    display: inline-flex !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #006B73 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+    transition: color .15s ease !important;
+}
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-course-identity-modal-panel,
+    .tfp-admin-course-detail-app .tfp-course-rules-modal-panel,
+    .tfp-admin-course-detail-app .tfp-course-learning-flow-panel,
+    .tfp-admin-course-detail-app .tfp-course-completion-panel {
+        width: 100% !important;
+        height: auto !important;
+        max-height: calc(100vh - 24px) !important;
+        padding: 20px 16px !important;
+    }
+}
