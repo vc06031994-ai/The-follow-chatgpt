@@ -1561,3 +1561,23 @@ body.tfp-course-identity-modal-open{overflow:hidden}
     padding:9px 13px;
     box-sizing:border-box;
 }
+
+/* Rules card Edit actions stay visually transparent in every interaction state. */
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit,
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit:hover,
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit:focus,
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit:focus-visible,
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit:active{
+    background:transparent !important;
+    background-color:transparent !important;
+    border-color:transparent !important;
+    box-shadow:none !important;
+    color:#171717 !important;
+    outline:none !important;
+    text-decoration:none !important;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit img,
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit svg{
+    background:transparent !important;
+    box-shadow:none !important;
+}
