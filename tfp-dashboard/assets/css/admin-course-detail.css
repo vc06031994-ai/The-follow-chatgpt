@@ -1325,3 +1325,30 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
   object-fit:contain;
   flex:0 0 14px;
 }
+
+/* Course Rules: align Save and Cancel with the main page heading. */
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header .tfp-admin-course-header-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex:0 0 auto;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header .tfp-admin-course-rules-save,
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header .tfp-admin-course-rules-cancel{
+  min-height:34px;
+  white-space:nowrap;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header .tfp-admin-course-rules-save-icon{
+  display:block;
+  width:14px;
+  height:14px;
+  object-fit:contain;
+  flex:0 0 14px;
+}
+@media(max-width:767px){
+  .tfp-admin-course-detail-app .tfp-admin-course-detail-header .tfp-admin-course-header-actions{
+    width:auto;
+    margin-left:auto;
+  }
+}
