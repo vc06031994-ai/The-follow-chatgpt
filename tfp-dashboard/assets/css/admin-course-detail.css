@@ -1061,3 +1061,29 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         min-width: 76px;
     }
 }
+
+
+/* Mobile Weeks table: keep the full table width and allow horizontal touch scrolling. */
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks-scroll {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x;
+        scrollbar-width: thin;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks table {
+        width: 760px !important;
+        min-width: 760px !important;
+        max-width: none !important;
+        table-layout: fixed !important;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+        white-space: nowrap !important;
+    }
+}
