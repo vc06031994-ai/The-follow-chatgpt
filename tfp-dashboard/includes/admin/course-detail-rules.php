@@ -285,6 +285,59 @@ $format_rule_value = static function ($value) {
             </div>
         </div>
     </div>
+
+    <div class="tfp-course-learning-flow-modal" id="tfp-course-learning-flow-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-course-learning-flow-title" hidden>
+        <div class="tfp-course-learning-flow-backdrop" data-learning-flow-close></div>
+        <div class="tfp-course-learning-flow-panel">
+            <div class="tfp-course-learning-flow-heading">
+                <div><h2 id="tfp-course-learning-flow-title"><?php esc_html_e('Edit Learning Flow', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Default step order within each module.', 'tfp-dashboard'); ?></p></div>
+                <button type="button" class="tfp-course-learning-flow-close" data-learning-flow-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button>
+            </div>
+            <?php
+            $learning_steps = ['Video', 'Reading', 'Homework', 'Quiz', 'Meeting/Review'];
+            $saved_step_order = isset($rules_settings['step_order']) && is_string($rules_settings['step_order']) && $rules_settings['step_order'] !== ''
+                ? array_values(array_filter(array_map('trim', explode(',', $rules_settings['step_order']))))
+                : $learning_steps;
+            $saved_step_order = array_values(array_intersect($saved_step_order, $learning_steps));
+            foreach ($learning_steps as $learning_step) {
+                if (!in_array($learning_step, $saved_step_order, true)) $saved_step_order[] = $learning_step;
+            }
+            ?>
+            <div class="tfp-course-learning-flow-section">
+                <strong><?php esc_html_e('Step Order', 'tfp-dashboard'); ?></strong>
+                <p class="tfp-course-learning-flow-hint"><?php esc_html_e('Drag and drop to change the default order.', 'tfp-dashboard'); ?></p>
+                <ol class="tfp-course-learning-flow-sortable" data-learning-flow-sortable>
+                    <?php foreach ($saved_step_order as $learning_step) : ?>
+                        <li class="tfp-course-learning-flow-step" draggable="true" data-step="<?php echo esc_attr($learning_step); ?>">
+                            <span class="tfp-course-learning-flow-grip" aria-hidden="true">⠿</span>
+                            <span><?php echo esc_html($learning_step); ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                </ol>
+                <input type="hidden" form="tfp-course-rules-form" name="tfp_course_rules[step_order]" value="<?php echo esc_attr(implode(',', $saved_step_order)); ?>" data-learning-flow-order>
+            </div>
+            <div class="tfp-course-learning-flow-section tfp-course-learning-flow-meeting">
+                <label for="tfp-course-meeting-step"><?php esc_html_e('Meeting Step', 'tfp-dashboard'); ?></label>
+                <select form="tfp-course-rules-form" id="tfp-course-meeting-step" name="tfp_course_rules[meeting_step]">
+                    <option value="Required" <?php selected(($rules_settings['meeting_step'] ?? 'Required'), 'Required'); ?>><?php esc_html_e('Required', 'tfp-dashboard'); ?></option>
+                    <option value="Optional" <?php selected(($rules_settings['meeting_step'] ?? ''), 'Optional'); ?>><?php esc_html_e('Optional', 'tfp-dashboard'); ?></option>
+                    <option value="Not used" <?php selected(($rules_settings['meeting_step'] ?? ''), 'Not used'); ?>><?php esc_html_e('Not used', 'tfp-dashboard'); ?></option>
+                </select>
+            </div>
+            <div class="tfp-course-learning-flow-toggle">
+                <strong><?php esc_html_e('Allow per-week override', 'tfp-dashboard'); ?></strong>
+                <label class="tfp-course-rules-switch">
+                    <input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[allow_per_week_override]" value="On" <?php checked(($rules_settings['allow_per_week_override'] ?? ''), 'On'); ?>>
+                    <span></span>
+                </label>
+                <small><?php echo (($rules_settings['allow_per_week_override'] ?? '') === 'On') ? esc_html__('On', 'tfp-dashboard') : esc_html__('Off', 'tfp-dashboard'); ?></small>
+            </div>
+            <div class="tfp-course-learning-flow-actions">
+                <button type="submit" form="tfp-course-rules-form" name="tfp_save_course_rules" value="1" class="tfp-admin-course-rules-save"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-admin-course-rules-cancel" data-learning-flow-close><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+            </div>
+        </div>
+    </div>
 </section>
 <script>
 (function () {
@@ -414,6 +467,79 @@ $format_rule_value = static function ($value) {
         sync();
         document.addEventListener('click', function (event) { if (!wrapper.contains(event.target)) close(); });
     });
+
+
+    var learningFlowModal = root.querySelector('#tfp-course-learning-flow-modal');
+    var learningFlowOpen = root.querySelector('.tfp-rules-learning_flow [data-rules-edit]');
+    if (learningFlowModal && learningFlowOpen) {
+        var closeLearningFlow = function () {
+            learningFlowModal.hidden = true;
+            document.body.classList.remove('tfp-course-learning-flow-open');
+        };
+        learningFlowOpen.addEventListener('click', function () {
+            learningFlowModal.hidden = false;
+            document.body.classList.add('tfp-course-learning-flow-open');
+            var firstStep = learningFlowModal.querySelector('.tfp-course-learning-flow-step');
+            if (firstStep) firstStep.focus();
+        });
+        learningFlowModal.querySelectorAll('[data-learning-flow-close]').forEach(function (el) {
+            el.addEventListener('click', closeLearningFlow);
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !learningFlowModal.hidden) closeLearningFlow();
+        });
+
+        var sortable = learningFlowModal.querySelector('[data-learning-flow-sortable]');
+        var orderField = learningFlowModal.querySelector('[data-learning-flow-order]');
+        if (sortable && orderField) {
+            var draggedStep = null;
+            var updateStepOrder = function () {
+                orderField.value = Array.prototype.map.call(sortable.querySelectorAll('[data-step]'), function (item) {
+                    return item.getAttribute('data-step');
+                }).join(',');
+            };
+            sortable.querySelectorAll('[data-step]').forEach(function (item) {
+                item.setAttribute('tabindex', '0');
+                item.addEventListener('dragstart', function (event) {
+                    draggedStep = item;
+                    item.classList.add('is-dragging');
+                    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+                });
+                item.addEventListener('dragend', function () {
+                    item.classList.remove('is-dragging');
+                    sortable.querySelectorAll('.is-drop-target').forEach(function (node) { node.classList.remove('is-drop-target'); });
+                    draggedStep = null;
+                    updateStepOrder();
+                });
+                item.addEventListener('dragover', function (event) {
+                    event.preventDefault();
+                    if (draggedStep && draggedStep !== item) item.classList.add('is-drop-target');
+                });
+                item.addEventListener('dragleave', function () { item.classList.remove('is-drop-target'); });
+                item.addEventListener('drop', function (event) {
+                    event.preventDefault();
+                    item.classList.remove('is-drop-target');
+                    if (!draggedStep || draggedStep === item) return;
+                    var bounds = item.getBoundingClientRect();
+                    var insertAfter = event.clientY > bounds.top + bounds.height / 2;
+                    sortable.insertBefore(draggedStep, insertAfter ? item.nextSibling : item);
+                    updateStepOrder();
+                });
+                item.addEventListener('keydown', function (event) {
+                    if (event.altKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+                        event.preventDefault();
+                        var target = event.key === 'ArrowUp' ? item.previousElementSibling : item.nextElementSibling;
+                        if (target) {
+                            sortable.insertBefore(item, event.key === 'ArrowUp' ? target : target.nextSibling);
+                            updateStepOrder();
+                            item.focus();
+                        }
+                    }
+                });
+            });
+            updateStepOrder();
+        }
+    }
 
     root.querySelectorAll('[data-rules-edit]').forEach(function (button) {
         button.addEventListener('click', function () {
