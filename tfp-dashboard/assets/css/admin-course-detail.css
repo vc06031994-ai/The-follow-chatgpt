@@ -1315,3 +1315,13 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
   font-weight:500;
   line-height:1.4;
 }
+
+
+/* Use the supplied Save icon in the Course Rules action button. */
+.tfp-admin-course-detail-app .tfp-admin-course-rules-save-icon{
+  display:block;
+  width:14px;
+  height:14px;
+  object-fit:contain;
+  flex:0 0 14px;
+}
