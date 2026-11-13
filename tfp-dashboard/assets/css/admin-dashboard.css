@@ -3214,3 +3214,27 @@ body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-logout {
         line-height: 1.4;
     }
 }
+
+
+/* Global admin dashboard hover colour: replace theme pink with the project teal. */
+.tfp-admin-app button:hover,
+.tfp-admin-app a.button:hover,
+.tfp-admin-app a[role="button"]:hover,
+.tfp-admin-app input[type="button"]:hover,
+.tfp-admin-app input[type="submit"]:hover,
+.tfp-admin-course-detail-app button:hover,
+.tfp-admin-course-detail-app a.button:hover,
+.tfp-admin-course-detail-app a[role="button"]:hover,
+.tfp-admin-course-detail-app input[type="button"]:hover,
+.tfp-admin-course-detail-app input[type="submit"]:hover,
+.tfp-admin-course-editor-app button:hover,
+.tfp-admin-course-editor-app a.button:hover,
+.tfp-admin-course-editor-app a[role="button"]:hover,
+.tfp-admin-course-editor-app input[type="button"]:hover,
+.tfp-admin-course-editor-app input[type="submit"]:hover {
+    border-color: #006B73 !important;
+    background-color: #006B73 !important;
+    background-image: none !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
