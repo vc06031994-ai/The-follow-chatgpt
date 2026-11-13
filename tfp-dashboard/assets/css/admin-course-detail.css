@@ -1293,3 +1293,12 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
  .tfp-admin-course-detail-app .tfp-admin-course-rules-rows dt{font-size:11px}
  .tfp-admin-course-detail-app .tfp-admin-course-rules-rows dd{font-size:10px;max-width:58%}
 }
+
+
+/* Course Rules: emphasized values and labels */
+.tfp-admin-course-detail-app .tfp-admin-course-rules-identity strong,
+.tfp-admin-course-detail-app .tfp-admin-course-rules-rows dt,
+.tfp-admin-course-detail-app .tfp-admin-course-rules-rows dd{
+  font-size:14px;
+  font-weight:700;
+}
