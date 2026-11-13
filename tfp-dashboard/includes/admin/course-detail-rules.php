@@ -6,6 +6,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Load the WordPress media picker used by the Course Identity image field.
+if (function_exists('wp_enqueue_media')) {
+    wp_enqueue_media();
+}
+
 $rules_meta_key = 'tfp_course_rules_settings';
 $rules_settings = get_post_meta($course_id, $rules_meta_key, true);
 $rules_settings = is_array($rules_settings) ? $rules_settings : [];
