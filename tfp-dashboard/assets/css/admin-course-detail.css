@@ -1552,3 +1552,12 @@ body.tfp-course-identity-modal-open{overflow:hidden}
     background-color:#006B73 !important;
     color:#fff !important;
 }
+
+/* Keep all Course Identity form controls the same height. */
+.tfp-admin-course-detail-app .tfp-course-identity-field>input,
+.tfp-admin-course-detail-app .tfp-course-identity-field>select{
+    height:42px;
+    min-height:42px;
+    padding:9px 13px;
+    box-sizing:border-box;
+}
