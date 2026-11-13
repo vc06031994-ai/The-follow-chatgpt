@@ -204,6 +204,7 @@ function tfp_admin_course_detail_render() {
     $tabs = ['Overview' => '', 'Plan' => 'plan', 'Rules' => 'rules', 'Cohorts' => 'cohorts', 'Insights' => 'insights', 'Access' => 'access', 'Health' => 'health'];
     $active_tab = isset($_GET['course_tab']) ? sanitize_key(wp_unslash($_GET['course_tab'])) : '';
     $is_plan_tab = ($active_tab === 'plan');
+    $is_rules_tab = ($active_tab === 'rules');
     ?>
     <div class="tfp-admin-app tfp-admin-course-detail-app">
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -246,16 +247,16 @@ function tfp_admin_course_detail_render() {
                 <a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a>
                 <b>/</b><a href="<?php echo esc_url(tfp_admin_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
                 <b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo esc_html($course_heading_title); ?></strong>
-                <?php if ($is_plan_tab) : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php esc_html_e('Plan', 'tfp-dashboard'); ?></strong><?php endif; ?>
+                <?php if ($is_plan_tab || $is_rules_tab) : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo $is_rules_tab ? esc_html__('Rules', 'tfp-dashboard') : esc_html__('Plan', 'tfp-dashboard'); ?></strong><?php endif; ?>
             </div>
 
             <header class="tfp-admin-page-header tfp-admin-course-detail-header">
-                <div><h1><?php echo esc_html($course_heading_title); ?></h1><p><?php echo $is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard'); ?></p></div>
+                <div><h1><?php echo $is_rules_tab ? esc_html__('Course rules & defaults', 'tfp-dashboard') : esc_html($course_heading_title); ?></h1><p><?php echo $is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : ($is_rules_tab ? esc_html__('Set course-wide progression, completion, assessment, grading, and facilitation defaults.', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard')); ?></p></div>
                 <div class="tfp-admin-course-header-actions">
                     <?php if ($is_plan_tab) : ?>
                         <a class="tfp-admin-course-edit" href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>"><span aria-hidden="true">✎</span><?php esc_html_e('Edit Course', 'tfp-dashboard'); ?></a>
                     <?php endif; ?>
-                    <a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a>
+                    <?php if (!$is_rules_tab) : ?><a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a><?php endif; ?>
                 </div>
             </header>
 
@@ -266,7 +267,9 @@ function tfp_admin_course_detail_render() {
             </nav>
 
             <main class="tfp-admin-content tfp-admin-course-detail-content">
-                <?php if ($is_plan_tab) : ?>
+                <?php if ($is_rules_tab) : ?>
+                    <?php require TFP_DASH_PATH . 'includes/admin/course-detail-rules.php'; ?>
+                <?php elseif ($is_plan_tab) : ?>
                     <section class="tfp-admin-panel tfp-admin-course-plan" id="tfp-course-plan">
                         <div class="tfp-admin-course-plan-toolbar">
                             <h2><?php esc_html_e('Course Plan', 'tfp-dashboard'); ?></h2>
