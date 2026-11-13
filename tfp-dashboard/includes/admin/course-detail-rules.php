@@ -386,7 +386,7 @@ $format_rule_value = static function ($value) {
 
     // Replace native popup selects with accessible custom dropdowns so option
     // hover and selected states render consistently across browsers/operating systems.
-    root.querySelectorAll('.tfp-course-identity-field select, .tfp-course-rules-field select').forEach(function (select) {
+    root.querySelectorAll('[role="dialog"] select').forEach(function (select) {
         if (select.dataset.customized === 'true') return;
         select.dataset.customized = 'true';
         var wrapper = document.createElement('div');
