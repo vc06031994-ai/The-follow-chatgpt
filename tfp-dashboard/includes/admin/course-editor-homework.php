@@ -146,13 +146,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     form.querySelectorAll('input[name="homework_type"]').forEach(function (radio) { radio.addEventListener('change', toggle); });
     form.addEventListener('submit', function () {
-        var type = form.querySelector('input[name="homework_type"]:checked');
-        if (!type) return;
-        if (type.value === 'written') {
-            var writtenPrompt = form.querySelector('[name="homework_prompt_written"]');
-            var hiddenPrompt = document.createElement('input');
-            hiddenPrompt.type = 'hidden'; hiddenPrompt.name = 'homework_prompt'; hiddenPrompt.value = writtenPrompt ? writtenPrompt.value : '';
-            form.appendChild(hiddenPrompt);
+        var selected = form.querySelector('input[name="homework_type"]:checked');
+        if (!selected) return;
+        function addHidden(name, value) {
+            var input = document.createElement('input');
+            input.type = 'hidden'; input.name = name; input.value = value || '';
+            form.appendChild(input);
+        }
+        if (selected.value === 'multiple_choice') {
+            var mc = form.querySelector('[name="homework_prompt"], [name="homework_mc_prompt"]');
+            if (!form.querySelector('[name="homework_prompt"]')) addHidden('homework_prompt', mc ? mc.value : '');
+        } else if (selected.value === 'written') {
+            var writtenPrompt = form.querySelector('[name="homework_prompt_written"], [name="homework_written_prompt"]');
+            addHidden('homework_prompt', writtenPrompt ? writtenPrompt.value : '');
+        } else if (selected.value === 'both') {
+            var bothMc = form.querySelector('[name="homework_prompt"], [name="homework_mc_prompt"]');
+            var bothWritten = form.querySelector('[name="homework_written_prompt"], [name="homework_prompt_written"]');
+            if (!form.querySelector('[name="homework_mc_prompt"]')) addHidden('homework_mc_prompt', bothMc ? bothMc.value : '');
+            if (!form.querySelector('[name="homework_written_prompt"]')) addHidden('homework_written_prompt', bothWritten ? bothWritten.value : '');
         }
     });
     toggle();
