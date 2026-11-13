@@ -129,7 +129,7 @@ $format_rule_value = static function ($value) {
                 <p><?php esc_html_e('Set course-wide progression, completion, assessment, grading, and facilitation defaults.', 'tfp-dashboard'); ?></p>
             </div>
             <div class="tfp-admin-course-rules-actions">
-                <button class="tfp-admin-course-rules-save" type="submit" name="tfp_save_course_rules" value="1"><span aria-hidden="true">▣</span><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button class="tfp-admin-course-rules-save" type="submit" name="tfp_save_course_rules" value="1"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
                 <a class="tfp-admin-course-rules-cancel" href="<?php echo esc_url(add_query_arg('course_tab', 'rules', tfp_admin_course_detail_url($course_id))); ?>"><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></a>
             </div>
         </div>
