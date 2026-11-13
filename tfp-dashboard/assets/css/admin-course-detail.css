@@ -1509,3 +1509,38 @@ body.tfp-course-identity-modal-open{overflow:hidden}
     outline:2px solid rgba(0,107,115,.22) !important;
     outline-offset:2px;
 }
+
+
+/* Course Identity modal: desktop height and teal native-select states. */
+.tfp-admin-course-detail-app .tfp-course-identity-modal-panel{
+    height:min(800px,calc(100vh - 48px));
+    max-height:calc(100vh - 48px);
+}
+.tfp-admin-course-detail-app .tfp-course-identity-field>select{
+    min-height:42px;
+    padding:9px 13px;
+    border-color:#c9ced0;
+    font-size:13px;
+}
+.tfp-admin-course-detail-app .tfp-course-identity-field>select:focus{
+    border-color:#006B73;
+    outline:2px solid rgba(0,107,115,.18);
+    outline-offset:1px;
+    box-shadow:0 0 0 2px rgba(0,107,115,.10);
+}
+.tfp-admin-course-detail-app .tfp-course-identity-field>select option{
+    padding:10px 14px;
+    background:#fff;
+    color:#333;
+    font-size:13px;
+}
+.tfp-admin-course-detail-app .tfp-course-identity-field>select option:checked{
+    background:#006B73;
+    color:#fff;
+}
+@media(max-width:700px){
+    .tfp-admin-course-detail-app .tfp-course-identity-modal-panel{
+        height:auto;
+        max-height:calc(100vh - 24px);
+    }
+}
