@@ -152,7 +152,7 @@ function tfp_admin_course_editor_render($course_id, $data) {
             <header class="tfp-admin-page-header tfp-admin-course-editor-header">
                 <div><h1><?php esc_html_e('Course Editor', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Modify the master curriculum template. Select a week below to begin.', 'tfp-dashboard'); ?></p></div>
                 <div class="tfp-admin-course-editor-header-actions">
-                    <button type="button" class="tfp-editor-top-save" data-tfp-editor-save-trigger <?php disabled(!$selected_reading); ?>>▣ <?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                    <button type="button" class="tfp-editor-top-save" data-tfp-editor-save-trigger <?php disabled(!$selected_reading); ?>><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
                     <a class="tfp-editor-discard" href="<?php echo esc_url($plan_url); ?>"><?php esc_html_e('Discard Draft', 'tfp-dashboard'); ?></a>
                 </div>
             </header>
