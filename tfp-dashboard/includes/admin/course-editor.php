@@ -42,7 +42,7 @@ function tfp_admin_course_editor_render($course_id, $data) {
         $action = sanitize_key(wp_unslash($_POST['tfp_course_editor_action']));
         $reading_id = isset($_POST['reading_id']) ? absint($_POST['reading_id']) : 0;
         $reading = $reading_id ? get_post($reading_id) : null;
-        if ($reading && $reading->post_type !== 'tfp_reading') {
+        if ($reading && ($reading->post_type !== 'tfp_reading' || (int) get_post_meta($reading_id, '_tfp_lesson_id', true) !== $week_id)) {
             $reading = null;
         }
 
