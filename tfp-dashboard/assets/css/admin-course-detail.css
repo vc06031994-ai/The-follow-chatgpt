@@ -407,7 +407,7 @@
 /* Shared Admin page heading standard — match the Users page reference. */
 body.tfp-admin-dashboard-view .tfp-admin-page-header {
     min-height: 112px;
-    align-items: flex-end;
+    align-items: flex-start;
     padding: 14px clamp(24px, 2.6vw, 42px) 16px;
 }
 body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
