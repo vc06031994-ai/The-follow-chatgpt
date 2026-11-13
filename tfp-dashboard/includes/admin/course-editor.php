@@ -166,7 +166,9 @@ function tfp_admin_course_editor_render($course_id, $data) {
                     </select>
                     <noscript><button type="submit"><?php esc_html_e('Go', 'tfp-dashboard'); ?></button></noscript>
                 </form>
-                <nav class="tfp-editor-tabs" aria-label="<?php esc_attr_e('Content type', 'tfp-dashboard'); ?>"><div class="tfp-editor-tab-links"><a class="is-active" href="#tfp-reading-editor"><?php esc_html_e('Reading', 'tfp-dashboard'); ?></a><a href="<?php echo esc_url(add_query_arg(['week_editor' => '1', 'week_id' => $week_id, 'editor_tab' => 'homework'], tfp_admin_course_detail_url($course_id))); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a><span aria-disabled="true"><?php esc_html_e('Test Bank', 'tfp-dashboard'); ?></span></div><p class="tfp-editor-last-sync"><?php echo esc_html(sprintf(__('Last sync: %1$s • by %2$s • OK', 'tfp-dashboard'), get_post_modified_time('M j, Y • g:i A', false, $course_id, true), $name)); ?></p></nav>
+                <?php $editor_tab = isset($_GET['editor_tab']) ? sanitize_key(wp_unslash($_GET['editor_tab'])) : 'reading'; if (!in_array($editor_tab, ['reading', 'homework'], true)) { $editor_tab = 'reading'; } ?>
+                <nav class="tfp-editor-tabs" aria-label="<?php esc_attr_e('Content type', 'tfp-dashboard'); ?>"><div class="tfp-editor-tab-links"><a class="<?php echo $editor_tab === 'reading' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['week_editor' => '1', 'week_id' => $week_id, 'editor_tab' => 'reading'], tfp_admin_course_detail_url($course_id))); ?>"><?php esc_html_e('Reading', 'tfp-dashboard'); ?></a><a class="<?php echo $editor_tab === 'homework' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['week_editor' => '1', 'week_id' => $week_id, 'editor_tab' => 'homework'], tfp_admin_course_detail_url($course_id))); ?>"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></a><span aria-disabled="true"><?php esc_html_e('Test Bank', 'tfp-dashboard'); ?></span></div><p class="tfp-editor-last-sync"><?php echo esc_html(sprintf(__('Last sync: %1$s • by %2$s • OK', 'tfp-dashboard'), get_post_modified_time('M j, Y • g:i A', false, $course_id, true), $name)); ?></p></nav>
+                <?php if ($editor_tab === 'reading') : ?>
                 <section class="tfp-editor-workspace" id="tfp-reading-editor">
                     <div class="tfp-editor-workspace-heading"><div><h2><?php esc_html_e('Reading Editor', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Edit the scripture list for the week', 'tfp-dashboard'); ?></p></div><span class="tfp-editor-count"><?php echo esc_html(sprintf(__('%d items', 'tfp-dashboard'), count($readings))); ?></span></div>
                     <div class="tfp-editor-columns">
@@ -190,6 +192,7 @@ function tfp_admin_course_editor_render($course_id, $data) {
                     </div>
                     <div class="tfp-editor-footnote"><?php esc_html_e('This editor is for reading passages only.', 'tfp-dashboard'); ?></div>
                 </section>
+                <?php else : require TFP_DASH_PATH . 'includes/admin/course-editor-homework.php'; endif; ?>
             </main>
         </div>
     </div>
