@@ -80,7 +80,7 @@ function tfp_admin_course_detail_get_data($course_id) {
             'status_class' => $is_published ? 'is-published' : 'is-attention',
             'items' => $items,
             'gate' => 'Strict',
-            'edit_url' => get_edit_post_link($week->ID, 'raw'),
+            'edit_url' => function_exists('tfp_admin_course_editor_url') ? tfp_admin_course_editor_url($course_id, $week->ID) : get_edit_post_link($week->ID, 'raw'),
         ];
     }
 
@@ -153,6 +153,10 @@ function tfp_admin_course_detail_render() {
     $data = tfp_admin_course_detail_get_data($course_id);
     if (!$data) {
         wp_die(esc_html__('The requested course could not be found.', 'tfp-dashboard'), esc_html__('Course not found', 'tfp-dashboard'), ['response' => 404]);
+    }
+    if (isset($_GET['week_editor']) && '1' === sanitize_text_field(wp_unslash($_GET['week_editor'])) && function_exists('tfp_admin_course_editor_render')) {
+        tfp_admin_course_editor_render($course_id, $data);
+        return;
     }
 
     $user = wp_get_current_user();
