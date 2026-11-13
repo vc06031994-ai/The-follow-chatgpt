@@ -330,6 +330,91 @@ $format_rule_value = static function ($value) {
         progressionModal.querySelectorAll('[data-progression-close]').forEach(function (el) { el.addEventListener('click', closeProgression); });
         document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !progressionModal.hidden) closeProgression(); });
     }
+
+    // Replace native popup selects with accessible custom dropdowns so option
+    // hover and selected states render consistently across browsers/operating systems.
+    root.querySelectorAll('.tfp-course-identity-field select, .tfp-course-rules-field select').forEach(function (select) {
+        if (select.dataset.customized === 'true') return;
+        select.dataset.customized = 'true';
+        var wrapper = document.createElement('div');
+        wrapper.className = 'tfp-course-custom-select';
+        var trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'tfp-course-custom-select-trigger';
+        trigger.setAttribute('role', 'combobox');
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+        var list = document.createElement('div');
+        list.className = 'tfp-course-custom-select-options';
+        list.setAttribute('role', 'listbox');
+        list.hidden = true;
+        Array.prototype.forEach.call(select.options, function (option, index) {
+            var item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'tfp-course-custom-select-option';
+            item.textContent = option.textContent;
+            item.setAttribute('role', 'option');
+            item.setAttribute('aria-selected', option.selected ? 'true' : 'false');
+            item.dataset.value = option.value;
+            item.addEventListener('click', function () {
+                select.value = option.value;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                sync();
+                close();
+                trigger.focus();
+            });
+            list.appendChild(item);
+        });
+        function sync() {
+            var current = select.options[select.selectedIndex];
+            trigger.textContent = current ? current.textContent : '';
+            Array.prototype.forEach.call(list.children, function (item) {
+                var selected = item.dataset.value === select.value;
+                item.setAttribute('aria-selected', selected ? 'true' : 'false');
+            });
+        }
+        function close() {
+            list.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+            wrapper.classList.remove('is-open');
+        }
+        trigger.addEventListener('click', function () {
+            var opening = list.hidden;
+            list.hidden = !opening;
+            trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
+            wrapper.classList.toggle('is-open', opening);
+        });
+        trigger.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') { close(); return; }
+            if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                if (list.hidden) { list.hidden = false; trigger.setAttribute('aria-expanded', 'true'); wrapper.classList.add('is-open'); }
+                var active = list.querySelector('[aria-selected="true"]') || list.firstElementChild;
+                if (active) active.focus();
+            }
+        });
+        list.addEventListener('keydown', function (event) {
+            var items = Array.prototype.slice.call(list.children);
+            var currentIndex = items.indexOf(document.activeElement);
+            if (event.key === 'Escape') { event.preventDefault(); close(); trigger.focus(); }
+            else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                var next = event.key === 'ArrowDown' ? Math.min(items.length - 1, currentIndex + 1) : Math.max(0, currentIndex - 1);
+                if (items[next]) items[next].focus();
+            }
+        });
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(list);
+        wrapper.appendChild(select);
+        select.classList.add('tfp-course-custom-select-native');
+        select.tabIndex = -1;
+        select.setAttribute('aria-hidden', 'true');
+        select.addEventListener('change', sync);
+        sync();
+        document.addEventListener('click', function (event) { if (!wrapper.contains(event.target)) close(); });
+    });
+
     root.querySelectorAll('[data-rules-edit]').forEach(function (button) {
         button.addEventListener('click', function () {
             var card = button.closest('.tfp-admin-course-rules-card');
