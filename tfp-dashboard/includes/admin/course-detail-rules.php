@@ -77,22 +77,44 @@ $rules_sections = [
     ],
 ];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tfp_save_course_rules'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rules']) || isset($_POST['tfp_save_course_identity']))) {
     check_admin_referer('tfp_save_course_rules_' . $course_id);
     if (current_user_can('edit_post', $course_id)) {
-        $submitted = isset($_POST['tfp_course_rules']) && is_array($_POST['tfp_course_rules'])
-            ? wp_unslash($_POST['tfp_course_rules'])
-            : [];
-        $clean = [];
-        foreach ($rules_sections as $section_key => $section) {
-            foreach ($section['fields'] as $field_key => $label) {
-                $raw = $submitted[$field_key] ?? '';
-                $clean[$field_key] = is_scalar($raw) ? sanitize_text_field((string) $raw) : '';
+        if (isset($_POST['tfp_save_course_identity'])) {
+            $identity_name = isset($_POST['tfp_course_identity_name']) ? sanitize_text_field(wp_unslash($_POST['tfp_course_identity_name'])) : '';
+            $identity_type = isset($_POST['tfp_course_identity_type']) ? sanitize_text_field(wp_unslash($_POST['tfp_course_identity_type'])) : '';
+            $identity_description = isset($_POST['tfp_course_identity_description']) ? sanitize_textarea_field(wp_unslash($_POST['tfp_course_identity_description'])) : '';
+            if ($identity_name !== '') {
+                wp_update_post([
+                    'ID' => $course_id,
+                    'post_title' => $identity_name,
+                    'post_excerpt' => $identity_description,
+                ]);
             }
+            if (in_array($identity_type, ['Foundation', 'Discipleship', 'Devotional'], true)) {
+                update_post_meta($course_id, 'tfp_course_type', $identity_type);
+            }
+            $identity_image_id = isset($_POST['tfp_course_identity_image_id']) ? absint($_POST['tfp_course_identity_image_id']) : 0;
+            if ($identity_image_id && wp_attachment_is_image($identity_image_id)) {
+                set_post_thumbnail($course_id, $identity_image_id);
+            }
+            $course_heading_title = get_the_title($course_id);
+            echo '<div class="tfp-admin-course-rules-notice" role="status">' . esc_html__('Course identity saved.', 'tfp-dashboard') . '</div>';
+        } else {
+            $submitted = isset($_POST['tfp_course_rules']) && is_array($_POST['tfp_course_rules'])
+                ? wp_unslash($_POST['tfp_course_rules'])
+                : [];
+            $clean = [];
+            foreach ($rules_sections as $section_key => $section) {
+                foreach ($section['fields'] as $field_key => $label) {
+                    $raw = $submitted[$field_key] ?? '';
+                    $clean[$field_key] = is_scalar($raw) ? sanitize_text_field((string) $raw) : '';
+                }
+            }
+            update_post_meta($course_id, $rules_meta_key, $clean);
+            $rules_settings = $clean;
+            echo '<div class="tfp-admin-course-rules-notice" role="status">' . esc_html__('Course rules saved.', 'tfp-dashboard') . '</div>';
         }
-        update_post_meta($course_id, $rules_meta_key, $clean);
-        $rules_settings = $clean;
-        echo '<div class="tfp-admin-course-rules-notice" role="status">' . esc_html__('Course rules saved.', 'tfp-dashboard') . '</div>';
     }
 }
 
@@ -128,7 +150,7 @@ $format_rule_value = static function ($value) {
             <article class="tfp-admin-panel tfp-admin-course-rules-card tfp-rules-identity">
                 <div class="tfp-admin-course-rules-card-heading">
                     <div><h3><?php esc_html_e('Course Identity', 'tfp-dashboard'); ?></h3><p><?php esc_html_e('Name and basic metadata for this course template.', 'tfp-dashboard'); ?></p></div>
-                    <a href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>" class="tfp-admin-course-rules-edit"><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></a>
+                    <button type="button" class="tfp-admin-course-rules-edit" data-course-identity-open aria-haspopup="dialog" aria-controls="tfp-course-identity-modal"><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></button>
                 </div>
                 <div class="tfp-admin-course-rules-identity">
                     <?php if ($course_cover) : ?><img src="<?php echo esc_url($course_cover); ?>" alt=""><?php endif; ?>
@@ -162,11 +184,78 @@ $format_rule_value = static function ($value) {
             <?php endforeach; ?>
         </div>
     </form>
+    <div class="tfp-course-identity-modal" id="tfp-course-identity-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-course-identity-title" hidden>
+        <div class="tfp-course-identity-modal-backdrop" data-course-identity-close></div>
+        <div class="tfp-course-identity-modal-panel">
+            <div class="tfp-course-identity-modal-heading">
+                <div><h2 id="tfp-course-identity-title"><?php esc_html_e('Edit Course Identity', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Name and basic metadata for this course template.', 'tfp-dashboard'); ?></p></div>
+                <button type="button" class="tfp-course-identity-close" data-course-identity-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button>
+            </div>
+            <div class="tfp-course-identity-field tfp-course-identity-image-field">
+                <label><?php esc_html_e('Course Image', 'tfp-dashboard'); ?></label>
+                <small><?php esc_html_e('210 × 210px | Supported formats: JPG, PNG', 'tfp-dashboard'); ?></small>
+                <div class="tfp-course-identity-upload">
+                    <img data-course-identity-preview src="<?php echo esc_url($course_cover ?: ''); ?>" alt="" <?php echo $course_cover ? '' : 'hidden'; ?>>
+                    <span data-course-identity-upload-empty <?php echo $course_cover ? 'hidden' : ''; ?>>◎<small><?php esc_html_e('Drag and drop your image here', 'tfp-dashboard'); ?></small><small><?php esc_html_e('or', 'tfp-dashboard'); ?></small></span>
+                    <button type="button" class="tfp-admin-course-rules-save" data-course-identity-upload><?php esc_html_e('＋ Upload Image', 'tfp-dashboard'); ?></button>
+                    <input type="hidden" name="tfp_course_identity_image_id" value="<?php echo esc_attr($course_cover_id); ?>" data-course-identity-image-id>
+                </div>
+            </div>
+            <div class="tfp-course-identity-field">
+                <label for="tfp-course-identity-name"><?php esc_html_e('Course Name', 'tfp-dashboard'); ?></label>
+                <input id="tfp-course-identity-name" type="text" name="tfp_course_identity_name" value="<?php echo esc_attr($course_heading_title); ?>" required>
+            </div>
+            <div class="tfp-course-identity-field">
+                <label for="tfp-course-identity-type"><?php esc_html_e('Course Type', 'tfp-dashboard'); ?></label>
+                <select id="tfp-course-identity-type" name="tfp_course_identity_type">
+                    <option value=""><?php esc_html_e('Dropdown option', 'tfp-dashboard'); ?></option>
+                    <?php foreach (['Foundation', 'Discipleship', 'Devotional'] as $identity_type_option) : ?>
+                        <option value="<?php echo esc_attr($identity_type_option); ?>" <?php selected($course_type_label, $identity_type_option); ?>><?php echo esc_html($identity_type_option); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="tfp-course-identity-field">
+                <label for="tfp-course-identity-description"><?php esc_html_e('Short Description', 'tfp-dashboard'); ?></label>
+                <input id="tfp-course-identity-description" type="text" name="tfp_course_identity_description" value="<?php echo esc_attr(get_post_field('post_excerpt', $course_id)); ?>" placeholder="<?php esc_attr_e('One-line summary', 'tfp-dashboard'); ?>">
+            </div>
+            <div class="tfp-course-identity-modal-actions">
+                <button type="submit" name="tfp_save_course_identity" value="1" class="tfp-admin-course-rules-save"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-admin-course-rules-cancel" data-course-identity-close><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+            </div>
+        </div>
+    </div>
 </section>
 <script>
 (function () {
     var root = document.querySelector('.tfp-admin-course-rules-page');
     if (!root) return;
+    var identityModal = root.querySelector('#tfp-course-identity-modal');
+    var identityOpen = root.querySelector('[data-course-identity-open]');
+    if (identityModal && identityOpen) {
+        var closeIdentity = function () { identityModal.hidden = true; document.body.classList.remove('tfp-course-identity-modal-open'); };
+        identityOpen.addEventListener('click', function () {
+            identityModal.hidden = false;
+            document.body.classList.add('tfp-course-identity-modal-open');
+            var nameField = identityModal.querySelector('#tfp-course-identity-name');
+            if (nameField) nameField.focus();
+        });
+        identityModal.querySelectorAll('[data-course-identity-close]').forEach(function (el) { el.addEventListener('click', closeIdentity); });
+        document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !identityModal.hidden) closeIdentity(); });
+        var uploadButton = identityModal.querySelector('[data-course-identity-upload]');
+        if (uploadButton) uploadButton.addEventListener('click', function () {
+            if (!window.wp || !wp.media) return;
+            var frame = wp.media({ title: 'Select Course Image', button: { text: 'Use this image' }, library: { type: 'image' }, multiple: false });
+            frame.on('select', function () {
+                var attachment = frame.state().get('selection').first().toJSON();
+                identityModal.querySelector('[data-course-identity-image-id]').value = attachment.id;
+                var preview = identityModal.querySelector('[data-course-identity-preview]');
+                preview.src = attachment.url;
+                preview.hidden = false;
+                identityModal.querySelector('[data-course-identity-upload-empty]').hidden = true;
+            });
+            frame.open();
+        });
+    }
     root.querySelectorAll('[data-rules-edit]').forEach(function (button) {
         button.addEventListener('click', function () {
             var card = button.closest('.tfp-admin-course-rules-card');
