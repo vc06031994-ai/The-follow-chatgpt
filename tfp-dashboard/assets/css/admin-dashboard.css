@@ -3178,3 +3178,39 @@ body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-logout {
         justify-content: flex-start;
     }
 }
+
+
+/* Mobile breadcrumb wrapping: keep long page/course titles inside the breadcrumb background on every admin page. */
+@media (max-width: 700px) {
+    .tfp-admin-app .tfp-admin-breadcrumb {
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 4px 9px;
+        width: 100%;
+        height: auto;
+        min-height: 42px;
+        padding: 8px 16px;
+        line-height: 1.45;
+        white-space: normal;
+        overflow: visible;
+    }
+
+    .tfp-admin-app .tfp-admin-breadcrumb a,
+    .tfp-admin-app .tfp-admin-breadcrumb b {
+        flex: 0 0 auto;
+    }
+
+    .tfp-admin-app .tfp-admin-breadcrumb strong,
+    .tfp-admin-app .tfp-admin-breadcrumb .tfp-admin-breadcrumb-current {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        line-height: 1.4;
+    }
+}
