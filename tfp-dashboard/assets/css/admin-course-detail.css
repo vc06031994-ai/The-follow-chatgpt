@@ -1003,3 +1003,61 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         font-size: 15px !important;
     }
 }
+
+/* Plan tab pagination — match the Weeks table footer and keep controls on one line. */
+.tfp-admin-course-detail-app .tfp-admin-course-plan-footer {
+    display: flex;
+    min-height: 47px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 18px;
+    border-top: 1px solid #e6e9eb;
+    color: #26364d;
+    font: 500 13px/1.35 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 22px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions a,
+.tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions span {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+    text-decoration: none;
+    font: 500 14px/1 var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions .is-next {
+    min-width: 92px;
+    padding: 0 14px;
+    border-radius: 7px;
+    background: #006b73;
+    color: #fff;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions .is-previous {
+    color: #333;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions .is-disabled {
+    color: #b7b7b7;
+    pointer-events: none;
+}
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-plan-footer {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+        gap: 8px;
+        font-size: 12px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions {
+        gap: 10px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-plan-footer .tfp-admin-course-pagination-actions .is-next {
+        min-width: 76px;
+    }
+}
