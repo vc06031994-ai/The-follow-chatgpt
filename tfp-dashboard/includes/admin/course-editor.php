@@ -152,7 +152,7 @@ function tfp_admin_course_editor_render($course_id, $data) {
             <header class="tfp-admin-page-header tfp-admin-course-editor-header">
                 <div><h1><?php esc_html_e('Course Editor', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Modify the master curriculum template. Select a week below to begin.', 'tfp-dashboard'); ?></p></div>
                 <div class="tfp-admin-course-editor-header-actions">
-                    <?php if ($selected_reading) : ?><form method="post" class="tfp-editor-top-save"><?php wp_nonce_field('tfp_course_editor_' . $course_id . '_' . $week_id); ?><input type="hidden" name="tfp_course_editor_action" value="save"><input type="hidden" name="reading_id" value="<?php echo esc_attr($selected_reading->ID); ?>"><input type="hidden" name="reading_title" value="<?php echo esc_attr($selected_reading->post_title); ?>"><input type="hidden" name="reading_content" value="<?php echo esc_attr($selected_reading->post_content); ?>"><button type="submit" class="tfp-admin-course-edit">▣ <?php esc_html_e('Save', 'tfp-dashboard'); ?></button></form><?php endif; ?>
+                    <?php if ($selected_reading) : ?><button type="button" class="tfp-editor-top-save" data-tfp-editor-save-trigger>▣ <?php esc_html_e('Save', 'tfp-dashboard'); ?></button><?php endif; ?>
                     <a class="tfp-editor-discard" href="<?php echo esc_url($plan_url); ?>"><?php esc_html_e('Discard Draft', 'tfp-dashboard'); ?></a>
                 </div>
             </header>
