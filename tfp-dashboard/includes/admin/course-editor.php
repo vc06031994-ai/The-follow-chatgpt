@@ -147,12 +147,12 @@ function tfp_admin_course_editor_render($course_id, $data) {
                 <a href="<?php echo esc_url(function_exists('tfp_admin_courses_page_url') ? tfp_admin_courses_page_url() : home_url('/admin-courses/')); ?>"><?php esc_html_e('Course', 'tfp-dashboard'); ?></a><b>/</b>
                 <a href="<?php echo esc_url($plan_url); ?>"><?php echo esc_html($course_title); ?></a><b>/</b>
                 <a href="<?php echo esc_url($plan_url); ?>"><?php esc_html_e('Plan', 'tfp-dashboard'); ?></a><b>/</b>
-                <strong class="tfp-admin-breadcrumb-current"><?php echo esc_html(sprintf(__('Week %d', 'tfp-dashboard'), $week_number)); ?></strong><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php esc_html_e('Content Editor (reading)', 'tfp-dashboard'); ?></strong>
+                <strong class="tfp-admin-breadcrumb-current"><?php echo esc_html(sprintf(__('Week %d', 'tfp-dashboard'), $week_number)); ?></strong>
             </div>
             <header class="tfp-admin-page-header tfp-admin-course-editor-header">
                 <div><h1><?php esc_html_e('Course Editor', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Modify the master curriculum template. Select a week below to begin.', 'tfp-dashboard'); ?></p></div>
                 <div class="tfp-admin-course-editor-header-actions">
-                    <?php if ($selected_reading) : ?><button type="button" class="tfp-editor-top-save" data-tfp-editor-save-trigger>▣ <?php esc_html_e('Save', 'tfp-dashboard'); ?></button><?php endif; ?>
+                    <button type="button" class="tfp-editor-top-save" data-tfp-editor-save-trigger <?php disabled(!$selected_reading); ?>>▣ <?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
                     <a class="tfp-editor-discard" href="<?php echo esc_url($plan_url); ?>"><?php esc_html_e('Discard Draft', 'tfp-dashboard'); ?></a>
                 </div>
             </header>
@@ -162,11 +162,11 @@ function tfp_admin_course_editor_render($course_id, $data) {
                     <input type="hidden" name="week_editor" value="1">
                     <label class="screen-reader-text" for="tfp-editor-week-select"><?php esc_html_e('Switch week', 'tfp-dashboard'); ?></label>
                     <select id="tfp-editor-week-select" name="week_id" onchange="this.form.submit()">
-                        <?php foreach ($weeks as $index => $item) : ?><option value="<?php echo esc_attr($item->ID); ?>" <?php selected($week_id, $item->ID); ?>><?php echo esc_html(sprintf(__('Week %d', 'tfp-dashboard'), $index + 1)); ?></option><?php endforeach; ?>
+                        <?php foreach ($weeks as $index => $item) : ?><option value="<?php echo esc_attr($item->ID); ?>" <?php selected($week_id, $item->ID); ?>><?php echo esc_html(sprintf(__('Switch Week: Week %02d', 'tfp-dashboard'), $index + 1)); ?></option><?php endforeach; ?>
                     </select>
                     <noscript><button type="submit"><?php esc_html_e('Go', 'tfp-dashboard'); ?></button></noscript>
                 </form>
-                <nav class="tfp-editor-tabs" aria-label="<?php esc_attr_e('Content type', 'tfp-dashboard'); ?>"><a class="is-active" href="#tfp-reading-editor"><?php esc_html_e('Reading', 'tfp-dashboard'); ?></a><span aria-disabled="true"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></span><span aria-disabled="true"><?php esc_html_e('Test Bank', 'tfp-dashboard'); ?></span></nav>
+                <nav class="tfp-editor-tabs" aria-label="<?php esc_attr_e('Content type', 'tfp-dashboard'); ?>"><div class="tfp-editor-tab-links"><a class="is-active" href="#tfp-reading-editor"><?php esc_html_e('Reading', 'tfp-dashboard'); ?></a><span aria-disabled="true"><?php esc_html_e('Homework', 'tfp-dashboard'); ?></span><span aria-disabled="true"><?php esc_html_e('Test Bank', 'tfp-dashboard'); ?></span></div><p class="tfp-editor-last-sync"><?php echo esc_html(sprintf(__('Last sync: %1$s • by %2$s • OK', 'tfp-dashboard'), get_post_modified_time('M j, Y • g:i A', false, $course_id, true), $name)); ?></p></nav>
                 <section class="tfp-editor-workspace" id="tfp-reading-editor">
                     <div class="tfp-editor-workspace-heading"><div><h2><?php esc_html_e('Reading Editor', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Edit the scripture list for the week', 'tfp-dashboard'); ?></p></div><span class="tfp-editor-count"><?php echo esc_html(sprintf(__('%d items', 'tfp-dashboard'), count($readings))); ?></span></div>
                     <div class="tfp-editor-columns">
