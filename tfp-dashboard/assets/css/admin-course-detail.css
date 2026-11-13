@@ -1204,3 +1204,39 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
 }
 
 .tfp-admin-course-editor-app .tfp-editor-top-save img{display:block;width:14px;height:14px;object-fit:contain;margin-right:7px;flex:0 0 14px}
+
+
+/* Course Editor workspace typography — align with the standard admin page scale. */
+.tfp-admin-course-editor-app .tfp-editor-workspace-heading h2{font-size:16px;line-height:1.4}
+.tfp-admin-course-editor-app .tfp-editor-workspace-heading p{font-size:13px;line-height:1.5}
+.tfp-admin-course-editor-app .tfp-editor-count{font-size:11px;line-height:1.3}
+.tfp-admin-course-editor-app .tfp-editor-list-panel h3,
+.tfp-admin-course-editor-app .tfp-editor-edit-panel h3{font-size:14px;line-height:1.4}
+.tfp-admin-course-editor-app .tfp-editor-reading-item strong{font-size:13px;line-height:1.45}
+.tfp-admin-course-editor-app .tfp-editor-reading-item small{font-size:11px;line-height:1.4}
+.tfp-admin-course-editor-app .tfp-editor-reading-form label,
+.tfp-admin-course-editor-app .tfp-editor-move-row label{font-size:13px;line-height:1.4}
+.tfp-admin-course-editor-app .tfp-editor-reading-form input,
+.tfp-admin-course-editor-app .tfp-editor-reading-form textarea,
+.tfp-admin-course-editor-app .tfp-editor-move-row select{font-size:13px;line-height:1.5}
+.tfp-admin-course-editor-app .tfp-editor-save,
+.tfp-admin-course-editor-app .tfp-editor-secondary{font-size:12px;line-height:1.3}
+.tfp-admin-course-editor-app .tfp-editor-footnote{font-size:11px;line-height:1.45}
+.tfp-admin-course-editor-app .tfp-editor-empty{font-size:13px;line-height:1.5}
+.tfp-admin-course-editor-app .tfp-editor-notice{font-size:13px;line-height:1.45}
+@media(max-width:700px){
+ .tfp-admin-course-editor-app .tfp-editor-workspace-heading h2{font-size:15px}
+ .tfp-admin-course-editor-app .tfp-editor-workspace-heading p{font-size:12px}
+ .tfp-admin-course-editor-app .tfp-editor-list-panel h3,
+ .tfp-admin-course-editor-app .tfp-editor-edit-panel h3{font-size:13px}
+ .tfp-admin-course-editor-app .tfp-editor-reading-item strong{font-size:12px}
+ .tfp-admin-course-editor-app .tfp-editor-reading-item small{font-size:10px}
+ .tfp-admin-course-editor-app .tfp-editor-reading-form label,
+ .tfp-admin-course-editor-app .tfp-editor-move-row label{font-size:12px}
+ .tfp-admin-course-editor-app .tfp-editor-reading-form input,
+ .tfp-admin-course-editor-app .tfp-editor-reading-form textarea,
+ .tfp-admin-course-editor-app .tfp-editor-move-row select{font-size:12px}
+ .tfp-admin-course-editor-app .tfp-editor-footnote{font-size:10px}
+ .tfp-admin-course-editor-app .tfp-editor-empty{font-size:12px}
+ .tfp-admin-course-editor-app .tfp-editor-notice{font-size:12px}
+}
