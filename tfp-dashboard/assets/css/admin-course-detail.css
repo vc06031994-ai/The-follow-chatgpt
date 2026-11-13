@@ -1484,3 +1484,28 @@ body.tfp-course-identity-modal-open{overflow:hidden}
         box-shadow:0 16px 40px rgba(0,0,0,.30),0 4px 12px rgba(0,0,0,.12)
     }
 }
+
+/* Keep the Course Identity image-upload action on the dashboard teal theme. */
+.tfp-admin-course-detail-app .tfp-course-identity-upload button,
+.tfp-admin-course-detail-app .tfp-course-identity-upload .button,
+.tfp-admin-course-detail-app .tfp-course-identity-upload input[type="button"],
+.tfp-admin-course-detail-app .tfp-course-identity-upload input[type="submit"]{
+    border:1px solid #006b73 !important;
+    background:#006b73 !important;
+    background-image:none !important;
+    color:#fff !important;
+    box-shadow:none !important;
+}
+.tfp-admin-course-detail-app .tfp-course-identity-upload button:hover,
+.tfp-admin-course-detail-app .tfp-course-identity-upload .button:hover,
+.tfp-admin-course-detail-app .tfp-course-identity-upload input[type="button"]:hover,
+.tfp-admin-course-detail-app .tfp-course-identity-upload input[type="submit"]:hover{
+    border-color:#005a61 !important;
+    background:#005a61 !important;
+    color:#fff !important;
+}
+.tfp-admin-course-detail-app .tfp-course-identity-upload button:focus,
+.tfp-admin-course-detail-app .tfp-course-identity-upload .button:focus{
+    outline:2px solid rgba(0,107,115,.22) !important;
+    outline-offset:2px;
+}
