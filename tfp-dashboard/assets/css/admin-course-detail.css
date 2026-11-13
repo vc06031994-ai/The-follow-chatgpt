@@ -1672,3 +1672,24 @@ body.tfp-course-rules-modal-open{overflow:hidden}
         box-shadow:0 16px 40px rgba(0,0,0,.30),0 4px 12px rgba(0,0,0,.12)
     }
 }
+
+
+/* Keep selected, hovered, focused and active options teal in BOTH course popups. */
+.tfp-admin-course-detail-app .tfp-course-identity-modal-panel select option:checked,
+.tfp-admin-course-detail-app .tfp-course-identity-modal-panel select option:hover,
+.tfp-admin-course-detail-app .tfp-course-identity-modal-panel select option:focus,
+.tfp-admin-course-detail-app .tfp-course-identity-modal-panel select option:active,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-panel select option:checked,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-panel select option:hover,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-panel select option:focus,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-panel select option:active{
+    background:#006B73 !important;
+    background-color:#006B73 !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+}
+.tfp-admin-course-detail-app .tfp-course-identity-modal-panel select option,
+.tfp-admin-course-detail-app .tfp-course-rules-modal-panel select option{
+    background-color:#fff;
+    color:#333;
+}
