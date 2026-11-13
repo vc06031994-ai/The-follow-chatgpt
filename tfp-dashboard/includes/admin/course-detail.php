@@ -180,6 +180,15 @@ function tfp_admin_course_detail_render() {
     $visible_rows = array_slice($data['week_rows'], ($page_number - 1) * $per_page, $per_page);
     $first_item = $total_rows ? (($page_number - 1) * $per_page) + 1 : 0;
     $last_item = min($page_number * $per_page, $total_rows);
+
+    // The Plan tab has its own 15-row pagination, independent of the Overview tab.
+    $plan_per_page = 15;
+    $plan_page_number = isset($_GET['plan_page']) ? max(1, absint($_GET['plan_page'])) : 1;
+    $plan_total_pages = max(1, (int) ceil($total_rows / $plan_per_page));
+    $plan_page_number = min($plan_page_number, $plan_total_pages);
+    $plan_visible_rows = array_slice($data['week_rows'], ($plan_page_number - 1) * $plan_per_page, $plan_per_page);
+    $plan_first_item = $total_rows ? (($plan_page_number - 1) * $plan_per_page) + 1 : 0;
+    $plan_last_item = min($plan_page_number * $plan_per_page, $total_rows);
     $tabs = ['Overview' => '', 'Plan' => 'plan', 'Rules' => 'rules', 'Cohorts' => 'cohorts', 'Insights' => 'insights', 'Access' => 'access', 'Health' => 'health'];
     $active_tab = isset($_GET['course_tab']) ? sanitize_key(wp_unslash($_GET['course_tab'])) : '';
     $is_plan_tab = ($active_tab === 'plan');
@@ -246,7 +255,7 @@ function tfp_admin_course_detail_render() {
 
             <main class="tfp-admin-content tfp-admin-course-detail-content">
                 <?php if ($is_plan_tab) : ?>
-                    <section class="tfp-admin-panel tfp-admin-course-plan">
+                    <section class="tfp-admin-panel tfp-admin-course-plan" id="tfp-course-plan">
                         <div class="tfp-admin-course-plan-toolbar">
                             <h2><?php esc_html_e('Course Plan', 'tfp-dashboard'); ?></h2>
                             <div class="tfp-admin-course-plan-actions">
@@ -259,7 +268,7 @@ function tfp_admin_course_detail_render() {
                             <table>
                                 <thead><tr><th><?php esc_html_e('Week', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Module Name', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Gate Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Exercise ID', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Content Summary', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Attention', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
                                 <tbody>
-                                <?php foreach ($data['week_rows'] as $row) :
+                                <?php foreach ($plan_visible_rows as $row) :
                                     $lesson_id = (int) $row['id'];
                                     $video_count = get_post_meta($lesson_id, 'tfp_week_video_url', true) ? 1 : 0;
                                     $lesson_post = get_post($lesson_id);
@@ -292,6 +301,21 @@ function tfp_admin_course_detail_render() {
                                 <?php if (empty($data['week_rows'])) : ?><tr><td colspan="7" class="tfp-admin-course-no-weeks"><?php esc_html_e('No weeks are mapped to this course yet.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="tfp-admin-course-plan-footer">
+                            <span><?php echo esc_html(sprintf(__('%1$s - %2$s of %3$s items', 'tfp-dashboard'), number_format_i18n($plan_first_item), number_format_i18n($plan_last_item), number_format_i18n($total_rows))); ?></span>
+                            <div class="tfp-admin-course-pagination-actions">
+                                <?php if ($plan_page_number > 1) : ?>
+                                    <a class="is-previous" href="<?php echo esc_url(add_query_arg(['course_tab' => 'plan', 'plan_page' => $plan_page_number - 1], tfp_admin_course_detail_url($course_id)) . '#tfp-course-plan'); ?>"><span aria-hidden="true">‹</span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></a>
+                                <?php else : ?>
+                                    <span class="is-previous is-disabled"><span aria-hidden="true">‹</span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span>
+                                <?php endif; ?>
+                                <?php if ($plan_page_number < $plan_total_pages) : ?>
+                                    <a class="is-next" href="<?php echo esc_url(add_query_arg(['course_tab' => 'plan', 'plan_page' => $plan_page_number + 1], tfp_admin_course_detail_url($course_id)) . '#tfp-course-plan'); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span></a>
+                                <?php else : ?>
+                                    <span class="is-next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?><span aria-hidden="true">›</span></span>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <div class="tfp-admin-course-plan-sync-note" id="tfp-course-plan-sync-log"><?php esc_html_e('Sync log is not available yet.', 'tfp-dashboard'); ?></div>
                     </section>
