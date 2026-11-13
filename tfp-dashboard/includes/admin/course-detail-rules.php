@@ -15,6 +15,12 @@ $rules_meta_key = 'tfp_course_rules_settings';
 $rules_settings = get_post_meta($course_id, $rules_meta_key, true);
 $rules_settings = is_array($rules_settings) ? $rules_settings : [];
 
+$rules_extra_fields = [
+    'late_work_grace_period',
+    'allow_facilitator_overrides',
+    'auto_unlock_on_close_section',
+];
+
 $rules_sections = [
     'progression' => [
         'title' => __('Progression Model', 'tfp-dashboard'),
@@ -115,6 +121,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
                     $raw = $submitted[$field_key] ?? '';
                     $clean[$field_key] = is_scalar($raw) ? sanitize_text_field((string) $raw) : '';
                 }
+            }
+            foreach ($rules_extra_fields as $field_key) {
+                $raw = $submitted[$field_key] ?? '';
+                $clean[$field_key] = is_scalar($raw) ? sanitize_text_field((string) $raw) : '';
             }
             update_post_meta($course_id, $rules_meta_key, $clean);
             $rules_settings = $clean;
@@ -229,6 +239,52 @@ $format_rule_value = static function ($value) {
             </div>
         </div>
     </div>
+    <div class="tfp-course-rules-modal" id="tfp-course-progression-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-course-progression-title" hidden>
+        <div class="tfp-course-rules-modal-backdrop" data-progression-close></div>
+        <div class="tfp-course-rules-modal-panel">
+            <div class="tfp-course-rules-modal-heading">
+                <div><h2 id="tfp-course-progression-title"><?php esc_html_e('Edit Progression Model', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Define how learners unlock the next section/week.', 'tfp-dashboard'); ?></p></div>
+                <button type="button" class="tfp-course-rules-modal-close" data-progression-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button>
+            </div>
+            <div class="tfp-course-rules-choice-group">
+                <strong><?php esc_html_e('Course Mode', 'tfp-dashboard'); ?></strong>
+                <label><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[course_mode]" value="Facilitation-Based" <?php checked(($rules_settings['course_mode'] ?? 'Facilitation-Based'), 'Facilitation-Based'); ?>> <span><?php esc_html_e('Facilitation-Based', 'tfp-dashboard'); ?></span></label>
+                <label><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[course_mode]" value="Self-Paced" <?php checked(($rules_settings['course_mode'] ?? ''), 'Self-Paced'); ?>> <span><?php esc_html_e('Self-Paced', 'tfp-dashboard'); ?></span></label>
+            </div>
+            <div class="tfp-course-rules-choice-group">
+                <strong><?php esc_html_e('Unlock Rule', 'tfp-dashboard'); ?></strong>
+                <label><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[unlock_rule]" value="Module Completion/Pass" <?php checked(($rules_settings['unlock_rule'] ?? ''), 'Module Completion/Pass'); ?>> <span><?php esc_html_e('Module Completion/Pass', 'tfp-dashboard'); ?></span></label>
+                <label><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[unlock_rule]" value="Facilitator Close" <?php checked(($rules_settings['unlock_rule'] ?? 'Facilitator Close'), 'Facilitator Close'); ?>> <span><?php esc_html_e('Facilitator Close', 'tfp-dashboard'); ?></span></label>
+            </div>
+            <div class="tfp-course-rules-field">
+                <label for="tfp-course-late-work"><?php esc_html_e('Late Work Policy', 'tfp-dashboard'); ?></label>
+                <select form="tfp-course-rules-form" id="tfp-course-late-work" name="tfp_course_rules[late_work]">
+                    <option value="Allowed" <?php selected(($rules_settings['late_work'] ?? 'Allowed'), 'Allowed'); ?>><?php esc_html_e('Allowed', 'tfp-dashboard'); ?></option>
+                    <option value="Allowed with penalty" <?php selected(($rules_settings['late_work'] ?? ''), 'Allowed with penalty'); ?>><?php esc_html_e('Allowed with penalty', 'tfp-dashboard'); ?></option>
+                    <option value="Not allowed" <?php selected(($rules_settings['late_work'] ?? ''), 'Not allowed'); ?>><?php esc_html_e('Not allowed', 'tfp-dashboard'); ?></option>
+                </select>
+            </div>
+            <div class="tfp-course-rules-field">
+                <label for="tfp-course-late-grace"><?php esc_html_e('Late Work Grace Period', 'tfp-dashboard'); ?></label>
+                <select form="tfp-course-rules-form" id="tfp-course-late-grace" name="tfp_course_rules[late_work_grace_period]">
+                    <option value="3 Days" <?php selected(($rules_settings['late_work_grace_period'] ?? '3 Days'), '3 Days'); ?>><?php esc_html_e('3 Days', 'tfp-dashboard'); ?></option>
+                    <option value="5 Days" <?php selected(($rules_settings['late_work_grace_period'] ?? ''), '5 Days'); ?>><?php esc_html_e('5 Days', 'tfp-dashboard'); ?></option>
+                </select>
+            </div>
+            <div class="tfp-course-rules-toggle-field">
+                <strong><?php esc_html_e('Allow Facilitator Overrides', 'tfp-dashboard'); ?></strong>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[allow_facilitator_overrides]" value="On" <?php checked(($rules_settings['allow_facilitator_overrides'] ?? 'On'), 'On'); ?>><span></span></label><small><?php esc_html_e('On', 'tfp-dashboard'); ?></small>
+            </div>
+            <div class="tfp-course-rules-toggle-field">
+                <strong><?php esc_html_e('Auto-unlock on Close Section', 'tfp-dashboard'); ?></strong>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[auto_unlock_on_close_section]" value="On" <?php checked(($rules_settings['auto_unlock_on_close_section'] ?? 'On'), 'On'); ?>><span></span></label><small><?php esc_html_e('On', 'tfp-dashboard'); ?></small>
+            </div>
+            <div class="tfp-course-rules-modal-actions">
+                <button type="submit" form="tfp-course-rules-form" name="tfp_save_course_rules" value="1" class="tfp-admin-course-rules-save"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-admin-course-rules-cancel" data-progression-close><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+            </div>
+        </div>
+    </div>
 </section>
 <script>
 (function () {
@@ -260,6 +316,19 @@ $format_rule_value = static function ($value) {
             });
             frame.open();
         });
+    }
+    var progressionModal = root.querySelector('#tfp-course-progression-modal');
+    var progressionOpen = root.querySelector('.tfp-rules-progression [data-rules-edit]');
+    if (progressionModal && progressionOpen) {
+        var closeProgression = function () { progressionModal.hidden = true; document.body.classList.remove('tfp-course-rules-modal-open'); };
+        progressionOpen.addEventListener('click', function () {
+            progressionModal.hidden = false;
+            document.body.classList.add('tfp-course-rules-modal-open');
+            var firstChoice = progressionModal.querySelector('input[type="radio"]');
+            if (firstChoice) firstChoice.focus();
+        });
+        progressionModal.querySelectorAll('[data-progression-close]').forEach(function (el) { el.addEventListener('click', closeProgression); });
+        document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !progressionModal.hidden) closeProgression(); });
     }
     root.querySelectorAll('[data-rules-edit]').forEach(function (button) {
         button.addEventListener('click', function () {
