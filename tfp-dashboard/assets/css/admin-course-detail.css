@@ -1202,3 +1202,5 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
         width: min(100%, 230px);
     }
 }
+
+.tfp-admin-course-editor-app .tfp-editor-top-save img{display:block;width:14px;height:14px;object-fit:contain;margin-right:7px;flex:0 0 14px}
