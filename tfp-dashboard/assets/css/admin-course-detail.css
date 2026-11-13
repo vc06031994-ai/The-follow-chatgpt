@@ -1353,3 +1353,62 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
     margin-left:auto;
   }
 }
+
+/* Rules header: keep the title on top and align description with actions on the bottom row. */
+.tfp-admin-course-detail-app .tfp-admin-course-rules-header{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:auto auto;
+  align-items:end;
+  column-gap:18px;
+  row-gap:4px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-rules-header>div:first-child{display:contents}
+.tfp-admin-course-detail-app .tfp-admin-course-rules-header h1{
+  grid-column:1 / -1;
+  grid-row:1;
+  margin:0;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-rules-header p{
+  grid-column:1;
+  grid-row:2;
+  align-self:end;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-rules-header .tfp-admin-course-header-actions{
+  grid-column:2;
+  grid-row:2;
+  align-self:end;
+  margin:0 0 0 auto;
+}
+@media(max-width:767px){
+  .tfp-admin-course-detail-app .tfp-admin-course-rules-header{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto auto auto;
+    row-gap:8px;
+  }
+  .tfp-admin-course-detail-app .tfp-admin-course-rules-header h1{grid-column:1;grid-row:1}
+  .tfp-admin-course-detail-app .tfp-admin-course-rules-header p{grid-column:1;grid-row:2}
+  .tfp-admin-course-detail-app .tfp-admin-course-rules-header .tfp-admin-course-header-actions{
+    grid-column:1;grid-row:3;margin:0;justify-content:flex-start
+  }
+}
+
+
+/* Course Rules Edit actions — supplied pencil icon and requested typography. */
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.35;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-rules-edit img {
+    display: block;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    object-fit: contain;
+}

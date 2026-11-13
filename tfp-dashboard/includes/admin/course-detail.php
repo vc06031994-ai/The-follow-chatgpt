@@ -250,7 +250,7 @@ function tfp_admin_course_detail_render() {
                 <?php if ($is_plan_tab || $is_rules_tab) : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo $is_rules_tab ? esc_html__('Rules', 'tfp-dashboard') : esc_html__('Plan', 'tfp-dashboard'); ?></strong><?php endif; ?>
             </div>
 
-            <header class="tfp-admin-page-header tfp-admin-course-detail-header">
+            <header class="tfp-admin-page-header tfp-admin-course-detail-header <?php echo $is_rules_tab ? 'tfp-admin-course-rules-header' : ''; ?>">
                 <div><h1><?php echo $is_rules_tab ? esc_html__('Course rules & defaults', 'tfp-dashboard') : esc_html($course_heading_title); ?></h1><p><?php echo $is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : ($is_rules_tab ? esc_html__('Set course-wide progression, completion, assessment, grading, and facilitation defaults.', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard')); ?></p></div>
                 <div class="tfp-admin-course-header-actions">
                     <?php if ($is_rules_tab) : ?>

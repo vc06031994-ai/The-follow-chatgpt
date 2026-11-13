@@ -128,7 +128,7 @@ $format_rule_value = static function ($value) {
             <article class="tfp-admin-panel tfp-admin-course-rules-card tfp-rules-identity">
                 <div class="tfp-admin-course-rules-card-heading">
                     <div><h3><?php esc_html_e('Course Identity', 'tfp-dashboard'); ?></h3><p><?php esc_html_e('Name and basic metadata for this course template.', 'tfp-dashboard'); ?></p></div>
-                    <a href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>" class="tfp-admin-course-rules-edit">✎ <span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></a>
+                    <a href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>" class="tfp-admin-course-rules-edit"><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></a>
                 </div>
                 <div class="tfp-admin-course-rules-identity">
                     <?php if ($course_cover) : ?><img src="<?php echo esc_url($course_cover); ?>" alt=""><?php endif; ?>
@@ -143,7 +143,7 @@ $format_rule_value = static function ($value) {
                 <article class="tfp-admin-panel tfp-admin-course-rules-card tfp-rules-<?php echo esc_attr($section_key); ?>">
                     <div class="tfp-admin-course-rules-card-heading">
                         <div><h3><?php echo esc_html($section['title']); ?></h3><p><?php echo esc_html($section['description']); ?></p></div>
-                        <button type="button" class="tfp-admin-course-rules-edit" data-rules-edit aria-expanded="false"><span aria-hidden="true">✎</span> <span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></button>
+                        <button type="button" class="tfp-admin-course-rules-edit" data-rules-edit aria-expanded="false"><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></button>
                     </div>
                     <dl class="tfp-admin-course-rules-rows">
                         <?php foreach ($section['fields'] as $field_key => $label) :
