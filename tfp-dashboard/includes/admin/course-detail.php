@@ -241,7 +241,7 @@ function tfp_admin_course_detail_render() {
             <div class="tfp-admin-breadcrumb">
                 <a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a>
                 <b>/</b><a href="<?php echo esc_url(tfp_admin_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
-                <b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo esc_html($course_title); ?></strong>
+                <b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo esc_html($course_heading_title); ?></strong>
                 <?php if ($is_plan_tab) : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php esc_html_e('Plan', 'tfp-dashboard'); ?></strong><?php endif; ?>
             </div>
 
