@@ -1881,3 +1881,18 @@ body.tfp-course-learning-flow-open{overflow:hidden}
  .tfp-admin-course-detail-app .tfp-course-completion-panel{width:100%;height:min(800px,calc(100dvh - 24px));max-height:calc(100dvh - 24px);padding:22px 18px}
  .tfp-admin-course-detail-app .tfp-course-completion-toggle-row{flex-wrap:wrap}
 }
+
+
+/* Completion Requirements close control: remove inherited pink hover/active fill. */
+.tfp-admin-course-detail-app .tfp-course-completion-close,
+.tfp-admin-course-detail-app .tfp-course-completion-close:hover,
+.tfp-admin-course-detail-app .tfp-course-completion-close:focus,
+.tfp-admin-course-detail-app .tfp-course-completion-close:focus-visible,
+.tfp-admin-course-detail-app .tfp-course-completion-close:active {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #006B73 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
