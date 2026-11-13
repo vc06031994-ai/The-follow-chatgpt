@@ -38,3 +38,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+
+/* Course Editor: submit the active reading form from the page-level Save button. */
+document.addEventListener('click', function (event) {
+    var saveTrigger = event.target.closest('[data-tfp-editor-save-trigger]');
+    if (saveTrigger) {
+        var readingForm = document.querySelector('.tfp-editor-reading-form');
+        if (readingForm) {
+            readingForm.requestSubmit();
+        }
+    }
+
+    var moveTrigger = event.target.closest('[data-tfp-editor-move-toggle]');
+    if (moveTrigger) {
+        var moveRow = document.querySelector('.tfp-editor-move-row');
+        if (moveRow) {
+            moveRow.hidden = !moveRow.hidden;
+        }
+    }
+});
