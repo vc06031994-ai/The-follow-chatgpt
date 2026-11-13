@@ -16,6 +16,9 @@ $rules_settings = get_post_meta($course_id, $rules_meta_key, true);
 $rules_settings = is_array($rules_settings) ? $rules_settings : [];
 
 $rules_extra_fields = [
+    'video_completion_percent',
+    'quiz_pass_percent',
+    'test_pass_percent',
     'late_work_grace_period',
     'allow_facilitator_overrides',
     'auto_unlock_on_close_section',
@@ -338,6 +341,68 @@ $format_rule_value = static function ($value) {
             </div>
         </div>
     </div>
+    <div class="tfp-course-completion-modal" id="tfp-course-completion-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-course-completion-title" hidden>
+        <div class="tfp-course-completion-backdrop" data-completion-close></div>
+        <div class="tfp-course-completion-panel">
+            <div class="tfp-course-completion-heading">
+                <div><h2 id="tfp-course-completion-title"><?php esc_html_e('Edit Completion Requirements', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Define what “complete” means for each step.', 'tfp-dashboard'); ?></p></div>
+                <button type="button" class="tfp-course-completion-close" data-completion-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button>
+            </div>
+
+            <div class="tfp-course-completion-field tfp-course-completion-video">
+                <label for="tfp-course-video-completion"><?php esc_html_e('Video Completion %', 'tfp-dashboard'); ?></label>
+                <input form="tfp-course-rules-form" id="tfp-course-video-completion" type="number" min="1" max="100" name="tfp_course_rules[video_completion_percent]" value="<?php echo esc_attr($rules_settings['video_completion_percent'] ?? '100'); ?>">
+            </div>
+
+            <div class="tfp-course-completion-field tfp-course-completion-reading">
+                <label for="tfp-course-reading-completion"><?php esc_html_e('Reading', 'tfp-dashboard'); ?></label>
+                <select form="tfp-course-rules-form" id="tfp-course-reading-completion" name="tfp_course_rules[reading_completion]">
+                    <option value="Complete all assigned readings" <?php selected(($rules_settings['reading_completion'] ?? 'Complete all assigned readings'), 'Complete all assigned readings'); ?>><?php esc_html_e('Complete all assigned readings', 'tfp-dashboard'); ?></option>
+                    <option value="Mark as read" <?php selected(($rules_settings['reading_completion'] ?? ''), 'Mark as read'); ?>><?php esc_html_e('Mark as read', 'tfp-dashboard'); ?></option>
+                </select>
+            </div>
+
+            <div class="tfp-course-completion-field tfp-course-completion-homework">
+                <strong><?php esc_html_e('Homework', 'tfp-dashboard'); ?></strong>
+                <?php $homework_completion = $rules_settings['homework_completion'] ?? 'Submit required'; ?>
+                <?php foreach (['Submit required', 'Submit + Pass', 'Submit + Reviewed'] as $homework_option) : ?>
+                    <label class="tfp-course-completion-choice"><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[homework_completion]" value="<?php echo esc_attr($homework_option); ?>" <?php checked($homework_completion, $homework_option); ?>><span><?php echo esc_html($homework_option); ?></span></label>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="tfp-course-completion-assessment">
+                <div class="tfp-course-completion-toggle-row">
+                    <div class="tfp-course-completion-toggle-copy">
+                        <strong><?php esc_html_e('Quiz', 'tfp-dashboard'); ?></strong>
+                        <span><?php esc_html_e('On | Pass %', 'tfp-dashboard'); ?></span>
+                    </div>
+                    <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[quiz_completion]" value="On" <?php checked(($rules_settings['quiz_completion'] ?? 'On'), 'On'); ?>><span></span></label>
+                    <input form="tfp-course-rules-form" class="tfp-course-completion-percent" type="number" min="0" max="100" aria-label="<?php esc_attr_e('Quiz pass percentage', 'tfp-dashboard'); ?>" name="tfp_course_rules[quiz_pass_percent]" value="<?php echo esc_attr($rules_settings['quiz_pass_percent'] ?? '80'); ?>">
+                    <span class="tfp-course-completion-default"><?php esc_html_e('default: ON / 80%', 'tfp-dashboard'); ?></span>
+                </div>
+                <div class="tfp-course-completion-toggle-row">
+                    <div class="tfp-course-completion-toggle-copy">
+                        <strong><?php esc_html_e('Test', 'tfp-dashboard'); ?></strong>
+                        <span><?php esc_html_e('On | Pass %', 'tfp-dashboard'); ?></span>
+                    </div>
+                    <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[test_completion]" value="On" <?php checked(($rules_settings['test_completion'] ?? 'On'), 'On'); ?>><span></span></label>
+                    <input form="tfp-course-rules-form" class="tfp-course-completion-percent" type="number" min="0" max="100" aria-label="<?php esc_attr_e('Test pass percentage', 'tfp-dashboard'); ?>" name="tfp_course_rules[test_pass_percent]" value="<?php echo esc_attr($rules_settings['test_pass_percent'] ?? '70'); ?>">
+                    <span class="tfp-course-completion-default"><?php esc_html_e('default: ON / 70%', 'tfp-dashboard'); ?></span>
+                </div>
+                <div class="tfp-course-completion-toggle-row tfp-course-completion-meeting">
+                    <div class="tfp-course-completion-toggle-copy"><strong><?php esc_html_e('Meeting/Review', 'tfp-dashboard'); ?></strong></div>
+                    <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[meeting_completion]" value="On" <?php checked(($rules_settings['meeting_completion'] ?? 'On'), 'On'); ?>><span></span></label>
+                    <span class="tfp-course-completion-default"><?php esc_html_e('On', 'tfp-dashboard'); ?></span>
+                </div>
+            </div>
+
+            <div class="tfp-course-completion-actions">
+                <button type="submit" form="tfp-course-rules-form" name="tfp_save_course_rules" value="1" class="tfp-admin-course-rules-save"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-admin-course-rules-cancel" data-completion-close><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+            </div>
+        </div>
+    </div>
+
 </section>
 <script>
 (function () {
@@ -469,6 +534,27 @@ $format_rule_value = static function ($value) {
     });
 
 
+    var completionModal = root.querySelector('#tfp-course-completion-modal');
+    var completionOpen = root.querySelector('.tfp-rules-completion [data-rules-edit]');
+    if (completionModal && completionOpen) {
+        var closeCompletion = function () {
+            completionModal.hidden = true;
+            document.body.classList.remove('tfp-course-completion-open');
+        };
+        completionOpen.addEventListener('click', function () {
+            completionModal.hidden = false;
+            document.body.classList.add('tfp-course-completion-open');
+            var firstField = completionModal.querySelector('input, button, select');
+            if (firstField) firstField.focus();
+        });
+        completionModal.querySelectorAll('[data-completion-close]').forEach(function (el) {
+            el.addEventListener('click', closeCompletion);
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !completionModal.hidden) closeCompletion();
+        });
+    }
+
     var learningFlowModal = root.querySelector('#tfp-course-learning-flow-modal');
     var learningFlowOpen = root.querySelector('.tfp-rules-learning_flow [data-rules-edit]');
     if (learningFlowModal && learningFlowOpen) {
@@ -544,6 +630,7 @@ $format_rule_value = static function ($value) {
     root.querySelectorAll('[data-rules-edit]').forEach(function (button) {
         button.addEventListener('click', function () {
             var card = button.closest('.tfp-admin-course-rules-card');
+            if (card && card.classList.contains('tfp-rules-completion')) return;
             var editing = button.getAttribute('aria-expanded') !== 'true';
             button.setAttribute('aria-expanded', editing ? 'true' : 'false');
             button.querySelector('span:last-child').textContent = editing ? 'Done' : 'Edit';
