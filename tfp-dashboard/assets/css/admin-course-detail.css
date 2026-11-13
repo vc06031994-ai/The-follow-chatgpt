@@ -1736,3 +1736,102 @@ body.tfp-course-rules-modal-open{overflow:hidden}
 .tfp-admin-course-detail-app .tfp-course-custom-select-trigger:focus{
   border-color:#006B73!important;outline:none!important;box-shadow:0 0 0 2px rgba(0,107,115,.12)!important
 }
+
+
+/* Learning Flow drawer — follows the Course Identity / Progression popup dimensions and shadow. */
+.tfp-admin-course-detail-app .tfp-course-learning-flow-modal[hidden]{display:none!important}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-modal{
+    position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:flex-end;
+    padding:40px 7.5vw 40px 24px;background:rgba(0,0,0,.58);box-sizing:border-box
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-backdrop{position:absolute;inset:0}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-panel{
+    position:relative;z-index:1;width:min(680px,100%);height:min(800px,calc(100vh - 48px));
+    max-height:calc(100vh - 48px);overflow-y:auto;padding:28px 24px;
+    border:1px solid #c7cccd;border-radius:7px;background:#dfe3e4;
+    box-shadow:0 18px 48px rgba(0,0,0,.30),0 4px 12px rgba(0,0,0,.12);box-sizing:border-box
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-heading{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+    margin:0 0 18px;padding:0 0 10px;border-bottom:1px solid #aeb5b7
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-heading h2{
+    margin:0 0 5px;color:#171717;font:700 16px/1.35 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-heading p{
+    margin:0;color:#333;font:400 13px/1.4 var(--tfp-dash-font-alt,Georgia,serif)
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-close{
+    display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;
+    border:0;border-radius:4px;background:transparent;color:#333;font-size:23px;cursor:pointer
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-section{
+    margin:0 0 24px;padding:0 0 22px;border-bottom:1px solid #aeb5b7
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-section>strong,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-section>label,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-toggle>strong{
+    display:block;margin:0 0 12px;color:#171717;font:700 15px/1.35 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-hint{
+    margin:-5px 0 12px;color:#555;font:400 11px/1.4 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-sortable{
+    display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-step{
+    display:inline-flex;min-height:46px;align-items:center;gap:10px;padding:0 14px;
+    border:1px solid #e0e2e3;border-radius:10px;background:#fff;color:#171717;
+    font:700 14px/1.3 var(--tfp-dash-font,"Eudoxus Sans",sans-serif);cursor:grab;user-select:none
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-step:first-child{
+    border:2px solid #006b73;padding-left:13px
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-step.is-dragging{opacity:.45;cursor:grabbing}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-step.is-drop-target{outline:2px dashed #006b73;outline-offset:2px}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-grip{
+    color:#171717;font-size:22px;line-height:1;letter-spacing:-3px;cursor:grab
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-meeting{
+    display:flex;flex-direction:column;gap:9px;margin-top:0
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-meeting>label{margin:0}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-meeting select{
+    width:100%;height:64px;min-height:64px;padding:12px 15px;border:1px solid #c9ced0;border-radius:8px;
+    background:#fff;color:#333;font:400 15px/1.4 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-meeting select:focus{
+    border-color:#006b73;outline:2px solid rgba(0,107,115,.18);outline-offset:1px
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-meeting select option:checked,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-meeting select option:hover{
+    background:#006b73;color:#fff
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-toggle{
+    display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;margin:0 0 26px
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-toggle>strong{margin:0}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-toggle>small{
+    min-width:24px;color:#666;font:400 14px/1.3 var(--tfp-dash-font-alt,Georgia,serif)
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-actions{
+    display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:28px
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-actions .tfp-admin-course-rules-save,
+.tfp-admin-course-detail-app .tfp-course-learning-flow-actions .tfp-admin-course-rules-cancel{
+    min-height:46px;padding:0 18px;font-size:14px
+}
+.tfp-admin-course-detail-app .tfp-course-learning-flow-actions .tfp-admin-course-rules-save-icon{
+    width:18px;height:18px;flex-basis:18px
+}
+body.tfp-course-learning-flow-open{overflow:hidden}
+@media(max-width:700px){
+    .tfp-admin-course-detail-app .tfp-course-learning-flow-modal{justify-content:center;padding:12px}
+    .tfp-admin-course-detail-app .tfp-course-learning-flow-panel{
+        width:100%;height:auto;max-height:calc(100vh - 24px);padding:20px 16px;
+        box-shadow:0 16px 40px rgba(0,0,0,.30),0 4px 12px rgba(0,0,0,.12)
+    }
+    .tfp-admin-course-detail-app .tfp-course-learning-flow-sortable{gap:8px}
+    .tfp-admin-course-detail-app .tfp-course-learning-flow-step{min-height:42px;padding:0 11px;font-size:12px}
+    .tfp-admin-course-detail-app .tfp-course-learning-flow-meeting select{height:48px;min-height:48px}
+}
