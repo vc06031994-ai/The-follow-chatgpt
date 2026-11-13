@@ -121,18 +121,8 @@ $format_rule_value = static function ($value) {
 };
 ?>
 <section class="tfp-admin-course-rules-page">
-    <form method="post" class="tfp-admin-course-rules-form">
+    <form method="post" id="tfp-course-rules-form" class="tfp-admin-course-rules-form">
         <?php wp_nonce_field('tfp_save_course_rules_' . $course_id); ?>
-        <div class="tfp-admin-course-rules-toolbar">
-            <div>
-                <h2><?php esc_html_e('Course rules & defaults', 'tfp-dashboard'); ?></h2>
-                <p><?php esc_html_e('Set course-wide progression, completion, assessment, grading, and facilitation defaults.', 'tfp-dashboard'); ?></p>
-            </div>
-            <div class="tfp-admin-course-rules-actions">
-                <button class="tfp-admin-course-rules-save" type="submit" name="tfp_save_course_rules" value="1"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
-                <a class="tfp-admin-course-rules-cancel" href="<?php echo esc_url(add_query_arg('course_tab', 'rules', tfp_admin_course_detail_url($course_id))); ?>"><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></a>
-            </div>
-        </div>
 
         <div class="tfp-admin-course-rules-grid">
             <article class="tfp-admin-panel tfp-admin-course-rules-card tfp-rules-identity">
