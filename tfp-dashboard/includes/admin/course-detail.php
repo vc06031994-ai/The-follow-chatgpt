@@ -171,6 +171,14 @@ function tfp_admin_course_detail_render() {
     if (!$course_title) {
         $course_title = (string) $data['course']->post_title;
     }
+    // Use concise display headings for the two named foundation courses.
+    $course_heading_title = $course_title;
+    $course_id = (int) $data['course']->ID;
+    if (1039 === $course_id) {
+        $course_heading_title = __('12 Week Foundation', 'tfp-dashboard');
+    } elseif (1659 === $course_id) {
+        $course_heading_title = __('58 Week Discipleship', 'tfp-dashboard');
+    }
     $cohorts_url = admin_url('edit.php?post_type=tfp_cohort');
     $page_number = isset($_GET['week_page']) ? max(1, absint($_GET['week_page'])) : 1;
     $per_page = 6;
@@ -238,7 +246,7 @@ function tfp_admin_course_detail_render() {
             </div>
 
             <header class="tfp-admin-page-header tfp-admin-course-detail-header">
-                <div><h1><?php echo esc_html($course_title); ?></h1><p><?php echo $is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard'); ?></p></div>
+                <div><h1><?php echo esc_html($course_heading_title); ?></h1><p><?php echo $is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard'); ?></p></div>
                 <div class="tfp-admin-course-header-actions">
                     <?php if ($is_plan_tab) : ?>
                         <a class="tfp-admin-course-edit" href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>"><span aria-hidden="true">✎</span><?php esc_html_e('Edit Course', 'tfp-dashboard'); ?></a>
