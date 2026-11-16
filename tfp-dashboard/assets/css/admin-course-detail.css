@@ -2333,3 +2333,31 @@ body.tfp-course-learning-flow-open{overflow:hidden}
         gap: 5px;
     }
 }
+
+
+/* Grading typography refinement: match the dashboard font and enlarge form text. */
+.tfp-admin-course-detail-app .tfp-grading-panel {
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+}
+.tfp-admin-course-detail-app .tfp-grading-panel .tfp-course-rules-modal-heading h2,
+.tfp-admin-course-detail-app .tfp-grading-panel .tfp-course-rules-modal-heading p {
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif) !important;
+}
+/* Keep the red-box heading and description at their existing font sizes. */
+.tfp-admin-course-detail-app .tfp-grading-panel .tfp-course-rules-modal-heading h2 {
+    font-size: 14px !important;
+}
+.tfp-admin-course-detail-app .tfp-grading-panel .tfp-course-rules-modal-heading p {
+    font-size: 10px !important;
+}
+/* Increase all remaining Grading popup text by 2px. */
+.tfp-admin-course-detail-app .tfp-grading-group h3 { font-size: 13px !important; }
+.tfp-admin-course-detail-app .tfp-grading-group > small { font-size: 10px !important; }
+.tfp-admin-course-detail-app .tfp-grading-allocation-row > strong { font-size: 12px !important; }
+.tfp-admin-course-detail-app .tfp-grading-allocation-row > small { font-size: 11px !important; }
+.tfp-admin-course-detail-app .tfp-grading-allocation-row input[type="number"],
+.tfp-admin-course-detail-app .tfp-grading-inline-field input { font-size: 12px !important; }
+.tfp-admin-course-detail-app .tfp-grading-allocation-total { font-size: 10px !important; }
+.tfp-admin-course-detail-app .tfp-grading-inline-field { font-size: 11px !important; }
+.tfp-admin-course-detail-app .tfp-grading-choice { font-size: 11px !important; }
+.tfp-admin-course-detail-app .tfp-grading-mode { font-size: 11px !important; }
