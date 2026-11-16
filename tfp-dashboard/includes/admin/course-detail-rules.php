@@ -136,7 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
             }
             foreach ($rules_extra_fields as $field_key) {
                 $raw = $submitted[$field_key] ?? '';
-                $clean[$field_key] = is_scalar($raw) ? sanitize_text_field((string) $raw) : '';
+                $clean[$field_key] = is_array($raw)
+                    ? implode(',', array_map('sanitize_text_field', array_filter($raw, 'is_scalar')))
+                    : (is_scalar($raw) ? sanitize_text_field((string) $raw) : '');
             }
             update_post_meta($course_id, $rules_meta_key, $clean);
             $rules_settings = $clean;
@@ -149,8 +151,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
 $rules_settings['attendance_policy'] = (($rules_settings['track_attendance'] ?? 'On') === 'On' ? 'On' : 'Off')
     . ' | Allowed misses: ' . (string) ($rules_settings['allowed_misses'] ?? '2')
     . ' | Excused absences: ' . (($rules_settings['count_excused_absences'] ?? 'On') === 'On' ? 'On' : 'Off');
-$rules_settings['close_outs'] = !empty($rules_settings['required_checks'])
-    ? str_replace(',', ', ', (string) $rules_settings['required_checks'])
+$rules_settings['close_outs'] = array_key_exists('required_checks', $rules_settings)
+    ? (trim((string) $rules_settings['required_checks']) !== '' ? str_replace(',', ', ', (string) $rules_settings['required_checks']) : 'None')
     : 'Attendance, Homework, Quiz, Test, Exercise, Notes';
 $rules_settings['enforcement'] = (($rules_settings['enforcement_level'] ?? 'Strict') === 'Warnings allowed') ? 'Warnings allowed' : 'Strict';
 $course_type_label = get_post_meta($course_id, 'tfp_course_type', true);
