@@ -2361,3 +2361,42 @@ body.tfp-course-learning-flow-open{overflow:hidden}
 .tfp-admin-course-detail-app .tfp-grading-inline-field { font-size: 11px !important; }
 .tfp-admin-course-detail-app .tfp-grading-choice { font-size: 11px !important; }
 .tfp-admin-course-detail-app .tfp-grading-mode { font-size: 11px !important; }
+
+
+/* Grading popup: restore Figma-sized switches and keep the knob inside the track. */
+.tfp-admin-course-detail-app .tfp-grading-allocation-row .tfp-course-rules-switch {
+    position: relative !important;
+    display: inline-flex !important;
+    flex: 0 0 35px !important;
+    width: 35px !important;
+    min-width: 35px !important;
+    height: 18px !important;
+    overflow: visible !important;
+}
+.tfp-admin-course-detail-app .tfp-grading-allocation-row .tfp-course-rules-switch > span {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 35px !important;
+    height: 18px !important;
+    border-radius: 20px !important;
+}
+.tfp-admin-course-detail-app .tfp-grading-allocation-row .tfp-course-rules-switch > span::before {
+    top: 2px !important;
+    left: 2px !important;
+    width: 14px !important;
+    height: 14px !important;
+}
+.tfp-admin-course-detail-app .tfp-grading-allocation-row .tfp-course-rules-switch input:checked + span::before {
+    transform: translateX(17px) !important;
+}
+/* Match the Figma reference: Lora is used only for the modal title and intro. */
+.tfp-admin-course-detail-app .tfp-grading-panel .tfp-course-rules-modal-heading h2,
+.tfp-admin-course-detail-app .tfp-grading-panel .tfp-course-rules-modal-heading p {
+    font-family: "Lora", Georgia, serif !important;
+}
+/* Increase title/label text by a further 2px; keep supporting helper copy unchanged. */
+.tfp-admin-course-detail-app .tfp-grading-group h3 { font-size: 15px !important; }
+.tfp-admin-course-detail-app .tfp-grading-allocation-row > strong { font-size: 14px !important; }
+.tfp-admin-course-detail-app .tfp-grading-inline-field { font-size: 13px !important; }
+.tfp-admin-course-detail-app .tfp-grading-choice { font-size: 13px !important; }
+.tfp-admin-course-detail-app .tfp-grading-mode { font-size: 13px !important; }
