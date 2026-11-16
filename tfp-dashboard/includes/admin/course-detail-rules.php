@@ -29,6 +29,13 @@ $rules_extra_fields = [
     'on_close_action',
     'enforcement_level',
     'notification_recipients',
+    'quiz_questions_per_attempt',
+    'quiz_attempts_allowed',
+    'quiz_passing_score',
+    'test_questions_per_attempt',
+    'test_attempts_allowed',
+    'test_passing_score',
+    'assessment_randomization',
 ];
 
 $rules_sections = [
@@ -147,6 +154,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
     }
 }
 
+// Build concise summary values for the Assessments card.
+$rules_settings['quiz_defaults'] = (string) ($rules_settings['quiz_questions_per_attempt'] ?? '10') . ' questions | '
+    . (string) ($rules_settings['quiz_attempts_allowed'] ?? '3') . ' attempts | '
+    . (string) ($rules_settings['quiz_passing_score'] ?? '80') . '% passing';
+$rules_settings['test_defaults'] = (string) ($rules_settings['test_questions_per_attempt'] ?? '10') . ' questions | '
+    . (string) ($rules_settings['test_attempts_allowed'] ?? '2') . ' attempts | '
+    . (string) ($rules_settings['test_passing_score'] ?? '70') . '% passing';
+$rules_settings['randomization'] = $rules_settings['assessment_randomization'] ?? 'No repeats until questions exhausted';
+
 // Build concise summary values for the Facilitation Rules card.
 $rules_settings['attendance_policy'] = (($rules_settings['track_attendance'] ?? 'On') === 'On' ? 'On' : 'Off')
     . ' | Allowed misses: ' . (string) ($rules_settings['allowed_misses'] ?? '2')
@@ -202,7 +218,15 @@ $format_rule_value = static function ($value) {
                 <article class="tfp-admin-panel tfp-admin-course-rules-card tfp-rules-<?php echo esc_attr($section_key); ?>">
                     <div class="tfp-admin-course-rules-card-heading">
                         <div><h3><?php echo esc_html($section['title']); ?></h3><p><?php echo esc_html($section['description']); ?></p></div>
-                        <button type="button" class="tfp-admin-course-rules-edit" <?php echo $section_key === 'facilitation' ? 'data-facilitation-open aria-haspopup="dialog" aria-controls="tfp-facilitation-rules-modal"' : 'data-rules-edit aria-expanded="false"'; ?>><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></button>
+                        <button type="button" class="tfp-admin-course-rules-edit" <?php
+                            if ($section_key === 'facilitation') {
+                                echo 'data-facilitation-open aria-haspopup="dialog" aria-controls="tfp-facilitation-rules-modal"';
+                            } elseif ($section_key === 'assessments') {
+                                echo 'data-assessments-open aria-haspopup="dialog" aria-controls="tfp-assessments-modal"';
+                            } else {
+                                echo 'data-rules-edit aria-expanded="false"';
+                            }
+                        ?>><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></button>
                     </div>
                     <dl class="tfp-admin-course-rules-rows">
                         <?php foreach ($section['fields'] as $field_key => $label) :
@@ -423,6 +447,39 @@ $format_rule_value = static function ($value) {
     </div>
 
 
+
+    <div class="tfp-course-rules-modal tfp-assessments-modal" id="tfp-assessments-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-assessments-title" hidden>
+        <div class="tfp-course-rules-modal-backdrop" data-assessments-close></div>
+        <div class="tfp-course-rules-modal-panel tfp-assessments-panel">
+            <div class="tfp-course-rules-modal-heading">
+                <div><h2 id="tfp-assessments-title"><?php esc_html_e('Edit Assessments', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Configure quiz & test defaults. Single-attempt assessments.', 'tfp-dashboard'); ?></p></div>
+                <button type="button" class="tfp-course-rules-modal-close" data-assessments-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button>
+            </div>
+            <section class="tfp-assessments-group">
+                <h3><?php esc_html_e('Quiz Defaults', 'tfp-dashboard'); ?></h3>
+                <label><span><?php esc_html_e('Questions per attempt', 'tfp-dashboard'); ?></span><input form="tfp-course-rules-form" type="number" min="1" name="tfp_course_rules[quiz_questions_per_attempt]" value="<?php echo esc_attr($rules_settings['quiz_questions_per_attempt'] ?? '10'); ?>"></label>
+                <label><span><?php esc_html_e('Attempts allowed', 'tfp-dashboard'); ?></span><input form="tfp-course-rules-form" type="number" min="1" name="tfp_course_rules[quiz_attempts_allowed]" value="<?php echo esc_attr($rules_settings['quiz_attempts_allowed'] ?? '3'); ?>"></label>
+                <label><span><?php esc_html_e('Passing score %', 'tfp-dashboard'); ?></span><input form="tfp-course-rules-form" type="number" min="0" max="100" name="tfp_course_rules[quiz_passing_score]" value="<?php echo esc_attr($rules_settings['quiz_passing_score'] ?? '80'); ?>"></label>
+            </section>
+            <section class="tfp-assessments-group">
+                <h3><?php esc_html_e('Test Defaults', 'tfp-dashboard'); ?></h3>
+                <label><span><?php esc_html_e('Questions per attempt', 'tfp-dashboard'); ?></span><input form="tfp-course-rules-form" type="number" min="1" name="tfp_course_rules[test_questions_per_attempt]" value="<?php echo esc_attr($rules_settings['test_questions_per_attempt'] ?? '10'); ?>"></label>
+                <label><span><?php esc_html_e('Attempts allowed', 'tfp-dashboard'); ?></span><input form="tfp-course-rules-form" type="number" min="1" name="tfp_course_rules[test_attempts_allowed]" value="<?php echo esc_attr($rules_settings['test_attempts_allowed'] ?? '2'); ?>"></label>
+                <label><span><?php esc_html_e('Passing score %', 'tfp-dashboard'); ?></span><input form="tfp-course-rules-form" type="number" min="0" max="100" name="tfp_course_rules[test_passing_score]" value="<?php echo esc_attr($rules_settings['test_passing_score'] ?? '70'); ?>"></label>
+            </section>
+            <section class="tfp-assessments-group tfp-assessments-randomization">
+                <h3><?php esc_html_e('Randomization policy', 'tfp-dashboard'); ?></h3>
+                <?php foreach (['No repeats until questions exhausted', 'Avoid recent questions', 'Prefer new', 'Allow repeats'] as $randomization_option) : ?>
+                    <label><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[assessment_randomization]" value="<?php echo esc_attr($randomization_option); ?>" <?php checked(($rules_settings['assessment_randomization'] ?? 'No repeats until questions exhausted'), $randomization_option); ?>><span><?php echo esc_html($randomization_option); ?></span></label>
+                <?php endforeach; ?>
+            </section>
+            <div class="tfp-course-rules-modal-actions">
+                <button type="submit" form="tfp-course-rules-form" name="tfp_save_course_rules" value="1" class="tfp-admin-course-rules-save"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-admin-course-rules-cancel" data-assessments-close><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+            </div>
+        </div>
+    </div>
+
     <div class="tfp-course-rules-modal tfp-facilitation-rules-modal" id="tfp-facilitation-rules-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-facilitation-rules-title" hidden>
         <div class="tfp-course-rules-modal-backdrop" data-facilitation-close></div>
         <div class="tfp-course-rules-modal-panel tfp-facilitation-rules-panel">
@@ -509,6 +566,28 @@ $format_rule_value = static function ($value) {
                 identityModal.querySelector('[data-course-identity-upload-empty]').hidden = true;
             });
             frame.open();
+        });
+    }
+
+
+    var assessmentsModal = root.querySelector('#tfp-assessments-modal');
+    var assessmentsOpen = root.querySelector('[data-assessments-open]');
+    if (assessmentsModal && assessmentsOpen) {
+        var closeAssessments = function () {
+            assessmentsModal.hidden = true;
+            document.body.classList.remove('tfp-course-rules-modal-open');
+        };
+        assessmentsOpen.addEventListener('click', function () {
+            assessmentsModal.hidden = false;
+            document.body.classList.add('tfp-course-rules-modal-open');
+            var firstField = assessmentsModal.querySelector('input, button');
+            if (firstField) firstField.focus();
+        });
+        assessmentsModal.querySelectorAll('[data-assessments-close]').forEach(function (el) {
+            el.addEventListener('click', closeAssessments);
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !assessmentsModal.hidden) closeAssessments();
         });
     }
 
