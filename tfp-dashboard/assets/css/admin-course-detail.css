@@ -1968,3 +1968,20 @@ body.tfp-course-learning-flow-open{overflow:hidden}
         padding: 20px 16px !important;
     }
 }
+
+
+/* Facilitation Rules drawer */
+.tfp-admin-course-detail-app .tfp-facilitation-rules-modal{z-index:100004}
+.tfp-admin-course-detail-app .tfp-facilitation-rules-panel{display:flex;flex-direction:column;gap:0}
+.tfp-admin-course-detail-app .tfp-facilitation-field{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0;padding:12px 0;border-bottom:1px solid #aeb5b7}
+.tfp-admin-course-detail-app .tfp-facilitation-field>strong{flex:1 1 100%;margin:0;color:#171717;font:700 13px/1.35 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-course-detail-app .tfp-facilitation-field>small{color:#666;font:400 12px/1.35 var(--tfp-dash-font-alt,Georgia,serif)}
+.tfp-admin-course-detail-app .tfp-facilitation-field>p{flex:1 1 100%;margin:0;color:#777;font:400 10px/1.4 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-course-detail-app .tfp-facilitation-number{width:48px;height:34px;padding:6px 8px;border:1px solid #c9ced0;border-radius:5px;background:#fff;color:#333;font:400 12px var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-course-detail-app .tfp-facilitation-checklist,.tfp-admin-course-detail-app .tfp-facilitation-radio-group{align-items:flex-start;flex-direction:column;gap:9px}
+.tfp-admin-course-detail-app .tfp-facilitation-checklist>label,.tfp-admin-course-detail-app .tfp-facilitation-radio-group>label{display:flex;align-items:center;gap:9px;margin:0;color:#555;font:400 12px/1.4 var(--tfp-dash-font-alt,Georgia,serif);cursor:pointer}
+.tfp-admin-course-detail-app .tfp-facilitation-checklist input,.tfp-admin-course-detail-app .tfp-facilitation-radio-group input{width:16px;height:16px;margin:0;accent-color:#006b73;flex:0 0 auto}
+.tfp-admin-course-detail-app .tfp-facilitation-checklist{padding-bottom:16px}
+.tfp-admin-course-detail-app .tfp-facilitation-recipients{border-bottom:0}
+.tfp-admin-course-detail-app .tfp-facilitation-field .tfp-course-rules-switch{flex:0 0 35px}
+@media(max-width:700px){.tfp-admin-course-detail-app .tfp-facilitation-rules-panel{overflow-y:auto}.tfp-admin-course-detail-app .tfp-facilitation-field{gap:8px;padding:10px 0}}
