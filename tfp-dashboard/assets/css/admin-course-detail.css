@@ -2033,3 +2033,28 @@ body.tfp-course-learning-flow-open{overflow:hidden}
         grid-template-columns: 1fr !important;
     }
 }
+
+
+/* On shorter screens, keep the drawer within the viewport and allow vertical scrolling. */
+@media (max-height: 820px) {
+    .tfp-admin-course-detail-app .tfp-facilitation-rules-modal {
+        padding-top: 16px !important;
+        padding-bottom: 16px !important;
+    }
+    .tfp-admin-course-detail-app .tfp-facilitation-rules-panel {
+        height: auto !important;
+        max-height: calc(100vh - 32px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+    }
+}
+@media (max-height: 560px) {
+    .tfp-admin-course-detail-app .tfp-facilitation-rules-modal {
+        align-items: flex-start !important;
+    }
+    .tfp-admin-course-detail-app .tfp-facilitation-rules-panel {
+        max-height: calc(100vh - 24px) !important;
+    }
+}
