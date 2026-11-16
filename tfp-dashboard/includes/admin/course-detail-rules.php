@@ -22,6 +22,13 @@ $rules_extra_fields = [
     'late_work_grace_period',
     'allow_facilitator_overrides',
     'auto_unlock_on_close_section',
+    'track_attendance',
+    'allowed_misses',
+    'count_excused_absences',
+    'required_checks',
+    'on_close_action',
+    'enforcement_level',
+    'notification_recipients',
 ];
 
 $rules_sections = [
@@ -122,7 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
             foreach ($rules_sections as $section_key => $section) {
                 foreach ($section['fields'] as $field_key => $label) {
                     $raw = $submitted[$field_key] ?? '';
-                    $clean[$field_key] = is_scalar($raw) ? sanitize_text_field((string) $raw) : '';
+                    $clean[$field_key] = is_array($raw)
+                    ? implode(',', array_map('sanitize_text_field', array_filter($raw, 'is_scalar')))
+                    : (is_scalar($raw) ? sanitize_text_field((string) $raw) : '');
                 }
             }
             foreach ($rules_extra_fields as $field_key) {
@@ -136,6 +145,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
     }
 }
 
+// Build concise summary values for the Facilitation Rules card.
+$rules_settings['attendance_policy'] = (($rules_settings['track_attendance'] ?? 'On') === 'On' ? 'On' : 'Off')
+    . ' | Allowed misses: ' . (string) ($rules_settings['allowed_misses'] ?? '2')
+    . ' | Excused absences: ' . (($rules_settings['count_excused_absences'] ?? 'On') === 'On' ? 'On' : 'Off');
+$rules_settings['close_outs'] = !empty($rules_settings['required_checks'])
+    ? str_replace(',', ', ', (string) $rules_settings['required_checks'])
+    : 'Attendance, Homework, Quiz, Test, Exercise, Notes';
+$rules_settings['enforcement'] = (($rules_settings['enforcement_level'] ?? 'Strict') === 'Warnings allowed') ? 'Warnings allowed' : 'Strict';
 $course_type_label = get_post_meta($course_id, 'tfp_course_type', true);
 if (!$course_type_label) {
     $course_type_label = get_post_meta($course_id, '_sfwd-courses', true);
@@ -183,7 +200,7 @@ $format_rule_value = static function ($value) {
                 <article class="tfp-admin-panel tfp-admin-course-rules-card tfp-rules-<?php echo esc_attr($section_key); ?>">
                     <div class="tfp-admin-course-rules-card-heading">
                         <div><h3><?php echo esc_html($section['title']); ?></h3><p><?php echo esc_html($section['description']); ?></p></div>
-                        <button type="button" class="tfp-admin-course-rules-edit" data-rules-edit aria-expanded="false"><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></button>
+                        <button type="button" class="tfp-admin-course-rules-edit" <?php echo $section_key === 'facilitation' ? 'data-facilitation-open aria-haspopup="dialog" aria-controls="tfp-facilitation-rules-modal"' : 'data-rules-edit aria-expanded="false"'; ?>><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Edit_Pencil_Line_01.png" alt="" aria-hidden="true"><span><?php esc_html_e('Edit', 'tfp-dashboard'); ?></span></button>
                     </div>
                     <dl class="tfp-admin-course-rules-rows">
                         <?php foreach ($section['fields'] as $field_key => $label) :
@@ -403,6 +420,63 @@ $format_rule_value = static function ($value) {
         </div>
     </div>
 
+
+    <div class="tfp-course-rules-modal tfp-facilitation-rules-modal" id="tfp-facilitation-rules-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-facilitation-rules-title" hidden>
+        <div class="tfp-course-rules-modal-backdrop" data-facilitation-close></div>
+        <div class="tfp-course-rules-modal-panel tfp-facilitation-rules-panel">
+            <div class="tfp-course-rules-modal-heading">
+                <div><h2 id="tfp-facilitation-rules-title"><?php esc_html_e('Edit Facilitation Rules', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Meeting requirements, policies, and close-out checklist.', 'tfp-dashboard'); ?></p></div>
+                <button type="button" class="tfp-course-rules-modal-close" data-facilitation-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button>
+            </div>
+            <div class="tfp-facilitation-field">
+                <strong><?php esc_html_e('Meeting Required', 'tfp-dashboard'); ?></strong>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[meeting_required]" value="On" <?php checked(($rules_settings['meeting_required'] ?? 'On'), 'On'); ?>><span></span></label><small>On</small>
+                <p><?php esc_html_e('If On, Learning Flow must include a Meeting step.', 'tfp-dashboard'); ?></p>
+            </div>
+            <div class="tfp-facilitation-field">
+                <strong><?php esc_html_e('Track attendance', 'tfp-dashboard'); ?></strong>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[track_attendance]" value="On" <?php checked(($rules_settings['track_attendance'] ?? 'On'), 'On'); ?>><span></span></label><small>On | Allowed misses</small>
+                <input form="tfp-course-rules-form" class="tfp-facilitation-number" type="number" min="0" max="99" name="tfp_course_rules[allowed_misses]" value="<?php echo esc_attr($rules_settings['allowed_misses'] ?? '2'); ?>" aria-label="Allowed misses">
+            </div>
+            <div class="tfp-facilitation-field">
+                <strong><?php esc_html_e('Count excused absences', 'tfp-dashboard'); ?></strong>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[count_excused_absences]" value="On" <?php checked(($rules_settings['count_excused_absences'] ?? 'On'), 'On'); ?>><span></span></label><small>On</small>
+                <p><?php esc_html_e('Learners may miss up to scheduled meetings before being flagged.', 'tfp-dashboard'); ?></p>
+            </div>
+            <div class="tfp-facilitation-field tfp-facilitation-checklist">
+                <strong><?php esc_html_e('Close-outs / Required checks', 'tfp-dashboard'); ?></strong>
+                <p><?php esc_html_e('Items facilitators must verify before closing a week.', 'tfp-dashboard'); ?></p>
+                <?php $required_checks = array_filter(array_map('trim', explode(',', (string) ($rules_settings['required_checks'] ?? 'Attendance,Homework,Quiz,Test,Exercise,Notes')))); ?>
+                <?php foreach (['Attendance', 'Homework', 'Quiz', 'Test', 'Exercise', 'Notes'] as $check_item) : ?>
+                    <label><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[required_checks][]" value="<?php echo esc_attr($check_item); ?>" <?php checked(in_array($check_item, $required_checks, true)); ?>><span><?php echo esc_html($check_item); ?></span></label>
+                <?php endforeach; ?>
+            </div>
+            <div class="tfp-facilitation-field">
+                <strong><?php esc_html_e('On close action', 'tfp-dashboard'); ?></strong>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[on_close_action]" value="On" <?php checked(($rules_settings['on_close_action'] ?? 'On'), 'On'); ?>><span></span></label><small>On</small>
+                <p><?php esc_html_e('When enabled, learners who have completed required items are unlocked immediately when the week is closed.', 'tfp-dashboard'); ?></p>
+            </div>
+            <div class="tfp-facilitation-field tfp-facilitation-radio-group">
+                <strong><?php esc_html_e('Enforcement level', 'tfp-dashboard'); ?></strong>
+                <?php foreach (['Strict', 'Warnings allowed'] as $level) : ?>
+                    <label><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[enforcement_level]" value="<?php echo esc_attr($level); ?>" <?php checked(($rules_settings['enforcement_level'] ?? 'Strict'), $level); ?>><span><?php echo esc_html($level === 'Strict' ? 'Strict (block progression)' : 'Warnings allowed (flag only)'); ?></span></label>
+                <?php endforeach; ?>
+                <p><?php esc_html_e('Strict prevents progression until resolved. Warnings flag for follow-up but do not block.', 'tfp-dashboard'); ?></p>
+            </div>
+            <div class="tfp-facilitation-field tfp-facilitation-radio-group tfp-facilitation-recipients">
+                <strong><?php esc_html_e('Notification recipients', 'tfp-dashboard'); ?></strong>
+                <?php $notification_recipients = array_filter(array_map('trim', explode(',', (string) ($rules_settings['notification_recipients'] ?? 'Facilitator Assigned to Cohort,Admin')))); ?>
+                <?php foreach (['Facilitator Assigned to Cohort', 'Admin'] as $recipient) : ?>
+                    <label><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[notification_recipients][]" value="<?php echo esc_attr($recipient); ?>" <?php checked(in_array($recipient, $notification_recipients, true)); ?>><span><?php echo esc_html($recipient); ?></span></label>
+                <?php endforeach; ?>
+            </div>
+            <div class="tfp-course-rules-modal-actions">
+                <button type="submit" form="tfp-course-rules-form" name="tfp_save_course_rules" value="1" class="tfp-admin-course-rules-save"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-admin-course-rules-cancel" data-facilitation-close><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+            </div>
+        </div>
+    </div>
+
 </section>
 <script>
 (function () {
@@ -435,6 +509,28 @@ $format_rule_value = static function ($value) {
             frame.open();
         });
     }
+
+    var facilitationModal = root.querySelector('#tfp-facilitation-rules-modal');
+    var facilitationOpen = root.querySelector('[data-facilitation-open]');
+    if (facilitationModal && facilitationOpen) {
+        var closeFacilitation = function () {
+            facilitationModal.hidden = true;
+            document.body.classList.remove('tfp-course-rules-modal-open');
+        };
+        facilitationOpen.addEventListener('click', function () {
+            facilitationModal.hidden = false;
+            document.body.classList.add('tfp-course-rules-modal-open');
+            var firstField = facilitationModal.querySelector('input, button');
+            if (firstField) firstField.focus();
+        });
+        facilitationModal.querySelectorAll('[data-facilitation-close]').forEach(function (el) {
+            el.addEventListener('click', closeFacilitation);
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !facilitationModal.hidden) closeFacilitation();
+        });
+    }
+
     var progressionModal = root.querySelector('#tfp-course-progression-modal');
     var progressionOpen = root.querySelector('.tfp-rules-progression [data-rules-edit]');
     if (progressionModal && progressionOpen) {
