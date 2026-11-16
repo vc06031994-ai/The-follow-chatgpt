@@ -36,6 +36,22 @@ $rules_extra_fields = [
     'test_attempts_allowed',
     'test_passing_score',
     'assessment_randomization',
+    'grading_homework_enabled',
+    'grading_homework_points',
+    'grading_quiz_enabled',
+    'grading_quiz_points',
+    'grading_test_enabled',
+    'grading_test_points',
+    'grading_pass_threshold',
+    'grading_pass_rule',
+    'grading_award',
+    'grading_transcript_entry',
+    'grading_ordination',
+    'grading_component_minimum_enabled',
+    'grading_component_minimum_mode',
+    'grading_homework_minimum',
+    'grading_test_minimum',
+    'grading_facilitator_overrides',
 ];
 
 $rules_sections = [
@@ -154,6 +170,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
     }
 }
 
+// Build concise summary values for the Grading card.
+$grading_homework_enabled = ($rules_settings['grading_homework_enabled'] ?? 'On') === 'On';
+$grading_quiz_enabled = ($rules_settings['grading_quiz_enabled'] ?? 'Off') === 'On';
+$grading_test_enabled = ($rules_settings['grading_test_enabled'] ?? 'On') === 'On';
+$grading_homework_points = (int) ($rules_settings['grading_homework_points'] ?? 60);
+$grading_quiz_points = (int) ($rules_settings['grading_quiz_points'] ?? 0);
+$grading_test_points = (int) ($rules_settings['grading_test_points'] ?? 40);
+$rules_settings['points_per_module'] = (string) ($rules_settings['points_per_module'] ?? '100');
+$rules_settings['graded_items'] = 'Homework: ' . ($grading_homework_enabled ? $grading_homework_points : 'Off')
+    . ' | Quiz: ' . ($grading_quiz_enabled ? $grading_quiz_points : 'Off')
+    . ' | Test: ' . ($grading_test_enabled ? $grading_test_points : 'Off');
+$rules_settings['points_model'] = 'Graded parts allocation';
+$rules_settings['grade_calculation'] = $rules_settings['grading_component_minimum_mode'] ?? 'Course-average';
+$rules_settings['quiz_grading'] = $rules_settings['quiz_passing_score'] ?? '80% passing';
+$rules_settings['test_grading'] = $rules_settings['test_passing_score'] ?? '70% passing';
+$rules_settings['quiz_randomization'] = $rules_settings['assessment_randomization'] ?? 'No repeats until questions exhausted';
+$rules_settings['test_randomization'] = $rules_settings['test_assessment_randomization'] ?? 'No repeats until questions exhausted';
+$rules_settings['certification'] = ($rules_settings['grading_award'] ?? 'Certificate of Completion') . ' | Pass: '
+    . (string) ($rules_settings['grading_pass_threshold'] ?? '75') . '%';
+$rules_settings['ordination'] = $rules_settings['grading_ordination'] ?? 'Admin approval';
+
 // Build concise summary values for the Assessments card.
 $rules_settings['quiz_defaults'] = (string) ($rules_settings['quiz_questions_per_attempt'] ?? '10') . ' questions | '
     . (string) ($rules_settings['quiz_attempts_allowed'] ?? '3') . ' attempts | '
@@ -223,6 +260,8 @@ $format_rule_value = static function ($value) {
                                 echo 'data-facilitation-open aria-haspopup="dialog" aria-controls="tfp-facilitation-rules-modal"';
                             } elseif ($section_key === 'assessments') {
                                 echo 'data-assessments-open aria-haspopup="dialog" aria-controls="tfp-assessments-modal"';
+                            } elseif ($section_key === 'grading') {
+                                echo 'data-grading-open aria-haspopup="dialog" aria-controls="tfp-grading-modal"';
                             } else {
                                 echo 'data-rules-edit aria-expanded="false"';
                             }
@@ -448,6 +487,71 @@ $format_rule_value = static function ($value) {
 
 
 
+
+    <div class="tfp-course-rules-modal tfp-grading-modal" id="tfp-grading-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-grading-title" hidden>
+        <div class="tfp-course-rules-modal-backdrop" data-grading-close></div>
+        <div class="tfp-course-rules-modal-panel tfp-grading-panel">
+            <div class="tfp-course-rules-modal-heading">
+                <div><h2 id="tfp-grading-title"><?php esc_html_e('Edit Grading', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Module total = 100 points. Allocate points to graded parts, set assessment defaults, and define pass & certification rules.', 'tfp-dashboard'); ?></p></div>
+                <button type="button" class="tfp-course-rules-modal-close" data-grading-close aria-label="<?php esc_attr_e('Close', 'tfp-dashboard'); ?>">×</button>
+            </div>
+            <section class="tfp-grading-group">
+                <h3><?php esc_html_e('Graded Parts Allocation', 'tfp-dashboard'); ?></h3><small>Allocate points (must total 100)</small>
+                <?php foreach (['homework' => ['Homework','On',60], 'quiz' => ['Quiz','Off',0], 'test' => ['Test','On',40]] as $part => $defaults) : ?>
+                    <div class="tfp-grading-allocation-row">
+                        <strong><?php echo esc_html($defaults[0]); ?></strong>
+                        <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[grading_<?php echo esc_attr($part); ?>_enabled]" value="On" <?php checked(($rules_settings['grading_' . $part . '_enabled'] ?? $defaults[1]), 'On'); ?>><span></span></label>
+                        <small><?php echo esc_html(($rules_settings['grading_' . $part . '_enabled'] ?? $defaults[1]) === 'On' ? 'On' : 'Off'); ?></small>
+                        <input form="tfp-course-rules-form" type="number" min="0" max="100" name="tfp_course_rules[grading_<?php echo esc_attr($part); ?>_points]" value="<?php echo esc_attr($rules_settings['grading_' . $part . '_points'] ?? $defaults[2]); ?>" aria-label="<?php echo esc_attr($defaults[0] . ' points'); ?>">
+                    </div>
+                <?php endforeach; ?>
+                <p class="tfp-grading-allocation-total">Allocated: <strong data-grading-total>100</strong>/100 · Remaining: <strong data-grading-remaining>0</strong></p>
+            </section>
+            <section class="tfp-grading-group">
+                <h3><?php esc_html_e('Overall pass & Certification', 'tfp-dashboard'); ?></h3>
+                <small>All modules count equally (course final = average of module %).</small>
+                <label class="tfp-grading-inline-field"><span>Passing threshold %</span><input form="tfp-course-rules-form" type="number" min="0" max="100" name="tfp_course_rules[grading_pass_threshold]" value="<?php echo esc_attr($rules_settings['grading_pass_threshold'] ?? '75'); ?>"></label>
+                <?php foreach (['Require all modules completed','Require facilitator close','Require no unresolved flags'] as $rule) : ?>
+                    <label class="tfp-grading-choice"><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[grading_pass_rule]" value="<?php echo esc_attr($rule); ?>" <?php checked(($rules_settings['grading_pass_rule'] ?? 'Require all modules completed'), $rule); ?>><span><?php echo esc_html($rule); ?></span></label>
+                <?php endforeach; ?>
+            </section>
+            <section class="tfp-grading-group">
+                <h3>Award on pass</h3>
+                <label class="tfp-grading-choice"><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[grading_award]" value="Certificate of Completion" <?php checked(($rules_settings['grading_award'] ?? 'Certificate of Completion'), 'Certificate of Completion'); ?>><span>Certificate of Completion</span></label>
+            </section>
+            <section class="tfp-grading-group">
+                <h3>Transcript entry</h3>
+                <?php foreach (['Record overall','Record module + overall'] as $entry) : ?>
+                    <label class="tfp-grading-choice"><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[grading_transcript_entry]" value="<?php echo esc_attr($entry); ?>" <?php checked(($rules_settings['grading_transcript_entry'] ?? 'Record module + overall'), $entry); ?>><span><?php echo esc_html($entry); ?></span></label>
+                <?php endforeach; ?>
+            </section>
+            <section class="tfp-grading-group">
+                <h3>Ordination</h3>
+                <?php foreach (['Admin approval','None'] as $ordination) : ?>
+                    <label class="tfp-grading-choice"><input form="tfp-course-rules-form" type="radio" name="tfp_course_rules[grading_ordination]" value="<?php echo esc_attr($ordination); ?>" <?php checked(($rules_settings['grading_ordination'] ?? 'Admin approval'), $ordination); ?>><span><?php echo esc_html($ordination); ?></span></label>
+                <?php endforeach; ?>
+            </section>
+            <section class="tfp-grading-group">
+                <h3>Component minimum</h3>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[grading_component_minimum_enabled]" value="On" <?php checked(($rules_settings['grading_component_minimum_enabled'] ?? 'On'), 'On'); ?>><span></span></label>
+                <small>On</small>
+                <strong class="tfp-grading-mode">Mode: <?php echo esc_html($rules_settings['grading_component_minimum_mode'] ?? 'Course-average'); ?></strong>
+                <small>Enforcement (implicit): Block certification if component minimums unmet.</small>
+                <label class="tfp-grading-inline-field"><span>Homework minimum %</span><input form="tfp-course-rules-form" type="number" min="0" max="100" name="tfp_course_rules[grading_homework_minimum]" value="<?php echo esc_attr($rules_settings['grading_homework_minimum'] ?? '60'); ?>"></label>
+                <label class="tfp-grading-inline-field"><span>Test minimum %</span><input form="tfp-course-rules-form" type="number" min="0" max="100" name="tfp_course_rules[grading_test_minimum]" value="<?php echo esc_attr($rules_settings['grading_test_minimum'] ?? '50'); ?>"></label>
+            </section>
+            <section class="tfp-grading-group tfp-grading-last-group">
+                <h3>Allow Facilitator Overrides</h3>
+                <label class="tfp-course-rules-switch"><input form="tfp-course-rules-form" type="checkbox" name="tfp_course_rules[grading_facilitator_overrides]" value="On" <?php checked(($rules_settings['grading_facilitator_overrides'] ?? 'On'), 'On'); ?>><span></span></label>
+                <small>On</small>
+            </section>
+            <div class="tfp-course-rules-modal-actions">
+                <button type="submit" form="tfp-course-rules-form" name="tfp_save_course_rules" value="1" class="tfp-admin-course-rules-save"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
+                <button type="button" class="tfp-admin-course-rules-cancel" data-grading-close><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+            </div>
+        </div>
+    </div>
+
     <div class="tfp-course-rules-modal tfp-assessments-modal" id="tfp-assessments-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-assessments-title" hidden>
         <div class="tfp-course-rules-modal-backdrop" data-assessments-close></div>
         <div class="tfp-course-rules-modal-panel tfp-assessments-panel">
@@ -569,6 +673,45 @@ $format_rule_value = static function ($value) {
         });
     }
 
+
+
+    var gradingModal = root.querySelector('#tfp-grading-modal');
+    var gradingOpen = root.querySelector('[data-grading-open]');
+    if (gradingModal && gradingOpen) {
+        var closeGrading = function () {
+            gradingModal.hidden = true;
+            document.body.classList.remove('tfp-course-rules-modal-open');
+        };
+        gradingOpen.addEventListener('click', function () {
+            gradingModal.hidden = false;
+            document.body.classList.add('tfp-course-rules-modal-open');
+            var firstField = gradingModal.querySelector('input, button');
+            if (firstField) firstField.focus();
+        });
+        gradingModal.querySelectorAll('[data-grading-close]').forEach(function (el) {
+            el.addEventListener('click', closeGrading);
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !gradingModal.hidden) closeGrading();
+        });
+        var updateGradingAllocation = function () {
+            var total = 0;
+            gradingModal.querySelectorAll('.tfp-grading-allocation-row').forEach(function (row) {
+                var enabled = row.querySelector('input[type="checkbox"]').checked;
+                var points = parseInt(row.querySelector('input[type="number"]').value, 10) || 0;
+                if (enabled) total += points;
+            });
+            var totalNode = gradingModal.querySelector('[data-grading-total]');
+            var remainingNode = gradingModal.querySelector('[data-grading-remaining]');
+            if (totalNode) totalNode.textContent = total;
+            if (remainingNode) remainingNode.textContent = 100 - total;
+        };
+        gradingModal.querySelectorAll('.tfp-grading-allocation-row input').forEach(function (input) {
+            input.addEventListener('change', updateGradingAllocation);
+            input.addEventListener('input', updateGradingAllocation);
+        });
+        updateGradingAllocation();
+    }
 
     var assessmentsModal = root.querySelector('#tfp-assessments-modal');
     var assessmentsOpen = root.querySelector('[data-assessments-open]');
