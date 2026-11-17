@@ -389,7 +389,7 @@ function tfp_admin_course_detail_render() {
                                     <?php endforeach; ?>
                                 </select>
                                 <label class="tfp-admin-course-cohorts-search">
-                                    <span aria-hidden="true">⌕</span>
+                                    <img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Note_Search-2.png" alt="" class="tfp-admin-course-cohorts-search-icon" aria-hidden="true">
                                     <input type="search" name="cohort_search" value="<?php echo esc_attr($cohort_search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>">
                                 </label>
                                 <button type="submit" class="screen-reader-text"><?php esc_html_e('Search', 'tfp-dashboard'); ?></button>
