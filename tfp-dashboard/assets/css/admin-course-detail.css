@@ -2557,3 +2557,162 @@ body.tfp-global-overrides-open{overflow:hidden}
  .tfp-admin-course-cohorts-export{min-height:36px;padding:0 10px}
  .tfp-admin-course-cohorts-sync{gap:5px}
 }
+
+
+
+/* Cohorts page polish: compact horizontal filters, aligned to the shared
+   Course Plan controls instead of stretching each field across the page. */
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts{
+    width:100%;
+    max-width:100%;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-filters{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    width:100%;
+    margin:0 0 14px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-filters > select,
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-filter-form > select{
+    display:block;
+    flex:0 0 155px;
+    width:155px !important;
+    min-width:155px;
+    max-width:155px;
+    height:36px;
+    min-height:36px;
+    margin:0;
+    padding:0 30px 0 11px;
+    border:1px solid #d5d9da;
+    border-radius:7px;
+    background-color:#fff;
+    color:#252525;
+    font:500 12px/1.2 var(--tfp-dash-font,"Eudoxus Sans",sans-serif);
+    box-shadow:none;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-filter-form{
+    display:flex;
+    flex:0 1 auto;
+    flex-direction:row;
+    align-items:center;
+    gap:10px;
+    width:auto;
+    min-width:0;
+    margin:0;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-filter-form > select{
+    flex-basis:138px;
+    width:138px !important;
+    min-width:138px;
+    max-width:138px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-search{
+    box-sizing:border-box;
+    display:flex;
+    flex:0 1 205px;
+    width:205px;
+    min-width:180px;
+    max-width:240px;
+    height:36px;
+    min-height:36px;
+    align-items:center;
+    gap:9px;
+    margin:0;
+    padding:0 10px;
+    border:1px solid #d5d9da;
+    border-radius:7px;
+    background:#fff;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-search:focus-within,
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-filters select:focus{
+    border-color:#006b73;
+    outline:0;
+    box-shadow:0 0 0 2px rgba(0,107,115,.10);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-search input{
+    box-sizing:border-box;
+    flex:1 1 auto;
+    width:100%;
+    min-width:0;
+    height:32px;
+    margin:0;
+    padding:0;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    font-size:12px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-panel{
+    border:1px solid #d4d7d8;
+    border-radius:11px;
+    box-shadow:0 1px 2px rgba(20,30,30,.04);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-toolbar{
+    min-height:68px;
+    padding:13px 20px;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-toolbar h2{
+    font-size:14px;
+    font-weight:700;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-table-wrap th{
+    height:42px;
+    padding:10px 14px;
+    background:#e1e5e6;
+    font-size:11px;
+    font-weight:700;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-table-wrap td{
+    height:43px;
+    padding:8px 14px;
+    font-size:11px;
+    vertical-align:middle;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-table-wrap tbody tr:last-child td{
+    border-bottom:0;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-join,
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-view{
+    min-width:78px;
+    height:28px;
+    border-radius:7px;
+    font-size:11px;
+    font-weight:600;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-sync-note{
+    margin:9px 0 0;
+    color:#8a8f90;
+    font-size:11px;
+}
+@media(max-width:767px){
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-filters{
+        flex-direction:column;
+        align-items:stretch;
+        gap:8px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-filters > select,
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-filter-form,
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-filter-form > select,
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-search{
+        box-sizing:border-box;
+        width:100% !important;
+        min-width:0;
+        max-width:none;
+        flex:1 1 auto;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-filter-form{
+        flex-direction:column;
+        align-items:stretch;
+        gap:8px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-toolbar{
+        min-height:60px;
+        padding:11px 13px;
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-cohorts-toolbar>div{
+        gap:9px;
+    }
+}
