@@ -316,8 +316,12 @@ function tfp_admin_course_insights_data($course_id, $cohort_filter = 0, $period 
         $total = array_sum($counts);
         $week_start = ($i * $chunk_size) + 1;
         $week_end = min(count($weeks), (($i + 1) * $chunk_size));
+        $topic_title = $slice ? wp_strip_all_tags(get_the_title($slice[0]->ID)) : '';
+        $topic_title = preg_replace('/^Week\\s*\\d+\\s*[:.\\-–—]*\\s*/i', '', $topic_title);
+        $topic_title = trim($topic_title);
         $sections[] = [
             'label' => sprintf(__('Section %d', 'tfp-dashboard'), $i + 1),
+            'topic' => $topic_title,
             'week_start' => $week_start,
             'week_end' => $week_end,
             'counts' => $counts,
@@ -781,7 +785,9 @@ function tfp_admin_course_detail_render() {
                                                         }
                                                     }
                                                     $tooltip_lines = [
-                                                        sprintf(__('Week %1$d–%2$d', 'tfp-dashboard'), (int) $section['week_start'], (int) $section['week_end']),
+                                                        $section['topic'] !== ''
+                                                            ? sprintf(__('Wk %1$d–%2$d (%3$s)', 'tfp-dashboard'), (int) $section['week_start'], (int) $section['week_end'], $section['topic'])
+                                                            : sprintf(__('Wk %1$d–%2$d', 'tfp-dashboard'), (int) $section['week_start'], (int) $section['week_end']),
                                                         sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $status_labels['on_track'], (int) $section['counts']['on_track']),
                                                         sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $status_labels['behind'], (int) $section['counts']['behind']),
                                                         sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $status_labels['stalled'], (int) $section['counts']['stalled']),
