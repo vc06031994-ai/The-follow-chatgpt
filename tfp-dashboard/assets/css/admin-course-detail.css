@@ -2833,3 +2833,27 @@ body.tfp-global-overrides-open{overflow:hidden}
 .tfp-admin-course-detail-app .tfp-admin-course-insights-header{display:none}
 .tfp-admin-course-detail-app .tfp-admin-insights-bar-column:hover .tfp-admin-insights-bar{filter:brightness(.96)}
 .tfp-admin-course-detail-app .tfp-admin-insights-bar-column:focus-within{outline:2px solid rgba(0,107,115,.35);outline-offset:3px}
+
+
+/* Mobile: align the Plan header actions to the left, matching the page content. */
+@media (max-width: 600px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-header {
+        align-items: flex-start !important;
+    }
+
+    .tfp-admin-course-detail-app .tfp-admin-course-header-actions {
+        display: flex !important;
+        width: 100%;
+        justify-content: flex-start !important;
+        align-items: center;
+        align-self: flex-start;
+        margin: 8px 0 0 !important;
+        padding: 0 !important;
+        gap: 8px;
+    }
+
+    .tfp-admin-course-detail-app .tfp-admin-course-header-actions .tfp-admin-course-edit,
+    .tfp-admin-course-detail-app .tfp-admin-course-header-actions .tfp-admin-course-view-cohorts {
+        margin-left: 0 !important;
+    }
+}
