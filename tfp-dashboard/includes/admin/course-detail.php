@@ -681,6 +681,156 @@ function tfp_admin_course_detail_render() {
                         </div>
                         <p class="tfp-admin-course-cohorts-sync-note" id="tfp-course-cohorts-sync-log"><?php esc_html_e('Sync log is not available yet.', 'tfp-dashboard'); ?></p>
                     </section>
+                <?php elseif ($active_tab === 'insights') :
+                    $insight_cohort_filter = isset($_GET['insight_cohort']) ? absint($_GET['insight_cohort']) : 0;
+                    $insight_period = isset($_GET['insight_period']) ? sanitize_key(wp_unslash($_GET['insight_period'])) : '90';
+                    if (!in_array($insight_period, ['30', '90', '365', 'all'], true)) $insight_period = '90';
+                    $insights = tfp_admin_course_insights_data($course_id, $insight_cohort_filter, $insight_period);
+                    $insight_courses = get_posts(['post_type' => 'sfwd-courses', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC']);
+                    $insight_total = max(1, (int) $insights['total_enrolled']);
+                    $insight_on_track = (int) round(($insights['statuses']['on_track'] / $insight_total) * 100);
+                    $insight_behind = (int) round(($insights['statuses']['behind'] / $insight_total) * 100);
+                    $insight_stalled = (int) round(($insights['statuses']['stalled'] / $insight_total) * 100);
+                    $insight_create_url = admin_url('post-new.php?post_type=sfwd-courses');
+                ?>
+                    <section class="tfp-admin-insights">
+                        <form class="tfp-admin-insights-filters" method="get" action="<?php echo esc_url(tfp_admin_course_detail_url($course_id)); ?>">
+                            <input type="hidden" name="course_tab" value="insights">
+                            <label class="screen-reader-text" for="tfp-insight-course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
+                            <select id="tfp-insight-course" name="insight_course" onchange="if(this.value){window.location.href=this.value;}">
+                                <?php foreach ($insight_courses as $insight_course) :
+                                    $insight_course_id = (int) $insight_course->ID;
+                                    $insight_course_label = $insight_course_id === 1039 ? __('12 Week Foundation', 'tfp-dashboard') : ($insight_course_id === 1659 ? __('58 Week Discipleship', 'tfp-dashboard') : $insight_course->post_title);
+                                    $insight_course_url = add_query_arg('course_tab', 'insights', tfp_admin_course_detail_url($insight_course_id));
+                                ?>
+                                    <option value="<?php echo esc_url($insight_course_url); ?>" <?php selected($course_id, $insight_course_id); ?>><?php echo esc_html($insight_course_label); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <label class="screen-reader-text" for="tfp-insight-cohort"><?php esc_html_e('Cohort', 'tfp-dashboard'); ?></label>
+                            <select id="tfp-insight-cohort" name="insight_cohort" onchange="this.form.submit()">
+                                <option value="0" <?php selected($insight_cohort_filter, 0); ?>><?php esc_html_e('All Cohorts', 'tfp-dashboard'); ?></option>
+                                <?php foreach ($insights['cohorts'] as $insight_cohort) : ?>
+                                    <option value="<?php echo esc_attr($insight_cohort->ID); ?>" <?php selected($insight_cohort_filter, $insight_cohort->ID); ?>><?php echo esc_html($insight_cohort->post_title); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <label class="screen-reader-text" for="tfp-insight-period"><?php esc_html_e('Date range', 'tfp-dashboard'); ?></label>
+                            <select id="tfp-insight-period" name="insight_period" onchange="this.form.submit()">
+                                <option value="30" <?php selected($insight_period, '30'); ?>><?php esc_html_e('Last 30 Days', 'tfp-dashboard'); ?></option>
+                                <option value="90" <?php selected($insight_period, '90'); ?>><?php esc_html_e('Last 90 Days', 'tfp-dashboard'); ?></option>
+                                <option value="365" <?php selected($insight_period, '365'); ?>><?php esc_html_e('Last 12 Months', 'tfp-dashboard'); ?></option>
+                                <option value="all" <?php selected($insight_period, 'all'); ?>><?php esc_html_e('All Time', 'tfp-dashboard'); ?></option>
+                            </select>
+                        </form>
+
+                        <div class="tfp-admin-insights-heading">
+                            <div><h2><?php esc_html_e('Insights', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Monitor student progress, assessment performance, activation, and facilitator workload.', 'tfp-dashboard'); ?></p></div>
+                            <a href="<?php echo esc_url($insight_create_url); ?>" class="tfp-admin-insights-create"><span aria-hidden="true">＋</span><?php esc_html_e('Create Course', 'tfp-dashboard'); ?></a>
+                        </div>
+
+                        <section class="tfp-admin-insights-summary" aria-label="<?php esc_attr_e('Student status summary', 'tfp-dashboard'); ?>">
+                            <article><small><?php esc_html_e('Total Enrolled', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($insights['total_enrolled'])); ?></strong><p><?php esc_html_e('Across selected cohorts', 'tfp-dashboard'); ?></p></article>
+                            <article><small><?php esc_html_e('On Track', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_on_track); ?>%</strong><p><?php esc_html_e('Meeting expected week progress', 'tfp-dashboard'); ?></p></article>
+                            <article><small><?php esc_html_e('Behind', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_behind); ?>%</strong><p><?php esc_html_e('Some progress, below expected pace', 'tfp-dashboard'); ?></p></article>
+                            <article><small><?php esc_html_e('Stalled', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_stalled); ?>%</strong><p><?php esc_html_e('No recorded lesson-step progress', 'tfp-dashboard'); ?></p></article>
+                        </section>
+
+                        <section class="tfp-admin-insights-chart-card">
+                            <div class="tfp-admin-insights-chart-head">
+                                <p><?php esc_html_e('Student status across every module — hover for insight', 'tfp-dashboard'); ?></p>
+                                <div class="tfp-admin-insights-legend">
+                                    <span><i class="is-on-track"></i><?php esc_html_e('On Track', 'tfp-dashboard'); ?></span>
+                                    <span><i class="is-behind"></i><?php esc_html_e('Behind', 'tfp-dashboard'); ?></span>
+                                    <span><i class="is-stalled"></i><?php esc_html_e('Stalled', 'tfp-dashboard'); ?></span>
+                                    <span><i class="is-pending"></i><?php esc_html_e('Pending Gate', 'tfp-dashboard'); ?></span>
+                                </div>
+                            </div>
+                            <?php if (!empty($insights['sections']) && $insights['total_enrolled']) : ?>
+                                <div class="tfp-admin-insights-chart">
+                                    <div class="tfp-admin-insights-y-axis"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div>
+                                    <div class="tfp-admin-insights-plot">
+                                        <div class="tfp-admin-insights-gridlines"><i></i><i></i><i></i><i></i><i></i></div>
+                                        <div class="tfp-admin-insights-bars">
+                                            <?php foreach ($insights['sections'] as $section) :
+                                                $total = max(1, (int) $section['total']);
+                                                $parts = [
+                                                    'on_track' => ['class' => 'is-on-track', 'label' => __('On Track', 'tfp-dashboard')],
+                                                    'behind' => ['class' => 'is-behind', 'label' => __('Behind', 'tfp-dashboard')],
+                                                    'stalled' => ['class' => 'is-stalled', 'label' => __('Stalled', 'tfp-dashboard')],
+                                                    'pending_gate' => ['class' => 'is-pending', 'label' => __('Pending Gate', 'tfp-dashboard')],
+                                                ];
+                                            ?>
+                                                <div class="tfp-admin-insights-bar-column" title="<?php echo esc_attr($section['label']); ?>">
+                                                    <div class="tfp-admin-insights-bar">
+                                                        <?php foreach ($parts as $key => $part) :
+                                                            $count = (int) $section['counts'][$key];
+                                                            $height = $count ? ($count / $total) * 100 : 0;
+                                                        ?>
+                                                            <?php if ($count) : ?><span class="<?php echo esc_attr($part['class']); ?>" style="height:<?php echo esc_attr($height); ?>%" title="<?php echo esc_attr(sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $part['label'], $count)); ?>"></span><?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                    <small><?php echo esc_html($section['label']); ?></small>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php else : ?>
+                                <p class="tfp-admin-insights-empty"><?php esc_html_e('No enrolled students or published course weeks are available for this selection yet.', 'tfp-dashboard'); ?></p>
+                            <?php endif; ?>
+                            <div class="tfp-admin-insights-note"><?php esc_html_e('Status is calculated from saved lesson-step completion and the elapsed cohort schedule. Pending Gate represents unpublished course weeks.', 'tfp-dashboard'); ?></div>
+                        </section>
+
+                        <div class="tfp-admin-insights-middle">
+                            <section class="tfp-admin-insights-card tfp-admin-insights-assessment">
+                                <h3><?php esc_html_e('Assessment Pulse', 'tfp-dashboard'); ?></h3>
+                                <p><?php esc_html_e('Pass rates across recorded quizzes and tests', 'tfp-dashboard'); ?></p>
+                                <div class="tfp-admin-insights-mini-metrics">
+                                    <article><small><?php esc_html_e('Average Pass Rate', 'tfp-dashboard'); ?></small><strong><?php echo $insights['avg_pass_rate'] !== null ? esc_html($insights['avg_pass_rate'] . '%') : '—'; ?></strong></article>
+                                    <article><small><?php esc_html_e('First-Try Pass', 'tfp-dashboard'); ?></small><strong><?php echo $insights['first_try_pass'] !== null ? esc_html($insights['first_try_pass'] . '%') : '—'; ?></strong></article>
+                                </div>
+                                <h4><?php esc_html_e('TOP MISSED QUESTIONS', 'tfp-dashboard'); ?></h4>
+                                <?php if ($insights['missed_questions']) : ?>
+                                    <ul class="tfp-admin-insights-missed">
+                                        <?php foreach ($insights['missed_questions'] as $missed) : ?>
+                                            <li><span><?php echo esc_html(wp_trim_words($missed['question'], 12)); ?></span><strong><?php echo esc_html(number_format_i18n($missed['count'])); ?></strong></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php else : ?><p class="tfp-admin-insights-muted"><?php esc_html_e('No missed-question data recorded yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                            </section>
+
+                            <section class="tfp-admin-insights-card tfp-admin-insights-activation">
+                                <h3><?php esc_html_e('Activation Efficiency', 'tfp-dashboard'); ?></h3>
+                                <p><?php esc_html_e('Completion across the required learning steps', 'tfp-dashboard'); ?></p>
+                                <?php
+                                $activation_labels = ['video' => __('Video Viewed', 'tfp-dashboard'), 'reading' => __('Reading Completed', 'tfp-dashboard'), 'homework' => __('Homework Submitted', 'tfp-dashboard'), 'quiz' => __('Quizzes Passed', 'tfp-dashboard'), 'test' => __('Tests Passed', 'tfp-dashboard')];
+                                foreach ($activation_labels as $key => $label) :
+                                    $value = $insights['activation'][$key];
+                                ?>
+                                    <div class="tfp-admin-insights-progress-row"><div><span><?php echo esc_html($label); ?></span><strong><?php echo $value !== null ? esc_html($value . '%') : '—'; ?></strong></div><i><b style="width:<?php echo esc_attr($value !== null ? $value : 0); ?>%"></b></i></div>
+                                <?php endforeach; ?>
+                                <div class="tfp-admin-insights-alert"><span aria-hidden="true">!</span><p><?php esc_html_e('Activation values reflect saved student progress. Missing progress is not treated as completed.', 'tfp-dashboard'); ?></p></div>
+                            </section>
+                        </div>
+
+                        <section class="tfp-admin-insights-card tfp-admin-insights-facilitators">
+                            <h3><?php esc_html_e('Facilitator Velocity', 'tfp-dashboard'); ?></h3>
+                            <p><?php esc_html_e('Pending student progress by assigned facilitator. Close-time analytics are shown only when reliable review timestamps are available.', 'tfp-dashboard'); ?></p>
+                            <div class="tfp-admin-insights-mini-metrics tfp-admin-insights-velocity-metrics">
+                                <article><small><?php esc_html_e('Avg. Close Time', 'tfp-dashboard'); ?></small><strong>—</strong></article>
+                                <article><small><?php esc_html_e('Fastest', 'tfp-dashboard'); ?></small><strong>—</strong></article>
+                                <article><small><?php esc_html_e('Slowest', 'tfp-dashboard'); ?></small><strong>—</strong></article>
+                            </div>
+                            <div class="tfp-admin-insights-table-wrap"><table><thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Avg. Close', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Pending Now', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th></tr></thead><tbody>
+                                <?php foreach ($insights['facilitators'] as $facilitator) :
+                                    $facilitator_status = $facilitator['pending'] === 0 ? 'on-track' : ($facilitator['pending'] > 10 ? 'fail' : 'attention');
+                                    $status_label = $facilitator_status === 'on-track' ? __('On Track', 'tfp-dashboard') : ($facilitator_status === 'fail' ? __('Fail', 'tfp-dashboard') : __('Attention', 'tfp-dashboard'));
+                                ?>
+                                    <tr><td><?php echo esc_html($facilitator['name']); ?></td><td>—</td><td><?php echo esc_html(number_format_i18n($facilitator['pending'])); ?> <?php esc_html_e('students', 'tfp-dashboard'); ?></td><td><span class="tfp-admin-insights-status is-<?php echo esc_attr($facilitator_status); ?>"><?php echo esc_html($status_label); ?></span></td></tr>
+                                <?php endforeach; ?>
+                                <?php if (empty($insights['facilitators'])) : ?><tr><td colspan="4" class="tfp-admin-insights-empty"><?php esc_html_e('No facilitator assignments found for the selected cohorts.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                            </tbody></table></div>
+                        </section>
+                    </section>
                 <?php else : ?>
                 <section class="tfp-admin-course-detail-stats">
                     <article><small><?php esc_html_e('Total Weeks', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['total_weeks'])); ?></strong><p><?php esc_html_e('Number of weeks in course', 'tfp-dashboard'); ?></p></article>
