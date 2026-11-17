@@ -2716,3 +2716,13 @@ body.tfp-global-overrides-open{overflow:hidden}
         gap:9px;
     }
 }
+
+
+/* Use the supplied project search icon in the Cohorts search field. */
+.tfp-admin-course-detail-app .tfp-admin-course-cohorts-search .tfp-admin-course-cohorts-search-icon{
+    display:block;
+    flex:0 0 16px;
+    width:16px;
+    height:16px;
+    object-fit:contain;
+}
