@@ -749,7 +749,7 @@ $format_rule_value = static function ($value) {
 
                     <div class="tfp-global-overrides-actions">
                         <button type="submit" name="tfp_save_global_overrides" value="1" class="tfp-global-overrides-save">
-                            <span class="tfp-global-overrides-save-icon" aria-hidden="true">▣</span><?php esc_html_e('Save', 'tfp-dashboard'); ?>
+                            <img class="tfp-global-overrides-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?>
                         </button>
                         <button type="button" class="tfp-global-overrides-cancel" data-global-overrides-close>
                             <span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?>
