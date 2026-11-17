@@ -1,31 +1,3 @@
-
-// Export the currently selected course's published cohorts as CSV.
-add_action('admin_post_tfp_admin_course_cohorts_export', 'tfp_admin_course_cohorts_export');
-function tfp_admin_course_cohorts_export() {
-    if (!current_user_can('manage_options') && !current_user_can('administrator')) {
-        wp_die(esc_html__('You do not have permission to export cohorts.', 'tfp-dashboard'), '', ['response' => 403]);
-    }
-    $course_id = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
-    check_admin_referer('tfp_admin_course_cohorts_export_' . $course_id);
-    $course = get_post($course_id);
-    if (!$course || $course->post_type !== 'sfwd-courses') {
-        wp_die(esc_html__('Invalid course.', 'tfp-dashboard'), '', ['response' => 400]);
-    }
-    nocache_headers();
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="course-' . $course_id . '-cohorts.csv"');
-    $output = fopen('php://output', 'w');
-    fputcsv($output, ['Cohort Name', 'Course Name', 'Start Date', 'Weekly Meeting', 'Facilitator']);
-    foreach ((array) tfp_cohorts_for_course($course_id) as $cohort) {
-        $data = function_exists('tfp_cohort_get') ? tfp_cohort_get($cohort->ID) : [];
-        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id') ? tfp_cohort_get_facilitator_user_id($cohort->ID) : 0;
-        $facilitator = $facilitator_id ? get_the_author_meta('display_name', $facilitator_id) : (string) get_post_meta($cohort->ID, '_facilitator', true);
-        fputcsv($output, [get_the_title($cohort->ID), get_the_title($course_id), $data['start_label'] ?? '', $data['schedule'] ?? '', $facilitator]);
-    }
-    fclose($output);
-    exit;
-}
-
 <?php
 /**
  * Admin Course Detail dashboard.
@@ -614,3 +586,77 @@ function tfp_admin_course_plan_export() {
     exit;
 }
 add_action('admin_post_tfp_course_plan_export', 'tfp_admin_course_plan_export');
+
+
+/**
+ * Export published cohorts for a LearnDash course as CSV.
+ */
+function tfp_admin_course_cohorts_export() {
+    $course_id = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
+    $course = $course_id ? get_post($course_id) : null;
+
+    // Validate the target before checking its object-level permission.
+    if (!$course || 'sfwd-courses' !== $course->post_type) {
+        wp_die(esc_html__('Invalid course.', 'tfp-dashboard'), esc_html__('Export failed', 'tfp-dashboard'), ['response' => 404]);
+    }
+
+    // Verify nonce and ensure the current user can edit this specific course.
+    check_admin_referer('tfp_admin_course_cohorts_export_' . $course_id);
+    if (!is_user_logged_in() || !current_user_can('edit_post', $course_id)) {
+        wp_die(esc_html__('You do not have permission to export cohorts for this course.', 'tfp-dashboard'), esc_html__('Access denied', 'tfp-dashboard'), ['response' => 403]);
+    }
+
+    if (!function_exists('tfp_cohorts_for_course') || !function_exists('tfp_cohort_get')) {
+        wp_die(esc_html__('Cohort data is currently unavailable.', 'tfp-dashboard'), esc_html__('Export failed', 'tfp-dashboard'), ['response' => 500]);
+    }
+
+    nocache_headers();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="course-' . $course_id . '-cohorts.csv"');
+    header('X-Content-Type-Options: nosniff');
+
+    $output = fopen('php://output', 'w');
+    if (false === $output) {
+        wp_die(esc_html__('Could not create the CSV export.', 'tfp-dashboard'), esc_html__('Export failed', 'tfp-dashboard'), ['response' => 500]);
+    }
+
+    // Prevent spreadsheet formula injection in user-controlled text fields.
+    $csv_cell = static function ($value) {
+        $value = (string) $value;
+        return preg_match('/^[\\s]*[=+@-]/u', $value) ? "'" . $value : $value;
+    };
+
+    fputcsv($output, ['Cohort Name', 'Course Name', 'Start Date', 'Weekly Meeting', 'Facilitator']);
+
+    foreach ((array) tfp_cohorts_for_course($course_id) as $cohort) {
+        if (!$cohort instanceof WP_Post || 'publish' !== $cohort->post_status) {
+            continue;
+        }
+
+        $cohort_id = (int) $cohort->ID;
+        $data = tfp_cohort_get($cohort_id);
+        if (!is_array($data)) {
+            continue;
+        }
+
+        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id')
+            ? (int) tfp_cohort_get_facilitator_user_id($cohort_id)
+            : 0;
+        $facilitator_user = $facilitator_id ? get_userdata($facilitator_id) : false;
+        $facilitator = $facilitator_user
+            ? $facilitator_user->display_name
+            : (string) ($data['facilitator'] ?? '');
+
+        fputcsv($output, [
+            $csv_cell(get_the_title($cohort_id)),
+            $csv_cell(get_the_title($course_id)),
+            $csv_cell($data['start_label'] ?? ''),
+            $csv_cell($data['schedule'] ?? ''),
+            $csv_cell($facilitator),
+        ]);
+    }
+
+    fclose($output);
+    exit;
+}
+add_action('admin_post_tfp_admin_course_cohorts_export', 'tfp_admin_course_cohorts_export');
