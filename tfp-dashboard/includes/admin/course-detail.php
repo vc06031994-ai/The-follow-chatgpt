@@ -178,6 +178,169 @@ function tfp_admin_course_detail_get_data($course_id) {
     ];
 }
 
+
+/**
+ * Build course insights from live cohort membership and saved LearnDash progress.
+ * Status is based on completed week progress versus elapsed cohort weeks.
+ */
+function tfp_admin_course_insights_data($course_id, $cohort_filter = 0, $period = '90') {
+    $weeks = function_exists('tfp_ld_get_weeks') ? (array) tfp_ld_get_weeks($course_id) : [];
+    $cohorts = function_exists('tfp_cohorts_for_course') ? (array) tfp_cohorts_for_course($course_id) : [];
+    $period_days = in_array($period, ['30', '90', '365'], true) ? (int) $period : 0;
+    $cutoff = $period_days ? strtotime('-' . $period_days . ' days', current_time('timestamp')) : 0;
+    $cohorts = array_values(array_filter($cohorts, static function($cohort) use ($cohort_filter, $cutoff) {
+        if ($cohort_filter && (int) $cohort->ID !== (int) $cohort_filter) return false;
+        if ($cutoff) {
+            $start = get_post_meta($cohort->ID, '_start_date', true);
+            $timestamp = $start ? strtotime($start) : 0;
+            if (!$timestamp || $timestamp < $cutoff) return false;
+        }
+        return true;
+    }));
+
+    $students_by_cohort = [];
+    $student_ids = [];
+    $facilitators = [];
+    foreach ($cohorts as $cohort) {
+        $cid = (int) $cohort->ID;
+        $ids = function_exists('tfp_facilitator_cohort_students')
+            ? (array) tfp_facilitator_cohort_students($cid)
+            : array_map('absint', (array) get_users(['meta_key' => 'tfp_cohort_choice', 'meta_value' => $cid, 'fields' => 'ID']));
+        $students_by_cohort[$cid] = array_values(array_unique(array_map('absint', $ids)));
+        $student_ids = array_merge($student_ids, $students_by_cohort[$cid]);
+        $fid = function_exists('tfp_cohort_get_facilitator_user_id') ? absint(tfp_cohort_get_facilitator_user_id($cid)) : 0;
+        $user = $fid ? get_userdata($fid) : false;
+        $legacy = (string) get_post_meta($cid, '_facilitator', true);
+        $facilitator_name = $user ? $user->display_name : ($legacy ?: __('Unassigned', 'tfp-dashboard'));
+        $key = $fid ?: 'legacy-' . sanitize_title($facilitator_name);
+        if (!isset($facilitators[$key])) $facilitators[$key] = ['name' => $facilitator_name, 'students' => [], 'pending' => 0, 'cohorts' => 0];
+        $facilitators[$key]['students'] = array_merge($facilitators[$key]['students'], $students_by_cohort[$cid]);
+        $facilitators[$key]['cohorts']++;
+    }
+    $student_ids = array_values(array_unique(array_filter(array_map('absint', $student_ids))));
+
+    $status_counts = ['on_track' => 0, 'behind' => 0, 'stalled' => 0];
+    $step_totals = ['video' => 0, 'reading' => 0, 'homework' => 0, 'quiz' => 0, 'test' => 0];
+    $step_done = $step_totals;
+    $week_status = [];
+    $quiz_scores = [];
+    $test_scores = [];
+    $passed = 0;
+    $graded = 0;
+    $first_try_passed = 0;
+    $first_try_total = 0;
+    $missed = [];
+    $student_completed = [];
+
+    foreach ($weeks as $index => $week) {
+        $week_status[$index] = ['on_track' => 0, 'behind' => 0, 'stalled' => 0, 'pending_gate' => 0];
+    }
+
+    foreach ($student_ids as $student_id) {
+        $completed_weeks = 0;
+        $started_steps = 0;
+        foreach ($weeks as $index => $week) {
+            $progress = function_exists('tfp_ld_get_week_progress') ? (array) tfp_ld_get_week_progress($student_id, $week->ID) : [];
+            $done = 0;
+            foreach (array_keys($step_totals) as $step) {
+                $step_totals[$step]++;
+                if (!empty($progress[$step])) { $step_done[$step]++; $done++; $started_steps++; }
+            }
+            if ($done === count($step_totals)) $completed_weeks++;
+            if ('publish' !== $week->post_status) {
+                $week_status[$index]['pending_gate']++;
+            } elseif ($done === count($step_totals)) {
+                $week_status[$index]['on_track']++;
+            } elseif ($done > 0) {
+                $week_status[$index]['behind']++;
+            } else {
+                $week_status[$index]['stalled']++;
+            }
+
+            if (function_exists('tfp_week_get_quiz_result')) {
+                $result = tfp_week_get_quiz_result($student_id, $week->ID);
+                if (is_array($result) && isset($result['score'])) {
+                    $quiz_scores[] = (float) $result['score']; $graded++;
+                    if (!empty($result['passed'])) $passed++;
+                    $attempts = function_exists('tfp_week_get_quiz_attempts') ? (int) tfp_week_get_quiz_attempts($student_id, $week->ID) : 0;
+                    if ($attempts > 0) { $first_try_total++; if (!empty($result['passed']) && $attempts === 1) $first_try_passed++; }
+                    foreach ((array) ($result['results'] ?? []) as $question) {
+                        if (empty($question['is_correct']) && !empty($question['prompt'])) {
+                            $label = wp_strip_all_tags((string) $question['prompt']);
+                            $missed[$label] = ($missed[$label] ?? 0) + 1;
+                        }
+                    }
+                }
+            }
+            if (function_exists('tfp_week_get_test_result')) {
+                $result = tfp_week_get_test_result($student_id, $week->ID);
+                if (is_array($result) && isset($result['score'])) {
+                    $test_scores[] = (float) $result['score'];
+                    if (!empty($result['passed'])) $passed++;
+                    $graded++;
+                }
+            }
+        }
+        $expected = count($weeks);
+        $cohort_id = (int) get_user_meta($student_id, 'tfp_cohort_choice', true);
+        $cohort_start = $cohort_id ? get_post_meta($cohort_id, '_start_date', true) : '';
+        if ($cohort_start && $expected) {
+            $elapsed = max(1, (int) floor((current_time('timestamp') - strtotime($cohort_start)) / WEEK_IN_SECONDS) + 1);
+            $expected = min(count($weeks), $elapsed);
+        }
+        if ($started_steps === 0) $status_counts['stalled']++;
+        elseif ($completed_weeks >= $expected) $status_counts['on_track']++;
+        else $status_counts['behind']++;
+        $student_completed[$student_id] = $completed_weeks;
+    }
+
+    foreach ($facilitators as &$facilitator) {
+        $facilitator['students'] = array_values(array_unique(array_map('absint', $facilitator['students'])));
+        foreach ($facilitator['students'] as $sid) {
+            if (($student_completed[$sid] ?? 0) < count($weeks)) $facilitator['pending']++;
+        }
+    }
+    unset($facilitator);
+
+    $section_count = min(13, max(1, count($weeks)));
+    $chunk_size = $section_count ? (int) ceil(max(1, count($weeks)) / $section_count) : 1;
+    $sections = [];
+    for ($i = 0; $i < $section_count; $i++) {
+        $slice = array_slice($weeks, $i * $chunk_size, $chunk_size);
+        if (!$slice) continue;
+        $counts = ['on_track' => 0, 'behind' => 0, 'stalled' => 0, 'pending_gate' => 0];
+        foreach ($slice as $week) {
+            $index = array_search($week, $weeks, true);
+            foreach ($counts as $key => $unused) $counts[$key] += $week_status[$index][$key] ?? 0;
+        }
+        $total = array_sum($counts);
+        $sections[] = ['label' => sprintf(__('Section %d', 'tfp-dashboard'), $i + 1), 'counts' => $counts, 'total' => $total];
+    }
+
+    $assessment_scores = array_merge($quiz_scores, $test_scores);
+    $missed_questions = [];
+    arsort($missed);
+    foreach (array_slice($missed, 0, 3, true) as $question => $count) $missed_questions[] = ['question' => $question, 'count' => $count];
+
+    $activation = [];
+    foreach ($step_totals as $step => $total) $activation[$step] = $total ? (int) round(($step_done[$step] / $total) * 100) : null;
+
+    return [
+        'cohorts' => $cohorts,
+        'students' => $student_ids,
+        'total_enrolled' => count($student_ids),
+        'statuses' => $status_counts,
+        'sections' => $sections,
+        'activation' => $activation,
+        'avg_pass_rate' => $graded ? (int) round(($passed / $graded) * 100) : null,
+        'avg_score' => $assessment_scores ? (int) round(array_sum($assessment_scores) / count($assessment_scores)) : null,
+        'first_try_pass' => $first_try_total ? (int) round(($first_try_passed / $first_try_total) * 100) : null,
+        'missed_questions' => $missed_questions,
+        'facilitators' => array_values($facilitators),
+        'graded_count' => $graded,
+    ];
+}
+
 function tfp_admin_course_detail_render() {
     if (!is_user_logged_in()) {
         auth_redirect();
