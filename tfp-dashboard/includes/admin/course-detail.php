@@ -26,6 +26,43 @@ function tfp_admin_course_detail_route_id() {
     return ($course instanceof WP_Post) ? (int) $course->ID : 0;
 }
 
+
+/**
+ * Set a meaningful browser title for the front-end course detail routes.
+ * Avoid showing the generic WordPress page title (for example, "Page 1659").
+ */
+function tfp_admin_course_detail_document_title($title) {
+    if (!is_admin()) {
+        $course_id = tfp_admin_course_detail_route_id();
+        $course = $course_id ? get_post($course_id) : null;
+
+        if ($course instanceof WP_Post && 'sfwd-courses' === $course->post_type) {
+            $tab = isset($_GET['course_tab']) ? sanitize_key(wp_unslash($_GET['course_tab'])) : 'overview';
+            $tab_labels = [
+                'overview' => __('Overview', 'tfp-dashboard'),
+                'plan'     => __('Plan', 'tfp-dashboard'),
+                'rules'    => __('Rules', 'tfp-dashboard'),
+                'cohorts'  => __('Cohorts', 'tfp-dashboard'),
+                'insights' => __('Insights', 'tfp-dashboard'),
+                'access'   => __('Access', 'tfp-dashboard'),
+                'health'   => __('Health', 'tfp-dashboard'),
+            ];
+            $page_label = isset($tab_labels[$tab]) ? $tab_labels[$tab] : __('Course', 'tfp-dashboard');
+
+            return sprintf(
+                /* translators: 1: course tab name, 2: course title, 3: site name. */
+                __('%1$s — %2$s | %3$s', 'tfp-dashboard'),
+                $page_label,
+                get_the_title($course_id),
+                get_bloginfo('name')
+            );
+        }
+    }
+
+    return $title;
+}
+add_filter('pre_get_document_title', 'tfp_admin_course_detail_document_title', 20);
+
 function tfp_admin_course_detail_week_items($lesson_id) {
     $items = [];
     if (get_post_meta($lesson_id, 'tfp_week_video_url', true)) {
