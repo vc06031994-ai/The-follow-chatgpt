@@ -849,7 +849,7 @@ function tfp_admin_course_detail_render() {
                                 ?>
                                     <div class="tfp-admin-insights-progress-row"><div><span><?php echo esc_html($label); ?></span><strong><?php echo $value !== null ? esc_html($value . '%') : '—'; ?></strong></div><i><b style="width:<?php echo esc_attr($value !== null ? $value : 0); ?>%"></b></i></div>
                                 <?php endforeach; ?>
-                                <div class="tfp-admin-insights-alert"><span aria-hidden="true">!</span><p><?php esc_html_e('Activation values reflect saved student progress. Missing progress is not treated as completed.', 'tfp-dashboard'); ?></p></div>
+                                <div class="tfp-admin-insights-alert"><img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Vector.png" alt="" aria-hidden="true"><p><?php esc_html_e('Activation values reflect saved student progress. Missing progress is not treated as completed.', 'tfp-dashboard'); ?></p></div>
                             </section>
                         </div>
 
