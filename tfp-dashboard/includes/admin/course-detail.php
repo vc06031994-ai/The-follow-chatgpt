@@ -347,15 +347,35 @@ function tfp_admin_course_detail_render() {
                     $cohort_search = isset($_GET['cohort_search']) ? sanitize_text_field(wp_unslash($_GET['cohort_search'])) : '';
                     $cohort_rows = [];
                     $facilitator_ids = [];
+                    // Load real published courses for the course switcher.
+                    $available_courses = get_posts([
+                        'post_type' => 'sfwd-courses',
+                        'post_status' => 'publish',
+                        'posts_per_page' => -1,
+                        'orderby' => 'title',
+                        'order' => 'ASC',
+                    ]);
                     foreach ($cohort_posts as $cohort_post) {
+                        if (!$cohort_post instanceof WP_Post || 'publish' !== $cohort_post->post_status) {
+                            continue;
+                        }
                         $cohort_id = (int) $cohort_post->ID;
                         $cohort_data = function_exists('tfp_cohort_get') ? tfp_cohort_get($cohort_id) : [];
-                        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id') ? tfp_cohort_get_facilitator_user_id($cohort_id) : 0;
+                        $cohort_data = is_array($cohort_data) ? $cohort_data : [];
+                        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id') ? (int) tfp_cohort_get_facilitator_user_id($cohort_id) : 0;
                         $facilitator_user = $facilitator_id ? get_userdata($facilitator_id) : false;
                         $facilitator_name = $facilitator_user ? $facilitator_user->display_name : (string) get_post_meta($cohort_id, '_facilitator', true);
-                        if ($facilitator_id) $facilitator_ids[$facilitator_id] = $facilitator_name;
-                        if ($facilitator_filter && $facilitator_id !== $facilitator_filter) continue;
-                        if ($cohort_search !== '' && stripos(get_the_title($cohort_id) . ' ' . $course_heading_title, $cohort_search) === false) continue;
+                        if ($facilitator_id) {
+                            $facilitator_ids[$facilitator_id] = $facilitator_name;
+                        }
+                        // Apply facilitator and text search together.
+                        $searchable_text = get_the_title($cohort_id) . ' ' . $course_heading_title . ' ' . $facilitator_name;
+                        if ($facilitator_filter && $facilitator_id !== $facilitator_filter) {
+                            continue;
+                        }
+                        if ($cohort_search !== '' && stripos($searchable_text, $cohort_search) === false) {
+                            continue;
+                        }
                         $cohort_rows[] = [
                             'id' => $cohort_id,
                             'name' => get_the_title($cohort_id),
@@ -375,11 +395,19 @@ function tfp_admin_course_detail_render() {
                     ?>
                     <section class="tfp-admin-course-cohorts">
                         <div class="tfp-admin-course-cohorts-filters">
-                            <label class="screen-reader-text" for="tfp-cohort-course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
-                            <select id="tfp-cohort-course" disabled aria-label="<?php esc_attr_e('Selected course', 'tfp-dashboard'); ?>">
-                                <option><?php echo esc_html($course_heading_title); ?></option>
+                            <label class="screen-reader-text" for="tfp-cohort-course"><?php esc_html_e('Select course', 'tfp-dashboard'); ?></label>
+                            <select id="tfp-cohort-course" aria-label="<?php esc_attr_e('Select course', 'tfp-dashboard'); ?>" onchange="if (this.value) { window.location.href = this.value; }">
+                                <?php foreach ($available_courses as $available_course) :
+                                    $available_course_id = (int) $available_course->ID;
+                                    $available_course_label = $available_course->post_title;
+                                    if (1039 === $available_course_id) $available_course_label = __('12 Week Foundation', 'tfp-dashboard');
+                                    elseif (1659 === $available_course_id) $available_course_label = __('58 Week Discipleship', 'tfp-dashboard');
+                                    $available_course_url = add_query_arg('course_tab', 'cohorts', tfp_admin_course_detail_url($available_course_id));
+                                ?>
+                                    <option value="<?php echo esc_url($available_course_url); ?>" <?php selected($course_id, $available_course_id); ?>><?php echo esc_html($available_course_label); ?></option>
+                                <?php endforeach; ?>
                             </select>
-                            <form method="get" class="tfp-admin-course-cohorts-filter-form">
+                            <form method="get" class="tfp-admin-course-cohorts-filter-form" id="tfp-course-cohorts-filter-form">
                                 <input type="hidden" name="course_tab" value="cohorts">
                                 <label class="screen-reader-text" for="tfp-cohort-facilitator"><?php esc_html_e('Filter by facilitator', 'tfp-dashboard'); ?></label>
                                 <select id="tfp-cohort-facilitator" name="facilitator" onchange="this.form.submit()">
@@ -390,10 +418,25 @@ function tfp_admin_course_detail_render() {
                                 </select>
                                 <label class="tfp-admin-course-cohorts-search">
                                     <img src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Note_Search-2.png" alt="" class="tfp-admin-course-cohorts-search-icon" aria-hidden="true">
-                                    <input type="search" name="cohort_search" value="<?php echo esc_attr($cohort_search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>">
+                                    <input id="tfp-cohort-search" type="search" name="cohort_search" value="<?php echo esc_attr($cohort_search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>" autocomplete="off">
                                 </label>
                                 <button type="submit" class="screen-reader-text"><?php esc_html_e('Search', 'tfp-dashboard'); ?></button>
                             </form>
+                            <script>
+                            (function () {
+                                var search = document.getElementById('tfp-cohort-search');
+                                var form = document.getElementById('tfp-course-cohorts-filter-form');
+                                if (!search || !form) return;
+                                var timer;
+                                search.addEventListener('input', function () {
+                                    window.clearTimeout(timer);
+                                    timer = window.setTimeout(function () {
+                                        if (form.requestSubmit) form.requestSubmit();
+                                        else form.submit();
+                                    }, 350);
+                                });
+                            }());
+                            </script>
                         </div>
                         <div class="tfp-admin-panel tfp-admin-course-cohorts-panel">
                             <div class="tfp-admin-course-cohorts-toolbar">
