@@ -1,3 +1,31 @@
+
+// Export the currently selected course's published cohorts as CSV.
+add_action('admin_post_tfp_admin_course_cohorts_export', 'tfp_admin_course_cohorts_export');
+function tfp_admin_course_cohorts_export() {
+    if (!current_user_can('manage_options') && !current_user_can('administrator')) {
+        wp_die(esc_html__('You do not have permission to export cohorts.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+    $course_id = isset($_GET['course_id']) ? absint($_GET['course_id']) : 0;
+    check_admin_referer('tfp_admin_course_cohorts_export_' . $course_id);
+    $course = get_post($course_id);
+    if (!$course || $course->post_type !== 'sfwd-courses') {
+        wp_die(esc_html__('Invalid course.', 'tfp-dashboard'), '', ['response' => 400]);
+    }
+    nocache_headers();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="course-' . $course_id . '-cohorts.csv"');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, ['Cohort Name', 'Course Name', 'Start Date', 'Weekly Meeting', 'Facilitator']);
+    foreach ((array) tfp_cohorts_for_course($course_id) as $cohort) {
+        $data = function_exists('tfp_cohort_get') ? tfp_cohort_get($cohort->ID) : [];
+        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id') ? tfp_cohort_get_facilitator_user_id($cohort->ID) : 0;
+        $facilitator = $facilitator_id ? get_the_author_meta('display_name', $facilitator_id) : (string) get_post_meta($cohort->ID, '_facilitator', true);
+        fputcsv($output, [get_the_title($cohort->ID), get_the_title($course_id), $data['start_label'] ?? '', $data['schedule'] ?? '', $facilitator]);
+    }
+    fclose($output);
+    exit;
+}
+
 <?php
 /**
  * Admin Course Detail dashboard.
@@ -338,6 +366,105 @@ function tfp_admin_course_detail_render() {
                             </div>
                         </div>
                         <div class="tfp-admin-course-plan-sync-note" id="tfp-course-plan-sync-log"><?php esc_html_e('Sync log is not available yet.', 'tfp-dashboard'); ?></div>
+                    </section>
+                <?php elseif ($active_tab === 'cohorts') : ?>
+                    <?php
+                    // Load published cohort records from the existing cohort API.
+                    $cohort_posts = function_exists('tfp_cohorts_for_course') ? (array) tfp_cohorts_for_course($course_id) : [];
+                    $facilitator_filter = isset($_GET['facilitator']) ? absint($_GET['facilitator']) : 0;
+                    $cohort_search = isset($_GET['cohort_search']) ? sanitize_text_field(wp_unslash($_GET['cohort_search'])) : '';
+                    $cohort_rows = [];
+                    $facilitator_ids = [];
+                    foreach ($cohort_posts as $cohort_post) {
+                        $cohort_id = (int) $cohort_post->ID;
+                        $cohort_data = function_exists('tfp_cohort_get') ? tfp_cohort_get($cohort_id) : [];
+                        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id') ? tfp_cohort_get_facilitator_user_id($cohort_id) : 0;
+                        $facilitator_user = $facilitator_id ? get_userdata($facilitator_id) : false;
+                        $facilitator_name = $facilitator_user ? $facilitator_user->display_name : (string) get_post_meta($cohort_id, '_facilitator', true);
+                        if ($facilitator_id) $facilitator_ids[$facilitator_id] = $facilitator_name;
+                        if ($facilitator_filter && $facilitator_id !== $facilitator_filter) continue;
+                        if ($cohort_search !== '' && stripos(get_the_title($cohort_id) . ' ' . $course_heading_title, $cohort_search) === false) continue;
+                        $cohort_rows[] = [
+                            'id' => $cohort_id,
+                            'name' => get_the_title($cohort_id),
+                            'course' => $course_heading_title,
+                            'start' => !empty($cohort_data['start_label']) ? $cohort_data['start_label'] : '—',
+                            'schedule' => !empty($cohort_data['schedule']) ? $cohort_data['schedule'] : '—',
+                            'facilitator' => $facilitator_name !== '' ? $facilitator_name : '—',
+                            'facilitator_id' => $facilitator_id,
+                        ];
+                    }
+                    asort($facilitator_ids, SORT_NATURAL | SORT_FLAG_CASE);
+                    $cohort_export_url = add_query_arg([
+                        'action' => 'tfp_admin_course_cohorts_export',
+                        'course_id' => $course_id,
+                        '_wpnonce' => wp_create_nonce('tfp_admin_course_cohorts_export_' . $course_id),
+                    ], admin_url('admin-post.php'));
+                    ?>
+                    <section class="tfp-admin-course-cohorts">
+                        <div class="tfp-admin-course-cohorts-filters">
+                            <label class="screen-reader-text" for="tfp-cohort-course"><?php esc_html_e('Course', 'tfp-dashboard'); ?></label>
+                            <select id="tfp-cohort-course" disabled aria-label="<?php esc_attr_e('Selected course', 'tfp-dashboard'); ?>">
+                                <option><?php echo esc_html($course_heading_title); ?></option>
+                            </select>
+                            <form method="get" class="tfp-admin-course-cohorts-filter-form">
+                                <input type="hidden" name="course_tab" value="cohorts">
+                                <label class="screen-reader-text" for="tfp-cohort-facilitator"><?php esc_html_e('Filter by facilitator', 'tfp-dashboard'); ?></label>
+                                <select id="tfp-cohort-facilitator" name="facilitator" onchange="this.form.submit()">
+                                    <option value="0"><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></option>
+                                    <?php foreach ($facilitator_ids as $fid => $fname) : ?>
+                                        <option value="<?php echo esc_attr($fid); ?>" <?php selected($facilitator_filter, $fid); ?>><?php echo esc_html($fname); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <label class="tfp-admin-course-cohorts-search">
+                                    <span aria-hidden="true">⌕</span>
+                                    <input type="search" name="cohort_search" value="<?php echo esc_attr($cohort_search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>">
+                                </label>
+                                <button type="submit" class="screen-reader-text"><?php esc_html_e('Search', 'tfp-dashboard'); ?></button>
+                            </form>
+                        </div>
+                        <div class="tfp-admin-panel tfp-admin-course-cohorts-panel">
+                            <div class="tfp-admin-course-cohorts-toolbar">
+                                <h2><?php esc_html_e('Active Cohorts', 'tfp-dashboard'); ?></h2>
+                                <div>
+                                    <a class="tfp-admin-course-cohorts-export" href="<?php echo esc_url($cohort_export_url); ?>"><span aria-hidden="true">⇩</span><?php esc_html_e('Export', 'tfp-dashboard'); ?></a>
+                                    <a class="tfp-admin-course-cohorts-sync" href="#tfp-course-cohorts-sync-log"><span aria-hidden="true">···</span><?php esc_html_e('Sync Log', 'tfp-dashboard'); ?></a>
+                                </div>
+                            </div>
+                            <div class="tfp-admin-course-cohorts-table-wrap">
+                                <table>
+                                    <thead><tr>
+                                        <th><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th>
+                                        <th><?php esc_html_e('Course Name', 'tfp-dashboard'); ?></th>
+                                        <th><?php esc_html_e('Start Date', 'tfp-dashboard'); ?></th>
+                                        <th><?php esc_html_e('Weekly Meeting', 'tfp-dashboard'); ?></th>
+                                        <th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th>
+                                        <th><?php esc_html_e('Discord', 'tfp-dashboard'); ?></th>
+                                        <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                                    </tr></thead>
+                                    <tbody>
+                                    <?php foreach ($cohort_rows as $row) :
+                                        $discord_url = apply_filters('tfp_dashboard_discord_url', 'https://discord.gg/MunVQXc3a');
+                                        $view_url = get_edit_post_link($row['id'], 'raw');
+                                    ?>
+                                        <tr>
+                                            <td><?php echo esc_html($row['name']); ?></td>
+                                            <td><?php echo esc_html($row['course']); ?></td>
+                                            <td><?php echo esc_html($row['start']); ?></td>
+                                            <td><?php echo esc_html($row['schedule']); ?></td>
+                                            <td><?php echo esc_html($row['facilitator']); ?></td>
+                                            <td><a class="tfp-admin-course-cohorts-join" href="<?php echo esc_url($discord_url); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Join', 'tfp-dashboard'); ?></a></td>
+                                            <td><a class="tfp-admin-course-cohorts-view" href="<?php echo esc_url($view_url); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php if (empty($cohort_rows)) : ?>
+                                        <tr><td colspan="7" class="tfp-admin-course-cohorts-empty"><?php esc_html_e('No active cohorts found for this course.', 'tfp-dashboard'); ?></td></tr>
+                                    <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <p class="tfp-admin-course-cohorts-sync-note" id="tfp-course-cohorts-sync-log"><?php esc_html_e('Sync log is not available yet.', 'tfp-dashboard'); ?></p>
                     </section>
                 <?php else : ?>
                 <section class="tfp-admin-course-detail-stats">
