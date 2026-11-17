@@ -279,7 +279,7 @@ function tfp_admin_course_detail_render() {
             </div>
 
             <header class="tfp-admin-page-header tfp-admin-course-detail-header <?php echo $is_rules_tab ? 'tfp-admin-course-rules-header' : ''; ?>">
-                <div><h1><?php echo $is_rules_tab ? esc_html__('Course rules & defaults', 'tfp-dashboard') : esc_html($course_heading_title); ?></h1><p><?php echo $is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : ($is_rules_tab ? esc_html__('Set course-wide progression, completion, assessment, grading, and facilitation defaults.', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard')); ?></p></div>
+                <div><h1><?php echo $is_rules_tab ? esc_html__('Course rules & defaults', 'tfp-dashboard') : ($active_tab === 'cohorts' ? esc_html__('Cohorts', 'tfp-dashboard') : esc_html($course_heading_title)); ?></h1><p><?php echo $active_tab === 'cohorts' ? esc_html__('Manage active groups, track facilitator activity, and manage cross-course progress', 'tfp-dashboard') : ($is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : ($is_rules_tab ? esc_html__('Set course-wide progression, completion, assessment, grading, and facilitation defaults.', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard'))); ?></p></div>
                 <div class="tfp-admin-course-header-actions">
                     <?php if ($is_rules_tab) : ?>
                         <button class="tfp-admin-course-rules-save" type="submit" form="tfp-course-rules-form" name="tfp_save_course_rules" value="1"><img class="tfp-admin-course-rules-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?></button>
@@ -288,7 +288,7 @@ function tfp_admin_course_detail_render() {
                         <?php if ($is_plan_tab) : ?>
                             <a class="tfp-admin-course-edit" href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>"><span aria-hidden="true">✎</span><?php esc_html_e('Edit Course', 'tfp-dashboard'); ?></a>
                         <?php endif; ?>
-                        <a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a>
+                        <?php if ($active_tab !== 'cohorts') : ?><a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a><?php endif; ?>
                     <?php endif; ?>
                 </div>
             </header>
