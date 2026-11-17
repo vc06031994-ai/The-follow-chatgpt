@@ -2506,7 +2506,7 @@ body.tfp-course-learning-flow-open{overflow:hidden}
 }
 .tfp-admin-course-detail-app .tfp-global-overrides-save:hover{background:#00565d}
 .tfp-admin-course-detail-app .tfp-global-overrides-cancel:hover{background:#f1f3f3}
-.tfp-admin-course-detail-app .tfp-global-overrides-save-icon{font-size:22px;line-height:1}
+.tfp-admin-course-detail-app .tfp-global-overrides-save-icon{display:block;width:22px;height:22px;object-fit:contain;flex:0 0 22px}
 .tfp-admin-course-detail-app .tfp-global-overrides-cancel span{font-size:22px;line-height:1}
 body.tfp-global-overrides-open{overflow:hidden}
 @media(max-width:760px){
