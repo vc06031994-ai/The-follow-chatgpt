@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
+
 /* The Follow Project — Admin Console Stylesheet */
 body.tfp-admin-dashboard-view {
     --tfp-admin-teal: var(--tfp-dash-teal, #00666e);
@@ -276,7 +278,8 @@ body.tfp-admin-dashboard-view .entry-content {
     color: #333;
     font-size: clamp(13px, .9vw, 15px);
     line-height: 1.45;
-    font-family: var(--tfp-dash-font-alt, Georgia), serif;
+    font-family: "Lora", Georgia, serif !important;
+    font-weight: 500;
 }
 
 .tfp-admin-operational-status {
@@ -2835,4 +2838,403 @@ body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout .tfp-admin-logout-label {
     body.tfp-admin-sidebar-is-collapsed .tfp-admin-logout .tfp-admin-logout-label {
         display: inline !important;
     }
+}
+
+/* =========================================================================
+   Shared Admin Console — persistent desktop sidebar on every dashboard page.
+   Keep the navigation fixed to the viewport while the page content scrolls.
+   Mobile/tablet retains the existing off-canvas menu behavior below 992px.
+   ========================================================================= */
+@media (min-width: 992px) {
+    body.tfp-admin-dashboard-view .tfp-admin-app {
+        position: relative;
+    }
+
+    body.tfp-admin-dashboard-view .tfp-admin-app > .tfp-admin-sidebar {
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px;
+        height: 100vh;
+        height: 100dvh;
+        flex: 0 0 240px !important;
+        overflow-x: hidden;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    body.tfp-admin-dashboard-view .tfp-admin-app > .tfp-admin-main {
+        width: calc(100% - 240px);
+        max-width: calc(100% - 240px);
+        min-width: 0;
+        margin-left: 240px;
+    }
+
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-app > .tfp-admin-sidebar {
+        width: 76px !important;
+        min-width: 76px !important;
+        max-width: 76px;
+        flex-basis: 76px !important;
+    }
+
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-app > .tfp-admin-main {
+        width: calc(100% - 76px);
+        max-width: calc(100% - 76px);
+        margin-left: 76px;
+    }
+}
+
+
+/* Shared Admin page heading standard — match the Users page reference. */
+body.tfp-admin-dashboard-view .tfp-admin-page-header {
+    min-height: 112px;
+    align-items: flex-end;
+    padding: 14px clamp(24px, 2.6vw, 42px) 16px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
+    margin: 0 0 8px;
+    color: #171717;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 40px;
+    line-height: 1.1;
+    font-weight: 750;
+    letter-spacing: -.6px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header p {
+    margin: 0;
+    color: #333;
+    font-family: "Lora", Georgia, serif !important;
+    font-size: 15px;
+    line-height: 1.45;
+}
+@media (max-width: 700px) {
+    body.tfp-admin-dashboard-view .tfp-admin-page-header {
+        min-height: 96px;
+        padding: 14px 16px 15px;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
+        font-size: clamp(28px, 7vw, 36px);
+        line-height: 1.1;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+}
+
+
+/* =========================================================================
+   Global Admin Sidebar Standard
+   Keep the sidebar identical on every Admin page.
+   ========================================================================= */
+body.tfp-admin-dashboard-view .tfp-admin-sidebar {
+    position: sticky;
+    top: 0;
+    flex: 0 0 240px;
+    width: 240px;
+    min-width: 240px;
+    max-width: 240px;
+    height: 100vh;
+    height: 100dvh;
+    padding: 16px 14px;
+    border-right: 3px solid #570506;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-top {
+    display: flex;
+    min-height: 18px;
+    justify-content: flex-end;
+    margin: 0 0 10px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-toggle {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    padding: 0 !important;
+}
+body.tfp-admin-dashboard-view .tfp-admin-brand-row {
+    display: flex;
+    min-height: 0;
+    height: 54px;
+    flex: 0 0 54px;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 4px 8px 14px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-brand {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+}
+body.tfp-admin-dashboard-view .tfp-admin-brand img.tfp-admin-logo-expanded {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 40px;
+    object-fit: contain;
+    object-position: left center;
+}
+body.tfp-admin-dashboard-view .tfp-admin-brand img.tfp-admin-logo-collapsed {
+    display: none;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-link {
+    display: flex;
+    width: 100%;
+    min-height: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    align-items: center;
+    gap: 12px;
+    margin: 0 !important;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 0;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-icon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    align-items: center;
+    justify-content: center;
+    line-height: 18px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-nav-label {
+    display: block;
+    overflow: hidden;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view .tfp-admin-sidebar-bottom {
+    display: block;
+    width: 100%;
+    flex: 0 0 auto;
+    margin-top: auto;
+    padding: 14px 0 0;
+    border-top: 1px solid #dedede;
+}
+body.tfp-admin-dashboard-view .tfp-admin-profile {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px 14px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-profile img {
+    display: block;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+body.tfp-admin-dashboard-view .tfp-admin-profile strong {
+    display: block;
+    overflow: hidden;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view .tfp-admin-profile small {
+    display: block;
+    margin: 0;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-logout {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    height: 42px;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 10px 12px;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-logout .tfp-admin-logout-icon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    align-items: center;
+    justify-content: center;
+}
+body.tfp-admin-dashboard-view .tfp-admin-logout .tfp-admin-logout-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-logout .tfp-admin-logout-label {
+    display: block;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-sidebar {
+    flex-basis: 76px;
+    width: 76px;
+    min-width: 76px;
+    max-width: 76px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-brand-row {
+    justify-content: center;
+}
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-brand img.tfp-admin-logo-expanded {
+    display: none;
+}
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-brand img.tfp-admin-logo-collapsed {
+    display: block;
+    width: 36px;
+    height: 36px;
+    max-width: 36px;
+    max-height: 36px;
+    object-fit: contain;
+}
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-nav-link {
+    justify-content: center;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-nav-label,
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-profile span,
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-logout-label {
+    display: none;
+}
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-profile,
+body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-logout {
+    justify-content: center;
+}
+@media (max-width: 991px) {
+    body.tfp-admin-dashboard-view .tfp-admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        min-width: 260px;
+        max-width: 82vw;
+        height: 100vh;
+        height: 100dvh;
+        flex-basis: 260px;
+        padding: 16px 14px;
+        transform: translateX(-100%);
+        box-shadow: 8px 0 24px rgba(0,0,0,.12);
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-sidebar {
+        width: 260px;
+        min-width: 260px;
+        max-width: 82vw;
+        flex-basis: 260px;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-nav-label,
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-profile span,
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-logout-label {
+        display: block;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-nav-link,
+    body.tfp-admin-dashboard-view.tfp-admin-sidebar-is-collapsed .tfp-admin-logout {
+        justify-content: flex-start;
+    }
+}
+
+
+/* Mobile breadcrumb wrapping: keep long page/course titles inside the breadcrumb background on every admin page. */
+@media (max-width: 700px) {
+    .tfp-admin-app .tfp-admin-breadcrumb {
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 4px 9px;
+        width: 100%;
+        height: auto;
+        min-height: 42px;
+        padding: 8px 16px;
+        line-height: 1.45;
+        white-space: normal;
+        overflow: visible;
+    }
+
+    .tfp-admin-app .tfp-admin-breadcrumb a,
+    .tfp-admin-app .tfp-admin-breadcrumb b {
+        flex: 0 0 auto;
+    }
+
+    .tfp-admin-app .tfp-admin-breadcrumb strong,
+    .tfp-admin-app .tfp-admin-breadcrumb .tfp-admin-breadcrumb-current {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        line-height: 1.4;
+    }
+}
+
+
+/* Global admin dashboard hover colour: replace theme pink with the project teal. */
+.tfp-admin-app button:hover,
+.tfp-admin-app a.button:hover,
+.tfp-admin-app a[role="button"]:hover,
+.tfp-admin-app input[type="button"]:hover,
+.tfp-admin-app input[type="submit"]:hover,
+.tfp-admin-course-detail-app button:hover,
+.tfp-admin-course-detail-app a.button:hover,
+.tfp-admin-course-detail-app a[role="button"]:hover,
+.tfp-admin-course-detail-app input[type="button"]:hover,
+.tfp-admin-course-detail-app input[type="submit"]:hover,
+.tfp-admin-course-editor-app button:hover,
+.tfp-admin-course-editor-app a.button:hover,
+.tfp-admin-course-editor-app a[role="button"]:hover,
+.tfp-admin-course-editor-app input[type="button"]:hover,
+.tfp-admin-course-editor-app input[type="submit"]:hover {
+    border-color: #006B73 !important;
+    background-color: #006B73 !important;
+    background-image: none !important;
+    color: #fff !important;
+    box-shadow: none !important;
 }

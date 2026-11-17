@@ -1,94 +1,192 @@
-/* Admin → Users → Activity — Figma-aligned layout */
-.tfp-admin-activity-app{min-height:100vh;background:#fff;color:#151411;font-family:inherit}
-.tfp-admin-activity-app .tfp-admin-main{min-width:0}
-.tfp-admin-activity-app .tfp-admin-breadcrumb{height:51px;min-height:51px;background:#ebebeb;display:flex;align-items:center;gap:14px;padding:0 48px;color:#151411;font-size:14px}
-.tfp-admin-activity-app .tfp-admin-breadcrumb a{color:#00727b;text-decoration:none}
-.tfp-admin-activity-app .tfp-admin-breadcrumb strong{font-weight:700}
-.tfp-admin-activity-top-search{margin-left:auto;width:198px;height:32px;border:1px solid #4c535a;background:#fff;display:flex;flex-direction:row;align-items:center}
-.tfp-admin-activity-top-search input{width:100%;height:100%;border:0!important;box-shadow:none!important;padding:4px 8px;font-size:14px}
-.tfp-admin-activity-top-search button{border:0;background:#fff;padding:0 8px;cursor:pointer}
-.tfp-admin-activity-header{padding:14px 48px 17px;border-bottom:1px solid #6f0000}
-.tfp-admin-activity-header h1{font-size:40px;line-height:1.2;font-weight:700;margin:0 0 12px;color:#151411;letter-spacing:-.6px}
-.tfp-admin-activity-header p{font-family:Georgia,serif;font-size:16px;line-height:1.45;margin:0;color:#262626}
-.tfp-admin-activity-content{padding:30px 28px 40px 48px}
-.tfp-admin-activity-filters{display:flex;align-items:center;gap:8px;margin:0 0 19px;flex-wrap:wrap}
-.tfp-admin-activity-filters select,.tfp-admin-activity-inline-search{height:35px;border:1px solid #d5d8dc;border-radius:7px;background:#fff;color:#151411;font-size:13px}
-.tfp-admin-activity-filters select{min-width:137px;padding:0 28px 0 10px}
-.tfp-admin-activity-filters label:nth-child(2) select{min-width:137px}
-.tfp-admin-activity-filters label:nth-child(3) select{min-width:137px}
-.tfp-admin-activity-inline-search{display:flex;align-items:center;gap:8px;padding:0 10px;width:202px}
-.tfp-admin-activity-inline-search .dashicons{color:#171717;font-size:16px;width:16px;height:16px}
-.tfp-admin-activity-inline-search input{border:0!important;outline:0!important;box-shadow:none!important;width:100%;min-width:0;padding:0;font-size:13px;background:transparent}
-.tfp-admin-activity-filter-submit{height:35px;border:0;border-radius:6px;background:#00666e;color:#fff;padding:0 14px;font-size:13px;cursor:pointer}
-.tfp-admin-activity-table-wrap{border:1px solid #d0d0d0;border-radius:11px;padding:15px 5px 0;overflow:hidden;min-height:calc(100vh - 315px);display:flex;flex-direction:column}
-.tfp-admin-activity-table-scroll{width:100%;overflow-x:auto;flex:1}
-.tfp-admin-activity-table{width:100%;border-collapse:collapse;table-layout:fixed;margin:0}
-.tfp-admin-activity-table th{height:38px;background:#fbfbfc;text-align:left;font-size:12px;font-weight:700;color:#151411;padding:0 20px;border-bottom:1px solid #e5e7eb}
-.tfp-admin-activity-table td{height:37px;padding:5px 20px;border-bottom:1px solid #e5e7eb;font-size:10px;line-height:1.25;color:#151411;vertical-align:middle;overflow-wrap:anywhere}
-.tfp-admin-activity-table th:nth-child(1),.tfp-admin-activity-table td:nth-child(1){width:14%}
-.tfp-admin-activity-table th:nth-child(2),.tfp-admin-activity-table td:nth-child(2){width:24%}
-.tfp-admin-activity-table th:nth-child(3),.tfp-admin-activity-table td:nth-child(3){width:15%}
-.tfp-admin-activity-table th:nth-child(4),.tfp-admin-activity-table td:nth-child(4){width:24%}
-.tfp-admin-activity-table th:nth-child(5),.tfp-admin-activity-table td:nth-child(5){width:11%}
-.tfp-admin-activity-table th:nth-child(6),.tfp-admin-activity-table td:nth-child(6){width:12%}
-.tfp-admin-activity-table td:nth-child(2) strong{font-size:12px;font-weight:700}
-.tfp-admin-activity-view{display:inline-flex;align-items:center;justify-content:center;min-width:66px;height:26px;border-radius:7px;background:#00666e;color:#fff;text-decoration:none;font-size:12px;font-weight:600}
-.tfp-admin-activity-view:hover,.tfp-admin-activity-filter-submit:hover{background:#004f55;color:#fff}
-.tfp-admin-activity-empty{text-align:center!important;padding:48px 20px!important;font-size:13px!important;color:#6b7280!important}
-.tfp-admin-activity-pagination{display:flex;align-items:center;justify-content:space-between;padding:24px 15px 12px;font-size:13px;color:#42516a}
-.tfp-admin-activity-pagination nav{display:flex;align-items:center;gap:28px}
-.tfp-admin-activity-pagination a{color:#343a40;text-decoration:none;font-weight:600}
-.tfp-admin-activity-pagination a.next,.tfp-admin-activity-pagination .next{background:#00666e;color:#fff;border-radius:7px;padding:7px 16px;min-width:96px;text-align:center}
-.tfp-admin-activity-pagination .is-disabled{color:#a0a0a0}
-@media(max-width:1100px){.tfp-admin-activity-content{padding:24px}.tfp-admin-activity-table{min-width:850px}}
-@media(max-width:767px){.tfp-admin-activity-app .tfp-admin-breadcrumb{padding:0 18px;gap:8px}.tfp-admin-activity-top-search{width:120px}.tfp-admin-activity-header{padding:18px}.tfp-admin-activity-header h1{font-size:30px}.tfp-admin-activity-content{padding:18px 12px}.tfp-admin-activity-filters>*{flex:1 1 45%}.tfp-admin-activity-filters select{width:100%;min-width:0!important}.tfp-admin-activity-inline-search{width:auto}.tfp-admin-activity-filter-submit{flex:0 0 auto}.tfp-admin-activity-table-wrap{min-height:500px}.tfp-admin-activity-pagination{padding:18px 8px;gap:10px;flex-wrap:wrap}.tfp-admin-activity-pagination nav{gap:12px}}
+/* User Activity intentionally reuses the exact User Overview layout system.
+   Shared layout, typography, spacing, panel, table, and pagination rules are
+   inherited from admin-dashboard.css through the matching Overview classes. */
 
+/* Header search: match the Figma breadcrumb control and keep it functional. */
+.tfp-admin-activity-app .tfp-admin-breadcrumb {
+    gap: 12px;
+}
 
-/* Keep the Activity filter button on the project's teal brand color. */
-.tfp-admin-activity-app .tfp-admin-activity-filters .tfp-admin-activity-filter-submit,
-.tfp-admin-activity-app .tfp-admin-activity-filters button[type="submit"] {
-    background: #00666e !important;
-    border: 1px solid #00666e !important;
-    color: #ffffff !important;
+.tfp-admin-activity-app .tfp-admin-activity-top-search {
+    display: flex !important;
+    flex: 0 0 235px;
+    width: 235px;
+    height: 38px;
+    box-sizing: border-box;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: 9px;
+    margin: 0 0 0 auto;
+    padding: 0 10px;
+    border: 1px solid #252525;
+    border-radius: 0;
+    background: #fff;
+}
+
+.tfp-admin-activity-app .tfp-admin-activity-top-search input {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    border: 0 !important;
+    outline: 0 !important;
     box-shadow: none !important;
-    outline: none;
-}
-.tfp-admin-activity-app .tfp-admin-activity-filters .tfp-admin-activity-filter-submit:hover,
-.tfp-admin-activity-app .tfp-admin-activity-filters button[type="submit"]:hover,
-.tfp-admin-activity-app .tfp-admin-activity-filters .tfp-admin-activity-filter-submit:focus,
-.tfp-admin-activity-app .tfp-admin-activity-filters button[type="submit"]:focus {
-    background: #004f55 !important;
-    border-color: #004f55 !important;
-    color: #ffffff !important;
+    background: transparent !important;
+    color: #171717;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 15px;
+    font-weight: 600;
 }
 
-
-/* Center Apply button label horizontally and vertically. */
-.tfp-admin-activity-app .tfp-admin-activity-filters .tfp-admin-activity-filter-submit,
-.tfp-admin-activity-app .tfp-admin-activity-filters button[type="submit"] {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    line-height: 1 !important;
-    padding: 0 18px !important;
-    min-width: 78px;
+.tfp-admin-activity-app .tfp-admin-activity-top-search input::placeholder {
+    color: #171717;
+    opacity: 1;
 }
 
-/* Make the temporary sample-data state unmistakable. */
-.tfp-admin-activity-demo-notice td {
+.tfp-admin-activity-app .tfp-admin-activity-top-search button {
+    display: inline-flex;
+    flex: 0 0 19px;
+    width: 19px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    border: 0 !important;
+    background: transparent !important;
+    color: #171717 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.tfp-admin-activity-app img.tfp-activity-search-icon {
+    display: block;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    max-width: 16px;
+    object-fit: contain;
+}
+
+@media (max-width: 700px) {
+    .tfp-admin-activity-app .tfp-admin-breadcrumb {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 48px;
+        row-gap: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .tfp-admin-activity-app .tfp-admin-activity-top-search {
+        flex: 1 1 100%;
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+/* Match Overview filter dimensions while keeping Activity's own field names. */
+.tfp-admin-activity-app .tfp-admin-users-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.tfp-admin-activity-app .tfp-admin-users-filters select {
+    width: 138px;
+    height: 35px;
+    min-width: 0;
+    margin: 0;
+    padding: 0 10px;
+    border: 1px solid #d8d8d8;
+    border-radius: 7px;
+    background: #fff;
+    color: #252525;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 12px;
+    font-weight: 500;
+}
+.tfp-admin-activity-app .tfp-admin-users-filters label:nth-of-type(2) select {
+    width: 137px;
+}
+.tfp-admin-activity-app .tfp-admin-users-filters label:nth-of-type(3) select {
+    width: 136px;
+}
+.tfp-admin-activity-app .tfp-admin-overview-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 202px;
+    height: 35px;
+    padding: 0 10px;
+    border: 1px solid #d8d8d8;
+    border-radius: 7px;
+    background: #fff;
+}
+.tfp-admin-activity-app .tfp-admin-overview-search img.tfp-activity-search-icon {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+.tfp-admin-activity-app .tfp-admin-overview-search input {
+    width: 100%;
+    min-width: 0;
+    height: 32px;
+    padding: 0;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: #252525;
+    font-family: inherit;
+    font-size: 12px;
+}
+.tfp-admin-activity-app .tfp-admin-overview-search input::placeholder {
+    color: #252525;
+    opacity: 1;
+}
+
+/* Activity-specific table details; the rest uses .tfp-admin-overview-table. */
+.tfp-admin-activity-app .tfp-admin-overview-table td:nth-child(2) strong {
+    font-size: 12px;
+    font-weight: 700;
+}
+.tfp-admin-activity-app .tfp-admin-overview-table .tfp-admin-overview-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 66px;
+    min-height: 26px;
+    padding: 4px 13px;
+    border-radius: 7px;
+    background: #00666e;
+    color: #fff !important;
+    text-decoration: none !important;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 12px;
+    font-weight: 600;
+}
+.tfp-admin-activity-app .tfp-admin-overview-table .tfp-admin-overview-view:hover {
+    background: #00505a;
+}
+
+/* Clearly identify the demo preview rows without changing the shared table. */
+.tfp-admin-activity-app .tfp-admin-activity-demo-notice td {
     padding: 10px 18px !important;
-    background: #fff8e6;
+    background: #fff8e6 !important;
     color: #805b12 !important;
     font-size: 11px !important;
-    font-weight: 700;
+    font-weight: 700 !important;
     letter-spacing: .02em;
     border-bottom: 1px solid #f1dfb7 !important;
 }
-.tfp-admin-activity-demo-row td {
+.tfp-admin-activity-app .tfp-admin-activity-demo-row td {
     background: #fffdf7;
 }
-.tfp-admin-activity-demo-label {
+.tfp-admin-activity-app .tfp-admin-activity-demo-label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -99,4 +197,83 @@
     color: #72551b;
     font-size: 11px;
     font-weight: 700;
+}
+.tfp-admin-activity-app .tfp-admin-overview-empty {
+    height: 90px !important;
+    text-align: center !important;
+    color: #666 !important;
+}
+
+/* Keep the Activity table usable on narrower screens using Overview breakpoints. */
+@media (max-width: 860px) {
+    .tfp-admin-activity-app .tfp-admin-users-filters {
+        flex-wrap: wrap;
+        margin-right: 0;
+        margin-left: 0;
+    }
+    .tfp-admin-activity-app .tfp-admin-users-filters select {
+        flex: 1 1 150px;
+        width: auto !important;
+    }
+    .tfp-admin-activity-app .tfp-admin-overview-search {
+        flex: 1 1 220px;
+        width: auto;
+    }
+}
+@media (max-width: 560px) {
+    .tfp-admin-activity-app .tfp-admin-users-overview-content {
+        padding: 16px 12px 28px;
+    }
+    .tfp-admin-activity-app .tfp-admin-users-filters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    .tfp-admin-activity-app .tfp-admin-users-filters select,
+    .tfp-admin-activity-app .tfp-admin-overview-search {
+        width: 100% !important;
+        min-width: 0;
+    }
+    .tfp-admin-activity-app .tfp-admin-overview-search {
+        grid-column: 1 / -1;
+    }
+}
+
+
+/* Shared Admin page heading standard — match the Users page reference. */
+body.tfp-admin-dashboard-view .tfp-admin-page-header {
+    min-height: 112px;
+    align-items: flex-end;
+    padding: 14px clamp(24px, 2.6vw, 42px) 16px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
+    margin: 0 0 8px;
+    color: #171717;
+    font-family: var(--tfp-dash-font, "Eudoxus Sans", sans-serif);
+    font-size: 40px;
+    line-height: 1.1;
+    font-weight: 750;
+    letter-spacing: -.6px;
+}
+body.tfp-admin-dashboard-view .tfp-admin-page-header p {
+    margin: 0;
+    color: #333;
+    font-family: "Lora", Georgia, serif !important;
+    font-size: 15px;
+    line-height: 1.45;
+}
+@media (max-width: 700px) {
+    body.tfp-admin-dashboard-view .tfp-admin-page-header {
+        min-height: 96px;
+        padding: 14px 16px 15px;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header h1 {
+        font-size: clamp(28px, 7vw, 36px);
+        line-height: 1.1;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-page-header p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
 }
