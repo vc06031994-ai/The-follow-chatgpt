@@ -2827,3 +2827,9 @@ body.tfp-global-overrides-open{overflow:hidden}
  .tfp-admin-course-detail-app .tfp-admin-insights-mini-metrics{gap:8px}
  .tfp-admin-course-detail-app .tfp-admin-insights-velocity-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+
+
+/* Insights uses its own section heading below the filter row. */
+.tfp-admin-course-detail-app .tfp-admin-course-insights-header{display:none}
+.tfp-admin-course-detail-app .tfp-admin-insights-bar-column:hover .tfp-admin-insights-bar{filter:brightness(.96)}
+.tfp-admin-course-detail-app .tfp-admin-insights-bar-column:focus-within{outline:2px solid rgba(0,107,115,.35);outline-offset:3px}
