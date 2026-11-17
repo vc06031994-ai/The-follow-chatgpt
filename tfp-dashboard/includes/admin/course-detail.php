@@ -314,7 +314,15 @@ function tfp_admin_course_insights_data($course_id, $cohort_filter = 0, $period 
             foreach ($counts as $key => $unused) $counts[$key] += $week_status[$index][$key] ?? 0;
         }
         $total = array_sum($counts);
-        $sections[] = ['label' => sprintf(__('Section %d', 'tfp-dashboard'), $i + 1), 'counts' => $counts, 'total' => $total];
+        $week_start = ($i * $chunk_size) + 1;
+        $week_end = min(count($weeks), (($i + 1) * $chunk_size));
+        $sections[] = [
+            'label' => sprintf(__('Section %d', 'tfp-dashboard'), $i + 1),
+            'week_start' => $week_start,
+            'week_end' => $week_end,
+            'counts' => $counts,
+            'total' => $total,
+        ];
     }
 
     $assessment_scores = array_merge($quiz_scores, $test_scores);
@@ -759,13 +767,40 @@ function tfp_admin_course_detail_render() {
                                                     'pending_gate' => ['class' => 'is-pending', 'label' => __('Pending Gate', 'tfp-dashboard')],
                                                 ];
                                             ?>
-                                                <div class="tfp-admin-insights-bar-column" title="<?php echo esc_attr($section['label']); ?>">
+                                                <?php
+                                                    $status_labels = [
+                                                        'on_track' => __('On Track', 'tfp-dashboard'),
+                                                        'behind' => __('Behind', 'tfp-dashboard'),
+                                                        'stalled' => __('Stalled', 'tfp-dashboard'),
+                                                        'pending_gate' => __('Pending Gate', 'tfp-dashboard'),
+                                                    ];
+                                                    $dominant_key = 'on_track';
+                                                    foreach (['behind', 'stalled', 'pending_gate'] as $candidate_key) {
+                                                        if ((int) $section['counts'][$candidate_key] > (int) $section['counts'][$dominant_key]) {
+                                                            $dominant_key = $candidate_key;
+                                                        }
+                                                    }
+                                                    $tooltip_lines = [
+                                                        sprintf(__('Week %1$d–%2$d', 'tfp-dashboard'), (int) $section['week_start'], (int) $section['week_end']),
+                                                        sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $status_labels['on_track'], (int) $section['counts']['on_track']),
+                                                        sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $status_labels['behind'], (int) $section['counts']['behind']),
+                                                        sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $status_labels['stalled'], (int) $section['counts']['stalled']),
+                                                        sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $status_labels['pending_gate'], (int) $section['counts']['pending_gate']),
+                                                        sprintf(__('Most students are currently %1$s.', 'tfp-dashboard'), strtolower($status_labels[$dominant_key])),
+                                                    ];
+                                                ?>
+                                                <div class="tfp-admin-insights-bar-column" tabindex="0" aria-label="<?php echo esc_attr(implode('. ', $tooltip_lines)); ?>">
+                                                    <div class="tfp-admin-insights-tooltip" role="tooltip">
+                                                        <strong><?php echo esc_html($tooltip_lines[0]); ?></strong>
+                                                        <?php foreach (array_slice($tooltip_lines, 1, 4) as $tooltip_line) : ?><span><?php echo esc_html($tooltip_line); ?></span><?php endforeach; ?>
+                                                        <em><?php echo esc_html($tooltip_lines[5]); ?></em>
+                                                    </div>
                                                     <div class="tfp-admin-insights-bar">
                                                         <?php foreach ($parts as $key => $part) :
                                                             $count = (int) $section['counts'][$key];
                                                             $height = $count ? ($count / $total) * 100 : 0;
                                                         ?>
-                                                            <?php if ($count) : ?><span class="<?php echo esc_attr($part['class']); ?>" style="height:<?php echo esc_attr($height); ?>%" title="<?php echo esc_attr(sprintf(__('%1$s: %2$d students', 'tfp-dashboard'), $part['label'], $count)); ?>"></span><?php endif; ?>
+                                                            <?php if ($count) : ?><span class="<?php echo esc_attr($part['class']); ?>" style="height:<?php echo esc_attr($height); ?>%" aria-hidden="true"></span><?php endif; ?>
                                                         <?php endforeach; ?>
                                                     </div>
                                                     <small><?php echo esc_html($section['label']); ?></small>
