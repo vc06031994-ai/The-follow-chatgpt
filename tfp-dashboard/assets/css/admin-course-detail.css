@@ -2892,3 +2892,118 @@ body.tfp-global-overrides-open{overflow:hidden}
 @media(max-width:600px){
  .tfp-admin-course-detail-app .tfp-admin-insights-tooltip{max-width:min(245px,78vw);padding:9px 10px;font-size:10px}
 }
+
+
+/* =========================================================
+   Course Detail — universal spacing rhythm
+   Keep all vertical and horizontal gaps on a consistent scale.
+   ========================================================= */
+.tfp-admin-course-detail-app {
+    --tfp-space-1: 4px;
+    --tfp-space-2: 8px;
+    --tfp-space-3: 16px;
+    --tfp-space-4: 24px;
+    --tfp-space-5: 32px;
+    --tfp-space-6: 48px;
+}
+
+/* Page heading, navigation and page content */
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header {
+    padding-top: var(--tfp-space-3);
+    padding-bottom: var(--tfp-space-3);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-header h1 {
+    margin-bottom: var(--tfp-space-2);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-tabs {
+    min-height: 42px;
+    gap: var(--tfp-space-4);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-content {
+    padding-top: var(--tfp-space-4);
+    padding-bottom: var(--tfp-space-5);
+}
+
+/* Stats row and overview panels */
+.tfp-admin-course-detail-app .tfp-admin-course-detail-stats {
+    gap: var(--tfp-space-3);
+    margin-bottom: var(--tfp-space-4);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-stats article {
+    padding: var(--tfp-space-3);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels {
+    column-gap: var(--tfp-space-3);
+    row-gap: var(--tfp-space-3);
+    align-items: start;
+    margin-bottom: 0;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels > .tfp-admin-panel {
+    min-width: 0;
+    margin: 0;
+}
+.tfp-admin-course-detail-app .tfp-admin-course-detail-panels .tfp-admin-panel-heading {
+    padding: var(--tfp-space-3) var(--tfp-space-4);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dl {
+    padding: 0 var(--tfp-space-4) var(--tfp-space-3);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-summary dl > div {
+    padding: var(--tfp-space-2) var(--tfp-space-1);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-list {
+    padding: 0 var(--tfp-space-4) var(--tfp-space-3);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-week-health-row {
+    gap: var(--tfp-space-2);
+    padding: var(--tfp-space-2) var(--tfp-space-1);
+}
+
+/* The Weeks section follows the complete two-column panel row,
+   not the shorter left card, with one deliberate section gap. */
+.tfp-admin-course-detail-app .tfp-admin-course-weeks {
+    width: 100%;
+    margin-top: var(--tfp-space-5);
+}
+
+/* Keep compact controls and table content aligned to the same rhythm. */
+.tfp-admin-course-detail-app .tfp-admin-course-weeks > .tfp-admin-panel-heading {
+    padding: var(--tfp-space-3) var(--tfp-space-4);
+}
+.tfp-admin-course-detail-app .tfp-admin-course-weeks th,
+.tfp-admin-course-detail-app .tfp-admin-course-weeks td {
+    padding: var(--tfp-space-2) var(--tfp-space-3) !important;
+}
+
+@media (max-width: 900px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-panels {
+        row-gap: var(--tfp-space-3);
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks {
+        margin-top: var(--tfp-space-4);
+    }
+}
+@media (max-width: 700px) {
+    .tfp-admin-course-detail-app .tfp-admin-course-tabs {
+        gap: var(--tfp-space-3);
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-content {
+        padding: var(--tfp-space-3) var(--tfp-space-3) var(--tfp-space-4);
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-stats {
+        gap: var(--tfp-space-2);
+        margin-bottom: var(--tfp-space-3);
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-stats article {
+        padding: var(--tfp-space-2);
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-detail-panels .tfp-admin-panel-heading,
+    .tfp-admin-course-detail-app .tfp-admin-course-weeks > .tfp-admin-panel-heading {
+        padding: var(--tfp-space-3);
+    }
+    .tfp-admin-course-detail-app .tfp-admin-course-summary dl,
+    .tfp-admin-course-detail-app .tfp-admin-course-week-health-list {
+        padding-right: var(--tfp-space-3);
+        padding-left: var(--tfp-space-3);
+    }
+}
