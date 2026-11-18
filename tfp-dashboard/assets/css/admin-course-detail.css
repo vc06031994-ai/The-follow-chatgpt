@@ -3056,3 +3056,9 @@ body.tfp-global-overrides-open{overflow:hidden}
 .tfp-admin-course-detail-app .tfp-admin-access-add-editor .tfp-admin-access-add-form{display:flex;gap:8px;margin:0;padding:10px;border:1px solid #999;border-top:0;border-radius:0 0 8px 8px}
 .tfp-admin-course-detail-app .tfp-admin-access-add-editor .tfp-admin-access-add-form input[type=email]{min-width:0;flex:1;height:34px;padding:0 10px;border:1px solid #aaa;border-radius:6px;background:#fff}
 .tfp-admin-course-detail-app .tfp-admin-access-add-editor .tfp-admin-access-add-form button{width:auto;min-width:70px;border:0;border-radius:6px;background:#006b73;color:#fff}
+
+
+/* Keep action buttons aligned consistently in both Access cards. */
+.tfp-admin-course-detail-app .tfp-admin-access-lock-form{display:flex;flex-direction:column;align-items:stretch}
+.tfp-admin-course-detail-app .tfp-admin-access-lock-form .tfp-admin-access-save{align-self:flex-end;margin-top:12px}
+.tfp-admin-course-detail-app .tfp-admin-access-permissions-form .tfp-admin-access-save{justify-self:end;align-self:center}
