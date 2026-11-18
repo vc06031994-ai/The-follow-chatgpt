@@ -26,8 +26,6 @@ require_once TFP_AUTH_PATH.'includes/account-page/customer-account-routing.php';
 require_once TFP_AUTH_PATH.'includes/emails/welcome-email-preview.php';
 require_once TFP_AUTH_PATH.'includes/emails/processing-order-email-preview.php';
 require_once TFP_AUTH_PATH.'includes/emails/shipping-confirmation-email-preview.php';
-require_once TFP_AUTH_PATH.'includes/emails/email-template-test.php';
-require_once TFP_AUTH_PATH.'includes/emails/abandoned-cart-email-preview.php';
 
 function tfp_force_custom_customer_email_templates() {
     if (!function_exists('WC')) return;
