@@ -874,6 +874,8 @@ function tfp_admin_course_detail_render() {
                     </section>
                 <?php elseif ($active_tab === 'access') : ?>
                     <?php require TFP_DASH_PATH . 'includes/admin/course-detail-access.php'; ?>
+                <?php elseif ($active_tab === 'health') : ?>
+                    <?php require TFP_DASH_PATH . 'includes/admin/course-detail-health.php'; ?>
                 <?php else : ?>
                 <section class="tfp-admin-course-detail-stats">
                     <article><small><?php esc_html_e('Total Weeks', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['total_weeks'])); ?></strong><p><?php esc_html_e('Number of weeks in course', 'tfp-dashboard'); ?></p></article>
