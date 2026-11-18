@@ -3096,3 +3096,63 @@ body.tfp-global-overrides-open{overflow:hidden}
 .tfp-admin-course-detail-app .tfp-admin-course-health-scan-note{margin:8px 0 0;color:#006b73;font:500 10px/1.4 var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
 @media(max-width:900px){.tfp-admin-course-detail-app .tfp-admin-course-health-panels{grid-template-columns:1fr;max-width:none}}
 @media(max-width:600px){.tfp-admin-course-detail-app .tfp-admin-course-health-stats{grid-template-columns:1fr;gap:10px}.tfp-admin-course-detail-app .tfp-admin-course-health-stat{min-height:62px}.tfp-admin-course-detail-app .tfp-admin-course-health-panels>.tfp-admin-panel{padding:16px}.tfp-admin-course-detail-app .tfp-admin-course-health-connection-list>div{align-items:flex-start;flex-direction:column;justify-content:center;gap:4px;padding:9px 0}.tfp-admin-course-detail-app .tfp-admin-course-health-connection-list span{text-align:left}}
+
+
+/* Figma alignment refinements — System Health & Integrity only. */
+.tfp-admin-course-health-view .tfp-admin-breadcrumb{
+    display:flex;min-height:50px;align-items:center;gap:12px;
+    padding:0 clamp(24px,2.6vw,42px);background:#ededed;
+    box-sizing:border-box;font-size:13px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-detail-header{
+    min-height:112px;padding:14px clamp(24px,2.6vw,42px) 16px;
+    align-items:flex-end;border-bottom:1px solid #6b0000;
+}
+.tfp-admin-course-health-view .tfp-admin-course-detail-header h1{
+    font-size:clamp(30px,2.5vw,40px);line-height:1.15;margin-bottom:10px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-detail-header p{font-size:15px}
+.tfp-admin-course-health-view .tfp-admin-course-view-cohorts{
+    min-height:40px;padding:0 16px;border-radius:6px;font-size:13px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-tabs{
+    min-height:40px;gap:0;padding:0 clamp(24px,2.6vw,46px);
+    border-bottom:1px solid #bcbcbc;
+}
+.tfp-admin-course-health-view .tfp-admin-course-tabs a{
+    min-width:96px;padding:0 10px;font-size:14px;text-align:center;
+}
+.tfp-admin-course-health-view .tfp-admin-course-detail-content{
+    padding:18px clamp(24px,2.6vw,46px) 40px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-health{gap:22px}
+.tfp-admin-course-health-view .tfp-admin-course-health-stats{
+    grid-template-columns:repeat(3,214px);gap:12px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-health-stat{
+    min-height:70px;border-radius:9px;padding:10px 16px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-health-panels{
+    grid-template-columns:minmax(0,444px) minmax(0,353px);
+    gap:14px;max-width:811px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-health-panels>.tfp-admin-panel{
+    min-height:234px;padding:18px 26px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-health-panels .tfp-admin-panel-heading{margin-bottom:12px}
+.tfp-admin-course-health-view .tfp-admin-course-health-connection-list>div{min-height:37px}
+.tfp-admin-course-health-view .tfp-admin-course-health-issues{min-height:74px}
+.tfp-admin-course-health-view .tfp-admin-course-health-scan-button{min-height:28px;margin-top:8px}
+@media(max-width:900px){
+    .tfp-admin-course-health-view .tfp-admin-course-health-panels{grid-template-columns:minmax(0,1fr);max-width:100%}
+    .tfp-admin-course-health-view .tfp-admin-course-health-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:600px){
+    .tfp-admin-course-health-view .tfp-admin-breadcrumb{min-height:42px;padding:0 16px;gap:7px;font-size:11px}
+    .tfp-admin-course-health-view .tfp-admin-course-detail-header{padding:16px;min-height:0}
+    .tfp-admin-course-health-view .tfp-admin-course-detail-header h1{font-size:27px}
+    .tfp-admin-course-health-view .tfp-admin-course-detail-header p{font-size:12px}
+    .tfp-admin-course-health-view .tfp-admin-course-detail-content{padding:16px}
+    .tfp-admin-course-health-view .tfp-admin-course-health-stats{grid-template-columns:1fr;gap:10px}
+    .tfp-admin-course-health-view .tfp-admin-course-health-panels{gap:12px}
+}
