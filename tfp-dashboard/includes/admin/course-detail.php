@@ -418,7 +418,7 @@ function tfp_admin_course_detail_render() {
     $is_plan_tab = ($active_tab === 'plan');
     $is_rules_tab = ($active_tab === 'rules');
     ?>
-    <div class="tfp-admin-app tfp-admin-course-detail-app">
+    <div class="tfp-admin-app tfp-admin-course-detail-app <?php echo $active_tab === 'health' ? 'tfp-admin-course-health-view' : ''; ?>">
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
             <div class="tfp-admin-sidebar-top">
                 <button class="tfp-admin-sidebar-toggle" type="button" aria-label="<?php esc_attr_e('Toggle navigation', 'tfp-dashboard'); ?>" data-tfp-admin-toggle>
