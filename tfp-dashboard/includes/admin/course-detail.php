@@ -459,7 +459,7 @@ function tfp_admin_course_detail_render() {
                 <a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a>
                 <b>/</b><a href="<?php echo esc_url(tfp_admin_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
                 <b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo esc_html($course_heading_title); ?></strong>
-                <?php if ($is_plan_tab || $is_rules_tab || $active_tab === 'cohorts' || $active_tab === 'insights') : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo $is_rules_tab ? esc_html__('Rules', 'tfp-dashboard') : ($is_plan_tab ? esc_html__('Plan', 'tfp-dashboard') : ($active_tab === 'insights' ? esc_html__('Overview — Insights', 'tfp-dashboard') : esc_html__('Overview — Cohorts', 'tfp-dashboard'))); ?></strong><?php endif; ?>
+                <?php if ($is_plan_tab || $is_rules_tab || $active_tab === 'cohorts' || $active_tab === 'insights' || $active_tab === 'access') : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo $is_rules_tab ? esc_html__('Rules', 'tfp-dashboard') : ($is_plan_tab ? esc_html__('Plan', 'tfp-dashboard') : ($active_tab === 'insights' ? esc_html__('Overview — Insights', 'tfp-dashboard') : ($active_tab === 'access' ? esc_html__('Overview — Access', 'tfp-dashboard') : esc_html__('Overview — Cohorts', 'tfp-dashboard')))); ?></strong><?php endif; ?>
             </div>
 
             <header class="tfp-admin-page-header tfp-admin-course-detail-header <?php echo $is_rules_tab ? 'tfp-admin-course-rules-header' : ($active_tab === 'insights' ? 'tfp-admin-course-insights-header' : ''); ?>">
@@ -872,6 +872,8 @@ function tfp_admin_course_detail_render() {
                             </tbody></table></div>
                         </section>
                     </section>
+                <?php elseif ($active_tab === 'access') : ?>
+                    <?php require TFP_DASH_PATH . 'includes/admin/course-detail-access.php'; ?>
                 <?php else : ?>
                 <section class="tfp-admin-course-detail-stats">
                     <article><small><?php esc_html_e('Total Weeks', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($data['total_weeks'])); ?></strong><p><?php esc_html_e('Number of weeks in course', 'tfp-dashboard'); ?></p></article>
