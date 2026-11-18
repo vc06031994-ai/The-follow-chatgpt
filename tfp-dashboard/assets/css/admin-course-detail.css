@@ -3156,3 +3156,22 @@ body.tfp-global-overrides-open{overflow:hidden}
     .tfp-admin-course-health-view .tfp-admin-course-health-stats{grid-template-columns:1fr;gap:10px}
     .tfp-admin-course-health-view .tfp-admin-course-health-panels{gap:12px}
 }
+
+
+/* Health tab: use the available content width; do not leave an artificial blank column. */
+.tfp-admin-course-health-view .tfp-admin-course-health-panels{
+    width:100%;
+    max-width:none;
+    grid-template-columns:minmax(0,1.35fr) minmax(320px,0.85fr);
+    gap:16px;
+}
+.tfp-admin-course-health-view .tfp-admin-course-health-panels>.tfp-admin-panel{
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+}
+@media(max-width:900px){
+    .tfp-admin-course-health-view .tfp-admin-course-health-panels{
+        grid-template-columns:minmax(0,1fr);
+    }
+}
