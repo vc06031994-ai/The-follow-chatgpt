@@ -861,7 +861,7 @@ function tfp_admin_course_detail_render() {
                                 <article><small><?php esc_html_e('Fastest', 'tfp-dashboard'); ?></small><strong>—</strong></article>
                                 <article><small><?php esc_html_e('Slowest', 'tfp-dashboard'); ?></small><strong>—</strong></article>
                             </div>
-                            <div class="tfp-admin-insights-table-wrap"><table><thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Avg. Close', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Pending Now', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th></tr></thead><tbody>
+                            <div class="tfp-admin-insights-table-wrap tfp-dash-table-wrap"><table class="tfp-dash-table"><thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Avg. Close', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Pending Now', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th></tr></thead><tbody>
                                 <?php foreach ($insights['facilitators'] as $facilitator) :
                                     $facilitator_status = $facilitator['pending'] === 0 ? 'on-track' : ($facilitator['pending'] > 10 ? 'fail' : 'attention');
                                     $status_label = $facilitator_status === 'on-track' ? __('On Track', 'tfp-dashboard') : ($facilitator_status === 'fail' ? __('Fail', 'tfp-dashboard') : __('Attention', 'tfp-dashboard'));
