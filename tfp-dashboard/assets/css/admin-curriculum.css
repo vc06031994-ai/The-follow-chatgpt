@@ -1,0 +1,33 @@
+.tfp-admin-curriculum-app .tfp-admin-curriculum-header{min-height:112px;align-items:flex-end;padding:14px clamp(24px,2.6vw,42px) 16px;border-bottom:2px solid #570506}
+.tfp-admin-curriculum-app .tfp-admin-curriculum-header h1{margin:0 0 12px;font-size:40px;line-height:1.1;font-weight:750;letter-spacing:-.6px}
+.tfp-admin-curriculum-app .tfp-admin-curriculum-header p{margin:0;font:400 15px/1.45 "Lora",Georgia,serif}
+.tfp-admin-curriculum-primary,.tfp-admin-curriculum-add-course{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:40px;padding:0 16px;border:0;border-radius:6px;background:#006b70;color:#fff!important;text-decoration:none!important;font:600 13px var(--tfp-dash-font,"Eudoxus Sans",sans-serif)}
+.tfp-admin-curriculum-primary:hover,.tfp-admin-curriculum-add-course:hover{background:#00575d}
+.tfp-admin-curriculum-primary span,.tfp-admin-curriculum-add-course span{font-size:20px;line-height:1}
+.tfp-admin-curriculum-content{padding:26px clamp(24px,2.6vw,46px) 42px}
+.tfp-admin-curriculum-tabs{display:flex;align-items:center;gap:18px;min-height:40px;margin:-2px 0 24px;border-bottom:1px solid #c9c9c9}
+.tfp-admin-curriculum-tabs a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 4px;color:#b9b9b9;text-decoration:none;font-size:15px;font-weight:650}
+.tfp-admin-curriculum-tabs a.is-active{color:#171717;border-bottom:2px solid #006b70}
+.tfp-admin-curriculum-category-list{display:flex;flex-direction:column;gap:24px;max-width:100%}
+.tfp-admin-curriculum-category{padding:18px 14px 16px;border:1px solid #d7d7d7;border-radius:11px;background:#fff}
+.tfp-admin-curriculum-category-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 0 12px;border-bottom:1px solid #dedede}
+.tfp-admin-curriculum-category-info{min-width:0}
+.tfp-admin-curriculum-category-title{display:flex;align-items:center;flex-wrap:wrap;gap:14px}
+.tfp-admin-curriculum-category-title h2{margin:0;color:#171717;font-size:13px;line-height:1.4;font-weight:750}
+.tfp-admin-curriculum-category-title>span{padding:3px 8px;border-radius:20px;background:#e0f3f2;color:#007078;font-size:9px;font-weight:650}
+.tfp-admin-curriculum-category-info>p{margin:8px 0 0;color:#222;font:400 10px/1.4 "Lora",Georgia,serif}
+.tfp-admin-curriculum-category-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.tfp-admin-curriculum-add-course{min-height:30px;min-width:124px;padding:0 12px;font-size:12px}
+.tfp-admin-curriculum-add-course span{font-size:18px}
+.tfp-admin-curriculum-edit-category,.tfp-admin-curriculum-course-actions>a{display:inline-flex;align-items:center;justify-content:center;min-width:48px;min-height:28px;padding:0 12px;border:1px solid #222;border-radius:7px;background:#fff;color:#171717!important;text-decoration:none!important;font-size:12px}
+.tfp-admin-curriculum-course-list{display:flex;flex-direction:column;gap:10px;padding-top:14px}
+.tfp-admin-curriculum-course{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:58px;padding:10px 20px;border-radius:10px;background:#dfe3e4}
+.tfp-admin-curriculum-course>div:first-child{display:flex;min-width:0;flex-direction:column;gap:6px}
+.tfp-admin-curriculum-course strong{color:#171717;font-size:12px;line-height:1.3;font-weight:700}
+.tfp-admin-curriculum-course small{color:#333;font:400 9px/1.35 "Lora",Georgia,serif}
+.tfp-admin-curriculum-course-actions{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.tfp-admin-curriculum-status{display:inline-flex;align-items:center;justify-content:center;min-width:46px;min-height:23px;padding:0 9px;border:1px solid #00848b;border-radius:20px;background:#e9f7f6;color:#171717;font-size:9px}
+.tfp-admin-curriculum-status.is-inactive{border-color:#aaa;background:#f1f1f1}
+.tfp-admin-curriculum-empty{display:flex;align-items:center;justify-content:center;min-height:58px;margin-top:14px;border-radius:10px;background:#dfe3e4;color:#999;font-size:10px}
+.tfp-admin-curriculum-no-categories{padding:32px;border:1px solid #ddd;border-radius:10px;color:#777;text-align:center;font-size:13px}
+@media(max-width:700px){.tfp-admin-curriculum-app .tfp-admin-curriculum-header{min-height:0;align-items:flex-start;flex-direction:column;gap:14px;padding:18px 16px}.tfp-admin-curriculum-app .tfp-admin-curriculum-header h1{font-size:32px}.tfp-admin-curriculum-content{padding:18px 16px 30px}.tfp-admin-curriculum-category{padding:14px 10px}.tfp-admin-curriculum-category-head{align-items:flex-start;flex-direction:column}.tfp-admin-curriculum-category-actions{width:100%;justify-content:flex-end}.tfp-admin-curriculum-course{align-items:flex-start;padding:12px;flex-direction:column}.tfp-admin-curriculum-course-actions{width:100%;justify-content:flex-end}}
