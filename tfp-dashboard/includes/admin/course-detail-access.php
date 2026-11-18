@@ -93,13 +93,16 @@ $permission_labels = [
                     </article>
                 <?php endforeach; ?>
             </div>
-            <form method="post" class="tfp-admin-access-add-form">
-                <?php wp_nonce_field('tfp_course_access_' . $course_id, 'tfp_course_access_nonce'); ?>
-                <input type="hidden" name="tfp_course_access_action" value="add_editor">
-                <label class="screen-reader-text" for="tfp-course-editor-email"><?php esc_html_e('Editor email address', 'tfp-dashboard'); ?></label>
-                <input id="tfp-course-editor-email" type="email" name="editor_email" placeholder="<?php esc_attr_e('Enter an existing user email', 'tfp-dashboard'); ?>" required>
-                <button type="submit"><?php esc_html_e('+ Add Editor', 'tfp-dashboard'); ?></button>
-            </form>
+            <details class="tfp-admin-access-add-editor">
+                <summary><?php esc_html_e('+ Add Editor', 'tfp-dashboard'); ?></summary>
+                <form method="post" class="tfp-admin-access-add-form">
+                    <?php wp_nonce_field('tfp_course_access_' . $course_id, 'tfp_course_access_nonce'); ?>
+                    <input type="hidden" name="tfp_course_access_action" value="add_editor">
+                    <label class="screen-reader-text" for="tfp-course-editor-email"><?php esc_html_e('Editor email address', 'tfp-dashboard'); ?></label>
+                    <input id="tfp-course-editor-email" type="email" name="editor_email" placeholder="<?php esc_attr_e('Enter an existing user email', 'tfp-dashboard'); ?>" required>
+                    <button type="submit"><?php esc_html_e('Add', 'tfp-dashboard'); ?></button>
+                </form>
+            </details>
             <p class="tfp-admin-access-help"><?php esc_html_e('Only existing WordPress users can be added. The course owner cannot be removed.', 'tfp-dashboard'); ?></p>
         </section>
 
