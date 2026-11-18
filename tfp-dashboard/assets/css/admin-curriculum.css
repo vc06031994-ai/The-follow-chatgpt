@@ -33,10 +33,17 @@
 @media(max-width:700px){.tfp-admin-curriculum-app .tfp-admin-curriculum-header{min-height:0;align-items:flex-start;flex-direction:column;gap:14px;padding:18px 16px}.tfp-admin-curriculum-app .tfp-admin-curriculum-header h1{font-size:32px}.tfp-admin-curriculum-content{padding:18px 16px 30px}.tfp-admin-curriculum-category{padding:14px 10px}.tfp-admin-curriculum-category-head{align-items:flex-start;flex-direction:column}.tfp-admin-curriculum-category-actions{width:100%;justify-content:flex-end}.tfp-admin-curriculum-course{align-items:flex-start;padding:12px;flex-direction:column}.tfp-admin-curriculum-course-actions{width:100%;justify-content:flex-end}}
 
 
-/* Match the single framed category workspace and compact Figma column. */
-.tfp-admin-curriculum-content{max-width:none}
+
+/* Full-width category workspace — remove the artificial empty right column. */
+.tfp-admin-curriculum-content{
+    width:100%;
+    max-width:none;
+    box-sizing:border-box;
+}
 .tfp-admin-curriculum-category-list{
-    max-width:914px;
+    width:100%;
+    max-width:none;
+    box-sizing:border-box;
     display:flex;
     flex-direction:column;
     gap:0;
@@ -57,4 +64,7 @@
 .tfp-admin-curriculum-course-list{padding-top:12px;gap:9px}
 .tfp-admin-curriculum-course{min-height:58px}
 .tfp-admin-curriculum-empty{min-height:58px}
-@media(max-width:700px){.tfp-admin-curriculum-category-list{max-width:none;padding:12px}.tfp-admin-curriculum-category:not(:first-child){margin-top:16px}}
+@media(max-width:700px){
+    .tfp-admin-curriculum-category-list{padding:12px}
+    .tfp-admin-curriculum-category:not(:first-child){margin-top:16px}
+}
