@@ -472,7 +472,11 @@ function tfp_admin_course_detail_render() {
                         <?php if ($is_plan_tab) : ?>
                             <a class="tfp-admin-course-edit" href="<?php echo esc_url(get_edit_post_link($course_id, 'raw')); ?>"><span aria-hidden="true">✎</span><?php esc_html_e('Edit Course', 'tfp-dashboard'); ?></a>
                         <?php endif; ?>
-                        <?php if ($active_tab !== 'cohorts') : ?><a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a><?php endif; ?>
+                        <?php if ($active_tab === 'health') : ?>
+                            <a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url(admin_url('post-new.php?post_type=sfwd-courses')); ?>"><span aria-hidden="true">＋</span><?php esc_html_e('Create Course', 'tfp-dashboard'); ?></a>
+                        <?php elseif ($active_tab !== 'cohorts') : ?>
+                            <a class="tfp-admin-course-view-cohorts" href="<?php echo esc_url($cohorts_url); ?>"><span aria-hidden="true">◉</span><?php esc_html_e('View Cohorts', 'tfp-dashboard'); ?></a>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </header>
