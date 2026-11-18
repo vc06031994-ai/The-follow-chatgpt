@@ -131,6 +131,7 @@ $permission_labels = [
         <form method="post" class="tfp-admin-access-permissions-form">
             <?php wp_nonce_field('tfp_course_access_' . $course_id, 'tfp_course_access_nonce'); ?>
             <input type="hidden" name="tfp_course_access_action" value="save_permissions">
+            <input type="hidden" name="lock_course" value="<?php echo $access_settings['lock_course'] ? '1' : '0'; ?>">
             <?php foreach ($permission_labels as $key => $label) : ?>
                 <label class="tfp-admin-access-permission-row">
                     <span><?php echo esc_html($label); ?></span>
