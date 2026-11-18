@@ -462,6 +462,19 @@ function tfp_admin_course_detail_render() {
                 <?php if ($is_plan_tab || $is_rules_tab || $active_tab === 'cohorts' || $active_tab === 'insights' || $active_tab === 'access' || $active_tab === 'health') : ?><b>/</b><strong class="tfp-admin-breadcrumb-current"><?php echo $is_rules_tab ? esc_html__('Rules', 'tfp-dashboard') : ($is_plan_tab ? esc_html__('Plan', 'tfp-dashboard') : ($active_tab === 'insights' ? esc_html__('Overview — Insights', 'tfp-dashboard') : ($active_tab === 'access' ? esc_html__('Overview — Access', 'tfp-dashboard') : ($active_tab === 'health' ? esc_html__('Health & Integrity', 'tfp-dashboard') : esc_html__('Overview — Cohorts', 'tfp-dashboard'))))); ?></strong><?php endif; ?>
             </div>
 
+            <?php if ($active_tab === 'insights') :
+                $insight_cohort_filter = isset($_GET['insight_cohort']) ? absint($_GET['insight_cohort']) : 0;
+                $insight_period = isset($_GET['insight_period']) ? sanitize_key(wp_unslash($_GET['insight_period'])) : '90';
+                if (!in_array($insight_period, ['30', '90', '365', 'all'], true)) $insight_period = '90';
+                $insights = tfp_admin_course_insights_data($course_id, $insight_cohort_filter, $insight_period);
+                $insight_courses = get_posts(['post_type' => 'sfwd-courses', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC']);
+                $insight_total = max(1, (int) $insights['total_enrolled']);
+                $insight_on_track = (int) round(($insights['statuses']['on_track'] / $insight_total) * 100);
+                $insight_behind = (int) round(($insights['statuses']['behind'] / $insight_total) * 100);
+                $insight_stalled = (int) round(($insights['statuses']['stalled'] / $insight_total) * 100);
+                $insight_create_url = admin_url('post-new.php?post_type=sfwd-courses');
+            endif; ?>
+
             <header class="tfp-admin-page-header tfp-admin-course-detail-header <?php echo $is_rules_tab ? 'tfp-admin-course-rules-header' : ($active_tab === 'insights' ? 'tfp-admin-course-insights-header' : ''); ?>">
                 <div><h1><?php echo $is_rules_tab ? esc_html__('Course rules & defaults', 'tfp-dashboard') : ($active_tab === 'cohorts' ? esc_html__('Cohorts', 'tfp-dashboard') : ($active_tab === 'health' ? esc_html__('System Health & Integrity', 'tfp-dashboard') : esc_html($course_heading_title))); ?></h1><p><?php echo $active_tab === 'health' ? esc_html__('Monitor curriculum syncing, external service connections, and data integrity.', 'tfp-dashboard') : ($active_tab === 'cohorts' ? esc_html__('Manage active groups, track facilitator activity, and manage cross-course progress', 'tfp-dashboard') : ($is_plan_tab ? esc_html__('Course Plan & Week Mapping', 'tfp-dashboard') : ($is_rules_tab ? esc_html__('Set course-wide progression, completion, assessment, grading, and facilitation defaults.', 'tfp-dashboard') : esc_html__('Course details and week mapping', 'tfp-dashboard')))); ?></p></div>
                 <div class="tfp-admin-course-header-actions">
@@ -480,6 +493,15 @@ function tfp_admin_course_detail_render() {
                     <?php endif; ?>
                 </div>
             </header>
+
+            <?php if ($active_tab === 'insights') : ?>
+                <section class="tfp-admin-insights-summary tfp-admin-insights-summary-top" aria-label="<?php esc_attr_e('Student status summary', 'tfp-dashboard'); ?>">
+                    <article><small><?php esc_html_e('Total Enrolled', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($insights['total_enrolled'])); ?></strong><p><?php esc_html_e('Across selected cohorts', 'tfp-dashboard'); ?></p></article>
+                    <article><small><?php esc_html_e('On Track', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_on_track); ?>%</strong><p><?php esc_html_e('Meeting expected week progress', 'tfp-dashboard'); ?></p></article>
+                    <article><small><?php esc_html_e('Behind', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_behind); ?>%</strong><p><?php esc_html_e('Some progress, below expected pace', 'tfp-dashboard'); ?></p></article>
+                    <article><small><?php esc_html_e('Stalled', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_stalled); ?>%</strong><p><?php esc_html_e('No recorded lesson-step progress', 'tfp-dashboard'); ?></p></article>
+                </section>
+            <?php endif; ?>
 
             <nav class="tfp-admin-course-tabs" aria-label="<?php esc_attr_e('Course sections', 'tfp-dashboard'); ?>">
                 <?php foreach ($tabs as $label => $tab) : ?>
@@ -698,16 +720,7 @@ function tfp_admin_course_detail_render() {
                         <p class="tfp-admin-course-cohorts-sync-note" id="tfp-course-cohorts-sync-log"><?php esc_html_e('Sync log is not available yet.', 'tfp-dashboard'); ?></p>
                     </section>
                 <?php elseif ($active_tab === 'insights') :
-                    $insight_cohort_filter = isset($_GET['insight_cohort']) ? absint($_GET['insight_cohort']) : 0;
-                    $insight_period = isset($_GET['insight_period']) ? sanitize_key(wp_unslash($_GET['insight_period'])) : '90';
-                    if (!in_array($insight_period, ['30', '90', '365', 'all'], true)) $insight_period = '90';
-                    $insights = tfp_admin_course_insights_data($course_id, $insight_cohort_filter, $insight_period);
-                    $insight_courses = get_posts(['post_type' => 'sfwd-courses', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC']);
-                    $insight_total = max(1, (int) $insights['total_enrolled']);
-                    $insight_on_track = (int) round(($insights['statuses']['on_track'] / $insight_total) * 100);
-                    $insight_behind = (int) round(($insights['statuses']['behind'] / $insight_total) * 100);
-                    $insight_stalled = (int) round(($insights['statuses']['stalled'] / $insight_total) * 100);
-                    $insight_create_url = admin_url('post-new.php?post_type=sfwd-courses');
+
                 ?>
                     <section class="tfp-admin-insights">
                         <form class="tfp-admin-insights-filters" method="get" action="<?php echo esc_url(tfp_admin_course_detail_url($course_id)); ?>">
@@ -742,13 +755,6 @@ function tfp_admin_course_detail_render() {
                             <div><h2><?php esc_html_e('Insights', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Monitor student progress, assessment performance, activation, and facilitator workload.', 'tfp-dashboard'); ?></p></div>
                             <a href="<?php echo esc_url($insight_create_url); ?>" class="tfp-admin-insights-create"><span aria-hidden="true">＋</span><?php esc_html_e('Create Course', 'tfp-dashboard'); ?></a>
                         </div>
-
-                        <section class="tfp-admin-insights-summary" aria-label="<?php esc_attr_e('Student status summary', 'tfp-dashboard'); ?>">
-                            <article><small><?php esc_html_e('Total Enrolled', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($insights['total_enrolled'])); ?></strong><p><?php esc_html_e('Across selected cohorts', 'tfp-dashboard'); ?></p></article>
-                            <article><small><?php esc_html_e('On Track', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_on_track); ?>%</strong><p><?php esc_html_e('Meeting expected week progress', 'tfp-dashboard'); ?></p></article>
-                            <article><small><?php esc_html_e('Behind', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_behind); ?>%</strong><p><?php esc_html_e('Some progress, below expected pace', 'tfp-dashboard'); ?></p></article>
-                            <article><small><?php esc_html_e('Stalled', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($insight_stalled); ?>%</strong><p><?php esc_html_e('No recorded lesson-step progress', 'tfp-dashboard'); ?></p></article>
-                        </section>
 
                         <section class="tfp-admin-insights-chart-card">
                             <div class="tfp-admin-insights-chart-head">
