@@ -68,15 +68,21 @@ $recommended_products = function_exists('wc_get_products') ? wc_get_products([
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="border-top:2px solid #b47c7c;font-size:1px;line-height:1px;">&nbsp;</td></tr></table>
 <?php if ($cart_items): ?>
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:28px;">
-<?php foreach ($cart_items as $cart_item):
+<?php $cart_row_index = 0; foreach ($cart_items as $cart_item):
     $product = $cart_item['product'] ?? null;
     if (!$product instanceof WC_Product) { continue; }
     $quantity = max(1, absint($cart_item['quantity'] ?? 1));
     $image_id = $product->get_image_id();
     $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'woocommerce_thumbnail') : wc_placeholder_img_src();
     $line_price = (float) wc_get_price_to_display($product) * $quantity;
+    // Keep the separator clear of the next product image in email clients.
+    $row_top_padding = 14;
+    if (0 === $cart_row_index) {
+        $row_top_padding = 0;
+    }
+    $cart_row_index++;
 ?>
-<tr><td style="padding:0 0 14px;border-bottom:1px solid #dedede;">
+<tr><td style="padding:<?php echo (int) $row_top_padding; ?>px 0 14px;border-bottom:1px solid #dedede;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
 <td width="90" valign="middle" style="width:90px;padding:0 22px 0 0;"><img class="tfp-ac-product-image" src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($product->get_name()); ?>" width="90" height="90" style="display:block;width:90px;height:90px;object-fit:cover;border:0;"></td>
 <td valign="middle" style="font-family:Arial,sans-serif;"><div class="tfp-ac-product-name" style="font-size:14px;line-height:20px;font-weight:700;color:#171717;"><?php echo esc_html($product->get_name()); ?></div><div style="padding-top:6px;font:12px/18px Georgia,serif;color:#252525;"><?php echo esc_html(wp_trim_words($product->get_short_description() ?: $product->get_name(), 9)); ?></div><div style="padding-top:6px;font:10px/14px Arial,sans-serif;color:#9c9ca4;"><?php echo esc_html(sprintf(__('Qty: %d', 'tfp-authentication'), $quantity)); ?></div></td>
