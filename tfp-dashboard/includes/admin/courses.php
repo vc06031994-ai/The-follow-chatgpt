@@ -252,6 +252,11 @@ function tfp_admin_courses_render() {
             </header>
 
             <main class="tfp-admin-content tfp-admin-courses-content">
+                <nav class="tfp-admin-curriculum-tabs" aria-label="<?php esc_attr_e('Curriculum sections', 'tfp-dashboard'); ?>">
+                    <a href="<?php echo esc_url(tfp_admin_categories_page_url()); ?>"><?php esc_html_e('Categories', 'tfp-dashboard'); ?></a>
+                    <a class="is-active" href="<?php echo esc_url(tfp_admin_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
+                    <a href="<?php echo esc_url(admin_url('edit.php?post_type=sfwd-lessons')); ?>"><?php esc_html_e('Modules', 'tfp-dashboard'); ?></a>
+                </nav>
                 <form class="tfp-admin-courses-filters" method="get" action="<?php echo esc_url(tfp_admin_courses_page_url()); ?>">
                     <label class="screen-reader-text" for="tfp-course-select"><?php esc_html_e('Select course', 'tfp-dashboard'); ?></label>
                     <select id="tfp-course-select" name="course_id">
