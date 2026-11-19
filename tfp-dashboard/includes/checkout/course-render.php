@@ -103,6 +103,7 @@ function tfp_course_render_checkout_modal($state = null)
     $course_agreement = function_exists('tfp_course_purchase_agreement_content')
         ? tfp_course_purchase_agreement_content('course_agreement')
         : ['title' => __('Course Agreement', 'tfp-dashboard'), 'body' => __('Agreement content is not available yet.', 'tfp-dashboard')];
+    $agreements_configured = !empty(trim((string) ($nda_agreement['body'] ?? ''))) && !empty(trim((string) ($course_agreement['body'] ?? '')));
 
     $steps = [
         'agreements' => __('Agreements', 'tfp-dashboard'),
@@ -234,15 +235,15 @@ function tfp_course_render_checkout_modal($state = null)
                                 <div class="tfp-course-agreement-card" data-agreement-key="nda">
                                     <div class="tfp-course-agreement-card__copy">
                                         <h4><?php echo esc_html($nda_agreement['title']); ?></h4>
-                                        <div class="tfp-course-agreement-content"><?php echo wpautop(esc_html($nda_agreement['body'])); ?></div>
+                                        <div class="tfp-course-agreement-content"><?php echo $agreements_configured ? wpautop(esc_html($nda_agreement['body'])) : esc_html__('Agreement content will appear here once the administrator has configured the approved text.', 'tfp-dashboard'); ?></div>
                                     </div>
                                     <div class="tfp-course-agreement-card__action">
                                         <label for="tfp-course-agreement-signature-nda">
                                             <span><?php esc_html_e('Full name / signature', 'tfp-dashboard'); ?></span>
                                         </label>
                                         <div class="tfp-course-agreement-input-row">
-                                            <input id="tfp-course-agreement-signature-nda" type="text" class="tfp-course-agreement-signature" data-agreement-signature="nda" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
-                                            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="nda"><?php esc_html_e('Sign NDA', 'tfp-dashboard'); ?></button>
+                                            <input id="tfp-course-agreement-signature-nda" type="text" class="tfp-course-agreement-signature" data-agreement-signature="nda" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>" <?php disabled(!$agreements_configured); ?>>
+                                            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="nda" <?php disabled(!$agreements_configured); ?>><?php esc_html_e('Sign NDA', 'tfp-dashboard'); ?></button>
                                         </div>
                                         <span class="tfp-course-agreement-status" data-agreement-status="nda" aria-live="polite"></span>
                                     </div>
@@ -250,15 +251,15 @@ function tfp_course_render_checkout_modal($state = null)
                                 <div class="tfp-course-agreement-card" data-agreement-key="course_agreement">
                                     <div class="tfp-course-agreement-card__copy">
                                         <h4><?php echo esc_html($course_agreement['title']); ?></h4>
-                                        <div class="tfp-course-agreement-content"><?php echo wpautop(esc_html($course_agreement['body'])); ?></div>
+                                        <div class="tfp-course-agreement-content"><?php echo $agreements_configured ? wpautop(esc_html($course_agreement['body'])) : esc_html__('Agreement content will appear here once the administrator has configured the approved text.', 'tfp-dashboard'); ?></div>
                                     </div>
                                     <div class="tfp-course-agreement-card__action">
                                         <label for="tfp-course-agreement-signature-course">
                                             <span><?php esc_html_e('Full name / signature', 'tfp-dashboard'); ?></span>
                                         </label>
                                         <div class="tfp-course-agreement-input-row">
-                                            <input id="tfp-course-agreement-signature-course" type="text" class="tfp-course-agreement-signature" data-agreement-signature="course_agreement" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>">
-                                            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="course_agreement"><?php esc_html_e('Sign Course Agreement', 'tfp-dashboard'); ?></button>
+                                            <input id="tfp-course-agreement-signature-course" type="text" class="tfp-course-agreement-signature" data-agreement-signature="course_agreement" autocomplete="name" placeholder="<?php esc_attr_e('Your full name', 'tfp-dashboard'); ?>" <?php disabled(!$agreements_configured); ?>>
+                                            <button type="button" class="tfp-dash-btn tfp-dash-btn--primary tfp-course-sign-agreement" data-agreement-sign="course_agreement" <?php disabled(!$agreements_configured); ?>><?php esc_html_e('Sign Course Agreement', 'tfp-dashboard'); ?></button>
                                         </div>
                                         <span class="tfp-course-agreement-status" data-agreement-status="course_agreement" aria-live="polite"></span>
                                     </div>
