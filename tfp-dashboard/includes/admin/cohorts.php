@@ -37,13 +37,14 @@ function tfp_admin_cohorts_get_records() {
         $related_course = absint(get_post_meta($cohort->ID, '_related_course', true));
         $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id') ? absint(tfp_cohort_get_facilitator_user_id($cohort->ID)) : 0;
         $facilitator_user = $facilitator_id ? get_userdata($facilitator_id) : false;
-        $students = get_users(['meta_key' => 'tfp_cohort_choice', 'meta_value' => $cohort->ID, 'fields' => 'ID', 'number' => -1]);
+        $students = function_exists('tfp_cohort_seats_taken') ? tfp_cohort_seats_taken($cohort->ID) : count(get_users(['meta_key' => 'tfp_cohort_choice', 'meta_value' => $cohort->ID, 'fields' => 'ID', 'number' => -1]));
+        $seat_capacity = function_exists('tfp_cohort_seats_total') ? tfp_cohort_seats_total($cohort->ID) : 0;
         $records[] = [
             'id' => $cohort->ID, 'name' => get_the_title($cohort),
             'course' => $related_course ? get_the_title($related_course) : __('Course not assigned', 'tfp-dashboard'),
             'course_id' => $related_course,
             'facilitator' => $facilitator_user ? $facilitator_user->display_name : (get_post_meta($cohort->ID, '_facilitator', true) ?: '—'),
-            'students' => count($students),
+            'students' => (int) $students, 'capacity' => (int) $seat_capacity,
             'date' => (string) get_post_meta($cohort->ID, '_start_date', true),
             'meeting' => (string) get_post_meta($cohort->ID, '_schedule_text', true),
             'status' => $cohort->post_status === 'publish' ? 'active' : 'draft',
@@ -95,7 +96,7 @@ function tfp_admin_cohorts_render() {
               <thead><tr><th><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Start Date', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Meeting', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><span class="screen-reader-text"><?php esc_html_e('Actions', 'tfp-dashboard'); ?></span></th></tr></thead><tbody>
               <?php if ($rows) : foreach ($rows as $row) : ?><tr>
                 <td data-label="<?php esc_attr_e('Cohort Name', 'tfp-dashboard'); ?>"><strong><?php echo esc_html($row['name']); ?></strong><small><?php echo esc_html($row['course']); ?></small></td>
-                <td data-label="<?php esc_attr_e('Facilitator', 'tfp-dashboard'); ?>"><?php echo esc_html($row['facilitator']); ?></td><td data-label="<?php esc_attr_e('Students', 'tfp-dashboard'); ?>"><?php echo esc_html(number_format_i18n($row['students'])); ?></td>
+                <td data-label="<?php esc_attr_e('Facilitator', 'tfp-dashboard'); ?>"><?php echo esc_html($row['facilitator']); ?></td><td data-label="<?php esc_attr_e('Students', 'tfp-dashboard'); ?>"><?php echo esc_html(number_format_i18n($row['students']) . ($row['capacity'] > 0 ? '/' . number_format_i18n($row['capacity']) : '')); ?></td>
                 <td data-label="<?php esc_attr_e('Start Date', 'tfp-dashboard'); ?>"><?php echo $row['date'] && strtotime($row['date']) ? esc_html(date_i18n('M j', strtotime($row['date']))) : '—'; ?></td><td data-label="<?php esc_attr_e('Meeting', 'tfp-dashboard'); ?>"><?php echo esc_html($row['meeting'] ?: '—'); ?></td>
                 <td data-label="<?php esc_attr_e('Status', 'tfp-dashboard'); ?>"><span class="tfp-admin-cohort-status <?php echo $draft ? 'is-draft' : 'is-active'; ?>"><?php echo $draft ? esc_html__('Draft', 'tfp-dashboard') : esc_html__('Active', 'tfp-dashboard'); ?></span></td>
                 <td data-label="<?php esc_attr_e('Actions', 'tfp-dashboard'); ?>" class="tfp-admin-cohort-actions"><?php if ($draft) : ?><a class="tfp-admin-cohort-btn is-outline" href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></a><?php else : ?><a class="tfp-admin-cohort-btn is-primary" href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php if ($row['course_url']) : ?><a class="tfp-admin-cohort-btn is-outline" href="<?php echo esc_url($row['course_url']); ?>" title="<?php esc_attr_e('Open linked course editor', 'tfp-dashboard'); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?><?php endif; ?></td>
