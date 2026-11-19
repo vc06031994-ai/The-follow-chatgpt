@@ -125,6 +125,7 @@ function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
             'id' => $document_id,
             'title' => $title,
             'status' => get_post_meta($document_id, '_status', true) ?: 'pending',
+            'content' => (string) get_post_meta($document_id, '_tfp_agreement_content', true),
         ];
     }
 
