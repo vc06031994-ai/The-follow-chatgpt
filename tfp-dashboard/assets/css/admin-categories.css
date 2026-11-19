@@ -1,9 +1,9 @@
 /* ==========================================================================
-   Admin Curriculum Categories — scoped page styles
-   Uses the shared Admin Dashboard shell and design tokens.
+   Admin Curriculum Categories — Figma reference layout
+   Scoped to Categories only; shared Courses page styles remain untouched.
    ========================================================================== */
 body.tfp-admin-categories-view .tfp-admin-categories-content {
-    padding-top: 28px;
+    padding-top: 26px;
 }
 .tfp-admin-categories-header .tfp-admin-categories-add,
 .tfp-admin-categories-add {
@@ -15,20 +15,23 @@ body.tfp-admin-categories-view .tfp-admin-categories-content {
     padding: 10px 16px;
     border: 0;
     border-radius: 6px;
-    background: #00666e;
+    background: #006970;
     color: #fff !important;
     font-size: 13px;
     font-weight: 600;
     text-decoration: none !important;
     white-space: nowrap;
 }
-.tfp-admin-categories-add:hover { background: #00505a; }
-.tfp-admin-categories-add span { font-size: 20px; line-height: 1; }
+.tfp-admin-categories-add:hover,
+.tfp-admin-category-add-course:hover { background: #00575e; }
+.tfp-admin-categories-add span,
+.tfp-admin-category-add-course span { font-size: 20px; line-height: 1; }
+
 .tfp-admin-curriculum-tabs {
     display: flex;
     align-items: center;
     gap: 0;
-    margin: 0 0 20px;
+    margin: 0 0 24px;
     border-bottom: 1px solid #c9c9c9;
 }
 .tfp-admin-curriculum-tabs a {
@@ -45,8 +48,9 @@ body.tfp-admin-categories-view .tfp-admin-categories-content {
 .tfp-admin-curriculum-tabs a:hover { color: #171717; }
 .tfp-admin-curriculum-tabs a.is-active {
     color: #171717;
-    border-bottom-color: #00666e;
+    border-bottom-color: #006970;
 }
+
 .tfp-admin-categories-notice {
     margin: 0 0 18px;
     padding: 12px 16px;
@@ -61,45 +65,200 @@ body.tfp-admin-categories-view .tfp-admin-categories-content {
     background: #fff6f6;
     color: #9e2525;
 }
-.tfp-admin-categories-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(160px, 212px));
-    gap: 14px;
-    margin: 0 0 24px;
-}
-.tfp-admin-categories-stats article {
-    display: flex;
-    min-height: 88px;
-    flex-direction: column;
-    padding: 12px 16px;
+
+/* Main white container holds all category groups, like the Figma frame. */
+.tfp-admin-categories-groups {
+    padding: 14px !important;
+    border: 1px solid #dedede;
     border-radius: 12px;
-    background: #ededed;
-    box-shadow: 0 2px 4px rgba(0,0,0,.12);
+    background: #fff;
+    box-shadow: none;
 }
-.tfp-admin-categories-stats small {
+.tfp-admin-category-group + .tfp-admin-category-group {
+    margin-top: 48px;
+}
+.tfp-admin-category-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 58px;
+    padding: 4px 4px 12px;
+    border-bottom: 1px solid #dedede;
+}
+.tfp-admin-category-info { min-width: 0; }
+.tfp-admin-category-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.tfp-admin-category-title-row h2 {
+    margin: 0;
+    color: #171717;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+.tfp-admin-category-course-count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 17px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: #e0f1f1;
+    color: #00747a;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.tfp-admin-category-course-count:where(:empty) { display: none; }
+.tfp-admin-category-info > p {
+    margin: 7px 0 0;
     color: #333;
     font-size: 10px;
-    line-height: 1.3;
+    line-height: 1.4;
 }
-.tfp-admin-categories-stats strong {
-    margin-top: 6px;
+.tfp-admin-category-controls {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+}
+.tfp-admin-category-add-course {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 124px;
+    min-height: 30px;
+    padding: 5px 11px;
+    border: 0;
+    border-radius: 7px;
+    background: #006970;
+    color: #fff !important;
+    font-size: 12px;
+    line-height: 1;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+.tfp-admin-category-add-course span { font-size: 17px; }
+.tfp-admin-category-edit,
+.tfp-admin-category-course-actions > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    min-height: 30px;
+    padding: 5px 12px;
+    border: 1px solid #333;
+    border-radius: 7px;
+    background: #fff;
+    color: #222 !important;
+    font-size: 12px;
+    line-height: 1;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+.tfp-admin-category-edit:hover,
+.tfp-admin-category-course-actions > a:hover { background: #f2f4f4; }
+
+.tfp-admin-category-courses {
+    display: grid;
+    gap: 10px;
+    padding-top: 14px;
+}
+.tfp-admin-category-course-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 59px;
+    padding: 10px 20px;
+    border-radius: 11px;
+    background: #e0e3e4;
+}
+.tfp-admin-category-course-info {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+}
+.tfp-admin-category-course-info strong {
+    overflow: hidden;
     color: #171717;
-    font-size: 20px;
-    line-height: 1.15;
-    font-weight: 750;
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.tfp-admin-categories-stats p {
-    margin: 8px 0 0;
+.tfp-admin-category-course-info small {
     color: #333;
-    font-family: Georgia, serif;
-    font-size: 11px;
+    font-size: 9px;
+    line-height: 1.25;
 }
-.tfp-admin-categories-form-panel { margin-bottom: 20px; }
+.tfp-admin-category-course-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 9px;
+}
+.tfp-admin-category-course-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 23px;
+    padding: 3px 10px;
+    border: 1px solid #008b91;
+    border-radius: 20px;
+    background: #e8f7f7;
+    color: #222;
+    font-size: 9px;
+    line-height: 1;
+    white-space: nowrap;
+}
+.tfp-admin-category-course-status.is-draft {
+    border-color: #d8a82c;
+    background: #fff4d7;
+}
+.tfp-admin-category-empty-courses {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 59px;
+    margin-top: 14px;
+    border-radius: 11px;
+    background: #e0e3e4;
+    color: #999;
+    font-size: 10px;
+}
+
+.tfp-admin-categories-form-panel {
+    margin-bottom: 20px;
+    padding: 16px !important;
+}
+.tfp-admin-categories-group-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 14px;
+}
+.tfp-admin-categories-group-heading h2 {
+    margin: 0;
+    font-size: 15px;
+}
+.tfp-admin-categories-group-heading a,
+.tfp-admin-categories-form-actions a {
+    color: #555;
+    font-size: 12px;
+    text-decoration: none;
+}
 .tfp-admin-categories-form {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
-    padding: 4px 18px 20px;
 }
 .tfp-admin-categories-form label {
     display: flex;
@@ -131,148 +290,40 @@ body.tfp-admin-categories-view .tfp-admin-categories-content {
     align-items: center;
     gap: 14px;
 }
-.tfp-admin-categories-form-actions button,
-.tfp-admin-categories-list-toolbar button {
+.tfp-admin-categories-form-actions button {
     min-height: 38px;
     padding: 8px 16px;
     border: 0;
     border-radius: 6px;
-    background: #00666e;
+    background: #006970;
     color: #fff;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
 }
-.tfp-admin-categories-form-actions a {
-    color: #555;
-    font-size: 12px;
-    text-decoration: none;
-}
-.tfp-admin-categories-list-panel { padding: 14px; }
-.tfp-admin-categories-list-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 12px;
-}
-.tfp-admin-categories-search {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-}
-.tfp-admin-categories-search > span {
-    margin-left: 10px;
-    color: #222;
-    font-size: 20px;
-}
-.tfp-admin-categories-search input {
-    flex: 1;
-    width: 100%;
-    min-width: 0;
-    height: 38px;
-    padding: 8px 12px;
-    border: 1px solid #d6d6d6;
-    border-radius: 6px;
-    background: #fff;
-    color: #171717;
-    font-size: 13px;
-    box-shadow: none;
-}
-.tfp-admin-categories-result-count {
-    color: #777;
-    font-size: 12px;
-    white-space: nowrap;
-}
-.tfp-admin-categories-table-wrap { width: 100%; overflow-x: auto; }
-.tfp-admin-categories-table {
-    width: 100%;
-    min-width: 680px;
-    border-collapse: separate;
-    border-spacing: 0 8px;
-    text-align: left;
-}
-.tfp-admin-categories-table th {
-    padding: 8px 14px;
-    color: #555;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-.tfp-admin-categories-table td {
-    padding: 13px 14px;
-    background: #e2e5e6;
-    color: #262626;
-    font-size: 12px;
-    vertical-align: middle;
-}
-.tfp-admin-categories-table td:first-child { border-radius: 8px 0 0 8px; }
-.tfp-admin-categories-table td:last-child { border-radius: 0 8px 8px 0; }
-.tfp-admin-categories-table td strong { font-size: 13px; font-weight: 700; }
-.tfp-admin-categories-table code {
-    padding: 3px 6px;
-    border-radius: 4px;
-    background: rgba(255,255,255,.65);
-    color: #555;
-    font-size: 11px;
-}
-.tfp-admin-categories-count {
-    display: inline-flex;
-    min-width: 28px;
-    justify-content: center;
-    padding: 4px 8px;
-    border-radius: 20px;
-    background: #f3f5f5;
-    color: #333;
-    font-size: 11px;
-    font-weight: 700;
-}
-.tfp-admin-categories-muted { color: #777; }
-.tfp-admin-categories-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-}
-.tfp-admin-categories-actions a,
-.tfp-admin-categories-actions button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 30px;
-    padding: 5px 12px;
-    border: 1px solid #333;
-    border-radius: 7px;
-    background: transparent;
-    color: #222;
-    font-size: 11px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-}
-.tfp-admin-categories-actions form { margin: 0; }
-.tfp-admin-categories-actions button { border-color: #d8aaaa; color: #a52a2a; }
 .tfp-admin-categories-empty {
     margin: 0;
-    padding: 24px 16px;
-    color: #777;
-    font-size: 13px;
+    padding: 28px 16px;
+    color: #888;
+    font-size: 12px;
     text-align: center;
 }
-@media (max-width: 900px) {
-    .tfp-admin-categories-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-@media (max-width: 640px) {
+
+@media (max-width: 767px) {
     body.tfp-admin-categories-view .tfp-admin-categories-content { padding-top: 18px; }
     .tfp-admin-categories-header { align-items: flex-start; flex-direction: column; }
-    .tfp-admin-categories-stats { grid-template-columns: 1fr; gap: 10px; }
-    .tfp-admin-categories-list-toolbar { align-items: stretch; flex-direction: column; }
-    .tfp-admin-categories-search { flex-wrap: wrap; }
-    .tfp-admin-categories-search button { margin-left: auto; }
+    .tfp-admin-category-group + .tfp-admin-category-group { margin-top: 30px; }
+    .tfp-admin-category-heading { align-items: flex-start; flex-direction: column; }
+    .tfp-admin-category-controls { width: 100%; justify-content: flex-end; }
+    .tfp-admin-category-course-row { align-items: flex-start; padding: 12px; }
+    .tfp-admin-category-course-actions { gap: 6px; }
+    .tfp-admin-category-course-actions > a { min-width: 42px; padding-inline: 9px; }
+}
+@media (max-width: 480px) {
+    .tfp-admin-curriculum-tabs a { padding: 0 13px; font-size: 13px; }
+    .tfp-admin-categories-groups { padding: 10px !important; }
+    .tfp-admin-category-course-row { flex-direction: column; }
+    .tfp-admin-category-course-actions { width: 100%; justify-content: flex-end; }
     .tfp-admin-categories-form { grid-template-columns: 1fr; }
     .tfp-admin-categories-form label.is-full { grid-column: auto; }
-    .tfp-admin-categories-form-actions { flex-wrap: wrap; }
-    .tfp-admin-curriculum-tabs a { padding: 0 13px; font-size: 13px; }
 }
