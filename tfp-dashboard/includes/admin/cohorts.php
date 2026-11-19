@@ -130,3 +130,93 @@ function tfp_admin_cohorts_render() {
     </div>
     <?php
 }
+
+
+/**
+ * Create a cohort from the Admin Cohorts modal.
+ * Uses the existing tfp_cohort post type and established metadata keys.
+ */
+add_action('wp_ajax_tfp_admin_create_cohort', 'tfp_admin_create_cohort_ajax');
+function tfp_admin_create_cohort_ajax() {
+    check_ajax_referer('tfp_admin_create_cohort', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => __('You do not have permission to create cohorts.', 'tfp-dashboard')], 403);
+    }
+
+    $course_id = absint($_POST['course_id'] ?? 0);
+    $course = $course_id ? get_post($course_id) : null;
+    if (!$course || $course->post_type !== 'sfwd-courses' || $course->post_status !== 'publish') {
+        wp_send_json_error(['message' => __('Please select a valid course.', 'tfp-dashboard')], 400);
+    }
+
+    $start_date = sanitize_text_field(wp_unslash($_POST['start_date'] ?? ''));
+    $date = DateTime::createFromFormat('!Y-m-d', $start_date);
+    if (!$date || $date->format('Y-m-d') !== $start_date) {
+        wp_send_json_error(['message' => __('Please select a valid start date.', 'tfp-dashboard')], 400);
+    }
+
+    $day = sanitize_text_field(wp_unslash($_POST['meeting_day'] ?? ''));
+    $allowed_days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    if (!in_array($day, $allowed_days, true)) {
+        wp_send_json_error(['message' => __('Please select a meeting day.', 'tfp-dashboard')], 400);
+    }
+
+    $time = sanitize_text_field(wp_unslash($_POST['meeting_time'] ?? ''));
+    if (!preg_match('/^(0?[1-9]|1[0-2]):[0-5][0-9]$/', $time)) {
+        wp_send_json_error(['message' => __('Please enter a valid meeting time.', 'tfp-dashboard')], 400);
+    }
+
+    $ampm = strtoupper(sanitize_text_field(wp_unslash($_POST['meeting_ampm'] ?? 'AM')));
+    if (!in_array($ampm, ['AM','PM'], true)) { $ampm = 'AM'; }
+
+    $zone = sanitize_text_field(wp_unslash($_POST['meeting_zone'] ?? 'PST'));
+    $allowed_zones = ['PST','MST','CST','EST','UTC'];
+    if (!in_array($zone, $allowed_zones, true)) { $zone = 'PST'; }
+
+    $facilitator_id = absint($_POST['facilitator_id'] ?? 0);
+    if ($facilitator_id) {
+        $facilitator = get_userdata($facilitator_id);
+        if (!$facilitator) { $facilitator_id = 0; }
+    }
+
+    $capacity = absint($_POST['capacity'] ?? 0);
+    if ($capacity < 1) {
+        wp_send_json_error(['message' => __('Please enter a cohort capacity greater than zero.', 'tfp-dashboard')], 400);
+    }
+
+    $discord_room = sanitize_text_field(wp_unslash($_POST['discord_room'] ?? ''));
+    $month = (int) $date->format('n');
+    $semester = ($month >= 3 && $month <= 5) ? 'Spring' : (($month >= 6 && $month <= 8) ? 'Summer' : (($month >= 9 && $month <= 11) ? 'Fall' : 'Winter'));
+    $group_number = 1;
+    $title = sprintf('%s — %s %s — %s — Group %d', get_the_title($course_id), $semester, $date->format('Y'), $day, $group_number);
+
+    $post_id = wp_insert_post([
+        'post_type' => 'tfp_cohort',
+        'post_title' => $title,
+        'post_status' => 'publish',
+        'post_author' => get_current_user_id(),
+    ], true);
+
+    if (is_wp_error($post_id)) {
+        wp_send_json_error(['message' => $post_id->get_error_message()], 500);
+    }
+
+    $schedule = sprintf('%s %s %s %s', $day, $time, $ampm, $zone);
+    update_post_meta($post_id, '_related_course', $course_id);
+    update_post_meta($post_id, '_start_date', $start_date);
+    update_post_meta($post_id, '_schedule_text', $schedule);
+    update_post_meta($post_id, '_seats_total', $capacity);
+    update_post_meta($post_id, '_facilitator_user_id', $facilitator_id);
+    update_post_meta($post_id, '_facilitator', $facilitator_id ? get_userdata($facilitator_id)->display_name : '');
+    update_post_meta($post_id, '_discord_room', $discord_room);
+    if ($discord_room && filter_var($discord_room, FILTER_VALIDATE_URL)) {
+        update_post_meta($post_id, '_meeting_url', esc_url_raw($discord_room));
+    }
+
+    wp_send_json_success([
+        'message' => __('Cohort created successfully.', 'tfp-dashboard'),
+        'redirect' => tfp_admin_cohorts_url(),
+        'id' => $post_id,
+    ]);
+}
