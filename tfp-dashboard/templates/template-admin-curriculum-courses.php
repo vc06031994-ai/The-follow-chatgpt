@@ -20,7 +20,7 @@ status_header(200);
 nocache_headers();
 
 if (!function_exists('tfp_admin_curriculum_courses_render')) {
-    require_once dirname(__DIR__) . '/includes/admin/courses.php';
+    require_once dirname(__DIR__) . '/includes/admin/curriculum-courses.php';
 }
 
 $dash_url = defined('TFP_DASH_URL') ? TFP_DASH_URL : plugin_dir_url(dirname(__DIR__));
