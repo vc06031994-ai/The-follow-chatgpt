@@ -377,3 +377,24 @@ body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-m
         font-size: 14px !important;
     }
 }
+
+/* Modal Cancel must remain neutral; override shared/global button accent styles. */
+body.tfp-admin-curriculum-modules-view .tfp-admin-module-modal .tfp-admin-module-modal-actions > button[data-tfp-close-module-modal],
+body.tfp-admin-curriculum-modules-view .tfp-admin-module-modal .tfp-admin-module-modal-actions > button[data-tfp-close-module-modal]:visited {
+    background: #fff !important;
+    background-color: #fff !important;
+    border: 1px solid #c8c8c8 !important;
+    color: #171717 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+body.tfp-admin-curriculum-modules-view .tfp-admin-module-modal .tfp-admin-module-modal-actions > button[data-tfp-close-module-modal] svg {
+    stroke: #171717 !important;
+}
+body.tfp-admin-curriculum-modules-view .tfp-admin-module-modal .tfp-admin-module-modal-actions > button[data-tfp-close-module-modal]:hover,
+body.tfp-admin-curriculum-modules-view .tfp-admin-module-modal .tfp-admin-module-modal-actions > button[data-tfp-close-module-modal]:focus-visible {
+    background: #f2f2f2 !important;
+    background-color: #f2f2f2 !important;
+    border-color: #171717 !important;
+    color: #171717 !important;
+}
