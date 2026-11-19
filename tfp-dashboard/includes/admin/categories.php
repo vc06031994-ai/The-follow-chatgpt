@@ -178,7 +178,7 @@ function tfp_admin_categories_render() {
                     <h1><?php esc_html_e('Curriculum', 'tfp-dashboard'); ?></h1>
                     <p><?php esc_html_e('Manage categories, courses, modules and manage their structural organization.', 'tfp-dashboard'); ?></p>
                 </div>
-                <a class="tfp-admin-categories-add" href="<?php echo esc_url(tfp_admin_categories_page_url(['category_action' => 'add'])); ?>"><span aria-hidden="true">＋</span><?php esc_html_e('Add Category', 'tfp-dashboard'); ?></a>
+                <button class="tfp-admin-categories-add" type="button" data-tfp-open-category-modal><span aria-hidden="true">＋</span><?php esc_html_e('Add Category', 'tfp-dashboard'); ?></button>
             </header>
 
             <main class="tfp-admin-content tfp-admin-categories-content">
@@ -205,27 +205,38 @@ function tfp_admin_categories_render() {
                     <div class="tfp-admin-categories-notice is-error" role="alert"><?php esc_html_e('The category could not be saved. Please check that the name or slug is unique.', 'tfp-dashboard'); ?></div>
                 <?php endif; ?>
 
-                <?php if ($show_form) : ?>
-                    <section class="tfp-admin-panel tfp-admin-categories-form-panel">
-                        <div class="tfp-admin-categories-group-heading">
-                            <h2><?php echo $editing ? esc_html__('Edit Category', 'tfp-dashboard') : esc_html__('Add New Category', 'tfp-dashboard'); ?></h2>
-                            <a href="<?php echo esc_url(tfp_admin_categories_page_url()); ?>"><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></a>
-                        </div>
+                <div class="tfp-category-modal-backdrop" id="tfp-category-modal" aria-hidden="<?php echo $show_form ? 'false' : 'true'; ?>" <?php echo $show_form ? '' : 'hidden'; ?>>
+                    <section class="tfp-category-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-category-modal-title">
+                        <h2 id="tfp-category-modal-title"><?php echo $editing ? esc_html__('Edit Category', 'tfp-dashboard') : esc_html__('Add New Category', 'tfp-dashboard'); ?></h2>
                         <?php if (!$taxonomy) : ?>
                             <p class="tfp-admin-categories-empty"><?php esc_html_e('LearnDash course categories are unavailable because the ld_course_category taxonomy is not registered.', 'tfp-dashboard'); ?></p>
                         <?php else : ?>
-                            <form method="post" class="tfp-admin-categories-form">
+                            <form method="post" class="tfp-category-modal-form">
                                 <?php wp_nonce_field('tfp_admin_course_category_action', 'tfp_category_nonce'); ?>
                                 <input type="hidden" name="tfp_category_action" value="<?php echo $editing ? 'update' : 'create'; ?>">
-                                <?php if ($editing) : ?><input type="hidden" name="term_id" value="<?php echo esc_attr($editing->term_id); ?>"><?php endif; ?>
-                                <label><span><?php esc_html_e('Category Name', 'tfp-dashboard'); ?></span><input type="text" name="category_name" required maxlength="200" value="<?php echo $editing ? esc_attr($editing->name) : ''; ?>" placeholder="<?php esc_attr_e('Enter category name', 'tfp-dashboard'); ?>"></label>
-                                <label><span><?php esc_html_e('Slug', 'tfp-dashboard'); ?></span><input type="text" name="category_slug" value="<?php echo $editing ? esc_attr($editing->slug) : ''; ?>" placeholder="<?php esc_attr_e('Leave blank to generate automatically', 'tfp-dashboard'); ?>"></label>
-                                <label class="is-full"><span><?php esc_html_e('Description', 'tfp-dashboard'); ?></span><textarea name="category_description" rows="3"><?php echo $editing ? esc_textarea($editing->description) : ''; ?></textarea></label>
-                                <div class="tfp-admin-categories-form-actions"><button type="submit"><?php echo $editing ? esc_html__('Save Changes', 'tfp-dashboard') : esc_html__('Create Category', 'tfp-dashboard'); ?></button><a href="<?php echo esc_url(tfp_admin_categories_page_url()); ?>"><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></a></div>
+                                <?php if ($editing) : ?><input type="hidden" name="term_id" value="<?php echo esc_attr($editing->term_id); ?>"><input type="hidden" name="category_slug" value="<?php echo esc_attr($editing->slug); ?>"><?php endif; ?>
+                                <label><span><?php esc_html_e('Course Name', 'tfp-dashboard'); ?></span><input type="text" name="category_name" required maxlength="200" value="<?php echo $editing ? esc_attr($editing->name) : ''; ?>" placeholder="<?php esc_attr_e('e.g. Evangelism, Business', 'tfp-dashboard'); ?>"></label>
+                                <label><span><?php esc_html_e('Short Description', 'tfp-dashboard'); ?></span><input type="text" name="category_description" value="<?php echo $editing ? esc_attr($editing->description) : ''; ?>" placeholder="<?php esc_attr_e('e.g. Sharing the Gospel', 'tfp-dashboard'); ?>"></label>
+                                <div class="tfp-category-modal-actions">
+                                    <button class="tfp-category-save" type="submit"><span aria-hidden="true">▣</span><?php echo $editing ? esc_html__('Save', 'tfp-dashboard') : esc_html__('Save', 'tfp-dashboard'); ?></button>
+                                    <button class="tfp-category-cancel" type="button" data-tfp-close-category-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+                                </div>
                             </form>
                         <?php endif; ?>
                     </section>
-                <?php endif; ?>
+                </div>
+                <script>
+                (function () {
+                    const modal = document.getElementById('tfp-category-modal');
+                    if (!modal) return;
+                    const open = () => { modal.hidden = false; modal.setAttribute('aria-hidden', 'false'); const field = modal.querySelector('input[name="category_name"]'); if (field) field.focus(); };
+                    const close = () => { modal.hidden = true; modal.setAttribute('aria-hidden', 'true'); };
+                    document.querySelectorAll('[data-tfp-open-category-modal]').forEach((button) => button.addEventListener('click', open));
+                    modal.querySelectorAll('[data-tfp-close-category-modal]').forEach((button) => button.addEventListener('click', close));
+                    modal.addEventListener('click', (event) => { if (event.target === modal) close(); });
+                    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !modal.hidden) close(); });
+                }());
+                </script>
 
                 <section class="tfp-admin-panel tfp-admin-categories-groups" aria-label="<?php esc_attr_e('Course categories', 'tfp-dashboard'); ?>">
                     <?php if (!$taxonomy) : ?>
