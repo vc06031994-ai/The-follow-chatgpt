@@ -24,7 +24,7 @@ function tfp_admin_categories_handle_post() {
     }
 
     if (!current_user_can('manage_options') && !current_user_can('administrator')) {
-        wp_die(esc_html__('You do not have permission to manage course categories.', 'tfp-dashboard'), 403);
+        wp_die(esc_html__('You do not have permission to manage course categories.', 'tfp-dashboard'), esc_html__('Access denied', 'tfp-dashboard'), ['response' => 403]);
     }
 
     check_admin_referer('tfp_admin_course_category_action', 'tfp_category_nonce');
