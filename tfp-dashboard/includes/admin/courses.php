@@ -81,6 +81,15 @@ function tfp_admin_courses_get_data() {
     if ($selected_course) {
         $query_args['post__in'] = [$selected_course];
     }
+    // Curriculum Courses page category filter (only applied when selected).
+    $selected_category = isset($_GET['course_category']) ? absint($_GET['course_category']) : 0;
+    if ($selected_category && taxonomy_exists('ld_course_category')) {
+        $query_args['tax_query'] = [[
+            'taxonomy' => 'ld_course_category',
+            'field' => 'term_id',
+            'terms' => $selected_category,
+        ]];
+    }
     $courses = post_type_exists('sfwd-courses') ? get_posts($query_args) : [];
 
     if ($week_filter !== '') {
