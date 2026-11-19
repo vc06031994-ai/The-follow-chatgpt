@@ -328,3 +328,20 @@ body.tfp-admin-categories-view .tfp-admin-categories-content {
     .tfp-admin-categories-form label.is-full { grid-column: auto; }
 }
 
+
+
+/* Figma: Add New Category modal */
+.tfp-admin-categories-add { cursor:pointer; font:inherit; }
+.tfp-category-modal-backdrop { position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(34,29,29,.22); }
+.tfp-category-modal-backdrop[hidden] { display:none!important; }
+.tfp-category-modal { width:min(100%,536px); padding:16px 14px 18px; border-radius:10px; background:#fff; box-shadow:0 14px 48px rgba(0,0,0,.15); }
+.tfp-category-modal h2 { margin:0 0 24px; color:#111; font-size:14px; line-height:1.35; font-weight:700; }
+.tfp-category-modal-form { display:grid; gap:24px; }
+.tfp-category-modal-form label { display:flex; min-width:0; flex-direction:column; gap:6px; color:#111; font-size:13px; font-weight:700; }
+.tfp-category-modal-form input { width:100%; height:38px; min-height:38px; margin:0; padding:8px 10px; border:1px solid #d2d2d2; border-radius:8px; background:#fff; color:#222; font:400 13px/1.3 inherit; box-shadow:none; }
+.tfp-category-modal-form input::placeholder { color:#777; opacity:1; }
+.tfp-category-modal-actions { display:flex; justify-content:flex-end; align-items:center; gap:7px; margin-top:-4px; }
+.tfp-category-modal-actions button { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:38px; padding:8px 13px; border:1px solid #cfcfcf; border-radius:8px; background:#fff; color:#171717; font-size:12px; cursor:pointer; }
+.tfp-category-modal-actions .tfp-category-save { border-color:#006970; background:#006970; color:#fff; }
+.tfp-category-modal-actions button span { font-size:17px; line-height:1; }
+@media(max-width:600px) { .tfp-category-modal-backdrop { padding:16px; } .tfp-category-modal { padding:16px 14px; } .tfp-category-modal-form { gap:18px; } }
