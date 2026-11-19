@@ -31,8 +31,8 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-sec
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-section h2 span{font-weight:600}
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alerts{display:grid;gap:10px;margin-bottom:10px}
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alerts article{display:flex;align-items:center;gap:15px;min-height:58px;padding:8px 14px;border-radius:11px;background:#dfe3e4}
-body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alert-icon{display:flex;flex:0 0 40px;width:40px;height:40px;align-items:center;justify-content:center;border-radius:50%;background:#f6a313;color:#171717;font-size:23px;font-weight:700}
-body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alerts article.is-success .tfp-admin-cohort-alert-icon{background:#d6efea;color:#006b73}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alert-icon{display:flex;flex:0 0 40px;width:40px;height:40px;align-items:center;justify-content:center;border-radius:50%;overflow:hidden;background:transparent}\nbody.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alert-icon img{display:block;width:40px;height:40px;max-width:100%;object-fit:contain}
+
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alerts article>div{display:flex;align-items:baseline;gap:9px;min-width:0;flex:1}
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alerts strong{font-size:12px;font-weight:700}
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-alerts small{font:10px Georgia,serif}
