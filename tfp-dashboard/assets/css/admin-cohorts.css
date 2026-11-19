@@ -225,7 +225,7 @@ body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal {
 body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal.is-open { display: flex; }
 body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-backdrop {
     position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
-    background: rgba(0,0,0,.58); cursor: default;
+    background: rgba(0,0,0,.42); cursor: default;
 }
 body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-dialog {
     position: relative; z-index: 1; width: min(620px, 100%); max-height: calc(100vh - 36px);
