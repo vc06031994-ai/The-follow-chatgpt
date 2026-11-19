@@ -254,3 +254,23 @@
     }
 }
 
+
+
+/* Figma: Module details popup */
+.tfp-admin-module-preview-trigger { display:inline-flex; align-items:center; justify-content:center; min-width:47px; min-height:30px; padding:5px 12px; border:1px solid #333; border-radius:7px; background:transparent; color:#222; font:500 12px var(--tfp-dash-font,sans-serif); cursor:pointer; }
+.tfp-admin-module-preview-trigger:hover { background:#f4f4f4; }
+.tfp-admin-module-modal-backdrop { position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(34,29,29,.22); }
+.tfp-admin-module-modal-backdrop[hidden] { display:none!important; }
+.tfp-admin-module-modal { width:min(100%,310px); padding:15px; border-radius:9px; background:#fff; box-shadow:0 14px 48px rgba(0,0,0,.15); }
+.tfp-admin-module-modal h2 { margin:0 0 7px; color:#111; font-size:13px; line-height:1.35; font-weight:700; }
+.tfp-admin-module-modal-subtitle { margin:0 0 15px; color:#222; font:400 10px/1.4 var(--tfp-dash-font-alt,Georgia,serif); }
+.tfp-admin-module-modal-details { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.tfp-admin-module-modal-details article { display:flex; min-height:55px; flex-direction:column; justify-content:center; gap:7px; padding:9px 13px; border-radius:9px; background:#ededed; }
+.tfp-admin-module-modal-details small { color:#222; font-size:8px; line-height:1.2; }
+.tfp-admin-module-modal-details strong { color:#171717; font-size:15px; line-height:1.15; font-weight:700; }
+.tfp-admin-module-modal-details strong.has-flags { color:#c92832; }
+.tfp-admin-module-modal-actions { display:grid; grid-template-columns:1fr auto; gap:7px; margin-top:13px; }
+.tfp-admin-module-modal-actions a,.tfp-admin-module-modal-actions button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:38px; padding:7px 10px; border:1px solid #cfcfcf; border-radius:7px; background:#fff; color:#171717!important; font-size:11px; line-height:1.2; text-decoration:none!important; white-space:nowrap; cursor:pointer; }
+.tfp-admin-module-modal-actions a { border-color:#006970; background:#006970; color:#fff!important; }
+.tfp-admin-module-modal-actions span { font-size:16px; line-height:1; }
+@media(max-width:380px) { .tfp-admin-module-modal { padding:13px; } .tfp-admin-module-modal-actions { grid-template-columns:1fr; } .tfp-admin-module-modal-actions button { width:100%; } }
