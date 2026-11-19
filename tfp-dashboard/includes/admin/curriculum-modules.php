@@ -74,6 +74,7 @@ function tfp_admin_curriculum_modules_get_data() {
         $category_name = (!is_wp_error($course_terms) && !empty($course_terms)) ? $course_terms[0]->name : __('Uncategorized', 'tfp-dashboard');
         $rows[] = [
             'id' => $lesson->ID,
+            'course_id' => $assigned_course_id,
             'title' => get_the_title($lesson) ?: __('Untitled Module', 'tfp-dashboard'),
             'course' => $assigned_course ? get_the_title($assigned_course) : __('Course not assigned', 'tfp-dashboard'),
             'category' => $category_name,
@@ -145,11 +146,52 @@ function tfp_admin_curriculum_modules_render() {
                         <select name="module_status" aria-label="<?php esc_attr_e('Filter by status', 'tfp-dashboard'); ?>"><option value="all" <?php selected($data['status'], 'all'); ?>><?php esc_html_e('All Statuses', 'tfp-dashboard'); ?></option><option value="active" <?php selected($data['status'], 'active'); ?>><?php esc_html_e('Active', 'tfp-dashboard'); ?></option><option value="draft" <?php selected($data['status'], 'draft'); ?>><?php esc_html_e('Draft / Inactive', 'tfp-dashboard'); ?></option></select>
                     </form>
                     <div class="tfp-admin-modules-list">
-                        <?php foreach ($data['rows'] as $row) : ?><article class="tfp-admin-modules-row"><div class="tfp-admin-modules-info"><strong><?php echo esc_html($row['title']); ?></strong><small><?php echo esc_html($row['course']); ?><?php if ($row['category'] !== 'Uncategorized') : ?> · <?php echo esc_html($row['category']); ?><?php endif; ?></small></div><div class="tfp-admin-modules-actions"><span class="tfp-admin-modules-status <?php echo $row['status'] === 'publish' ? 'is-active' : 'is-draft'; ?>"><?php echo $row['status'] === 'publish' ? esc_html__('Active', 'tfp-dashboard') : esc_html__('Draft', 'tfp-dashboard'); ?></span><a href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></a></div></article><?php endforeach; ?>
+                        <?php foreach ($data['rows'] as $row) : ?><article class="tfp-admin-modules-row"><div class="tfp-admin-modules-info"><strong><?php echo esc_html($row['title']); ?></strong><small><?php echo esc_html($row['course']); ?><?php if ($row['category'] !== 'Uncategorized') : ?> · <?php echo esc_html($row['category']); ?><?php endif; ?></small></div><div class="tfp-admin-modules-actions"><span class="tfp-admin-modules-status <?php echo $row['status'] === 'publish' ? 'is-active' : 'is-draft'; ?>"><?php echo $row['status'] === 'publish' ? esc_html__('Active', 'tfp-dashboard') : esc_html__('Draft', 'tfp-dashboard'); ?></span><button type="button" class="tfp-admin-module-preview-trigger" data-module-title="<?php echo esc_attr($row['title']); ?>" data-module-course="<?php echo esc_attr($row['course']); ?>" data-module-category="<?php echo esc_attr($row['category']); ?>" data-module-status="<?php echo esc_attr($row['status'] === 'publish' ? 'Active' : 'Draft'); ?>" data-module-flags="<?php echo esc_attr((strpos($row['course'], 'not assigned') !== false ? 1 : 0) + (trim((string) get_post_field('post_content', $row['id'])) === '' ? 1 : 0)); ?>" data-module-editor="<?php echo esc_url(!empty($row['course_id']) && function_exists('tfp_admin_course_detail_url') ? tfp_admin_course_detail_url($row['course_id']) : $row['edit_url']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></button></div></article><?php endforeach; ?>
                         <?php if (empty($data['rows'])) : ?><div class="tfp-admin-modules-empty"><?php esc_html_e('No modules found.', 'tfp-dashboard'); ?></div><?php endif; ?>
                     </div>
                 </section>
             </main>
+            <div class="tfp-admin-module-modal-backdrop" id="tfp-admin-module-modal" hidden aria-hidden="true">
+                <section class="tfp-admin-module-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-admin-module-modal-title">
+                    <h2 id="tfp-admin-module-modal-title"></h2>
+                    <p class="tfp-admin-module-modal-subtitle"></p>
+                    <div class="tfp-admin-module-modal-details">
+                        <article><small><?php esc_html_e('Status', 'tfp-dashboard'); ?></small><strong class="module-modal-status"></strong></article>
+                        <article><small><?php esc_html_e('Content Flags', 'tfp-dashboard'); ?></small><strong class="module-modal-flags"></strong></article>
+                        <article><small><?php esc_html_e('Exercises', 'tfp-dashboard'); ?></small><strong><?php esc_html_e('None', 'tfp-dashboard'); ?></strong></article>
+                        <article><small><?php esc_html_e('Category', 'tfp-dashboard'); ?></small><strong class="module-modal-category"></strong></article>
+                    </div>
+                    <div class="tfp-admin-module-modal-actions">
+                        <a class="tfp-admin-module-open-editor" href="#"><span aria-hidden="true">↗</span><?php esc_html_e('Open Full Course Editor', 'tfp-dashboard'); ?></a>
+                        <button type="button" data-tfp-close-module-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+                    </div>
+                </section>
+            </div>
+            <script>
+            (function () {
+                const modal = document.getElementById('tfp-admin-module-modal');
+                if (!modal) return;
+                const close = () => { modal.hidden = true; modal.setAttribute('aria-hidden', 'true'); };
+                document.querySelectorAll('.tfp-admin-module-preview-trigger').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        modal.querySelector('#tfp-admin-module-modal-title').textContent = button.dataset.moduleTitle || '';
+                        modal.querySelector('.tfp-admin-module-modal-subtitle').textContent = (button.dataset.moduleCourse || '') + ' · 58 Week Discipleship';
+                        const flags = parseInt(button.dataset.moduleFlags || '0', 10);
+                        const status = modal.querySelector('.module-modal-status');
+                        status.textContent = flags ? 'Has Flags' : (button.dataset.moduleStatus || 'Active');
+                        status.classList.toggle('has-flags', flags > 0);
+                        modal.querySelector('.module-modal-flags').textContent = flags ? flags + (flags === 1 ? ' Flag to fix' : ' Flags to fix') : 'None';
+                        modal.querySelector('.module-modal-category').textContent = button.dataset.moduleCategory || 'Uncategorized';
+                        modal.querySelector('.tfp-admin-module-open-editor').href = button.dataset.moduleEditor || '#';
+                        modal.hidden = false; modal.setAttribute('aria-hidden', 'false');
+                        modal.querySelector('[data-tfp-close-module-modal]').focus();
+                    });
+                });
+                modal.querySelectorAll('[data-tfp-close-module-modal]').forEach((button) => button.addEventListener('click', close));
+                modal.addEventListener('click', (event) => { if (event.target === modal) close(); });
+                document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !modal.hidden) close(); });
+            }());
+            </script>
         </div>
     </div>
     <?php
