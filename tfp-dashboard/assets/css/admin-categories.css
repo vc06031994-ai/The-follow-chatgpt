@@ -1,0 +1,278 @@
+/* ==========================================================================
+   Admin Curriculum Categories — scoped page styles
+   Uses the shared Admin Dashboard shell and design tokens.
+   ========================================================================== */
+body.tfp-admin-categories-view .tfp-admin-categories-content {
+    padding-top: 28px;
+}
+.tfp-admin-categories-header .tfp-admin-categories-add,
+.tfp-admin-categories-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 6px;
+    background: #00666e;
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+.tfp-admin-categories-add:hover { background: #00505a; }
+.tfp-admin-categories-add span { font-size: 20px; line-height: 1; }
+.tfp-admin-curriculum-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0 0 20px;
+    border-bottom: 1px solid #c9c9c9;
+}
+.tfp-admin-curriculum-tabs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 18px;
+    border-bottom: 2px solid transparent;
+    color: #b9b9b9;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none !important;
+}
+.tfp-admin-curriculum-tabs a:hover { color: #171717; }
+.tfp-admin-curriculum-tabs a.is-active {
+    color: #171717;
+    border-bottom-color: #00666e;
+}
+.tfp-admin-categories-notice {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    border: 1px solid #b9dcd7;
+    border-radius: 8px;
+    background: #f2faf8;
+    color: #145b54;
+    font-size: 13px;
+}
+.tfp-admin-categories-notice.is-error {
+    border-color: #e6b8b8;
+    background: #fff6f6;
+    color: #9e2525;
+}
+.tfp-admin-categories-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 212px));
+    gap: 14px;
+    margin: 0 0 24px;
+}
+.tfp-admin-categories-stats article {
+    display: flex;
+    min-height: 88px;
+    flex-direction: column;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #ededed;
+    box-shadow: 0 2px 4px rgba(0,0,0,.12);
+}
+.tfp-admin-categories-stats small {
+    color: #333;
+    font-size: 10px;
+    line-height: 1.3;
+}
+.tfp-admin-categories-stats strong {
+    margin-top: 6px;
+    color: #171717;
+    font-size: 20px;
+    line-height: 1.15;
+    font-weight: 750;
+}
+.tfp-admin-categories-stats p {
+    margin: 8px 0 0;
+    color: #333;
+    font-family: Georgia, serif;
+    font-size: 11px;
+}
+.tfp-admin-categories-form-panel { margin-bottom: 20px; }
+.tfp-admin-categories-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 4px 18px 20px;
+}
+.tfp-admin-categories-form label {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+    color: #222;
+    font-size: 12px;
+    font-weight: 600;
+}
+.tfp-admin-categories-form label.is-full { grid-column: 1 / -1; }
+.tfp-admin-categories-form input,
+.tfp-admin-categories-form textarea {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 12px;
+    border: 1px solid #d5d8da;
+    border-radius: 6px;
+    background: #fff;
+    color: #171717;
+    font: inherit;
+    font-size: 13px;
+    box-shadow: none;
+}
+.tfp-admin-categories-form textarea { min-height: 84px; resize: vertical; }
+.tfp-admin-categories-form-actions {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    gap: 14px;
+}
+.tfp-admin-categories-form-actions button,
+.tfp-admin-categories-list-toolbar button {
+    min-height: 38px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 6px;
+    background: #00666e;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.tfp-admin-categories-form-actions a {
+    color: #555;
+    font-size: 12px;
+    text-decoration: none;
+}
+.tfp-admin-categories-list-panel { padding: 14px; }
+.tfp-admin-categories-list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+.tfp-admin-categories-search {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+.tfp-admin-categories-search > span {
+    margin-left: 10px;
+    color: #222;
+    font-size: 20px;
+}
+.tfp-admin-categories-search input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 38px;
+    padding: 8px 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 6px;
+    background: #fff;
+    color: #171717;
+    font-size: 13px;
+    box-shadow: none;
+}
+.tfp-admin-categories-result-count {
+    color: #777;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.tfp-admin-categories-table-wrap { width: 100%; overflow-x: auto; }
+.tfp-admin-categories-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    text-align: left;
+}
+.tfp-admin-categories-table th {
+    padding: 8px 14px;
+    color: #555;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.tfp-admin-categories-table td {
+    padding: 13px 14px;
+    background: #e2e5e6;
+    color: #262626;
+    font-size: 12px;
+    vertical-align: middle;
+}
+.tfp-admin-categories-table td:first-child { border-radius: 8px 0 0 8px; }
+.tfp-admin-categories-table td:last-child { border-radius: 0 8px 8px 0; }
+.tfp-admin-categories-table td strong { font-size: 13px; font-weight: 700; }
+.tfp-admin-categories-table code {
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,.65);
+    color: #555;
+    font-size: 11px;
+}
+.tfp-admin-categories-count {
+    display: inline-flex;
+    min-width: 28px;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: #f3f5f5;
+    color: #333;
+    font-size: 11px;
+    font-weight: 700;
+}
+.tfp-admin-categories-muted { color: #777; }
+.tfp-admin-categories-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+.tfp-admin-categories-actions a,
+.tfp-admin-categories-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 5px 12px;
+    border: 1px solid #333;
+    border-radius: 7px;
+    background: transparent;
+    color: #222;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+.tfp-admin-categories-actions form { margin: 0; }
+.tfp-admin-categories-actions button { border-color: #d8aaaa; color: #a52a2a; }
+.tfp-admin-categories-empty {
+    margin: 0;
+    padding: 24px 16px;
+    color: #777;
+    font-size: 13px;
+    text-align: center;
+}
+@media (max-width: 900px) {
+    .tfp-admin-categories-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+    body.tfp-admin-categories-view .tfp-admin-categories-content { padding-top: 18px; }
+    .tfp-admin-categories-header { align-items: flex-start; flex-direction: column; }
+    .tfp-admin-categories-stats { grid-template-columns: 1fr; gap: 10px; }
+    .tfp-admin-categories-list-toolbar { align-items: stretch; flex-direction: column; }
+    .tfp-admin-categories-search { flex-wrap: wrap; }
+    .tfp-admin-categories-search button { margin-left: auto; }
+    .tfp-admin-categories-form { grid-template-columns: 1fr; }
+    .tfp-admin-categories-form label.is-full { grid-column: auto; }
+    .tfp-admin-categories-form-actions { flex-wrap: wrap; }
+    .tfp-admin-curriculum-tabs a { padding: 0 13px; font-size: 13px; }
+}
