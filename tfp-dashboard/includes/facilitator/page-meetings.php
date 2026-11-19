@@ -1421,9 +1421,6 @@ function tfp_facilitator_meetings_render_session_tests($cohort, $week_number)
 
     $student_ids = function_exists('tfp_facilitator_cohort_students') ? array_values(array_unique(array_map('absint', (array) tfp_facilitator_cohort_students($cohort_id)))) : [];
     $questions = function_exists('tfp_week_get_test_questions') ? (array) tfp_week_get_test_questions($lesson->ID, false) : [];
-    // Demo preview is staging-only and uses in-memory sample data; it never writes to student records.
-    $demo_allowed = wp_get_environment_type() === 'staging' || strpos((string) home_url('/'), 'staging') !== false;
-    $demo_mode = $demo_allowed && isset($_GET['tfp_test_demo']) && sanitize_text_field(wp_unslash($_GET['tfp_test_demo'])) === '1';
     $stats = [];
     foreach ($questions as $i => $q) {
         $qid = sanitize_key((string) ($q['id'] ?? ''));
@@ -1443,31 +1440,11 @@ function tfp_facilitator_meetings_render_session_tests($cohort, $week_number)
     }
     foreach ($stats as &$item) $item['wrong_pct'] = $item['answered'] ? (int)round($item['wrong']/$item['answered']*100) : null;
     unset($item);
-    if ($demo_mode) {
-        // Sample questions and scores are only rendered; no fake users or grades are persisted.
-        $questions = [
-            ['id'=>'demo_test_q1','prompt'=>'What is the first step in responding to temptation?','options'=>['Ignore the warning signs','Recognise the temptation and seek God’s guidance','Rely only on personal strength','Avoid asking for help'],'correct_index'=>1,'explanation'=>'Recognising temptation early helps a person pause, seek wisdom, and choose a faithful response.','scripture'=>'1 Corinthians 10:13'],
-            ['id'=>'demo_test_q2','prompt'=>'How does obedience demonstrate trust?','options'=>['By following only convenient instructions','By trusting God and acting on His direction','By avoiding difficult decisions','By seeking approval from others'],'correct_index'=>1,'explanation'=>'Obedience puts trust into action, including when the next step is difficult.','scripture'=>'John 14:15'],
-            ['id'=>'demo_test_q3','prompt'=>'What should guide daily decisions?','options'=>['Popular opinion','Personal convenience','Wisdom grounded in Scripture','Fear of criticism'],'correct_index'=>2,'explanation'=>'Scripture encourages believers to seek wisdom and allow it to shape everyday choices.','scripture'=>'Proverbs 3:5–6'],
-            ['id'=>'demo_test_q4','prompt'=>'Which response best reflects love for others?','options'=>['Listening with patience and offering support','Avoiding people who disagree','Responding immediately in anger','Putting personal interests first'],'correct_index'=>0,'explanation'=>'Practical love is reflected through patience, care, and supportive action.','scripture'=>'1 Corinthians 13:4–7'],
-        ];
-        $demo_counts = [[4,20],[7,20],[3,20],[5,20]];
-        $stats = [];
-        foreach ($questions as $i => $q) {
-            $qid = sanitize_key($q['id']);
-            $stats[$qid] = ['id'=>$qid,'number'=>$i+1,'prompt'=>$q['prompt'],'options'=>$q['options'],'correct_index'=>$q['correct_index'],'explanation'=>$q['explanation'],'scripture'=>$q['scripture'],'wrong'=>$demo_counts[$i][0],'answered'=>$demo_counts[$i][1]];
-            $stats[$qid]['wrong_pct'] = (int) round($stats[$qid]['wrong'] / $stats[$qid]['answered'] * 100);
-        }
-        $demo_names = ['Alex Morgan','Ava Thompson','Benjamin Carter','Chloe Bennett','Daniel Foster','Ella Richardson','Ethan Brooks','Grace Mitchell','Henry Cooper','Isabella Reed','Jack Peterson','Liam Anderson','Mia Collins','Noah Bailey','Olivia Parker','Samuel Hayes','Sophia Turner','Theodore Ward','Victoria Price','William Scott'];
-        $students = [];
-        foreach ($demo_names as $i => $name) $students[] = ['id'=>'demo_student_'.($i+1),'name'=>$name];
-    }
     $first = $stats ? reset($stats) : null;
     $note_key = 'tfp_meeting_test_notes_' . $cohort_id . '_' . (int)$lesson->ID;
-    $notes = $demo_mode ? [] : get_post_meta($lesson->ID, $note_key, true);
+    $notes = get_post_meta($lesson->ID, $note_key, true);
     if (!is_array($notes)) $notes = [];
     $nonce = wp_create_nonce('tfp_meeting_test_note_'.$cohort_id.'_'.$lesson->ID);
-    $demo_url = add_query_arg(['tfp_meeting_cohort_id'=>$cohort_id,'tfp_meeting_week'=>$week_number,'tfp_meeting_session_view'=>'tests','tfp_test_demo'=>$demo_mode?'0':'1'], tfp_facilitator_meetings_url());
     ?>
     <div class="tfp-meeting-session-detail-page tfp-meeting-test-page" data-tfp-session-tests data-ajax-url="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" data-nonce="<?php echo esc_attr($nonce); ?>" data-cohort-id="<?php echo esc_attr($cohort_id); ?>" data-lesson-id="<?php echo esc_attr($lesson->ID); ?>">
       <header class="tfp-meeting-homework-header"><div><h1><?php echo esc_html($cohort->post_title); ?></h1><p><?php echo esc_html($lesson->post_title); ?></p></div><a class="tfp-dash-btn tfp-dash-btn--primary" href="<?php echo esc_url(tfp_facilitator_meetings_url(['tfp_meeting_cohort_id'=>$cohort_id,'tfp_meeting_week'=>$week_number])); ?>">↩ Back to All Meetings</a></header>
@@ -1478,8 +1455,7 @@ function tfp_facilitator_meetings_render_session_tests($cohort, $week_number)
         <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id,$week_number,'exercise')); ?>">Exercises</a>
         <a href="<?php echo esc_url(tfp_facilitator_meetings_session_url($cohort_id,$week_number,'notes')); ?>">Notes</a>
       </nav>
-      <section class="tfp-meeting-homework-surface tfp-meeting-test-surface"><header class="tfp-meeting-homework-surface__head"><h2>Tests</h2><?php if($demo_allowed): ?><a class="tfp-meeting-homework-demo-toggle" href="<?php echo esc_url($demo_url); ?>"><?php echo esc_html($demo_mode ? 'Exit Demo Preview' : 'Load Demo Data'); ?></a><?php endif; ?></header>
-       <?php if($demo_mode): ?><div class="tfp-meeting-homework-demo-notice" role="status">DEMO PREVIEW — 4 sample questions, 20 sample students and sample performance. Notes are read-only; no data is saved.</div><?php endif; ?>
+      <section class="tfp-meeting-homework-surface tfp-meeting-test-surface"><header class="tfp-meeting-homework-surface__head"><h2>Tests</h2></header>
       <?php if (!$stats): ?><div class="tfp-meeting-test-empty"><h3>No test questions found for this week.</h3><p>Add test questions to this course week to view question-level performance.</p></div>
       <?php else: ?>
         <div class="tfp-meeting-test-stats"><?php foreach($stats as $item): ?><button type="button" class="tfp-meeting-test-stat" data-test-question="<?php echo esc_attr($item['id']); ?>" aria-pressed="<?php echo $item['id']===$first['id']?'true':'false'; ?>"><small>Question <?php echo esc_html($item['number']); ?></small><strong><?php echo esc_html($item['wrong_pct']===null?'—':$item['wrong_pct'].'%'); ?></strong><span># Students Wrong</span></button><?php endforeach; ?></div>
