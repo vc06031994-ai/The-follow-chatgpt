@@ -40,3 +40,217 @@
 .tfp-admin-modules-empty { display:flex; min-height:70px; align-items:center; justify-content:center; border-radius:10px; background:var(--tfp-modules-row); color:#888; font-size:11px; }
 @media(max-width:900px) { .tfp-admin-modules-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .tfp-admin-modules-filters { grid-template-columns:minmax(0,1fr) repeat(2,minmax(120px,1fr)); } .tfp-admin-modules-search { grid-column:1/-1; grid-row:1; } }
 @media(max-width:600px) { .tfp-admin-modules-content { padding:20px 16px 30px; } .tfp-admin-modules-header { align-items:flex-start; flex-wrap:wrap; gap:12px; padding:14px 16px; } .tfp-admin-modules-stats { gap:10px; } .tfp-admin-modules-stat { min-height:78px; padding:9px 10px; } .tfp-admin-modules-filters { grid-template-columns:1fr; } .tfp-admin-modules-search { grid-column:auto; grid-row:auto; } .tfp-admin-modules-row { align-items:flex-start; padding:12px; } .tfp-admin-modules-actions { gap:6px; } .tfp-admin-modules-status { min-width:42px; padding:3px 7px; } .tfp-admin-modules-actions>a { min-width:42px; padding:5px 8px; } .tfp-admin-modules-info strong { white-space:normal; } }
+
+/* =========================================================================
+   Curriculum Modules — mobile and small-tablet layout refinements
+   ========================================================================= */
+@media (max-width: 860px) {
+    body.tfp-admin-curriculum-modules-view,
+    body.tfp-admin-curriculum-modules-view .tfp-admin-app {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-main {
+        width: 100%;
+        min-width: 0;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-header {
+        width: 100%;
+        min-height: 0;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-content {
+        width: 100%;
+        min-width: 0;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-panel {
+        min-width: 0;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-row {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    body.tfp-admin-curriculum-modules-view .tfp-admin-breadcrumb {
+        height: 40px;
+        gap: 7px;
+        padding-right: 14px;
+        padding-left: 14px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 16px 18px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-header h1 {
+        font-size: 28px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-header p {
+        font-size: 13px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-add {
+        align-self: flex-start;
+        min-height: 38px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-content {
+        padding: 18px 12px 28px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-curriculum-tabs {
+        max-width: 100%;
+        margin-bottom: 16px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-curriculum-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-curriculum-tabs a {
+        flex: 0 0 auto;
+        min-height: 38px;
+        padding: 0 13px;
+        font-size: 13px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-stat {
+        min-height: 82px;
+        padding: 10px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-stat small {
+        font-size: 9px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-stat strong {
+        font-size: 17px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-stat p {
+        font-size: 9px;
+        line-height: 1.35;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-panel {
+        padding: 10px;
+        border-radius: 9px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-filters {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-search,
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-filters select {
+        grid-column: auto;
+        grid-row: auto;
+        width: 100%;
+        height: 40px;
+        min-height: 40px;
+        font-size: 12px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-search input {
+        height: 36px;
+        font-size: 12px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-list {
+        max-height: 560px;
+        gap: 9px;
+        padding-right: 2px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-row {
+        align-items: flex-start;
+        gap: 10px;
+        min-height: 0;
+        padding: 12px;
+        border-radius: 9px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-info {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-info strong,
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-info small {
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-info strong {
+        font-size: 11px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-info small {
+        font-size: 9px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions {
+        flex: 0 0 auto;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-status {
+        min-width: 0;
+        min-height: 22px;
+        padding: 3px 7px;
+        font-size: 8px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > a {
+        min-width: 40px;
+        min-height: 28px;
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 380px) {
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-stats {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-stat {
+        min-height: 72px;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions {
+        justify-content: flex-start;
+    }
+}
+
