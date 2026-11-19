@@ -297,7 +297,7 @@ function tfp_admin_categories_render() {
                 <?php endif; ?>
 
                 <section class="tfp-admin-panel tfp-admin-categories-groups" aria-label="<?php esc_attr_e('Course categories', 'tfp-dashboard'); ?>">
-                    <?php if (!$taxonomy) : ?>
+                    <?php if (!$taxonomy && !$demo_mode) : ?>
                         <p class="tfp-admin-categories-empty"><?php esc_html_e('LearnDash course categories are not available. Activate LearnDash to manage course categories here.', 'tfp-dashboard'); ?></p>
                     <?php elseif (empty($category_groups)) : ?>
                         <p class="tfp-admin-categories-empty"><?php esc_html_e('No categories have been created yet. Use Add Category to create your first category.', 'tfp-dashboard'); ?></p>
