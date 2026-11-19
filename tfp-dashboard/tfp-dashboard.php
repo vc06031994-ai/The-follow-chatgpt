@@ -96,6 +96,7 @@ require_once TFP_DASH_PATH . 'includes/grades/admin.php';
 require_once TFP_DASH_PATH . 'includes/admin/submissions.php';
 require_once TFP_DASH_PATH . 'includes/admin/attendance-history.php';
 require_once TFP_DASH_PATH . 'includes/admin/dashboard.php';
+require_once TFP_DASH_PATH . 'includes/admin/cohorts.php';
 require_once TFP_DASH_PATH . 'includes/admin/courses.php';
 require_once TFP_DASH_PATH . 'includes/admin/curriculum-courses.php';
 require_once TFP_DASH_PATH . 'includes/admin/curriculum-modules.php';
