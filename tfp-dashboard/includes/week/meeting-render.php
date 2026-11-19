@@ -218,64 +218,6 @@ function tfp_dashboard_render_week_meeting_experience($week)
                     // Load raw test questions to resolve question numbers (e.g. Q1, Q6, Q12, Q10, Q3)
                     $test_questions_raw = function_exists('tfp_week_get_test_questions') ? tfp_week_get_test_questions($lesson_id, false) : [];
 
-                    if (!$test_result) {
-                        // High-fidelity fallback preview matching the screenshot when user hasn't completed test yet
-                        $sample_missed = [
-                            [
-                                'id' => 'q1',
-                                'q_num' => 'Q1',
-                                'prompt' => 'What is the primary foundation of God\'s authority established in Genesis?',
-                                'user_answer' => 'Personal interpretation of moral guidelines.',
-                                'correct_answer' => 'God\'s role as the sovereign Creator of all things.',
-                                'explanation' => 'God\'s authority is rooted in His creation. Because He created everything, He holds absolute sovereign rights over creation and defines truth, obedience, and moral authority.',
-                                'scripture' => 'Genesis 1:1 – "In the beginning God created the heavens and the earth."'
-                            ],
-                            [
-                                'id' => 'q6',
-                                'q_num' => 'Q6',
-                                'prompt' => 'How does deception play a role in the original temptation of man?',
-                                'user_answer' => 'By forcing man against his will to disobey.',
-                                'correct_answer' => 'By distorting God\'s Word and questioning His goodness.',
-                                'explanation' => 'Temptation often begins by undermining trust in God\'s character and truth. The adversary questioned "Did God really say?" to induce doubt before disobedience.',
-                                'scripture' => 'Genesis 3:1 – "Did God really say, \'You must not eat from any tree in the garden\'?"'
-                            ],
-                            [
-                                'id' => 'q12',
-                                'q_num' => 'Q12',
-                                'prompt' => 'What is the immediate consequence of sin on human fellowship with God?',
-                                'user_answer' => 'A temporary decrease in spiritual enthusiasm.',
-                                'correct_answer' => 'Spiritual separation, shame, and broken fellowship.',
-                                'explanation' => 'Sin creates an immediate rift in communion with God. Adam and Eve hid from God\'s presence due to guilt and shame.',
-                                'scripture' => 'Isaiah 59:2 – "But your iniquities have separated you from your God."'
-                            ],
-                            [
-                                'id' => 'q10',
-                                'q_num' => 'Q10',
-                                'prompt' => 'Why is self-sovereignty considered the core motive behind disobedience?',
-                                'user_answer' => 'Because humans naturally seek harmony with creation.',
-                                'correct_answer' => 'Because it seeks to replace God\'s authority with human desire.',
-                                'explanation' => 'At its core, sin is a declaration of independence from God—desiring to determine good and evil according to one\'s own will rather than trusting God\'s command.',
-                                'scripture' => 'Proverbs 14:12 – "There is a way that appears to be right, but in the end it leads to death."'
-                            ],
-                            [
-                                'id' => 'q3',
-                                'q_num' => 'Q3',
-                                'prompt' => 'Breakdown the process of sin in it\'s conception. Does this process give you a stronger grasp of how to reject sin?',
-                                'user_answer' => 'Lorem ipsum dolor sit amet consectetur adipiscing elit.',
-                                'correct_answer' => 'Lorem ipsum dolor sit amet consectetur adipiscing elit.',
-                                'explanation' => 'Biblical obedience is not simply following rules. It begins with a heart that trusts God\'s character and submits to His authority. Obedience reflects love, faith, and alignment with God\'s will—responding to His voice even when the instruction is difficult or inconvenient. Scripture teaches that obedience is better than sacrifice because it reveals loyalty and genuine relationship. A believer who obeys God shows that they trust His wisdom above their own understanding.',
-                                'scripture' => '1 Samuel 15:22 (HCSB) – "To obey is better than sacrifice, to pay attention is better than the fat of rams."'
-                            ]
-                        ];
-
-                        $test_summary = [
-                            'score' => 78,
-                            'passed' => true,
-                            'missed_count' => 4,
-                            'total_count' => 20,
-                            'missed_list' => $sample_missed
-                        ];
-                    } else {
                         // Extract actual missed questions from DB test result
                         $raw_missed = array_values(array_filter((array)($test_result['results'] ?? []), function($item){ return empty($item['is_correct']); }));
 
@@ -429,23 +371,8 @@ function tfp_dashboard_render_week_meeting_experience($week)
                     $description = (string)get_post_meta($lesson_id, 'tfp_week_meeting_exercise_description', true);
                     $purpose = (string)get_post_meta($lesson_id, 'tfp_week_meeting_exercise_purpose', true);
 
-                    // Fallback sample data matching screenshot if post meta is empty
-                    if (empty($title)) {
-                        $title = 'Exercise #2 – Flesh vs. Holy Spirit';
-                    }
-                    if (empty($group_type)) {
-                        $group_type = 'Group/Individual';
-                    }
-                    if (empty($format)) {
-                        $format = 'Seated • Journaling • Guided Listening';
-                    }
-                    if (empty($description)) {
-                        $description = "In this exercise, the student remains seated while the facilitator directs the class or small group to journal while speaking and listening to either the voice of the flesh or the voice of the Holy Spirit.\n\nThe goal is to help participants become aware that the flesh does speak, and to begin discerning the difference between thoughts, impressions, and desires that originate from the flesh versus those that are communicated by the Holy Spirit.\n\nParticipants are guided to listen intentionally, write what they hear, and reflect on the source of each impression without judgment. This exercise helps surface internal patterns and strengthens spiritual awareness through observation and practice.";
-                    }
-                    if (empty($purpose)) {
-                        $purpose = "The purpose of this exercise is to develop discernment and spiritual awareness by recognizing the distinction between the flesh and the Holy Spirit.\n\nBefore something can be denied, it must first be identified. This exercise creates space for participants to notice how the flesh communicates, while also learning to recognize the voice and leading of the Holy Spirit.\n\nBelievers understand that Jesus has taken authority over all flesh, and through the Holy Spirit we are empowered to subdue the self's voice and desires. This exercise supports that process by building awareness, humility, and trust in God's guidance through intentional listening and journaling.";
-                    }
                 ?>
+                    <?php if ($title || $group_type || $format || $description || $purpose) : ?>
                     <article class="tfp-week__meeting-exercise-article">
                         <h3 class="tfp-week__meeting-exercise-title"><?php echo esc_html($title); ?></h3>
 
@@ -464,6 +391,9 @@ function tfp_dashboard_render_week_meeting_experience($week)
                             <?php echo wp_kses_post(wpautop($purpose)); ?>
                         </div>
                     </article>
+                    <?php else : ?>
+                        <p class="tfp-week__meeting-empty"><?php esc_html_e('No exercise content has been added for this week yet.', 'tfp-dashboard'); ?></p>
+                    <?php endif; ?>
                 <?php else :
                     $reflection=(string)get_user_meta($user_id,'tfp_week_meeting_notes_'.$lesson_id,true);
                     $notes=(string)get_post_meta($lesson_id,'tfp_week_meeting_facilitator_notes',true);
