@@ -98,6 +98,7 @@ require_once TFP_DASH_PATH . 'includes/admin/attendance-history.php';
 require_once TFP_DASH_PATH . 'includes/admin/dashboard.php';
 require_once TFP_DASH_PATH . 'includes/admin/courses.php';
 require_once TFP_DASH_PATH . 'includes/admin/curriculum-courses.php';
+require_once TFP_DASH_PATH . 'includes/admin/curriculum-modules.php';
 require_once TFP_DASH_PATH . 'includes/admin/categories.php';
 require_once TFP_DASH_PATH . 'includes/admin/course-detail.php';
 require_once TFP_DASH_PATH . 'includes/admin/course-editor.php';
