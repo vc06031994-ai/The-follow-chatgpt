@@ -194,3 +194,23 @@ body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td
         text-align: right !important;
     }
 }
+
+
+/* Tighten the gap between the Status column and row actions. */
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-name { width: 34% !important; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-meeting { width: 12% !important; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-status { width: 10% !important; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-actions { width: 15% !important; }
+
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td.tfp-admin-cohort-actions {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    text-align: left !important;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions .tfp-admin-cohort-btn {
+    margin-left: 0 !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions .tfp-admin-cohort-btn + .tfp-admin-cohort-btn {
+    margin-left: 5px !important;
+}
