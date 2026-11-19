@@ -179,7 +179,7 @@ function tfp_dashboard_render_communication_content()
                 </div>
             </div>
 
-            <div class="tfp-dash-chatpanel__thread" data-tfp-chat-thread style="display:none;">
+            <div class="tfp-dash-chatpanel__thread" data-tfp-chat-thread hidden>
                 <!-- Chat Panel Header (Figma media_1790601569672.png) -->
                 <div class="tfp-dash-chatpanel__header">
                     <div class="tfp-dash-chatpanel__head-info">
