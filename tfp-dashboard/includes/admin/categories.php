@@ -80,34 +80,43 @@ function tfp_admin_categories_render() {
     tfp_admin_categories_handle_post();
 
     $taxonomy = tfp_admin_categories_taxonomy();
-    $search = isset($_GET['category_search']) ? sanitize_text_field(wp_unslash($_GET['category_search'])) : '';
     $edit_id = isset($_GET['edit_category']) ? absint($_GET['edit_category']) : 0;
     $editing = ($taxonomy && $edit_id) ? get_term($edit_id, $taxonomy) : null;
     if (is_wp_error($editing)) {
         $editing = null;
     }
 
-    $terms = [];
-    if ($taxonomy) {
-        $term_args = ['taxonomy' => $taxonomy, 'hide_empty' => false, 'orderby' => 'name', 'order' => 'ASC'];
-        if ($search !== '') {
-            $term_args['search'] = $search;
-        }
-        $terms = get_terms($term_args);
-        if (is_wp_error($terms)) {
-            $terms = [];
-        }
+    // Load real course categories and their assigned LearnDash courses.
+    $categories = $taxonomy ? get_terms([
+        'taxonomy' => $taxonomy,
+        'hide_empty' => false,
+        'orderby' => 'term_order',
+        'order' => 'ASC',
+    ]) : [];
+    if (is_wp_error($categories)) {
+        $categories = [];
     }
 
-    $all_terms = $taxonomy ? get_terms(['taxonomy' => $taxonomy, 'hide_empty' => false]) : [];
-    if (is_wp_error($all_terms)) {
-        $all_terms = [];
+    $category_groups = [];
+    foreach ($categories as $category) {
+        $courses = post_type_exists('sfwd-courses') ? get_posts([
+            'post_type' => 'sfwd-courses',
+            'post_status' => ['publish', 'draft', 'pending', 'private'],
+            'posts_per_page' => -1,
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
+            'tax_query' => [[
+                'taxonomy' => $taxonomy,
+                'field' => 'term_id',
+                'terms' => (int) $category->term_id,
+            ]],
+        ]) : [];
+
+        $category_groups[] = [
+            'term' => $category,
+            'courses' => $courses,
+        ];
     }
-    $total = count($all_terms);
-    $assigned = count(array_filter($all_terms, static function ($term) {
-        return (int) $term->count > 0;
-    }));
-    $unassigned = max(0, $total - $assigned);
 
     $user = wp_get_current_user();
     $name = $user->display_name ?: __('Administrator', 'tfp-dashboard');
@@ -123,8 +132,7 @@ function tfp_admin_categories_render() {
     unset($item);
 
     $notice = isset($_GET['category_notice']) ? sanitize_key(wp_unslash($_GET['category_notice'])) : '';
-    $show_form = isset($_GET['category_action']) && $_GET['category_action'] === 'add';
-    $show_form = $show_form || (bool) $editing;
+    $show_form = (isset($_GET['category_action']) && $_GET['category_action'] === 'add') || (bool) $editing;
     ?>
     <div class="tfp-admin-app tfp-admin-categories-app">
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -134,7 +142,7 @@ function tfp_admin_categories_render() {
                 </button>
             </div>
             <div class="tfp-admin-brand-row">
-                <a class="tfp-admin-brand" href="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>">
+                <a class="tfp-admin-brand" href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>">
                     <img class="tfp-admin-logo-expanded" src="<?php echo esc_url(TFP_DASH_URL . 'assets/images/logo-expanded.svg'); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
                     <img class="tfp-admin-logo-collapsed" src="<?php echo esc_url(TFP_DASH_URL . 'assets/images/logo-collapsed.svg'); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
                 </a>
@@ -164,10 +172,11 @@ function tfp_admin_categories_render() {
             <div class="tfp-admin-breadcrumb">
                 <span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><span><?php esc_html_e('Curriculum', 'tfp-dashboard'); ?></span><b>/</b><strong><?php esc_html_e('Categories', 'tfp-dashboard'); ?></strong>
             </div>
+
             <header class="tfp-admin-page-header tfp-admin-categories-header">
                 <div>
                     <h1><?php esc_html_e('Curriculum', 'tfp-dashboard'); ?></h1>
-                    <p><?php esc_html_e('Create, edit, and organize course categories.', 'tfp-dashboard'); ?></p>
+                    <p><?php esc_html_e('Manage categories, courses, modules and manage their structural organization.', 'tfp-dashboard'); ?></p>
                 </div>
                 <a class="tfp-admin-categories-add" href="<?php echo esc_url(tfp_admin_categories_page_url(['category_action' => 'add'])); ?>"><span aria-hidden="true">＋</span><?php esc_html_e('Add Category', 'tfp-dashboard'); ?></a>
             </header>
@@ -195,15 +204,12 @@ function tfp_admin_categories_render() {
                     <div class="tfp-admin-categories-notice is-error" role="alert"><?php esc_html_e('The category could not be saved. Please check that the name or slug is unique.', 'tfp-dashboard'); ?></div>
                 <?php endif; ?>
 
-                <section class="tfp-admin-categories-stats" aria-label="<?php esc_attr_e('Category metrics', 'tfp-dashboard'); ?>">
-                    <article><small><?php esc_html_e('Total Categories', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($total)); ?></strong><p><?php esc_html_e('Across all course tracks', 'tfp-dashboard'); ?></p></article>
-                    <article><small><?php esc_html_e('Active Categories', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($assigned)); ?></strong><p><?php esc_html_e('With courses assigned', 'tfp-dashboard'); ?></p></article>
-                    <article><small><?php esc_html_e('Unused Categories', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(number_format_i18n($unassigned)); ?></strong><p><?php esc_html_e('No courses assigned yet', 'tfp-dashboard'); ?></p></article>
-                </section>
-
                 <?php if ($show_form) : ?>
                     <section class="tfp-admin-panel tfp-admin-categories-form-panel">
-                        <div class="tfp-admin-panel-heading"><h2><?php echo $editing ? esc_html__('Edit Category', 'tfp-dashboard') : esc_html__('Add New Category', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(tfp_admin_categories_page_url()); ?>"><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></a></div>
+                        <div class="tfp-admin-categories-group-heading">
+                            <h2><?php echo $editing ? esc_html__('Edit Category', 'tfp-dashboard') : esc_html__('Add New Category', 'tfp-dashboard'); ?></h2>
+                            <a href="<?php echo esc_url(tfp_admin_categories_page_url()); ?>"><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></a>
+                        </div>
                         <?php if (!$taxonomy) : ?>
                             <p class="tfp-admin-categories-empty"><?php esc_html_e('LearnDash course categories are unavailable because the ld_course_category taxonomy is not registered.', 'tfp-dashboard'); ?></p>
                         <?php else : ?>
@@ -213,53 +219,64 @@ function tfp_admin_categories_render() {
                                 <?php if ($editing) : ?><input type="hidden" name="term_id" value="<?php echo esc_attr($editing->term_id); ?>"><?php endif; ?>
                                 <label><span><?php esc_html_e('Category Name', 'tfp-dashboard'); ?></span><input type="text" name="category_name" required maxlength="200" value="<?php echo $editing ? esc_attr($editing->name) : ''; ?>" placeholder="<?php esc_attr_e('Enter category name', 'tfp-dashboard'); ?>"></label>
                                 <label><span><?php esc_html_e('Slug', 'tfp-dashboard'); ?></span><input type="text" name="category_slug" value="<?php echo $editing ? esc_attr($editing->slug) : ''; ?>" placeholder="<?php esc_attr_e('Leave blank to generate automatically', 'tfp-dashboard'); ?>"></label>
-                                <label class="is-full"><span><?php esc_html_e('Description', 'tfp-dashboard'); ?></span><textarea name="category_description" rows="3" placeholder="<?php esc_attr_e('Add a short description (optional)', 'tfp-dashboard'); ?>"><?php echo $editing ? esc_textarea($editing->description) : ''; ?></textarea></label>
+                                <label class="is-full"><span><?php esc_html_e('Description', 'tfp-dashboard'); ?></span><textarea name="category_description" rows="3"><?php echo $editing ? esc_textarea($editing->description) : ''; ?></textarea></label>
                                 <div class="tfp-admin-categories-form-actions"><button type="submit"><?php echo $editing ? esc_html__('Save Changes', 'tfp-dashboard') : esc_html__('Create Category', 'tfp-dashboard'); ?></button><a href="<?php echo esc_url(tfp_admin_categories_page_url()); ?>"><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></a></div>
                             </form>
                         <?php endif; ?>
                     </section>
                 <?php endif; ?>
 
-                <section class="tfp-admin-panel tfp-admin-categories-list-panel">
-                    <div class="tfp-admin-categories-list-toolbar">
-                        <form method="get" action="<?php echo esc_url(tfp_admin_categories_page_url()); ?>" class="tfp-admin-categories-search">
-                            <label class="screen-reader-text" for="tfp-category-search"><?php esc_html_e('Search categories', 'tfp-dashboard'); ?></label>
-                            <span aria-hidden="true">⌕</span>
-                            <input id="tfp-category-search" type="search" name="category_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search Categories', 'tfp-dashboard'); ?>">
-                            <button type="submit"><?php esc_html_e('Search', 'tfp-dashboard'); ?></button>
-                        </form>
-                        <span class="tfp-admin-categories-result-count"><?php echo esc_html(sprintf(_n('%s category', '%s categories', count($terms), 'tfp-dashboard'), number_format_i18n(count($terms)))); ?></span>
-                    </div>
-
+                <section class="tfp-admin-panel tfp-admin-categories-groups" aria-label="<?php esc_attr_e('Course categories', 'tfp-dashboard'); ?>">
                     <?php if (!$taxonomy) : ?>
                         <p class="tfp-admin-categories-empty"><?php esc_html_e('LearnDash course categories are not available. Activate LearnDash to manage course categories here.', 'tfp-dashboard'); ?></p>
-                    <?php elseif (empty($terms)) : ?>
-                        <p class="tfp-admin-categories-empty"><?php echo $search ? esc_html__('No categories match your search.', 'tfp-dashboard') : esc_html__('No categories have been created yet. Use Add Category to create your first category.', 'tfp-dashboard'); ?></p>
+                    <?php elseif (empty($category_groups)) : ?>
+                        <p class="tfp-admin-categories-empty"><?php esc_html_e('No categories have been created yet. Use Add Category to create your first category.', 'tfp-dashboard'); ?></p>
                     <?php else : ?>
-                        <div class="tfp-admin-categories-table-wrap">
-                            <table class="tfp-admin-categories-table">
-                                <thead><tr><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Slug', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Courses', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Description', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Actions', 'tfp-dashboard'); ?></th></tr></thead>
-                                <tbody>
-                                <?php foreach ($terms as $term) : ?>
-                                    <tr>
-                                        <td><strong><?php echo esc_html($term->name); ?></strong></td>
-                                        <td><code><?php echo esc_html($term->slug); ?></code></td>
-                                        <td><span class="tfp-admin-categories-count"><?php echo esc_html(number_format_i18n((int) $term->count)); ?></span></td>
-                                        <td><?php echo $term->description !== '' ? esc_html(wp_trim_words($term->description, 14)) : '<span class="tfp-admin-categories-muted">—</span>'; ?></td>
-                                        <td class="tfp-admin-categories-actions">
-                                            <a href="<?php echo esc_url(tfp_admin_categories_page_url(['edit_category' => $term->term_id])); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></a>
-                                            <form method="post" onsubmit="return confirm('<?php echo esc_js(__('Delete this category? Courses will remain, but this category assignment will be removed.', 'tfp-dashboard')); ?>');">
-                                                <?php wp_nonce_field('tfp_admin_course_category_action', 'tfp_category_nonce'); ?>
-                                                <input type="hidden" name="tfp_category_action" value="delete">
-                                                <input type="hidden" name="term_id" value="<?php echo esc_attr($term->term_id); ?>">
-                                                <button type="submit"><?php esc_html_e('Delete', 'tfp-dashboard'); ?></button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                        <?php foreach ($category_groups as $group) :
+                            $category = $group['term'];
+                            $courses = $group['courses'];
+                            $count = count($courses);
+                            ?>
+                            <section class="tfp-admin-category-group">
+                                <div class="tfp-admin-category-heading">
+                                    <div class="tfp-admin-category-info">
+                                        <div class="tfp-admin-category-title-row">
+                                            <h2><?php echo esc_html($category->name); ?></h2>
+                                            <span class="tfp-admin-category-course-count"><?php echo esc_html(sprintf(_n('%s Course', '%s Courses', $count, 'tfp-dashboard'), number_format_i18n($count))); ?></span>
+                                        </div>
+                                        <?php if ($category->description !== '') : ?><p><?php echo esc_html($category->description); ?></p><?php endif; ?>
+                                    </div>
+                                    <div class="tfp-admin-category-controls">
+                                        <a class="tfp-admin-category-add-course" href="<?php echo esc_url(admin_url('post-new.php?post_type=sfwd-courses&ld_course_category=' . (int) $category->term_id)); ?>"><span aria-hidden="true">＋</span><?php esc_html_e('Add Course', 'tfp-dashboard'); ?></a>
+                                        <a class="tfp-admin-category-edit" href="<?php echo esc_url(tfp_admin_categories_page_url(['edit_category' => $category->term_id])); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></a>
+                                    </div>
+                                </div>
+
+                                <?php if (!empty($courses)) : ?>
+                                    <div class="tfp-admin-category-courses">
+                                        <?php foreach ($courses as $course) :
+                                            $status = get_post_status($course);
+                                            $status_label = ($status === 'publish') ? __('Active', 'tfp-dashboard') : __('Draft', 'tfp-dashboard');
+                                            $module_count = function_exists('tfp_admin_courses_get_course_steps_count') ? tfp_admin_courses_get_course_steps_count($course->ID) : 0;
+                                            $course_url = function_exists('tfp_admin_course_detail_url') ? tfp_admin_course_detail_url($course->ID) : get_edit_post_link($course->ID, 'raw');
+                                            ?>
+                                            <article class="tfp-admin-category-course-row">
+                                                <div class="tfp-admin-category-course-info">
+                                                    <strong><?php echo esc_html(get_the_title($course)); ?></strong>
+                                                    <small><?php echo esc_html($category->name . ' · ' . number_format_i18n($module_count) . ' ' . __('Modules', 'tfp-dashboard')); ?></small>
+                                                </div>
+                                                <div class="tfp-admin-category-course-actions">
+                                                    <span class="tfp-admin-category-course-status is-<?php echo esc_attr($status === 'publish' ? 'active' : 'draft'); ?>"><?php echo esc_html($status_label); ?></span>
+                                                    <a href="<?php echo esc_url($course_url); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></a>
+                                                </div>
+                                            </article>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php else : ?>
+                                    <div class="tfp-admin-category-empty-courses"><?php esc_html_e('No courses yet.', 'tfp-dashboard'); ?></div>
+                                <?php endif; ?>
+                            </section>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </section>
             </main>
