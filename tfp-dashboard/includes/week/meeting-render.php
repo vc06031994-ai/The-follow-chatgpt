@@ -259,7 +259,6 @@ function tfp_dashboard_render_week_meeting_experience($week)
                             'total_count' => (int)($test_result['total'] ?? 0),
                             'missed_list' => $missed_list
                         ];
-                    }
 
                     $item_param = isset($_GET['meeting_item']) ? absint($_GET['meeting_item']) : 0;
                     $active_missed_index = min($item_param, max(0, count($test_summary['missed_list']) - 1));
