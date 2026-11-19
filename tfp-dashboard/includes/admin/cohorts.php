@@ -111,6 +111,7 @@ function tfp_admin_cohorts_render() {
           <?php
           $table = function ($heading, $rows, $draft = false) { ?>
             <section class="tfp-admin-cohorts-panel"><h2><?php echo esc_html($heading); ?></h2><div class="tfp-admin-cohorts-table-wrap tfp-dash-table-wrap"><table class="tfp-admin-cohorts-table tfp-dash-table">
+              <colgroup><col class="tfp-col-name"><col class="tfp-col-facilitator"><col class="tfp-col-students"><col class="tfp-col-date"><col class="tfp-col-meeting"><col class="tfp-col-status"><col class="tfp-col-actions"></colgroup>
               <thead><tr><th><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Start Date', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Meeting', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><span class="screen-reader-text"><?php esc_html_e('Actions', 'tfp-dashboard'); ?></span></th></tr></thead><tbody>
               <?php if ($rows) : foreach ($rows as $row) : ?><tr>
                 <td data-label="<?php esc_attr_e('Cohort Name', 'tfp-dashboard'); ?>"><strong><?php echo esc_html($row['name']); ?></strong><small><?php echo esc_html($row['course']); ?></small></td>
