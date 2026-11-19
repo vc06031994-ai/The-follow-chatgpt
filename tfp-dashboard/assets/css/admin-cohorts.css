@@ -140,3 +140,57 @@ body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-btn.is-pr
         padding: 8px 0 !important;
     }
 }
+
+
+/* Cohorts table alignment fix: keep every action inside its own grid column. */
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table {
+    width: 100% !important;
+    min-width: 1040px !important;
+    table-layout: fixed !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-name { width: 31%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-facilitator { width: 12%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-students { width: 8%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-date { width: 9%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-meeting { width: 13%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-status { width: 9%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-actions { width: 18%; }
+
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table th,
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td.tfp-admin-cohort-actions {
+    display: table-cell !important;
+    width: 18%;
+    padding-right: 14px !important;
+    text-align: right !important;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions .tfp-admin-cohort-btn {
+    display: inline-flex !important;
+    vertical-align: middle;
+    min-width: 62px;
+    width: 62px;
+    height: 27px;
+    margin: 0 0 0 6px;
+    padding: 0 8px;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:nth-child(5) {
+    white-space: nowrap;
+}
+@media (max-width: 700px) {
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table {
+        min-width: 0 !important;
+        table-layout: auto !important;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td.tfp-admin-cohort-actions {
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        text-align: right !important;
+    }
+}
