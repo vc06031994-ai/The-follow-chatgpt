@@ -61,9 +61,8 @@ function tfp_course_cart_cohort_id()
 /**
  * Ensure the two program-purchase agreements exist for this student/cohort.
  *
- * The agreement text is currently a temporary development draft. The final
- * NDA and Course Agreement wording must be supplied by the client before
- * production launch; see tfp_course_purchase_agreement_content().
+ * Agreement records are created empty until an administrator saves approved
+ * legal wording. Signing is rejected while content is empty or still a draft.
  */
 function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
     $user_id = absint($user_id);
@@ -79,10 +78,6 @@ function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
     $course_content = function_exists('tfp_course_purchase_agreement_content')
         ? tfp_course_purchase_agreement_content('course_agreement')
         : ['body' => ''];
-
-    if (empty(trim((string) ($agreement_content['body'] ?? ''))) || empty(trim((string) ($course_content['body'] ?? '')))) {
-        return [];
-    }
 
     $agreements = [
         'nda' => __('NDA', 'tfp-dashboard'),
@@ -240,9 +235,6 @@ function tfp_course_ajax_reserve_seat()
     $cohort_id = isset($_POST['cohort_id']) ? absint($_POST['cohort_id']) : 0;
     $ack       = !empty($_POST['acknowledged']);
 
-    if (empty(tfp_course_purchase_agreement_content('nda')['body']) || empty(tfp_course_purchase_agreement_content('course_agreement')['body'])) {
-        wp_send_json(['success' => false, 'message' => __('Enrollment is temporarily unavailable because the approved purchase agreements have not been configured.', 'tfp-dashboard')], 409);
-    }
 
     $cohort = $cohort_id ? tfp_cohort_get($cohort_id) : null;
     if (!$cohort) {
@@ -331,7 +323,7 @@ function tfp_course_ajax_sign_agreement()
     }
 
     $agreement_body = (string) get_post_meta($document_id, '_tfp_agreement_content', true);
-    if (trim($agreement_body) === '') {
+    if (trim($agreement_body) === '' || stripos($agreement_body, 'temporary development draft') !== false || stripos($agreement_body, 'placeholder content') !== false) {
         wp_send_json(['success' => false, 'message' => __('This agreement is not available for signing until approved content is configured.', 'tfp-dashboard')], 409);
     }
 
