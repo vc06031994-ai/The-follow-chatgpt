@@ -88,8 +88,9 @@ function tfp_dashboard_render_week_meeting_experience($week)
                 <?php elseif ($active==='homework') :
                     $questions=tfp_week_get_homework_questions($lesson_id,false);
                     $answers=tfp_week_get_homework_answers($user_id,$lesson_id);
-                    if (!$questions) { echo '<p class="tfp-week__meeting-empty">'.esc_html__('No homework review is available for this week.','tfp-dashboard').'</p>'; }
-                    else {
+                    if (!$questions) :
+                        echo '<p class="tfp-week__meeting-empty">'.esc_html__('No homework review is available for this week.','tfp-dashboard').'</p>';
+                    else :
                         $total_questions = count($questions);
                 ?>
                     <div class="tfp-week__meeting-review" id="tfp-homework-review-wrap">
@@ -213,7 +214,7 @@ function tfp_dashboard_render_week_meeting_experience($week)
                         });
                     });
                     </script>
-                <?php } ?>
+                <?php endif; ?>
                 <?php elseif ($active==='test') :
                     // Load raw test questions to resolve question numbers (e.g. Q1, Q6, Q12, Q10, Q3)
                     $test_questions_raw = function_exists('tfp_week_get_test_questions') ? tfp_week_get_test_questions($lesson_id, false) : [];
