@@ -118,6 +118,69 @@ function tfp_admin_categories_render() {
         ];
     }
 
+    // Demo preview uses in-memory sample data only; it never creates or changes WordPress records.
+    $demo_mode = isset($_GET['demo']) && sanitize_text_field(wp_unslash($_GET['demo'])) === '1';
+    if ($demo_mode) {
+        $demo_categories = [
+            ['name' => 'Discipleship', 'description' => 'Personal Walk Pathways', 'courses' => [
+                ['title' => '58 Week Discipleship', 'modules' => 58, 'status' => 'publish'],
+                ['title' => '12 Week Foundations', 'modules' => 12, 'status' => 'publish'],
+            ]],
+            ['name' => 'Leadership', 'description' => 'Ministry & Small Group Training', 'courses' => [
+                ['title' => 'Small Group Multiplier', 'modules' => 10, 'status' => 'publish'],
+                ['title' => 'Facilitator Training', 'modules' => 5, 'status' => 'publish'],
+            ]],
+            ['name' => 'Business', 'description' => 'Marketplace Stewardship', 'courses' => [
+                ['title' => 'Small Group Multiplier', 'modules' => 10, 'status' => 'publish'],
+                ['title' => 'Facilitator Training', 'modules' => 5, 'status' => 'draft'],
+            ]],
+            ['name' => 'Kingdom Expansion', 'description' => 'Missions & Outreach', 'courses' => []],
+            ['name' => 'Cultural Intelligence', 'description' => 'Worldview & Apologetics', 'courses' => []],
+        ];
+
+        $category_groups = [];
+        foreach ($demo_categories as $index => $demo_category) {
+            $term = (object) [
+                'term_id' => 900001 + $index,
+                'name' => $demo_category['name'],
+                'description' => $demo_category['description'],
+                'slug' => sanitize_title($demo_category['name']),
+            ];
+            $demo_courses = [];
+            foreach ($demo_category['courses'] as $course_index => $demo_course) {
+                $post = new WP_Post((object) [
+                    'ID' => 990001 + ($index * 10) + $course_index,
+                    'post_title' => $demo_course['title'],
+                    'post_status' => $demo_course['status'],
+                    'post_type' => 'sfwd-courses',
+                    'post_author' => get_current_user_id(),
+                    'post_content' => '',
+                    'post_excerpt' => '',
+                    'post_date' => current_time('mysql'),
+                    'post_date_gmt' => current_time('mysql', true),
+                    'comment_status' => 'closed',
+                    'ping_status' => 'closed',
+                    'post_password' => '',
+                    'post_name' => sanitize_title($demo_course['title']),
+                    'to_ping' => '',
+                    'pinged' => '',
+                    'post_modified' => current_time('mysql'),
+                    'post_modified_gmt' => current_time('mysql', true),
+                    'post_content_filtered' => '',
+                    'post_parent' => 0,
+                    'guid' => '',
+                    'menu_order' => $course_index,
+                    'post_mime_type' => '',
+                    'comment_count' => 0,
+                    'filter' => 'raw',
+                ]);
+                $post->tfp_demo_module_count = (int) $demo_course['modules'];
+                $demo_courses[] = $post;
+            }
+            $category_groups[] = ['term' => $term, 'courses' => $demo_courses];
+        }
+    }
+
     $user = wp_get_current_user();
     $name = $user->display_name ?: __('Administrator', 'tfp-dashboard');
     $avatar = get_avatar_url($user->ID, ['size' => 96]);
@@ -178,7 +241,10 @@ function tfp_admin_categories_render() {
                     <h1><?php esc_html_e('Curriculum', 'tfp-dashboard'); ?></h1>
                     <p><?php esc_html_e('Manage categories, courses, modules and manage their structural organization.', 'tfp-dashboard'); ?></p>
                 </div>
-                <a class="tfp-admin-categories-add" href="<?php echo esc_url(tfp_admin_categories_page_url(['category_action' => 'add'])); ?>"><span aria-hidden="true">＋</span><?php esc_html_e('Add Category', 'tfp-dashboard'); ?></a>
+                <div class="tfp-admin-categories-header-actions">
+                    <a class="tfp-admin-categories-demo-toggle" href="<?php echo esc_url(tfp_admin_categories_page_url($demo_mode ? [] : ['demo' => 1])); ?>"><?php echo $demo_mode ? esc_html__('Exit Demo', 'tfp-dashboard') : esc_html__('Preview Demo Data', 'tfp-dashboard'); ?></a>
+                    <a class="tfp-admin-categories-add" href="<?php echo esc_url(tfp_admin_categories_page_url(['category_action' => 'add'])); ?>"><span aria-hidden="true">＋</span><?php esc_html_e('Add Category', 'tfp-dashboard'); ?></a>
+                </div>
             </header>
 
             <main class="tfp-admin-content tfp-admin-categories-content">
@@ -187,6 +253,10 @@ function tfp_admin_categories_render() {
                     <a href="<?php echo esc_url(tfp_admin_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
                     <a href="<?php echo esc_url(admin_url('edit.php?post_type=sfwd-lessons')); ?>"><?php esc_html_e('Modules', 'tfp-dashboard'); ?></a>
                 </nav>
+
+                <?php if ($demo_mode) : ?>
+                    <div class="tfp-admin-categories-demo-notice" role="status"><strong><?php esc_html_e('Demo Preview', 'tfp-dashboard'); ?></strong> <?php esc_html_e('You are viewing sample categories and courses for layout testing. No demo records have been added to your WordPress database.', 'tfp-dashboard'); ?></div>
+                <?php endif; ?>
 
                 <?php if ($notice && $notice !== 'error') : ?>
                     <div class="tfp-admin-categories-notice" role="status">
@@ -257,7 +327,7 @@ function tfp_admin_categories_render() {
                                         <?php foreach ($courses as $course) :
                                             $status = get_post_status($course);
                                             $status_label = ($status === 'publish') ? __('Active', 'tfp-dashboard') : __('Draft', 'tfp-dashboard');
-                                            $module_count = function_exists('tfp_admin_courses_get_course_steps_count') ? tfp_admin_courses_get_course_steps_count($course->ID) : 0;
+                                            $module_count = isset($course->tfp_demo_module_count) ? (int) $course->tfp_demo_module_count : (function_exists('tfp_admin_courses_get_course_steps_count') ? tfp_admin_courses_get_course_steps_count($course->ID) : 0);
                                             $course_url = function_exists('tfp_admin_course_detail_url') ? tfp_admin_course_detail_url($course->ID) : get_edit_post_link($course->ID, 'raw');
                                             ?>
                                             <article class="tfp-admin-category-course-row">
