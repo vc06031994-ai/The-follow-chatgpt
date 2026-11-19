@@ -81,6 +81,14 @@ function tfp_admin_courses_get_data() {
     if ($selected_course) {
         $query_args['post__in'] = [$selected_course];
     }
+    $selected_category = isset($_GET['course_category']) ? absint($_GET['course_category']) : 0;
+    if ($selected_category && taxonomy_exists('ld_course_category')) {
+        $query_args['tax_query'] = [[
+            'taxonomy' => 'ld_course_category',
+            'field' => 'term_id',
+            'terms' => $selected_category,
+        ]];
+    }
     $courses = post_type_exists('sfwd-courses') ? get_posts($query_args) : [];
 
     if ($week_filter !== '') {
@@ -294,17 +302,6 @@ function tfp_admin_courses_render() {
 
                     <div class="tfp-admin-courses-curriculum-list">
                         <?php foreach ($data['rows'] as $row) : ?>
-                            <?php
-                            $selected_category = isset($_GET['course_category']) ? absint($_GET['course_category']) : 0;
-                            if ($selected_category) {
-                                $course_id_for_category = 0;
-                                foreach ($data['courses'] as $candidate_course) {
-                                    if (get_the_title($candidate_course) === $row['title']) { $course_id_for_category = $candidate_course->ID; break; }
-                                }
-                                $course_terms = $course_id_for_category ? wp_get_post_terms($course_id_for_category, 'ld_course_category', ['fields' => 'ids']) : [];
-                                if (is_wp_error($course_terms) || !in_array($selected_category, $course_terms, true)) { continue; }
-                            }
-                            ?>
                             <article class="tfp-admin-courses-curriculum-row">
                                 <div class="tfp-admin-courses-curriculum-info">
                                     <strong><?php echo esc_html($row['title']); ?></strong>
