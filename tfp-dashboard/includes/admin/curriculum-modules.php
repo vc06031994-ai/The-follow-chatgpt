@@ -175,7 +175,7 @@ function tfp_admin_curriculum_modules_render() {
                 document.querySelectorAll('.tfp-admin-module-preview-trigger').forEach((button) => {
                     button.addEventListener('click', () => {
                         modal.querySelector('#tfp-admin-module-modal-title').textContent = button.dataset.moduleTitle || '';
-                        modal.querySelector('.tfp-admin-module-modal-subtitle').textContent = (button.dataset.moduleCourse || '') + ' · 58 Week Discipleship';
+                        modal.querySelector('.tfp-admin-module-modal-subtitle').textContent = (button.dataset.moduleCourse || '') + (button.dataset.moduleCategory ? ' · ' + button.dataset.moduleCategory : '');
                         const flags = parseInt(button.dataset.moduleFlags || '0', 10);
                         const status = modal.querySelector('.module-modal-status');
                         status.textContent = flags ? 'Has Flags' : (button.dataset.moduleStatus || 'Active');
