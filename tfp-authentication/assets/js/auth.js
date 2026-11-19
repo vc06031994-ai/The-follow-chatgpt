@@ -243,8 +243,6 @@
                     $noticeWrap.html($list);
                 },
                 error: function (xhr) {
-                    console.log('AJAX ERROR RESPONSE:', xhr);
-                    console.log(xhr.responseText);
                     var fallbackMessage = 'We could not create your account right now. Please try again.';
                     var serverMessage = '';
 
