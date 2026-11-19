@@ -118,3 +118,16 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-tab
  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-data-panel{padding:14px}
  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-data-panel dl>div{grid-template-columns:1fr;gap:5px}
 }
+
+
+/* Demo preview notice — shown only when ?demo=1 is enabled. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-demo-notice {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border: 1px solid #c8dfe0;
+    border-radius: 7px;
+    background: #eef7f6;
+    color: #006b73;
+    font-size: 12px;
+    line-height: 1.5;
+}
