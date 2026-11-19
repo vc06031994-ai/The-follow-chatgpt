@@ -250,7 +250,7 @@ function tfp_admin_categories_render() {
             <main class="tfp-admin-content tfp-admin-categories-content">
                 <nav class="tfp-admin-curriculum-tabs" aria-label="<?php esc_attr_e('Curriculum sections', 'tfp-dashboard'); ?>">
                     <a class="is-active" href="<?php echo esc_url(tfp_admin_categories_page_url()); ?>"><?php esc_html_e('Categories', 'tfp-dashboard'); ?></a>
-                    <a href="<?php echo esc_url(tfp_admin_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
+                    <a href="<?php echo esc_url(tfp_admin_curriculum_courses_page_url()); ?>"><?php esc_html_e('Courses', 'tfp-dashboard'); ?></a>
                     <a href="<?php echo esc_url(admin_url('edit.php?post_type=sfwd-lessons')); ?>"><?php esc_html_e('Modules', 'tfp-dashboard'); ?></a>
                 </nav>
 
