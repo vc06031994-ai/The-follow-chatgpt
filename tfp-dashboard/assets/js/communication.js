@@ -197,7 +197,7 @@
             items.forEach(function (el) {
                 el.classList.remove('is-active');
             });
-            if (threadPanel) threadPanel.style.display = 'none';
+            if (threadPanel) { threadPanel.hidden = true; threadPanel.style.display = 'none'; }
             if (emptyPanel) emptyPanel.style.display = '';
             if (messagesEl) messagesEl.innerHTML = '';
             if (replyInput) replyInput.value = '';
@@ -219,7 +219,7 @@
             });
 
             if (emptyPanel) emptyPanel.style.display = 'none';
-            if (threadPanel) threadPanel.style.display = '';
+            if (threadPanel) { threadPanel.hidden = false; threadPanel.style.display = ''; }
 
             // Real WordPress Ticket Mode
             if (titleEl) titleEl.textContent = name ? name.textContent.trim() : '';
