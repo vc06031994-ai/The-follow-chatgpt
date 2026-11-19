@@ -162,8 +162,8 @@ function tfp_admin_curriculum_modules_render() {
                         <article><small><?php esc_html_e('Category', 'tfp-dashboard'); ?></small><strong class="module-modal-category"></strong></article>
                     </div>
                     <div class="tfp-admin-module-modal-actions">
-                        <a class="tfp-admin-module-open-editor" href="#"><span aria-hidden="true">↗</span><?php esc_html_e('Open Full Course Editor', 'tfp-dashboard'); ?></a>
-                        <button type="button" data-tfp-close-module-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+                        <a class="tfp-admin-module-open-editor" href="#"><?php if (function_exists('tfp_dashboard_icon')) { echo tfp_dashboard_icon('arrow-up-right'); } ?><?php esc_html_e('Open Full Course Editor', 'tfp-dashboard'); ?></a>
+                        <button type="button" data-tfp-close-module-modal><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.75 3.75L16.25 16.25M10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10C19 14.9706 14.9706 19 10 19Z" stroke="#151411" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
                     </div>
                 </section>
             </div>
