@@ -281,29 +281,23 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('change', function (event) {
         var target = event.target;
         if (target && target.name === 'tfp_checkout_shipping_method') {
-            console.log('Shipping method radio changed to:', target.value);
 
             var formData = new FormData();
             formData.append('action', 'tfp_checkout_select_shipping_method');
             formData.append('tfp_checkout_nonce', window.tfpCheckoutSettings.nonce);
             formData.append('shipping_method', target.value);
 
-            console.log('Sending AJAX request for shipping method:', target.value);
 
             fetch(window.tfpCheckoutSettings.ajaxUrl, {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin'
             }).then(function (response) {
-                console.log('AJAX Response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok: ' + response.status);
                 }
                 return response.json();
             }).then(function (data) {
-                console.log('Shipping method selected - Full Response:', data);
-                console.log('Success:', data.success);
-                console.log('Has summary_html:', !!data.summary_html);
 
                 if (!data.success) {
                     console.error('Shipping selection failed:', data.message);
@@ -313,14 +307,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (!data.summary_html) {
                     console.error('No summary_html in response');
-                    console.log('Response keys:', Object.keys(data));
                     return;
                 }
 
                 var oldSummary = document.querySelector('.tfp-checkout-order-summary');
                 if (oldSummary) {
-                    console.log('Found order summary element, updating content');
-                    console.log('New HTML length:', data.summary_html.length);
 
                     // Create a temporary container to parse the HTML
                     var temp = document.createElement('div');
@@ -328,12 +319,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     var newSummary = temp.querySelector('.tfp-checkout-order-summary');
 
                     if (newSummary) {
-                        console.log('Parsed new summary element successfully');
                         oldSummary.parentNode.replaceChild(newSummary, oldSummary);
-                        console.log('Order summary updated successfully');
                     } else {
                         console.error('Could not parse summary from HTML');
-                        console.log('HTML received:', data.summary_html.substring(0, 200));
                     }
                 } else {
                     console.error('Order summary element not found in DOM');
@@ -391,7 +379,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 isFirst = false;
             });
 
-            console.log('Shipping methods loaded, triggering change event on first method');
             var checkedRadio = list.querySelector('input[name="tfp_checkout_shipping_method"]:checked');
             if (checkedRadio) {
                 checkedRadio.dispatchEvent(new Event('change', { bubbles: true }));
