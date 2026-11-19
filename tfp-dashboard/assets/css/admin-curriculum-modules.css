@@ -314,3 +314,43 @@
     background: #f2f2f2 !important;
     color: #000 !important;
 }
+
+/* Match the supplied Edit button reference: larger rounded black outline. */
+body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-module-preview-trigger {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    width: 106px !important;
+    min-width: 106px !important;
+    height: 57px !important;
+    min-height: 57px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 18px !important;
+    border: 2px solid #171717 !important;
+    border-radius: 16px !important;
+    background: transparent !important;
+    color: #171717 !important;
+    font-family: var(--tfp-dash-font, sans-serif) !important;
+    font-size: 28px !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-module-preview-trigger:hover,
+body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-module-preview-trigger:focus-visible {
+    border-color: #171717 !important;
+    background: #f0f0f0 !important;
+    color: #171717 !important;
+}
+@media (max-width: 600px) {
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-module-preview-trigger {
+        width: 90px !important;
+        min-width: 90px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        border-radius: 13px !important;
+        font-size: 23px !important;
+    }
+}
