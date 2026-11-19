@@ -220,7 +220,7 @@ body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions .
 body.tfp-admin-dashboard-view.tfp-admin-cohorts-view.tfp-cohort-modal-open { overflow: hidden; }
 body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal {
     position: fixed; inset: 0; z-index: 99999; display: none;
-    align-items: center; justify-content: center; padding: 18px;
+    align-items: center; justify-content: flex-end; padding: 18px 40px 18px 18px;
 }
 body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal.is-open { display: flex; }
 body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-backdrop {
