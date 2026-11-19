@@ -153,39 +153,6 @@ function tfp_admin_cohort_detail_render() {
     $data = tfp_admin_cohort_detail_data($id);
     if (!$data) { wp_die(esc_html__('Cohort not found.', 'tfp-dashboard'), esc_html__('Not found', 'tfp-dashboard'), ['response' => 404]); }
 
-    // Optional visual preview data; never writes demo records to the database.
-    $demo_mode = isset($_GET['demo']) && sanitize_text_field(wp_unslash($_GET['demo'])) === '1';
-    if ($demo_mode) {
-        $preview_user = wp_get_current_user();
-        $data['demo_student_count'] = 18;
-        $data['demo_weeks_led'] = 42;
-        $data['capacity'] = 22;
-        $data['average_progress'] = 60;
-        $data['attendance_rate'] = 64;
-        $data['current_week'] = 6;
-        $data['homework_review_rate'] = 71;
-        $data['facilitator'] = $preview_user;
-        $data['facilitator_id'] = (int) $preview_user->ID;
-        $data['students'] = [];
-        $data['weeks'] = array_fill(0, 10, (object) ['ID' => 0]);
-        $data['week_completion'] = [];
-        for ($week_number = 1; $week_number <= 13; $week_number++) {
-            $data['week_completion'][] = [
-                'number' => $week_number,
-                'title' => sprintf(__('Week %d', 'tfp-dashboard'), $week_number),
-                'completed' => $week_number <= 9 ? 18 : 0,
-                'total' => 18,
-                'complete' => $week_number <= 9,
-                'current' => $week_number === 10,
-            ];
-        }
-        $data['alerts'] = [
-            ['type' => 'warning', 'icon' => '!', 'title' => __('5 students inactive for 2+ weeks', 'tfp-dashboard'), 'detail' => __('Last seen: Week 4', 'tfp-dashboard'), 'link' => 'roster', 'link_label' => __('View Roster', 'tfp-dashboard')],
-            ['type' => 'warning', 'icon' => '↘', 'title' => __('Attendance dropped below 70% threshold', 'tfp-dashboard'), 'detail' => __('Last 3 sessions avg: 64%', 'tfp-dashboard'), 'link' => '', 'link_label' => ''],
-            ['type' => 'warning', 'icon' => '▤', 'title' => __('Week 7 not yet opened by facilitator', 'tfp-dashboard'), 'detail' => __('Scheduled: Mar 25', 'tfp-dashboard'), 'link' => '', 'link_label' => ''],
-        ];
-    }
-
     $user = wp_get_current_user();
     $nav = function_exists('tfp_admin_dashboard_nav_items') ? tfp_admin_dashboard_nav_items() : [];
     foreach ($nav as &$item) {
@@ -220,13 +187,13 @@ function tfp_admin_cohort_detail_render() {
           </div><a class="tfp-admin-cohort-add-student" href="<?php echo esc_url($add_student_url); ?>"><span aria-hidden="true">＋</span><?php esc_html_e('Add Student', 'tfp-dashboard'); ?></a>
         </header>
         <main class="tfp-admin-content tfp-admin-cohort-detail-content">
-          <?php if ($demo_mode) : ?><div class="tfp-admin-cohort-demo-notice"><?php esc_html_e('Demo preview data is shown for design review only. No records have been added or changed.', 'tfp-dashboard'); ?></div><?php endif; ?>
+
           <nav class="tfp-admin-cohort-tabs" aria-label="<?php esc_attr_e('Cohort sections', 'tfp-dashboard'); ?>">
             <?php foreach (['overview' => 'Overview', 'roster' => 'Roster', 'schedule' => 'Schedule', 'settings' => 'Settings', 'activity' => 'Activity'] as $key => $label) : ?><a class="<?php echo $tab === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('tab', $key, tfp_admin_cohort_detail_url($id))); ?>"><?php echo esc_html($label); ?></a><?php endforeach; ?>
           </nav>
           <?php if ($tab === 'overview') : ?>
             <section class="tfp-admin-cohort-metrics">
-              <article><small><?php esc_html_e('Active Students', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(($demo_mode ? (int) $data['demo_student_count'] : count($data['students'])) . ($data['capacity'] ? '/' . $data['capacity'] : '')); ?></strong><p><?php esc_html_e('Enrolled students', 'tfp-dashboard'); ?></p></article>
+              <article><small><?php esc_html_e('Active Students', 'tfp-dashboard'); ?></small><strong><?php echo esc_html(count($data['students']) . ($data['capacity'] ? '/' . $data['capacity'] : '')); ?></strong><p><?php esc_html_e('Enrolled students', 'tfp-dashboard'); ?></p></article>
               <article><small><?php esc_html_e('Avg Progress', 'tfp-dashboard'); ?></small><strong class="is-teal"><?php echo $data['weeks'] ? esc_html(sprintf(__('Wk %1$d / %2$d', 'tfp-dashboard'), min($data['current_week'], count($data['weeks'])), count($data['weeks']))) : '—'; ?></strong><p><?php echo $data['weeks'] ? esc_html(sprintf(__('%d%% average completion', 'tfp-dashboard'), $data['average_progress'])) : esc_html__('No course weeks available', 'tfp-dashboard'); ?></p></article>
               <article><small><?php esc_html_e('Attendance Rate', 'tfp-dashboard'); ?></small><strong class="is-gold"><?php echo $data['attendance_rate'] === null ? '—' : esc_html($data['attendance_rate'] . '%'); ?></strong><p><?php esc_html_e('Based on recorded attendance', 'tfp-dashboard'); ?></p></article>
               <article><small><?php esc_html_e('Stalled', 'tfp-dashboard'); ?></small><strong class="<?php echo $data['average_progress'] < 40 ? 'is-red' : 'is-teal'; ?>"><?php echo $data['average_progress'] < 40 && $data['students'] ? esc_html__('High', 'tfp-dashboard') : esc_html__('Low', 'tfp-dashboard'); ?></strong><p><?php esc_html_e('Based on course completion', 'tfp-dashboard'); ?></p></article>
@@ -237,7 +204,7 @@ function tfp_admin_cohort_detail_render() {
             <section class="tfp-admin-cohort-section tfp-admin-cohort-progress-section"><h2><?php esc_html_e('Cohort Progress', 'tfp-dashboard'); ?> <span>— <?php echo esc_html($data['course'] ? $data['course']->post_title : __('Course', 'tfp-dashboard')); ?></span></h2>
               <div class="tfp-admin-cohort-progress-card"><div class="tfp-admin-cohort-week-list"><?php foreach (array_slice($data['week_completion'], 0, 13) as $week) : ?><span class="<?php echo $week['complete'] ? 'is-complete' : ($week['current'] ? 'is-current' : 'is-upcoming'); ?>" title="<?php echo esc_attr($week['title']); ?>"><?php echo esc_html($week['number']); ?></span><?php endforeach; ?></div><div class="tfp-admin-cohort-legend"><span><i class="is-complete"></i><?php esc_html_e('Complete', 'tfp-dashboard'); ?></span><span><i class="is-current"></i><?php esc_html_e('Current', 'tfp-dashboard'); ?></span><span><i class="is-upcoming"></i><?php esc_html_e('Upcoming', 'tfp-dashboard'); ?></span></div><div class="tfp-admin-cohort-average"><div><span><?php esc_html_e('Cohort avg completion', 'tfp-dashboard'); ?></span><strong><?php echo esc_html($data['average_progress']); ?>%</strong></div><span class="tfp-admin-cohort-progress-track"><i style="width:<?php echo esc_attr($data['average_progress']); ?>%"></i></span></div></div>
             </section>
-            <section class="tfp-admin-cohort-section"><h2><?php esc_html_e('Facilitator Snapshot', 'tfp-dashboard'); ?></h2><div class="tfp-admin-cohort-facilitator-grid"><article class="tfp-admin-cohort-facilitator-card"><img src="<?php echo esc_url($data['facilitator'] ? get_avatar_url($data['facilitator_id'], ['size' => 96]) : ''); ?>" alt=""><div><strong><?php echo esc_html($data['facilitator'] ? $data['facilitator']->display_name : __('No facilitator assigned', 'tfp-dashboard')); ?></strong><small><?php esc_html_e('Assigned facilitator', 'tfp-dashboard'); ?></small></div><?php if ($data['facilitator']) : ?><a href="<?php echo esc_url(add_query_arg(['user_id' => $data['facilitator_id']], admin_url('user-edit.php'))); ?>"><?php esc_html_e('View Facilitator', 'tfp-dashboard'); ?></a><?php endif; ?></article><article class="tfp-admin-cohort-mini-stat"><strong><?php echo esc_html($demo_mode ? $data['demo_weeks_led'] : ($data['current_week'] ?: '—')); ?></strong><small><?php esc_html_e('Weeks Led', 'tfp-dashboard'); ?></small></article><article class="tfp-admin-cohort-mini-stat"><strong><?php echo $data['homework_review_rate'] === null ? '—' : esc_html($data['homework_review_rate'] . '%'); ?></strong><small><?php esc_html_e('HW Reviewed', 'tfp-dashboard'); ?></small></article><article class="tfp-admin-cohort-mini-stat"><strong><?php echo $data['attendance_rate'] === null ? '—' : esc_html($data['attendance_rate'] . '%'); ?></strong><small><?php esc_html_e('Avg Attendance', 'tfp-dashboard'); ?></small></article></div></section>
+            <section class="tfp-admin-cohort-section"><h2><?php esc_html_e('Facilitator Snapshot', 'tfp-dashboard'); ?></h2><div class="tfp-admin-cohort-facilitator-grid"><article class="tfp-admin-cohort-facilitator-card"><img src="<?php echo esc_url($data['facilitator'] ? get_avatar_url($data['facilitator_id'], ['size' => 96]) : ''); ?>" alt=""><div><strong><?php echo esc_html($data['facilitator'] ? $data['facilitator']->display_name : __('No facilitator assigned', 'tfp-dashboard')); ?></strong><small><?php esc_html_e('Assigned facilitator', 'tfp-dashboard'); ?></small></div><?php if ($data['facilitator']) : ?><a href="<?php echo esc_url(add_query_arg(['user_id' => $data['facilitator_id']], admin_url('user-edit.php'))); ?>"><?php esc_html_e('View Facilitator', 'tfp-dashboard'); ?></a><?php endif; ?></article><article class="tfp-admin-cohort-mini-stat"><strong><?php echo esc_html(($data['current_week'] ?: '—')); ?></strong><small><?php esc_html_e('Weeks Led', 'tfp-dashboard'); ?></small></article><article class="tfp-admin-cohort-mini-stat"><strong><?php echo $data['homework_review_rate'] === null ? '—' : esc_html($data['homework_review_rate'] . '%'); ?></strong><small><?php esc_html_e('HW Reviewed', 'tfp-dashboard'); ?></small></article><article class="tfp-admin-cohort-mini-stat"><strong><?php echo $data['attendance_rate'] === null ? '—' : esc_html($data['attendance_rate'] . '%'); ?></strong><small><?php esc_html_e('Avg Attendance', 'tfp-dashboard'); ?></small></article></div></section>
           <?php elseif ($tab === 'roster') : ?>
             <section class="tfp-admin-cohort-data-panel"><h2><?php esc_html_e('Student Roster', 'tfp-dashboard'); ?></h2><div class="tfp-admin-cohort-table-wrap"><table><thead><tr><th><?php esc_html_e('Student', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Course Progress', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Attendance', 'tfp-dashboard'); ?></th></tr></thead><tbody><?php foreach ($data['students'] as $student_id) : $student = get_userdata($student_id); if (!$student) { continue; } $p = $data['student_progress'][$student_id]; $a = $data['student_attendance'][$student_id]; $pct = $p['total'] ? (int) round(($p['completed'] / $p['total']) * 100) : 0; $apct = $a['recorded'] ? (int) round(($a['present'] / $a['recorded']) * 100) : null; ?><tr><td><strong><?php echo esc_html($student->display_name); ?></strong><small><?php echo esc_html($student->user_email); ?></small></td><td><?php echo esc_html($pct); ?>%</td><td><?php echo $apct === null ? '—' : esc_html($apct . '%'); ?></td></tr><?php endforeach; ?><?php if (!$data['students']) : ?><tr><td colspan="3"><?php esc_html_e('No students are currently assigned to this cohort.', 'tfp-dashboard'); ?></td></tr><?php endif; ?></tbody></table></div></section>
           <?php elseif ($tab === 'schedule') : ?>
