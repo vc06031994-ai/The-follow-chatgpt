@@ -767,3 +767,18 @@ body.tfp-admin-dashboard-view .tfp-admin-page-header p {
     .tfp-admin-courses-curriculum-row { align-items: flex-start; flex-direction: column; padding: 12px; }
     .tfp-admin-courses-curriculum-actions { width: 100%; justify-content: flex-end; }
 }
+
+
+/* Curriculum navigation tab text colors — prevent theme link color override. */
+.tfp-admin-courses-app .tfp-admin-curriculum-tabs a,
+body.tfp-admin-dashboard-view .tfp-admin-curriculum-tabs a {
+    color: #b9b9b9 !important;
+}
+.tfp-admin-courses-app .tfp-admin-curriculum-tabs a.is-active,
+body.tfp-admin-dashboard-view .tfp-admin-curriculum-tabs a.is-active {
+    color: #171717 !important;
+}
+.tfp-admin-courses-app .tfp-admin-curriculum-tabs a:hover,
+body.tfp-admin-dashboard-view .tfp-admin-curriculum-tabs a:hover {
+    color: #006970 !important;
+}
