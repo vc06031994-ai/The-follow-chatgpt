@@ -61,6 +61,24 @@ function tfp_admin_cohorts_render() {
         wp_die(esc_html__('You do not have permission to access this page.', 'tfp-dashboard'), esc_html__('Access denied', 'tfp-dashboard'), ['response' => 403]);
     }
     $data = tfp_admin_cohorts_get_records();
+
+    // Show non-persistent sample rows only when the real directory is empty and no filters are active.
+    // These examples are for layout review only and are never written to the database.
+    if (empty($data['records']) && empty($data['search']) && empty($data['course']) && empty($data['status'])) {
+        $demo_rows = [
+            ['id' => 0, 'name' => '58W: Spring 2026 – Tue A', 'course' => '58 Week Discipleship', 'course_id' => 0, 'facilitator' => 'John Doe', 'students' => 20, 'capacity' => 20, 'date' => '2026-04-18', 'meeting' => 'Mon, 7:00 PM PST', 'status' => 'active', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+            ['id' => 0, 'name' => '58W: Spring 2026 – Tue B', 'course' => '58 Week Discipleship', 'course_id' => 0, 'facilitator' => 'Jane Smith', 'students' => 16, 'capacity' => 20, 'date' => '2026-04-18', 'meeting' => 'Tue, 6:30 PM PST', 'status' => 'active', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+            ['id' => 0, 'name' => 'FND: Fall 2026 – Tue A', 'course' => '12 Week Foundation Course', 'course_id' => 0, 'facilitator' => 'Michael Brown', 'students' => 18, 'capacity' => 20, 'date' => '2026-09-08', 'meeting' => 'Tue, 7:00 PM PST', 'status' => 'active', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+            ['id' => 0, 'name' => 'FND: Spring 2026 – Tue A', 'course' => '12 Week Foundation Course', 'course_id' => 0, 'facilitator' => 'Sarah Wilson', 'students' => 12, 'capacity' => 20, 'date' => '2026-04-21', 'meeting' => 'Thu, 6:00 PM PST', 'status' => 'active', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+            ['id' => 0, 'name' => '58W: Summer 2026 – Thu A', 'course' => '58 Week Discipleship', 'course_id' => 0, 'facilitator' => 'John Doe', 'students' => 8, 'capacity' => 20, 'date' => '2026-06-04', 'meeting' => 'Thu, 7:00 PM PST', 'status' => 'draft', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+            ['id' => 0, 'name' => 'FND: Winter 2026 – Mon A', 'course' => '12 Week Foundation Course', 'course_id' => 0, 'facilitator' => 'Jane Smith', 'students' => 0, 'capacity' => 20, 'date' => '2026-12-07', 'meeting' => 'Mon, 6:00 PM PST', 'status' => 'draft', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+            ['id' => 0, 'name' => 'FND: Winter 2026 – Wed A', 'course' => '12 Week Foundation Course', 'course_id' => 0, 'facilitator' => 'Michael Brown', 'students' => 0, 'capacity' => 20, 'date' => '2026-12-09', 'meeting' => 'Wed, 7:00 PM PST', 'status' => 'draft', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+            ['id' => 0, 'name' => '58W: Winter 2026 – Sat A', 'course' => '58 Week Discipleship', 'course_id' => 0, 'facilitator' => 'Sarah Wilson', 'students' => 0, 'capacity' => 20, 'date' => '2026-12-12', 'meeting' => 'Sat, 10:00 AM PST', 'status' => 'draft', 'edit_url' => '', 'course_url' => '', 'is_demo' => true],
+        ];
+        $data['records'] = $demo_rows;
+        $data['is_demo'] = true;
+    }
+
     $user = wp_get_current_user();
     $courses = get_posts(['post_type' => 'sfwd-courses', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC']);
     $active = array_values(array_filter($data['records'], function ($r) { return $r['status'] === 'active'; }));
@@ -92,14 +110,14 @@ function tfp_admin_cohorts_render() {
           </form>
           <?php
           $table = function ($heading, $rows, $draft = false) { ?>
-            <section class="tfp-admin-cohorts-panel"><h2><?php echo esc_html($heading); ?></h2><div class="tfp-admin-cohorts-table-wrap"><table class="tfp-admin-cohorts-table">
+            <section class="tfp-admin-cohorts-panel"><h2><?php echo esc_html($heading); ?></h2><div class="tfp-admin-cohorts-table-wrap tfp-dash-table-wrap"><table class="tfp-admin-cohorts-table tfp-dash-table">
               <thead><tr><th><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Start Date', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Meeting', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><span class="screen-reader-text"><?php esc_html_e('Actions', 'tfp-dashboard'); ?></span></th></tr></thead><tbody>
               <?php if ($rows) : foreach ($rows as $row) : ?><tr>
                 <td data-label="<?php esc_attr_e('Cohort Name', 'tfp-dashboard'); ?>"><strong><?php echo esc_html($row['name']); ?></strong><small><?php echo esc_html($row['course']); ?></small></td>
                 <td data-label="<?php esc_attr_e('Facilitator', 'tfp-dashboard'); ?>"><?php echo esc_html($row['facilitator']); ?></td><td data-label="<?php esc_attr_e('Students', 'tfp-dashboard'); ?>"><?php echo esc_html(number_format_i18n($row['students']) . ($row['capacity'] > 0 ? '/' . number_format_i18n($row['capacity']) : '')); ?></td>
                 <td data-label="<?php esc_attr_e('Start Date', 'tfp-dashboard'); ?>"><?php echo $row['date'] && strtotime($row['date']) ? esc_html(date_i18n('M j', strtotime($row['date']))) : '—'; ?></td><td data-label="<?php esc_attr_e('Meeting', 'tfp-dashboard'); ?>"><?php echo esc_html($row['meeting'] ?: '—'); ?></td>
                 <td data-label="<?php esc_attr_e('Status', 'tfp-dashboard'); ?>"><span class="tfp-admin-cohort-status <?php echo $draft ? 'is-draft' : 'is-active'; ?>"><?php echo $draft ? esc_html__('Draft', 'tfp-dashboard') : esc_html__('Active', 'tfp-dashboard'); ?></span></td>
-                <td data-label="<?php esc_attr_e('Actions', 'tfp-dashboard'); ?>" class="tfp-admin-cohort-actions"><?php if ($draft) : ?><a class="tfp-admin-cohort-btn is-outline" href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></a><?php else : ?><a class="tfp-admin-cohort-btn is-primary" href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php if ($row['course_url']) : ?><a class="tfp-admin-cohort-btn is-outline" href="<?php echo esc_url($row['course_url']); ?>" title="<?php esc_attr_e('Open linked course editor', 'tfp-dashboard'); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?><?php endif; ?></td>
+                <td data-label="<?php esc_attr_e('Actions', 'tfp-dashboard'); ?>" class="tfp-admin-cohort-actions"><?php if (!empty($row['is_demo'])) : ?><span class="tfp-admin-cohort-btn is-primary is-disabled" aria-disabled="true"><?php echo $draft ? esc_html__('Edit', 'tfp-dashboard') : esc_html__('View', 'tfp-dashboard'); ?></span><?php if (!$draft) : ?><span class="tfp-admin-cohort-btn is-outline is-disabled" aria-disabled="true"><?php esc_html_e('View', 'tfp-dashboard'); ?></span><?php endif; ?><?php elseif ($draft) : ?><a class="tfp-admin-cohort-btn is-outline" href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('Edit', 'tfp-dashboard'); ?></a><?php else : ?><a class="tfp-admin-cohort-btn is-primary" href="<?php echo esc_url($row['edit_url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php if ($row['course_url']) : ?><a class="tfp-admin-cohort-btn is-outline" href="<?php echo esc_url($row['course_url']); ?>" title="<?php esc_attr_e('Open linked course editor', 'tfp-dashboard'); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?><?php endif; ?></td>
               </tr><?php endforeach; else : ?><tr><td colspan="7" class="tfp-admin-cohorts-empty"><?php esc_html_e('No cohorts found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
             </tbody></table></div></section>
           <?php };
