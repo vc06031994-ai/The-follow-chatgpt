@@ -354,3 +354,26 @@ body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-m
         font-size: 23px !important;
     }
 }
+
+/* Refined Edit button scale — compact dashboard control. */
+body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-module-preview-trigger {
+    width: 64px !important;
+    min-width: 64px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 12px !important;
+    border-width: 1.5px !important;
+    border-radius: 9px !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+}
+@media (max-width: 600px) {
+    body.tfp-admin-curriculum-modules-view .tfp-admin-modules-actions > .tfp-admin-module-preview-trigger {
+        width: 58px !important;
+        min-width: 58px !important;
+        height: 33px !important;
+        min-height: 33px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+    }
+}
