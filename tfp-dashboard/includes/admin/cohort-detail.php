@@ -144,6 +144,58 @@ function tfp_admin_cohort_detail_data($cohort_id) {
     ];
 }
 
+
+// Save a cohort-specific holiday/skip from the Schedule modal.
+add_action('admin_post_tfp_admin_cohort_add_skip', function () {
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        wp_die(esc_html__('You do not have permission to manage cohort schedules.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+
+    $cohort_id = absint($_POST['cohort_id'] ?? 0);
+    check_admin_referer('tfp_admin_cohort_add_skip_' . $cohort_id, 'tfp_cohort_skip_nonce');
+
+    $cohort = get_post($cohort_id);
+    $week_number = absint($_POST['week_number'] ?? 0);
+    $reason = sanitize_text_field(wp_unslash($_POST['skip_reason'] ?? ''));
+    $meeting_room = esc_url_raw(wp_unslash($_POST['meeting_room'] ?? ''));
+    $push_progression = !empty($_POST['push_progression']) ? 1 : 0;
+    $weeks = tfp_admin_cohort_detail_data($cohort_id);
+
+    if (!$cohort || $cohort->post_type !== 'tfp_cohort' || !$week_number || $week_number > count($weeks['weeks']) || $reason === '') {
+        wp_die(esc_html__('Please provide a valid cohort, meeting week and skip reason.', 'tfp-dashboard'), '', ['response' => 400]);
+    }
+
+    $start_date = (string) $weeks['start_date'];
+    $date = DateTimeImmutable::createFromFormat('!Y-m-d', $start_date, wp_timezone());
+    if (!$date) {
+        wp_die(esc_html__('Set a valid cohort start date before adding a schedule skip.', 'tfp-dashboard'), '', ['response' => 400]);
+    }
+    $date = $date->modify('+' . ($week_number - 1) . ' weeks')->format('Y-m-d');
+
+    $post_id = wp_insert_post([
+        'post_type' => 'tfp_off_day',
+        'post_status' => 'publish',
+        'post_title' => $reason,
+    ], true);
+
+    if (is_wp_error($post_id)) {
+        wp_die(esc_html__('The holiday / skip could not be saved. Please try again.', 'tfp-dashboard'), '', ['response' => 500]);
+    }
+
+    update_post_meta($post_id, '_date', $date);
+    update_post_meta($post_id, '_cohort_id', $cohort_id);
+    update_post_meta($post_id, '_week_number', $week_number);
+    update_post_meta($post_id, '_reason', $reason);
+    update_post_meta($post_id, '_push_progression', $push_progression);
+
+    if ($meeting_room) {
+        update_post_meta($cohort_id, '_meeting_url', $meeting_room);
+    }
+
+    wp_safe_redirect(add_query_arg(['tab' => 'schedule', 'schedule_notice' => 'saved'], tfp_admin_cohort_detail_url($cohort_id)));
+    exit;
+});
+
 function tfp_admin_cohort_detail_render() {
     if (!is_user_logged_in()) { auth_redirect(); }
     if (!current_user_can('manage_options')) {
@@ -209,6 +261,21 @@ function tfp_admin_cohort_detail_render() {
         $schedule_timezone = strtoupper($timezone_match[1]);
     }
     $schedule_manage_url = admin_url('edit.php?post_type=tfp_off_day');
+    $cohort_skip_posts = get_posts([
+        'post_type' => 'tfp_off_day',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'meta_query' => [
+            ['key' => '_cohort_id', 'value' => $id, 'type' => 'NUMERIC'],
+            ['key' => '_push_progression', 'value' => '1'],
+        ],
+    ]);
+    $cohort_skip_weeks = [];
+    foreach ($cohort_skip_posts as $skip_post) {
+        $skip_week = absint(get_post_meta($skip_post->ID, '_week_number', true));
+        if ($skip_week) { $cohort_skip_weeks[] = $skip_week; }
+    }
+    $schedule_notice_saved = isset($_GET['schedule_notice']) && sanitize_key($_GET['schedule_notice']) === 'saved';
     ?>
     <div class="tfp-admin-app tfp-admin-cohort-detail-app">
       <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -309,10 +376,11 @@ function tfp_admin_cohort_detail_render() {
             </section>
           <?php elseif ($tab === 'schedule') : ?>
             <section class="tfp-admin-cohort-schedule-page">
+              <?php if ($schedule_notice_saved) : ?><div class="tfp-admin-cohort-schedule-notice" role="status"><?php esc_html_e('Holiday / skip saved successfully.', 'tfp-dashboard'); ?></div><?php endif; ?>
               <div class="tfp-admin-cohort-meeting-bar">
                 <label for="tfp-cohort-meeting-link"><?php esc_html_e('Meeting Link:', 'tfp-dashboard'); ?></label>
                 <input id="tfp-cohort-meeting-link" type="url" value="<?php echo esc_attr($data['meeting_url']); ?>" readonly placeholder="<?php esc_attr_e('No meeting link added', 'tfp-dashboard'); ?>">
-                <a class="tfp-admin-cohort-manage-days" href="<?php echo esc_url($schedule_manage_url); ?>"><?php esc_html_e('Manage Holidays / Skips', 'tfp-dashboard'); ?></a>
+                <button type="button" class="tfp-admin-cohort-manage-days" data-tfp-open-skip-modal><?php esc_html_e('Manage Holidays / Skips', 'tfp-dashboard'); ?></button>
               </div>
 
               <section class="tfp-admin-cohort-schedule-panel">
@@ -330,6 +398,8 @@ function tfp_admin_cohort_detail_render() {
                         $absolute_week = (($schedule_page - 1) * $schedule_per_page) + $week_index + 1;
                         $week_date = ($data['start_date'] && preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $data['start_date'])) ? DateTimeImmutable::createFromFormat('!Y-m-d', $data['start_date'], wp_timezone()) : false;
                         $week_date = $week_date ? $week_date->modify('+' . ($absolute_week - 1) . ' weeks') : false;
+                        $shift_count = count(array_filter($cohort_skip_weeks, static function ($skip_week) use ($absolute_week) { return $skip_week <= $absolute_week; }));
+                        $week_date = $week_date && $shift_count ? $week_date->modify('+' . $shift_count . ' weeks') : $week_date;
                         $week_timestamp = $week_date ? $week_date->getTimestamp() : false;
                         $meeting_date = $week_timestamp ? wp_date('M j', $week_timestamp) . ($schedule_meeting_time ? ', ' . $schedule_meeting_time : '') . ($schedule_timezone ? ' ' . $schedule_timezone : '') : '—';
                         $week_status = $absolute_week < $data['current_week'] ? 'completed' : ($absolute_week === $data['current_week'] ? 'in-progress' : 'not-started');
@@ -356,6 +426,65 @@ function tfp_admin_cohort_detail_render() {
                   </div>
                 </div>
               </section>
+              <div class="tfp-admin-cohort-modal" data-tfp-skip-modal aria-hidden="true">
+                <div class="tfp-admin-cohort-modal-backdrop" data-tfp-close-skip-modal></div>
+                <section class="tfp-admin-cohort-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="tfp-skip-modal-title">
+                  <div class="tfp-admin-cohort-modal-heading">
+                    <h2 id="tfp-skip-modal-title"><?php esc_html_e('Add Holiday / Skip', 'tfp-dashboard'); ?></h2>
+                    <p><?php esc_html_e('Manage breaks in the 58-week progression.', 'tfp-dashboard'); ?></p>
+                  </div>
+                  <div class="tfp-admin-cohort-calendar-impact">
+                    <span class="tfp-admin-cohort-impact-icon" aria-hidden="true">!</span>
+                    <div><strong><?php esc_html_e('Calendar Impact:', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Adding a skip will automatically shift all future sessions forward by one week.', 'tfp-dashboard'); ?></span></div>
+                  </div>
+                  <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="tfp-admin-cohort-skip-form">
+                    <input type="hidden" name="action" value="tfp_admin_cohort_add_skip">
+                    <input type="hidden" name="cohort_id" value="<?php echo esc_attr($id); ?>">
+                    <?php wp_nonce_field('tfp_admin_cohort_add_skip_' . $id, 'tfp_cohort_skip_nonce'); ?>
+                    <label for="tfp-skip-reason"><?php esc_html_e('Reason For Skip', 'tfp-dashboard'); ?></label>
+                    <input id="tfp-skip-reason" name="skip_reason" type="text" required maxlength="180" placeholder="<?php esc_attr_e('eg. Christmas Break, Resurrection Sunday', 'tfp-dashboard'); ?>">
+                    <label for="tfp-skip-week"><?php esc_html_e('Date of Canceled Meeting', 'tfp-dashboard'); ?></label>
+                    <select id="tfp-skip-week" name="week_number" required>
+                      <option value=""><?php esc_html_e('Select a scheduled meeting', 'tfp-dashboard'); ?></option>
+                      <?php foreach ($data['weeks'] as $week_index => $week) :
+                        $option_week = $week_index + 1;
+                        $option_date = ($data['start_date'] && preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $data['start_date'])) ? DateTimeImmutable::createFromFormat('!Y-m-d', $data['start_date'], wp_timezone()) : false;
+                        $option_date = $option_date ? $option_date->modify('+' . ($option_week - 1) . ' weeks') : false;
+                        $option_shifts = count(array_filter($cohort_skip_weeks, static function ($skip_week) use ($option_week) { return $skip_week <= $option_week; }));
+                        $option_date = $option_date && $option_shifts ? $option_date->modify('+' . $option_shifts . ' weeks') : $option_date;
+                        $option_label = $option_date ? wp_date(get_option('date_format') . ', ' . get_option('time_format'), $option_date->getTimestamp()) : sprintf(__('Week %d', 'tfp-dashboard'), $option_week);
+                      ?>
+                        <option value="<?php echo esc_attr($option_week); ?>"><?php echo esc_html(get_the_title($week) . ' — ' . $option_label); ?></option>
+                      <?php endforeach; ?>
+                    </select>
+                    <label for="tfp-skip-meeting-room"><?php esc_html_e('Discord Meeting Room', 'tfp-dashboard'); ?></label>
+                    <input id="tfp-skip-meeting-room" name="meeting_room" type="url" value="<?php echo esc_attr($data['meeting_url']); ?>" placeholder="<?php esc_attr_e('https://discord.gg/...', 'tfp-dashboard'); ?>">
+                    <label class="tfp-admin-cohort-push-label" for="tfp-push-progression">
+                      <span><?php esc_html_e('Push Progression', 'tfp-dashboard'); ?></span>
+                      <input id="tfp-push-progression" name="push_progression" type="checkbox" value="1" checked>
+                      <span class="tfp-admin-cohort-toggle-ui" aria-hidden="true"></span>
+                      <small><?php esc_html_e('On', 'tfp-dashboard'); ?></small>
+                    </label>
+                    <div class="tfp-admin-cohort-modal-actions">
+                      <button type="submit" class="tfp-admin-cohort-modal-create"><span aria-hidden="true">▣</span><?php esc_html_e('Create', 'tfp-dashboard'); ?></button>
+                      <button type="button" class="tfp-admin-cohort-modal-cancel" data-tfp-close-skip-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+                    </div>
+                  </form>
+                </section>
+              </div>
+              <script>
+              (function(){
+                var modal=document.querySelector('[data-tfp-skip-modal]');
+                if(!modal)return;
+                var opener=document.querySelector('[data-tfp-open-skip-modal]');
+                var closeButtons=modal.querySelectorAll('[data-tfp-close-skip-modal]');
+                function closeModal(){modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('tfp-cohort-modal-open');}
+                function openModal(){modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.classList.add('tfp-cohort-modal-open');var field=modal.querySelector('input[name="skip_reason"]');if(field)field.focus();}
+                if(opener)opener.addEventListener('click',openModal);
+                closeButtons.forEach(function(button){button.addEventListener('click',closeModal);});
+                document.addEventListener('keydown',function(event){if(event.key==='Escape'&&modal.classList.contains('is-open'))closeModal();});
+              })();
+              </script>
             </section>
           <?php elseif ($tab === 'settings') : ?>
             <section class="tfp-admin-cohort-data-panel"><h2><?php esc_html_e('Cohort Settings', 'tfp-dashboard'); ?></h2><dl><div><dt><?php esc_html_e('Course', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['course'] ? $data['course']->post_title : '—'); ?></dd></div><div><dt><?php esc_html_e('Capacity', 'tfp-dashboard'); ?></dt><dd><?php echo $data['capacity'] ? esc_html(number_format_i18n($data['capacity'])) : esc_html__('Unlimited', 'tfp-dashboard'); ?></dd></div><div><dt><?php esc_html_e('Status', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['status']); ?></dd></div></dl><a class="tfp-admin-cohort-primary" href="<?php echo esc_url($edit_url); ?>"><?php esc_html_e('Edit Cohort Settings', 'tfp-dashboard'); ?></a></section>
