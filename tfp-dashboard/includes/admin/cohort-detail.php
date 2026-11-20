@@ -170,31 +170,10 @@ function tfp_admin_cohort_detail_render() {
         : '';
     $add_student_url = admin_url('users.php');
 
-    // Build a searchable, paginated roster from real students or a read-only preview.
+    // Build a searchable, paginated roster using enrolled students only.
     $roster_search = isset($_GET['roster_search']) ? sanitize_text_field(wp_unslash($_GET['roster_search'])) : '';
     $roster_page = max(1, absint($_GET['roster_page'] ?? 1));
     $roster_per_page = 10;
-    $roster_demo_mode = empty($data['students']);
-    $roster_demo_rows = [];
-
-    // Preview-only sample rows: these are never saved as WordPress users or cohort records.
-    if ($roster_demo_mode) {
-        $roster_demo_rows = [
-            ['name' => 'Olivia Bennett', 'status' => 'Active', 'progress' => 'Week 8 / 12', 'attendance' => '92%', 'activity' => 'Nov 19, 10:42 AM'],
-            ['name' => 'Ethan Carter', 'status' => 'Active', 'progress' => 'Week 7 / 12', 'attendance' => '88%', 'activity' => 'Nov 19, 09:18 AM'],
-            ['name' => 'Sophia Mitchell', 'status' => 'At Risk', 'progress' => 'Week 3 / 12', 'attendance' => '58%', 'activity' => 'Nov 17, 02:35 PM'],
-            ['name' => 'Liam Anderson', 'status' => 'Active', 'progress' => 'Week 9 / 12', 'attendance' => '96%', 'activity' => 'Nov 20, 08:05 AM'],
-            ['name' => 'Ava Thompson', 'status' => 'Locked', 'progress' => 'Week 2 / 12', 'attendance' => '40%', 'activity' => 'Nov 12, 11:20 AM'],
-            ['name' => 'Noah Williams', 'status' => 'Active', 'progress' => 'Week 6 / 12', 'attendance' => '84%', 'activity' => 'Nov 18, 04:12 PM'],
-            ['name' => 'Isabella Davis', 'status' => 'At Risk', 'progress' => 'Week 4 / 12', 'attendance' => '65%', 'activity' => 'Nov 16, 01:45 PM'],
-            ['name' => 'James Wilson', 'status' => 'Active', 'progress' => 'Week 10 / 12', 'attendance' => '100%', 'activity' => 'Nov 20, 09:30 AM'],
-            ['name' => 'Mia Robinson', 'status' => 'Active', 'progress' => 'Week 7 / 12', 'attendance' => '90%', 'activity' => 'Nov 19, 03:16 PM'],
-            ['name' => 'Lucas Martinez', 'status' => 'Locked', 'progress' => 'Week 1 / 12', 'attendance' => '25%', 'activity' => 'Nov 08, 10:10 AM'],
-            ['name' => 'Amelia Clark', 'status' => 'Active', 'progress' => 'Week 8 / 12', 'attendance' => '94%', 'activity' => 'Nov 20, 07:55 AM'],
-            ['name' => 'Benjamin Lewis', 'status' => 'At Risk', 'progress' => 'Week 3 / 12', 'attendance' => '60%', 'activity' => 'Nov 15, 12:25 PM'],
-        ];
-    }
-
     $roster_students = $data['students'];
 
     if ($roster_search !== '') {
@@ -208,20 +187,10 @@ function tfp_admin_cohort_detail_render() {
         }));
     }
 
-    if ($roster_demo_mode && $roster_search !== '') {
-        $needle = function_exists('mb_strtolower') ? mb_strtolower($roster_search) : strtolower($roster_search);
-        $roster_demo_rows = array_values(array_filter($roster_demo_rows, static function ($row) use ($needle) {
-            $haystack = function_exists('mb_strtolower') ? mb_strtolower($row['name'] . ' ' . $row['status']) : strtolower($row['name'] . ' ' . $row['status']);
-            return strpos($haystack, $needle) !== false;
-        }));
-    }
-
-    $roster_total = $roster_demo_mode ? count($roster_demo_rows) : count($roster_students);
+    $roster_total = count($roster_students);
     $roster_pages = max(1, (int) ceil($roster_total / $roster_per_page));
     $roster_page = min($roster_page, $roster_pages);
-    $roster_page_students = $roster_demo_mode
-        ? array_slice($roster_demo_rows, ($roster_page - 1) * $roster_per_page, $roster_per_page)
-        : array_slice($roster_students, ($roster_page - 1) * $roster_per_page, $roster_per_page);
+    $roster_page_students = array_slice($roster_students, ($roster_page - 1) * $roster_per_page, $roster_per_page);
     ?>
     <div class="tfp-admin-app tfp-admin-cohort-detail-app">
       <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -264,7 +233,6 @@ function tfp_admin_cohort_detail_render() {
           <?php elseif ($tab === 'roster') : ?>
             <section class="tfp-admin-cohort-roster-panel">
               <div class="tfp-admin-cohort-roster-title"><h2><?php esc_html_e('Cohort Roster', 'tfp-dashboard'); ?></h2></div>
-              <?php if ($roster_demo_mode) : ?><p class="tfp-admin-roster-demo-notice"><?php esc_html_e('Demo preview data — sample students are shown because this cohort has no enrolled students yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
               <form class="tfp-admin-cohort-roster-search" method="get" action="<?php echo esc_url(tfp_admin_cohort_detail_url($id)); ?>">
                 <input type="hidden" name="tab" value="roster">
                 <label class="screen-reader-text" for="tfp-cohort-roster-search"><?php esc_html_e('Search students', 'tfp-dashboard'); ?></label>
@@ -282,20 +250,6 @@ function tfp_admin_cohort_detail_render() {
                     <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                   </tr></thead>
                   <tbody>
-                    <?php if ($roster_demo_mode) : ?>
-                      <?php foreach ($roster_page_students as $demo_row) :
-                        $demo_status_class = $demo_row['status'] === 'Locked' ? 'is-locked' : ($demo_row['status'] === 'At Risk' ? 'is-risk' : 'is-active');
-                      ?>
-                        <tr class="tfp-admin-roster-demo-row">
-                          <td class="tfp-roster-student"><strong><?php echo esc_html($demo_row['name']); ?></strong></td>
-                          <td><span class="tfp-admin-roster-status <?php echo esc_attr($demo_status_class); ?>"><?php echo esc_html($demo_row['status']); ?></span></td>
-                          <td><?php echo esc_html($demo_row['progress']); ?></td>
-                          <td><?php echo esc_html($demo_row['attendance']); ?></td>
-                          <td><?php echo esc_html($demo_row['activity']); ?></td>
-                          <td><span class="tfp-admin-roster-demo-view"><?php esc_html_e('View', 'tfp-dashboard'); ?></span></td>
-                        </tr>
-                      <?php endforeach; ?>
-                    <?php else : ?>
                     <?php foreach ($roster_page_students as $student_id) :
                       $student = get_userdata($student_id);
                       if (!$student) { continue; }
@@ -320,7 +274,6 @@ function tfp_admin_cohort_detail_render() {
                         <td><a class="tfp-admin-roster-view" href="<?php echo esc_url($student_url); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                       </tr>
                     <?php endforeach; ?>
-                    <?php endif; ?>
 
                     <?php if (!$roster_page_students) : ?>
                       <tr><td colspan="6" class="tfp-admin-roster-empty"><?php esc_html_e('No students match your search.', 'tfp-dashboard'); ?></td></tr>
