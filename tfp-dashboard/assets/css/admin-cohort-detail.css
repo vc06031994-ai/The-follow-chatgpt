@@ -318,3 +318,55 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-dem
   color:#fff;
   font:600 12px/1 var(--tfp-dash-font,"Eudoxus Sans"),sans-serif;
 }
+
+
+/* Roster reference refinements: keep the layout compact and remove preview-only UI chrome. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-detail-header{
+  padding-left:50px;
+  padding-right:50px;
+  padding-top:20px;
+  padding-bottom:20px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-detail-content{
+  width:min(100%,1018px);
+  max-width:1018px;
+  margin-left:0;
+  padding:22px 55px 32px;
+  box-sizing:border-box;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-tabs{
+  margin-bottom:22px;
+  padding-left:0;
+  padding-right:0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-panel{
+  width:100%;
+  max-width:100%;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-title{
+  min-height:52px;
+  padding-left:20px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table th{
+  height:37px;
+  padding:9px 20px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table td{
+  height:37px;
+  padding:5px 20px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination{
+  min-height:68px;
+  padding:12px 20px;
+}
+@media(max-width:800px){
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-detail-header{
+    padding-left:20px;
+    padding-right:20px;
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-detail-content{
+    width:100%;
+    max-width:none;
+    padding:18px 20px 28px;
+  }
+}
