@@ -200,6 +200,40 @@ add_action('admin_post_tfp_admin_cohort_add_skip', function () {
     exit;
 });
 
+
+add_action('admin_post_tfp_admin_save_cohort_governance', function () {
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        wp_die(esc_html__('You do not have permission to update cohort governance.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+
+    $cohort_id = absint($_POST['cohort_id'] ?? 0);
+    check_admin_referer('tfp_admin_save_cohort_governance_' . $cohort_id, 'tfp_governance_nonce');
+    $cohort = get_post($cohort_id);
+    if (!$cohort || $cohort->post_type !== 'tfp_cohort') {
+        wp_die(esc_html__('Cohort not found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    $trigger = sanitize_key(wp_unslash($_POST['unlock_trigger'] ?? 'meeting_day'));
+    $block_clear = sanitize_key(wp_unslash($_POST['block_clear'] ?? 'admin'));
+    $settings = [
+        'auto_unlock' => !empty($_POST['auto_unlock']) ? 1 : 0,
+        'unlock_trigger' => in_array($trigger, ['meeting_day', '24_hours', 'manual'], true) ? $trigger : 'meeting_day',
+        'prerequisite_lock' => !empty($_POST['prerequisite_lock']) ? 1 : 0,
+        'flags_enabled' => !empty($_POST['flags_enabled']) ? 1 : 0,
+        'flag_inactive_days' => min(365, max(1, absint($_POST['flag_inactive_days'] ?? 7))),
+        'flag_missed_meetings' => min(52, max(1, absint($_POST['flag_missed_meetings'] ?? 1))),
+        'flag_weeks_behind' => min(52, max(1, absint($_POST['flag_weeks_behind'] ?? 1))),
+        'block_enabled' => !empty($_POST['block_enabled']) ? 1 : 0,
+        'block_weeks_behind' => min(52, max(1, absint($_POST['block_weeks_behind'] ?? 3))),
+        'block_missed_meetings' => min(52, max(1, absint($_POST['block_missed_meetings'] ?? 2))),
+        'block_clear' => in_array($block_clear, ['admin', 'facilitator'], true) ? $block_clear : 'admin',
+    ];
+
+    update_post_meta($cohort_id, '_tfp_cohort_governance', $settings);
+    wp_safe_redirect(add_query_arg(['tab' => 'settings', 'governance_notice' => 'saved'], tfp_admin_cohort_detail_url($cohort_id)));
+    exit;
+});
+
 function tfp_admin_cohort_detail_render() {
     if (!is_user_logged_in()) { auth_redirect(); }
     if (!current_user_can('manage_options')) {
@@ -207,6 +241,13 @@ function tfp_admin_cohort_detail_render() {
     }
     $id = tfp_admin_cohort_detail_request_id();
     $data = tfp_admin_cohort_detail_data($id);
+    $governance_defaults = [
+        'auto_unlock' => 1, 'unlock_trigger' => 'meeting_day', 'prerequisite_lock' => 0,
+        'flags_enabled' => 1, 'flag_inactive_days' => 7, 'flag_missed_meetings' => 1, 'flag_weeks_behind' => 1,
+        'block_enabled' => 1, 'block_weeks_behind' => 3, 'block_missed_meetings' => 2, 'block_clear' => 'admin',
+    ];
+    $governance = wp_parse_args(get_post_meta($id, '_tfp_cohort_governance', true), $governance_defaults);
+    $governance_saved = isset($_GET['governance_notice']) && sanitize_key($_GET['governance_notice']) === 'saved';
     if (!$data) { wp_die(esc_html__('Cohort not found.', 'tfp-dashboard'), esc_html__('Not found', 'tfp-dashboard'), ['response' => 404]); }
 
     $user = wp_get_current_user();
@@ -495,7 +536,68 @@ function tfp_admin_cohort_detail_render() {
               </script>
             </section>
           <?php elseif ($tab === 'settings') : ?>
-            <section class="tfp-admin-cohort-data-panel"><h2><?php esc_html_e('Cohort Settings', 'tfp-dashboard'); ?></h2><dl><div><dt><?php esc_html_e('Course', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['course'] ? $data['course']->post_title : '—'); ?></dd></div><div><dt><?php esc_html_e('Capacity', 'tfp-dashboard'); ?></dt><dd><?php echo $data['capacity'] ? esc_html(number_format_i18n($data['capacity'])) : esc_html__('Unlimited', 'tfp-dashboard'); ?></dd></div><div><dt><?php esc_html_e('Status', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['status']); ?></dd></div></dl><a class="tfp-admin-cohort-primary" href="<?php echo esc_url($edit_url); ?>"><?php esc_html_e('Edit Cohort Settings', 'tfp-dashboard'); ?></a></section>
+            <?php if ($governance_saved) : ?><div class="tfp-admin-cohort-schedule-notice" role="status"><?php esc_html_e('Cohort governance settings saved.', 'tfp-dashboard'); ?></div><?php endif; ?>
+            <section class="tfp-admin-cohort-data-panel tfp-admin-cohort-governance-panel">
+              <h2><?php esc_html_e('Cohort Governance', 'tfp-dashboard'); ?></h2>
+              <div class="tfp-admin-cohort-ruleset">
+                <div class="tfp-admin-cohort-ruleset-heading"><div><strong><?php esc_html_e('Current Ruleset', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Standard 58-Week Journey', 'tfp-dashboard'); ?></small></div><button type="button" class="tfp-admin-cohort-edit-ruleset" data-tfp-open-governance-modal><span aria-hidden="true">✎</span> <?php esc_html_e('Edit', 'tfp-dashboard'); ?></button></div>
+                <dl>
+                  <div><dt><?php esc_html_e('Course Mode', 'tfp-dashboard'); ?></dt><dd><?php esc_html_e('Facilitation-Based (Full 58-Week)', 'tfp-dashboard'); ?></dd></div>
+                  <div><dt><?php esc_html_e('Unlock Rule', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html(['meeting_day' => 'Auto-Unlock on Meeting Day', '24_hours' => '24 Hours Before Meeting', 'manual' => 'Manual Release by Facilitator'][$governance['unlock_trigger']]); ?></dd></div>
+                  <div><dt><?php esc_html_e('Warning Flag', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($governance['flags_enabled'] ? sprintf(__('After %d days / %d missed meetings', 'tfp-dashboard'), $governance['flag_inactive_days'], $governance['flag_missed_meetings']) : __('Disabled', 'tfp-dashboard')); ?></dd></div>
+                  <div><dt><?php esc_html_e('Hard Block', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($governance['block_enabled'] ? sprintf(__('After %d weeks / %d missed meetings', 'tfp-dashboard'), $governance['block_weeks_behind'], $governance['block_missed_meetings']) : __('Disabled', 'tfp-dashboard')); ?></dd></div>
+                  <div><dt><?php esc_html_e('Attendance Block', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($governance['block_clear'] === 'admin' ? __('Admin Approval Required', 'tfp-dashboard') : __('Facilitator Can Clear', 'tfp-dashboard')); ?></dd></div>
+                </dl>
+              </div>
+            </section>
+            <div class="tfp-admin-cohort-modal tfp-admin-cohort-governance-modal" data-tfp-governance-modal aria-hidden="true">
+              <div class="tfp-admin-cohort-modal-backdrop" data-tfp-close-governance-modal></div>
+              <section class="tfp-admin-cohort-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="tfp-governance-title">
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="tfp-admin-governance-form">
+                  <input type="hidden" name="action" value="tfp_admin_save_cohort_governance">
+                  <input type="hidden" name="cohort_id" value="<?php echo esc_attr($id); ?>">
+                  <?php wp_nonce_field('tfp_admin_save_cohort_governance_' . $id, 'tfp_governance_nonce'); ?>
+                  <header class="tfp-admin-governance-heading"><h2 id="tfp-governance-title"><?php esc_html_e('Cohort Command Center', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Define the behavior and rules for this specific 58-week discipleship cohort.', 'tfp-dashboard'); ?></p></header>
+                  <section class="tfp-admin-governance-section">
+                    <h3><?php esc_html_e('Timeline & Progression', 'tfp-dashboard'); ?></h3><p><?php esc_html_e('How and when students access their lessons.', 'tfp-dashboard'); ?></p>
+                    <label class="tfp-admin-governance-toggle"><input type="checkbox" name="auto_unlock" value="1" <?php checked($governance['auto_unlock'], 1); ?>><span></span><strong><?php esc_html_e('Auto-Unlock Master Rule', 'tfp-dashboard'); ?></strong></label>
+                    <div class="tfp-admin-governance-subtitle"><?php esc_html_e('Trigger Logic', 'tfp-dashboard'); ?></div>
+                    <label class="tfp-admin-governance-radio"><input type="radio" name="unlock_trigger" value="meeting_day" <?php checked($governance['unlock_trigger'], 'meeting_day'); ?>><?php esc_html_e('On Meeting Day (Standard)', 'tfp-dashboard'); ?></label>
+                    <label class="tfp-admin-governance-radio"><input type="radio" name="unlock_trigger" value="24_hours" <?php checked($governance['unlock_trigger'], '24_hours'); ?>><?php esc_html_e('24 Hours Before Meeting', 'tfp-dashboard'); ?></label>
+                    <label class="tfp-admin-governance-radio"><input type="radio" name="unlock_trigger" value="manual" <?php checked($governance['unlock_trigger'], 'manual'); ?>><?php esc_html_e('Manual Release by Facilitator.', 'tfp-dashboard'); ?></label>
+                    <label class="tfp-admin-governance-toggle tfp-admin-governance-prerequisite"><input type="checkbox" name="prerequisite_lock" value="1" <?php checked($governance['prerequisite_lock'], 1); ?>><span></span><strong><?php esc_html_e('Prerequisite Lock', 'tfp-dashboard'); ?></strong></label>
+                  </section>
+                  <section class="tfp-admin-governance-section">
+                    <h3><?php esc_html_e('Signals & Health Monitoring', 'tfp-dashboard'); ?></h3><p><?php esc_html_e('Rules for flagging & Locking students who may be slipping away.', 'tfp-dashboard'); ?></p>
+                    <label class="tfp-admin-governance-toggle"><input type="checkbox" name="flags_enabled" value="1" <?php checked($governance['flags_enabled'], 1); ?>><span></span><strong><?php esc_html_e('Flags Students', 'tfp-dashboard'); ?></strong></label>
+                    <div class="tfp-admin-governance-number-row"><span><?php esc_html_e('Flag after', 'tfp-dashboard'); ?></span><input type="number" min="1" max="365" name="flag_inactive_days" value="<?php echo esc_attr($governance['flag_inactive_days']); ?>"><span><?php esc_html_e('days of inactivity', 'tfp-dashboard'); ?></span></div>
+                    <div class="tfp-admin-governance-number-row"><span><?php esc_html_e('Flag after', 'tfp-dashboard'); ?></span><input type="number" min="1" max="52" name="flag_missed_meetings" value="<?php echo esc_attr($governance['flag_missed_meetings']); ?>"><span><?php esc_html_e('unexcused missed meeting', 'tfp-dashboard'); ?></span></div>
+                    <div class="tfp-admin-governance-number-row"><span><?php esc_html_e('Falls', 'tfp-dashboard'); ?></span><input type="number" min="1" max="52" name="flag_weeks_behind" value="<?php echo esc_attr($governance['flag_weeks_behind']); ?>"><span><?php esc_html_e('week behind schedule', 'tfp-dashboard'); ?></span></div>
+                    <label class="tfp-admin-governance-toggle tfp-admin-governance-block-toggle"><input type="checkbox" name="block_enabled" value="1" <?php checked($governance['block_enabled'], 1); ?>><span></span><strong><?php esc_html_e('Block (Hard Stop)', 'tfp-dashboard'); ?></strong></label>
+                    <div class="tfp-admin-governance-number-row"><span><?php esc_html_e('Block after', 'tfp-dashboard'); ?></span><input type="number" min="1" max="52" name="block_weeks_behind" value="<?php echo esc_attr($governance['block_weeks_behind']); ?>"><span><?php esc_html_e('weeks behind', 'tfp-dashboard'); ?></span></div>
+                    <div class="tfp-admin-governance-number-row"><span><?php esc_html_e('Block after', 'tfp-dashboard'); ?></span><input type="number" min="1" max="52" name="block_missed_meetings" value="<?php echo esc_attr($governance['block_missed_meetings']); ?>"><span><?php esc_html_e('unexcused missed meeting', 'tfp-dashboard'); ?></span></div>
+                  </section>
+                  <section class="tfp-admin-governance-section tfp-admin-governance-last-section">
+                    <h3><?php esc_html_e('Block Management', 'tfp-dashboard'); ?></h3>
+                    <label class="tfp-admin-governance-radio"><input type="radio" name="block_clear" value="admin" <?php checked($governance['block_clear'], 'admin'); ?>><?php esc_html_e('Require Admin Approval to clear blocks', 'tfp-dashboard'); ?></label>
+                    <label class="tfp-admin-governance-radio"><input type="radio" name="block_clear" value="facilitator" <?php checked($governance['block_clear'], 'facilitator'); ?>><?php esc_html_e('Facilitators can manually clear blocks', 'tfp-dashboard'); ?></label>
+                  </section>
+                  <div class="tfp-admin-governance-actions"><button type="submit" class="tfp-admin-cohort-modal-create"><span aria-hidden="true">▣</span><?php esc_html_e('Save', 'tfp-dashboard'); ?></button><button type="button" class="tfp-admin-cohort-modal-cancel" data-tfp-close-governance-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button></div>
+                </form>
+              </section>
+            </div>
+            <script>
+            (function(){
+              var modal=document.querySelector('[data-tfp-governance-modal]');if(!modal)return;
+              if(modal.parentNode!==document.body){document.body.appendChild(modal);}
+              var opener=document.querySelector('[data-tfp-open-governance-modal]');
+              function close(){modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('tfp-cohort-modal-open');}
+              function open(){modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.classList.add('tfp-cohort-modal-open');}
+              if(opener)opener.addEventListener('click',open);
+              modal.querySelectorAll('[data-tfp-close-governance-modal]').forEach(function(el){el.addEventListener('click',close);});
+              document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('is-open'))close();});
+            })();
+            </script>
           <?php else : ?>
             <section class="tfp-admin-cohort-data-panel"><h2><?php esc_html_e('Recent Activity', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Cohort created', 'tfp-dashboard'); ?> · <?php echo esc_html(get_the_date(get_option('date_format') . ' ' . get_option('time_format'), $id)); ?></p><p><?php esc_html_e('Last updated', 'tfp-dashboard'); ?> · <?php echo esc_html(get_the_modified_date(get_option('date_format') . ' ' . get_option('time_format'), $id)); ?></p></section>
           <?php endif; ?>
