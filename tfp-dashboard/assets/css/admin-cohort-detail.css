@@ -296,18 +296,14 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ros
 }
 
 
-/* Clearly identify the read-only sample rows used for an empty cohort preview. */
-body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-demo-notice{
-  margin:0;
+/* Clearly identify the read-only sample rows used for an empty cohort preview. */  margin:0;
   padding:9px 18px;
   border-bottom:1px solid #e5e7e8;
   background:#f5f7f7;
   color:#667085;
   font-size:11px;
   line-height:1.45;
-}
-body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-demo-view{
-  display:inline-flex;
+}  display:inline-flex;
   align-items:center;
   justify-content:center;
   width:66px;
