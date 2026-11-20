@@ -825,3 +825,15 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-sch
   body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-modal-actions{flex-direction:column-reverse}
   body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-modal-actions button{width:100%}
 }
+
+
+/* Cohort Settings panel — stretch across the complete available content width. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-detail-content > .tfp-admin-cohort-data-panel{
+  display:block;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  margin-left:0;
+  margin-right:0;
+  box-sizing:border-box;
+}
