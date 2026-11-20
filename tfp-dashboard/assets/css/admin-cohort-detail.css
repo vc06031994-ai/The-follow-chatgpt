@@ -534,7 +534,7 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-mob
 /* Cohort schedule tab — responsive layout matching the supplied reference. */
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-schedule-page{
   width:100%;
-  max-width:920px;
+  max-width:none;
 }
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-meeting-bar{
   display:flex;
