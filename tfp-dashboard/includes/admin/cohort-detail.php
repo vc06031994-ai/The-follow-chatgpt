@@ -258,7 +258,7 @@ function tfp_admin_cohort_detail_render() {
           <?php elseif ($tab === 'roster') : ?>
             <section class="tfp-admin-cohort-roster-panel">
               <div class="tfp-admin-cohort-roster-title"><h2><?php esc_html_e('Cohort Roster', 'tfp-dashboard'); ?></h2></div>
-              <?php if ($roster_demo_mode) : ?><p class="tfp-admin-roster-demo-notice"><?php esc_html_e('Demo preview data — sample students are shown because this cohort has no enrolled students yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              
               <form class="tfp-admin-cohort-roster-search" method="get" action="<?php echo esc_url(tfp_admin_cohort_detail_url($id)); ?>">
                 <input type="hidden" name="tab" value="roster">
                 <label class="screen-reader-text" for="tfp-cohort-roster-search"><?php esc_html_e('Search students', 'tfp-dashboard'); ?></label>
