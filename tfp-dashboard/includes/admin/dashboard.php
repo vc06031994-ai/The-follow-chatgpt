@@ -351,7 +351,9 @@ function tfp_admin_dashboard_render() {
         <!-- Main Workspace -->
         <div class="tfp-admin-main">
             <div class="tfp-admin-mobilebar">
-                <button type="button" data-tfp-admin-toggle aria-label="<?php esc_attr_e('Open menu', 'tfp-dashboard'); ?>">☰</button>
+                <button type="button" class="tfp-admin-mobilebar-toggle" data-tfp-admin-toggle aria-controls="tfp-admin-sidebar" aria-expanded="false" aria-label="<?php esc_attr_e('Open admin menu', 'tfp-dashboard'); ?>">
+                    <?php echo function_exists('tfp_dashboard_icon') ? tfp_dashboard_icon('toggle') : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 17V1M6 17H13.8031C15.48 17 17 2.52 17 4.19691V13.8031C17 15.48 15.48 17 13.8031 17H6M6 17H4.19692C2.519 17 1 15.48 1 13.8002V4.2002C1 2.52 2.52 1 4.2002 1H6" stroke="#570506" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; ?>
+                </button>
                 <span><?php esc_html_e('Admin Console', 'tfp-dashboard'); ?></span>
             </div>
 
