@@ -328,8 +328,8 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-det
   padding-bottom:20px;
 }
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-detail-content{
-  width:min(100%,1018px);
-  max-width:1018px;
+  width:100%;
+  max-width:none;
   margin-left:0;
   padding:22px 55px 32px;
   box-sizing:border-box;
