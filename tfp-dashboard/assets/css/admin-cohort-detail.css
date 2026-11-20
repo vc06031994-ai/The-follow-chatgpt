@@ -429,9 +429,9 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-mobilebar{
   }
 }
 body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search{
-  position:relative;
-  top:auto;
-  right:auto;
+  position:absolute;
+  top:8px;
+  right:clamp(20px,2.6vw,42px);
   z-index:2;
   width:252px;
   height:40px;
@@ -478,6 +478,8 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ros
 @media(max-width:800px){
   body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search{
     position:relative;
+    top:auto;
+    right:auto;
     width:100%;
     margin:12px 0 0;
   }
