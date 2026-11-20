@@ -480,6 +480,10 @@ function tfp_admin_cohort_detail_render() {
               (function(){
                 var modal=document.querySelector('[data-tfp-skip-modal]');
                 if(!modal)return;
+
+                // Render the modal directly under <body> so fixed positioning is viewport-centered.
+                if(modal.parentNode!==document.body){document.body.appendChild(modal);}
+
                 var opener=document.querySelector('[data-tfp-open-skip-modal]');
                 var closeButtons=modal.querySelectorAll('[data-tfp-close-skip-modal]');
                 function closeModal(){modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('tfp-cohort-modal-open');}
