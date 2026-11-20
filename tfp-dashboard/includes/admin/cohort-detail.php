@@ -276,7 +276,7 @@ function tfp_admin_cohort_detail_render() {
                     <?php endforeach; ?>
 
                     <?php if (!$roster_page_students) : ?>
-                      <tr><td colspan="6" class="tfp-admin-roster-empty"><?php esc_html_e('No students match your search.', 'tfp-dashboard'); ?></td></tr>
+                      <tr><td colspan="6" class="tfp-admin-roster-empty"><?php echo $roster_search !== '' ? esc_html__('No students match your search.', 'tfp-dashboard') : esc_html__('No students are enrolled in this cohort yet.', 'tfp-dashboard'); ?></td></tr>
                     <?php endif; ?>
                   </tbody>
                 </table>
