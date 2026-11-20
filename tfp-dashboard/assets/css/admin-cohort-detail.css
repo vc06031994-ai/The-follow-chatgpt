@@ -370,3 +370,115 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ros
     padding:18px 20px 28px;
   }
 }
+
+
+/* Tablet navigation: keep the menu trigger outside the off-canvas sidebar. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-mobilebar{
+  display:none;
+}
+@media(max-width:991px){
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-mobilebar{
+    display:flex;
+    position:relative;
+    z-index:120;
+    align-items:center;
+    gap:12px;
+    min-height:48px;
+    padding:0 20px;
+    border-bottom:1px solid #dedede;
+    background:#fff;
+    color:#151411;
+    font-size:13px;
+    font-weight:750;
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-mobilebar button{
+    display:inline-flex;
+    width:36px;
+    height:36px;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    border:1px solid #d4d4d4;
+    border-radius:6px;
+    background:#fff;
+    color:#006b73;
+    font-size:21px;
+    line-height:1;
+    cursor:pointer;
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-sidebar{
+    z-index:200;
+    transform:translateX(-105%);
+    transition:transform .22s ease;
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-app.is-menu-open .tfp-admin-sidebar{
+    transform:translateX(0);
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-app.is-menu-open:after{
+    position:fixed;
+    z-index:190;
+    inset:0;
+    background:rgba(0,0,0,.38);
+    content:"";
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-breadcrumb{
+    position:relative;
+    min-height:42px;
+    padding-top:10px;
+    padding-bottom:10px;
+  }
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search{
+  position:relative;
+  top:auto;
+  right:auto;
+  z-index:2;
+  width:252px;
+  height:40px;
+  margin:0;
+  padding:0 11px;
+  border:1px solid #dedede;
+  border-radius:7px;
+  background:#fff;
+  box-sizing:border-box;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search .tfp-admin-search-png{
+  display:inline-flex;
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  align-items:center;
+  justify-content:center;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search .tfp-admin-search-png img{
+  display:block;
+  width:16px;
+  height:16px;
+  object-fit:contain;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search input{
+  flex:1 1 auto;
+  width:100%;
+  height:100%;
+  min-width:0;
+  margin:0;
+  padding:0 0 0 9px;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  background:transparent;
+  color:#151411;
+  font:500 12px/1.2 var(--tfp-dash-font,"Eudoxus Sans"),sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search input:focus{
+  border:0;
+  outline:0;
+  box-shadow:none;
+}
+@media(max-width:800px){
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search{
+    position:relative;
+    width:100%;
+    margin:12px 0 0;
+  }
+}
