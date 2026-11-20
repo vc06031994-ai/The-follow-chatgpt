@@ -118,3 +118,179 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-tab
  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-data-panel{padding:14px}
  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-data-panel dl>div{grid-template-columns:1fr;gap:5px}
 }
+
+
+/* Admin cohort roster — aligned with the supplied Roster reference. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-panel{
+  padding:0;
+  overflow:hidden;
+  border:1px solid #d1d1d1;
+  border-radius:11px;
+  background:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-title{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  padding:0 20px;
+  border-bottom:1px solid #d5d5d5;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-title h2{
+  margin:0;
+  color:#151411;
+  font-size:14px;
+  font-weight:700;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search{
+  display:flex;
+  align-items:center;
+  width:198px;
+  height:34px;
+  position:absolute;
+  top:10px;
+  right:clamp(24px,2.6vw,42px);
+  border:1px solid #303b43;
+  background:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search input{
+  width:100%;
+  min-width:0;
+  height:100%;
+  padding:0 8px;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  color:#151411;
+  background:transparent;
+  font:500 12px/1.2 var(--tfp-dash-font,"Eudoxus Sans"),sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 34px;
+  width:34px;
+  height:32px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#151411;
+  font-size:21px;
+  cursor:pointer;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-table-wrap.tfp-admin-cohort-roster-table-wrap{
+  overflow-x:auto;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table{
+  width:100%;
+  min-width:760px;
+  border-collapse:collapse;
+  border-spacing:0;
+  margin:0;
+  background:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table th{
+  height:36px;
+  padding:9px 16px;
+  border:0;
+  background:#dfe3e4;
+  color:#151411;
+  text-align:left;
+  white-space:nowrap;
+  font:700 12px/1.3 var(--tfp-dash-font,"Eudoxus Sans"),sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table td{
+  height:37px;
+  padding:5px 16px;
+  border:0;
+  border-bottom:1px solid #e6e8e9;
+  color:#151411;
+  background:#fff;
+  white-space:nowrap;
+  font:500 10px/1.35 var(--tfp-dash-font,"Eudoxus Sans"),sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table tbody tr:last-child td{border-bottom:0}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table .tfp-roster-student strong{
+  color:#151411;
+  font:700 12px/1.3 var(--tfp-dash-font,"Eudoxus Sans"),sans-serif;
+  text-transform:uppercase;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-status{
+  display:inline-block;
+  font-size:10px;
+  font-weight:600;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-status.is-active{color:#151411}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-status.is-locked{color:#c52232}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-status.is-risk{color:#b58b00}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table .tfp-admin-roster-view{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:66px;
+  height:26px;
+  border:1px solid #006b73;
+  border-radius:7px;
+  background:#006b73;
+  color:#fff;
+  text-decoration:none;
+  font:600 12px/1 var(--tfp-dash-font,"Eudoxus Sans"),sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-table .tfp-admin-roster-view:hover{
+  background:#fff;
+  color:#006b73;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-roster-empty{
+  height:90px!important;
+  text-align:center!important;
+  color:#777!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  min-height:64px;
+  padding:12px 18px;
+  color:#344054;
+  font-size:12px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination>div{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination a,
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination .tfp-roster-page-disabled{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-width:88px;
+  height:32px;
+  color:#343a40;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:600;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination .tfp-roster-page-next{
+  min-width:96px;
+  padding:0 12px;
+  border-radius:7px;
+  background:#006b73;
+  color:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination .tfp-roster-page-disabled{
+  opacity:.45;
+}
+@media(max-width:800px){
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-search{
+    position:static;
+    width:100%;
+    margin:12px 0 0;
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-roster-pagination{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
