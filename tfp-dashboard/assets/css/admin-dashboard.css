@@ -3383,3 +3383,45 @@ body.tfp-admin-dashboard-view .tfp-dash-table td {
         padding: var(--tfp-space-3) var(--tfp-space-4) var(--tfp-space-2);
     }
 }
+
+
+/* Shared tablet menu toggle icon — consistent with Student and Facilitator dashboards. */
+@media (max-width: 991px) {
+    body.tfp-admin-dashboard-view .tfp-admin-mobilebar {
+        display: flex !important;
+        align-items: center;
+        gap: 12px;
+        min-height: 48px;
+        padding: 0 16px;
+        box-sizing: border-box;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-mobilebar .tfp-admin-mobilebar-toggle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 24px;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        margin: 0;
+        padding: 3px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        color: #570506 !important;
+        line-height: 1;
+        cursor: pointer;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    body.tfp-admin-dashboard-view .tfp-admin-mobilebar .tfp-admin-mobilebar-toggle svg {
+        display: block !important;
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px;
+        min-height: 18px;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
