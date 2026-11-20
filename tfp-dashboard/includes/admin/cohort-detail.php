@@ -191,6 +191,24 @@ function tfp_admin_cohort_detail_render() {
     $roster_pages = max(1, (int) ceil($roster_total / $roster_per_page));
     $roster_page = min($roster_page, $roster_pages);
     $roster_page_students = array_slice($roster_students, ($roster_page - 1) * $roster_per_page, $roster_per_page);
+
+    // Build the cohort schedule from the course's real week records and cohort start date.
+    $schedule_page = max(1, absint($_GET['schedule_page'] ?? 1));
+    $schedule_per_page = 10;
+    $schedule_weeks = array_values($data['weeks']);
+    $schedule_total = count($schedule_weeks);
+    $schedule_pages = max(1, (int) ceil($schedule_total / $schedule_per_page));
+    $schedule_page = min($schedule_page, $schedule_pages);
+    $schedule_page_weeks = array_slice($schedule_weeks, ($schedule_page - 1) * $schedule_per_page, $schedule_per_page);
+    $schedule_meeting_time = '';
+    $schedule_timezone = '';
+    if (preg_match('/\\b(\\d{1,2}:\\d{2}\\s*[AP]M)\\b/i', $data['schedule'], $meeting_time_match)) {
+        $schedule_meeting_time = strtoupper(preg_replace('/\\s+/', ' ', $meeting_time_match[1]));
+    }
+    if (preg_match('/\\b(PST|PDT|MST|MDT|CST|CDT|EST|EDT|PT|MT|CT|ET)\\b/i', $data['schedule'], $timezone_match)) {
+        $schedule_timezone = strtoupper($timezone_match[1]);
+    }
+    $schedule_manage_url = admin_url('edit.php?post_type=tfp_off_day');
     ?>
     <div class="tfp-admin-app tfp-admin-cohort-detail-app">
       <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -290,7 +308,54 @@ function tfp_admin_cohort_detail_render() {
               </div>
             </section>
           <?php elseif ($tab === 'schedule') : ?>
-            <section class="tfp-admin-cohort-data-panel"><h2><?php esc_html_e('Cohort Schedule', 'tfp-dashboard'); ?></h2><dl><div><dt><?php esc_html_e('Start Date', 'tfp-dashboard'); ?></dt><dd><?php echo $data['start_date'] && strtotime($data['start_date']) ? esc_html(date_i18n(get_option('date_format'), strtotime($data['start_date']))) : '—'; ?></dd></div><div><dt><?php esc_html_e('Meeting', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['schedule'] ?: '—'); ?></dd></div><div><dt><?php esc_html_e('Meeting Room', 'tfp-dashboard'); ?></dt><dd><?php echo $data['meeting_url'] ? '<a href="' . esc_url($data['meeting_url']) . '" target="_blank" rel="noopener">' . esc_html($data['meeting_url']) . '</a>' : '—'; ?></dd></div></dl></section>
+            <section class="tfp-admin-cohort-schedule-page">
+              <div class="tfp-admin-cohort-meeting-bar">
+                <label for="tfp-cohort-meeting-link"><?php esc_html_e('Meeting Link:', 'tfp-dashboard'); ?></label>
+                <input id="tfp-cohort-meeting-link" type="url" value="<?php echo esc_attr($data['meeting_url']); ?>" readonly placeholder="<?php esc_attr_e('No meeting link added', 'tfp-dashboard'); ?>">
+                <?php if ($data['meeting_url']) : ?><a class="tfp-admin-cohort-meeting-open" href="<?php echo esc_url($data['meeting_url']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Open Link', 'tfp-dashboard'); ?></a><?php endif; ?>
+                <a class="tfp-admin-cohort-manage-days" href="<?php echo esc_url($schedule_manage_url); ?>"><?php esc_html_e('Manage Holidays / Skips', 'tfp-dashboard'); ?></a>
+              </div>
+
+              <section class="tfp-admin-cohort-schedule-panel">
+                <div class="tfp-admin-cohort-schedule-title"><h2><?php esc_html_e('Cohort Schedule', 'tfp-dashboard'); ?></h2></div>
+                <div class="tfp-admin-cohort-table-wrap tfp-admin-cohort-schedule-table-wrap">
+                  <table class="tfp-admin-cohort-schedule-table">
+                    <thead><tr>
+                      <th><?php esc_html_e('Week #', 'tfp-dashboard'); ?></th>
+                      <th><?php esc_html_e('Session / Lesson Name', 'tfp-dashboard'); ?></th>
+                      <th><?php echo esc_html($schedule_timezone ? sprintf(__('Meeting Date (%s)', 'tfp-dashboard'), $schedule_timezone) : __('Meeting Date', 'tfp-dashboard')); ?></th>
+                      <th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th>
+                    </tr></thead>
+                    <tbody>
+                      <?php foreach ($schedule_page_weeks as $week_index => $week) :
+                        $absolute_week = (($schedule_page - 1) * $schedule_per_page) + $week_index + 1;
+                        $week_timestamp = ($data['start_date'] && strtotime($data['start_date'])) ? strtotime($data['start_date'] . ' +' . ($absolute_week - 1) . ' weeks') : false;
+                        $meeting_date = $week_timestamp ? wp_date('M j', $week_timestamp) . ($schedule_meeting_time ? ', ' . $schedule_meeting_time : '') . ($schedule_timezone ? ' ' . $schedule_timezone : '') : '—';
+                        $week_status = $absolute_week < $data['current_week'] ? 'completed' : ($absolute_week === $data['current_week'] ? 'in-progress' : 'not-started');
+                        $week_status_label = $week_status === 'completed' ? __('Completed', 'tfp-dashboard') : ($week_status === 'in-progress' ? __('In Progress', 'tfp-dashboard') : __('Not Started', 'tfp-dashboard'));
+                      ?>
+                        <tr>
+                          <td><strong><?php echo esc_html(sprintf(__('Week %d', 'tfp-dashboard'), $absolute_week)); ?></strong></td>
+                          <td><?php echo esc_html(get_the_title($week)); ?></td>
+                          <td><?php echo esc_html($meeting_date); ?></td>
+                          <td><span class="tfp-admin-cohort-week-status is-<?php echo esc_attr($week_status); ?>"><?php echo esc_html($week_status_label); ?></span></td>
+                        </tr>
+                      <?php endforeach; ?>
+                      <?php if (!$schedule_page_weeks) : ?>
+                        <tr><td colspan="4" class="tfp-admin-cohort-schedule-empty"><?php esc_html_e('No course weeks are available for this cohort yet.', 'tfp-dashboard'); ?></td></tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="tfp-admin-cohort-schedule-pagination">
+                  <span><?php echo $schedule_total ? esc_html(sprintf(__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), (($schedule_page - 1) * $schedule_per_page) + 1, min($schedule_page * $schedule_per_page, $schedule_total), $schedule_total)) : esc_html__('0 items', 'tfp-dashboard'); ?></span>
+                  <div>
+                    <?php if ($schedule_page > 1) : ?><a class="tfp-schedule-page-prev" href="<?php echo esc_url(add_query_arg(['tab' => 'schedule', 'schedule_page' => $schedule_page - 1], tfp_admin_cohort_detail_url($id))); ?>">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></a><?php else : ?><span class="tfp-schedule-page-disabled">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></span><?php endif; ?>
+                    <?php if ($schedule_page < $schedule_pages) : ?><a class="tfp-schedule-page-next" href="<?php echo esc_url(add_query_arg(['tab' => 'schedule', 'schedule_page' => $schedule_page + 1], tfp_admin_cohort_detail_url($id))); ?>"><span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span> ›</a><?php else : ?><span class="tfp-schedule-page-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span><?php endif; ?>
+                  </div>
+                </div>
+              </section>
+            </section>
           <?php elseif ($tab === 'settings') : ?>
             <section class="tfp-admin-cohort-data-panel"><h2><?php esc_html_e('Cohort Settings', 'tfp-dashboard'); ?></h2><dl><div><dt><?php esc_html_e('Course', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['course'] ? $data['course']->post_title : '—'); ?></dd></div><div><dt><?php esc_html_e('Capacity', 'tfp-dashboard'); ?></dt><dd><?php echo $data['capacity'] ? esc_html(number_format_i18n($data['capacity'])) : esc_html__('Unlimited', 'tfp-dashboard'); ?></dd></div><div><dt><?php esc_html_e('Status', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html($data['status']); ?></dd></div></dl><a class="tfp-admin-cohort-primary" href="<?php echo esc_url($edit_url); ?>"><?php esc_html_e('Edit Cohort Settings', 'tfp-dashboard'); ?></a></section>
           <?php else : ?>
