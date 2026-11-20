@@ -230,6 +230,7 @@ function tfp_admin_cohort_detail_render() {
         <div class="tfp-admin-sidebar-bottom"><div class="tfp-admin-profile"><img src="<?php echo esc_url(get_avatar_url($user->ID, ['size' => 96])); ?>" alt=""><span><strong><?php echo esc_html($user->display_name); ?></strong><small><?php esc_html_e('Administrator', 'tfp-dashboard'); ?></small></span></div><a class="tfp-admin-logout" href="<?php echo esc_url(wp_logout_url(home_url('/'))); ?>"><span class="tfp-admin-logout-icon" aria-hidden="true">×</span><span class="tfp-admin-logout-label"><?php esc_html_e('Logout', 'tfp-dashboard'); ?></span></a></div>
       </aside>
       <div class="tfp-admin-main">
+        <div class="tfp-admin-mobilebar"><button type="button" data-tfp-admin-toggle aria-label="<?php esc_attr_e('Open menu', 'tfp-dashboard'); ?>" aria-controls="tfp-admin-sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button><span><?php esc_html_e('Admin Console', 'tfp-dashboard'); ?></span></div>
         <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><a href="<?php echo esc_url(tfp_admin_cohorts_url()); ?>"><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></a><b>/</b><strong><?php echo esc_html(get_the_title($id)); ?></strong><?php if ($tab === 'roster') : ?><b>/</b><strong><?php esc_html_e('Roster', 'tfp-dashboard'); ?></strong><?php endif; ?></div>
         <header class="tfp-admin-page-header tfp-admin-cohort-detail-header">
           <div class="tfp-admin-cohort-heading"><h1><?php echo esc_html(get_the_title($id)); ?></h1><p><?php echo esc_html($data['course'] ? $data['course']->post_title : __('Course not assigned', 'tfp-dashboard')); ?> · <?php echo esc_html(sprintf(__('Facilitator: %s', 'tfp-dashboard'), $data['facilitator'] ? $data['facilitator']->display_name : '—')); ?> · <?php echo esc_html($data['schedule'] ?: __('Schedule not set', 'tfp-dashboard')); ?></p>
@@ -263,7 +264,7 @@ function tfp_admin_cohort_detail_render() {
                 <input type="hidden" name="tab" value="roster">
                 <label class="screen-reader-text" for="tfp-cohort-roster-search"><?php esc_html_e('Search students', 'tfp-dashboard'); ?></label>
                 <input id="tfp-cohort-roster-search" type="search" name="roster_search" value="<?php echo esc_attr($roster_search); ?>" placeholder="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>">
-                <button type="submit" aria-label="<?php esc_attr_e('Search roster', 'tfp-dashboard'); ?>"><span aria-hidden="true">⌕</span></button>
+                <span class="tfp-admin-search-png" aria-hidden="true"><img src="<?php echo esc_url('https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Note_Search-2.png'); ?>" alt=""></span>
               </form>
               <div class="tfp-admin-cohort-table-wrap tfp-admin-cohort-roster-table-wrap">
                 <table class="tfp-admin-cohort-roster-table">
