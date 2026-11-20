@@ -934,3 +934,121 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance
   body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-number-row{margin-left:0;gap:6px}
   body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions{position:sticky;bottom:-16px;padding:10px 0 0;background:#dfe3e4}
 }
+
+
+/* Match the Figma Cohort Governance layout: compact ruleset card, not a full-width panel. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-panel{
+  width:100%!important;
+  max-width:none!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-panel>h2{
+  margin:0 0 22px!important;
+  padding:0!important;
+  font-size:18px!important;
+  font-weight:600!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset{
+  display:block!important;
+  width:444px!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:18px 26px 14px!important;
+  border:1px solid #d0d0d0!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  box-sizing:border-box!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  width:100%!important;
+  gap:12px!important;
+  margin:0 0 12px!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading>div{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:5px!important;
+  min-width:0!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading strong{
+  display:block!important;
+  margin:0!important;
+  font-size:14px!important;
+  line-height:1.3!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading small{
+  display:block!important;
+  font-size:11px!important;
+  line-height:1.3!important;
+  color:#555!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading .tfp-admin-cohort-edit-ruleset{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:4px 0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#171717!important;
+  font:inherit!important;
+  font-size:12px!important;
+  line-height:1.3!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dl{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dl>div{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  width:100%!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:9px 0!important;
+  border:0!important;
+  border-bottom:1px solid #e7e9ea!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-sizing:border-box!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dl>div:last-child{
+  border-bottom:0!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dt{
+  flex:0 0 auto!important;
+  margin:0!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1.35!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dd{
+  flex:1 1 auto!important;
+  margin:0!important;
+  text-align:right!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+}
+@media(max-width:600px){
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset{width:100%!important;padding:16px!important}
+}
