@@ -524,3 +524,12 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-mob
     line-height:1.2;
   }
 }
+
+
+/* Give the cohort menu toggle comfortable top and left breathing room on tablets. */
+@media (max-width: 991px) {
+  body.tfp-admin-dashboard-view .tfp-admin-cohort-mobile-toggle {
+    display: flex !important;
+    margin: 18px 0 14px 28px !important;
+  }
+}
