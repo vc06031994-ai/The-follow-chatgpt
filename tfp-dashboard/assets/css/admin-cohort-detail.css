@@ -837,3 +837,100 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-det
   margin-right:0;
   box-sizing:border-box;
 }
+
+
+/* Cohort Command Center — governance editor modal */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-panel{
+  width:100%;max-width:none;box-sizing:border-box
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset{
+  width:min(100%,560px);padding:18px 22px;border:1px solid #d0d0d0;border-radius:10px;background:#fff;box-sizing:border-box
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading>div{
+  display:flex;flex-direction:column;gap:5px
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading strong{font-size:14px}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading small{font-size:11px;color:#555}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-edit-ruleset{
+  border:0;background:transparent;color:#222;font:inherit;font-size:12px;cursor:pointer
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dl{margin:0}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dl>div{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #e7e9ea
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dt{font-size:12px;font-weight:700}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset dd{margin:0;text-align:right;font-size:10px}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-modal .tfp-admin-cohort-modal-dialog{
+  width:min(610px,100%);padding:18px 17px 16px;background:#dfe3e4;border-radius:11px
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-form{display:flex;flex-direction:column;gap:0}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-heading{
+  padding-bottom:10px;border-bottom:1px solid #aeb5b7
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-heading h2{
+  margin:0 0 6px;font-size:14px;font-weight:700;color:#171717
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-heading p{
+  margin:0;font-size:10px;color:#333
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-section{
+  padding:10px 0;border-bottom:1px solid #aeb5b7
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-section h3{
+  margin:0 0 4px;font-size:13px;font-weight:700;color:#151515
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-section>p{
+  margin:0 0 10px;font-size:9px;color:#7b8183
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-toggle{
+  display:flex;align-items:center;gap:12px;min-height:25px;margin:4px 0;color:#171717;cursor:pointer
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-toggle input{
+  position:absolute;width:1px;height:1px;opacity:0
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-toggle>span{
+  position:relative;flex:0 0 41px;width:41px;height:20px;border-radius:20px;background:#b9bec0;transition:background .2s
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-toggle>span:after{
+  content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-toggle input:checked+span{background:#006f77}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-toggle input:checked+span:after{transform:translateX(21px)}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-toggle strong{font-size:12px}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-subtitle{
+  margin:8px 0 4px;font-size:9px;color:#818789
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-radio{
+  display:flex;align-items:center;gap:9px;margin:5px 0;color:#555;font-size:11px;cursor:pointer
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-radio input{
+  width:18px;height:18px;min-width:18px;margin:0;accent-color:#006f77
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-prerequisite{
+  margin-top:12px;padding-top:8px;border-top:1px solid #aeb5b7
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-number-row{
+  display:flex;align-items:center;justify-content:flex-start;gap:8px;margin:4px 0 4px 48px;font-size:9px;color:#242424
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-number-row>span:first-child{
+  min-width:48px;text-align:right
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-number-row input{
+  width:42px;height:31px;min-height:31px;padding:2px 5px;margin:0;border:1px solid #aeb5b7;border-radius:2px;background:#fff;text-align:center;font-size:10px;box-shadow:none
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-block-toggle{margin-top:9px}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-last-section{padding-bottom:8px}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions{
+  display:flex;justify-content:flex-end;gap:8px;margin-top:13px
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions button{
+  min-height:40px;padding:0 14px;border-radius:8px;font:600 11px/1 inherit;cursor:pointer
+}
+@media(max-width:640px){
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-modal .tfp-admin-cohort-modal-dialog{padding:16px 13px}
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-number-row{margin-left:0;gap:6px}
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions{position:sticky;bottom:-16px;padding:10px 0 0;background:#dfe3e4}
+}
