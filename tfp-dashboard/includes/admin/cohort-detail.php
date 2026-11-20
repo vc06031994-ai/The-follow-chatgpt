@@ -155,13 +155,17 @@ add_action('admin_post_tfp_admin_cohort_add_skip', function () {
     check_admin_referer('tfp_admin_cohort_add_skip_' . $cohort_id, 'tfp_cohort_skip_nonce');
 
     $cohort = get_post($cohort_id);
+    if (!$cohort || $cohort->post_type !== 'tfp_cohort') {
+        wp_die(esc_html__('The selected cohort could not be found.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
     $week_number = absint($_POST['week_number'] ?? 0);
     $reason = sanitize_text_field(wp_unslash($_POST['skip_reason'] ?? ''));
     $meeting_room = esc_url_raw(wp_unslash($_POST['meeting_room'] ?? ''));
     $push_progression = !empty($_POST['push_progression']) ? 1 : 0;
     $weeks = tfp_admin_cohort_detail_data($cohort_id);
 
-    if (!$cohort || $cohort->post_type !== 'tfp_cohort' || !$week_number || $week_number > count($weeks['weeks']) || $reason === '') {
+    if (!$week_number || $week_number > count($weeks['weeks']) || $reason === '') {
         wp_die(esc_html__('Please provide a valid cohort, meeting week and skip reason.', 'tfp-dashboard'), '', ['response' => 400]);
     }
 
