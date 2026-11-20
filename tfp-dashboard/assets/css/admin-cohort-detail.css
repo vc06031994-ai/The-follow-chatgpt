@@ -1052,3 +1052,59 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-rul
 @media(max-width:600px){
   body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset{width:100%!important;padding:16px!important}
 }
+
+
+/* Governance command center: align the dialog to the right, matching the Figma side panel. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-modal{
+  justify-content:flex-end!important;
+  align-items:center!important;
+  padding:24px 32px 24px 24px!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-modal .tfp-admin-cohort-modal-dialog{
+  width:min(560px,calc(100vw - 48px))!important;
+  max-height:calc(100dvh - 48px)!important;
+  margin:0!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions{
+  display:flex!important;
+  justify-content:flex-end!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  min-height:40px!important;
+  padding:0 15px!important;
+  border:1px solid #006f75!important;
+  border-radius:8px!important;
+  background:#006f75!important;
+  color:#fff!important;
+  font:600 12px/1.2 inherit!important;
+  box-shadow:none!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions .tfp-admin-cohort-modal-create{
+  border-color:#006f75!important;
+  background:#006f75!important;
+  color:#fff!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions .tfp-admin-cohort-modal-cancel{
+  border-color:#c8ccce!important;
+  background:#fff!important;
+  color:#222!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions button:hover{
+  filter:brightness(.96);
+}
+@media(max-width:640px){
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-modal{
+    justify-content:center!important;
+    padding:12px!important;
+  }
+  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-governance-modal .tfp-admin-cohort-modal-dialog{
+    width:100%!important;
+    margin:0!important;
+  }
+}
