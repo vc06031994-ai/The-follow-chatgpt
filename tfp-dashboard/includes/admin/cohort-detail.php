@@ -223,7 +223,7 @@ function tfp_admin_cohort_detail_render() {
         <button type="button" class="tfp-dash-pageheader__mobile-toggle tfp-student-mobile-toggle tfp-admin-cohort-mobile-toggle" data-tfp-sidebar-toggle data-tfp-admin-toggle aria-controls="tfp-admin-sidebar" aria-expanded="false" aria-label="<?php esc_attr_e('Open admin menu', 'tfp-dashboard'); ?>">
           <?php echo tfp_dashboard_icon('toggle'); ?>
         </button>
-        <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><a href="<?php echo esc_url(tfp_admin_cohorts_url()); ?>"><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></a><b>/</b><strong><?php echo esc_html(get_the_title($id)); ?></strong><?php if ($tab === 'roster') : ?><b>/</b><strong><?php esc_html_e('Roster', 'tfp-dashboard'); ?></strong><?php endif; ?></div>
+        <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><a href="<?php echo esc_url(tfp_admin_cohorts_url()); ?>"><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></a><b>/</b><strong><?php echo esc_html(get_the_title($id)); ?></strong><?php if (in_array($tab, ['roster', 'schedule'], true)) : ?><b>/</b><strong><?php echo esc_html($tab === 'roster' ? __('Roster', 'tfp-dashboard') : __('Schedule', 'tfp-dashboard')); ?></strong><?php endif; ?></div>
         <header class="tfp-admin-page-header tfp-admin-cohort-detail-header">
           <div class="tfp-admin-cohort-heading"><h1><?php echo esc_html(get_the_title($id)); ?></h1><p><?php echo esc_html($data['course'] ? $data['course']->post_title : __('Course not assigned', 'tfp-dashboard')); ?> · <?php echo esc_html(sprintf(__('Facilitator: %s', 'tfp-dashboard'), $data['facilitator'] ? $data['facilitator']->display_name : '—')); ?> · <?php echo esc_html($data['schedule'] ?: __('Schedule not set', 'tfp-dashboard')); ?></p>
             <div class="tfp-admin-cohort-header-actions"><span class="tfp-admin-cohort-live-status"><?php echo esc_html($data['status']); ?></span><a class="tfp-admin-cohort-secondary" href="<?php echo esc_url(add_query_arg('post', $id, admin_url('post.php')) . '&action=edit'); ?>"><?php esc_html_e('Reassign Facilitator', 'tfp-dashboard'); ?></a><a class="tfp-admin-cohort-secondary" href="<?php echo esc_url($edit_url); ?>"><?php esc_html_e('Edit Settings', 'tfp-dashboard'); ?></a><?php if ($facilitator_url) : ?><a class="tfp-admin-cohort-primary" href="<?php echo esc_url($facilitator_url); ?>"><?php esc_html_e('Open Facilitator View', 'tfp-dashboard'); ?> <span aria-hidden="true">↗</span></a><?php endif; ?></div>
@@ -312,7 +312,6 @@ function tfp_admin_cohort_detail_render() {
               <div class="tfp-admin-cohort-meeting-bar">
                 <label for="tfp-cohort-meeting-link"><?php esc_html_e('Meeting Link:', 'tfp-dashboard'); ?></label>
                 <input id="tfp-cohort-meeting-link" type="url" value="<?php echo esc_attr($data['meeting_url']); ?>" readonly placeholder="<?php esc_attr_e('No meeting link added', 'tfp-dashboard'); ?>">
-                <?php if ($data['meeting_url']) : ?><a class="tfp-admin-cohort-meeting-open" href="<?php echo esc_url($data['meeting_url']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Open Link', 'tfp-dashboard'); ?></a><?php endif; ?>
                 <a class="tfp-admin-cohort-manage-days" href="<?php echo esc_url($schedule_manage_url); ?>"><?php esc_html_e('Manage Holidays / Skips', 'tfp-dashboard'); ?></a>
               </div>
 
@@ -329,7 +328,9 @@ function tfp_admin_cohort_detail_render() {
                     <tbody>
                       <?php foreach ($schedule_page_weeks as $week_index => $week) :
                         $absolute_week = (($schedule_page - 1) * $schedule_per_page) + $week_index + 1;
-                        $week_timestamp = ($data['start_date'] && strtotime($data['start_date'])) ? strtotime($data['start_date'] . ' +' . ($absolute_week - 1) . ' weeks') : false;
+                        $week_date = ($data['start_date'] && preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $data['start_date'])) ? DateTimeImmutable::createFromFormat('!Y-m-d', $data['start_date'], wp_timezone()) : false;
+                        $week_date = $week_date ? $week_date->modify('+' . ($absolute_week - 1) . ' weeks') : false;
+                        $week_timestamp = $week_date ? $week_date->getTimestamp() : false;
                         $meeting_date = $week_timestamp ? wp_date('M j', $week_timestamp) . ($schedule_meeting_time ? ', ' . $schedule_meeting_time : '') . ($schedule_timezone ? ' ' . $schedule_timezone : '') : '—';
                         $week_status = $absolute_week < $data['current_week'] ? 'completed' : ($absolute_week === $data['current_week'] ? 'in-progress' : 'not-started');
                         $week_status_label = $week_status === 'completed' ? __('Completed', 'tfp-dashboard') : ($week_status === 'in-progress' ? __('In Progress', 'tfp-dashboard') : __('Not Started', 'tfp-dashboard'));
