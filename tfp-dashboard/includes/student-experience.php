@@ -300,12 +300,20 @@ function tfp_calendar_off_days($from, $to) {
         'post_type' => 'tfp_off_day',
         'post_status' => 'publish',
         'posts_per_page' => -1,
-        'meta_query' => [[
-            'key' => '_date',
-            'value' => [$from, $to],
-            'compare' => 'BETWEEN',
-            'type' => 'DATE',
-        ]],
+        'meta_query' => [
+            'relation' => 'AND',
+            [
+                'key' => '_date',
+                'value' => [$from, $to],
+                'compare' => 'BETWEEN',
+                'type' => 'DATE',
+            ],
+            [
+                'relation' => 'OR',
+                ['key' => '_cohort_id', 'compare' => 'NOT EXISTS'],
+                ['key' => '_cohort_id', 'value' => '0'],
+            ],
+        ],
         'orderby' => 'meta_value',
         'order' => 'ASC',
         'meta_key' => '_date',
