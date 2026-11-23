@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
             mobileToggle.setAttribute('aria-controls', 'tfp-admin-sidebar');
             mobileToggle.setAttribute('aria-expanded', 'false');
             mobileToggle.setAttribute('aria-label', 'Open admin menu');
-            mobileToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M6 17V1M6 17H13.8C15.5 17 17 2.5 17 4.2V13.8C17 15.5 15.5 17 13.8 17H6M6 17H4.2C2.5 17 1 15.5 1 13.8V4.2C1 2.5 2.5 1 4.2 1H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            mobileToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2.25" y="2.25" width="13.5" height="13.5" rx="1.4" stroke="currentColor" stroke-width="1.8"/><path d="M7 2.8V15.2" stroke="currentColor" stroke-width="1.8"/></svg>';
         }
 
         // Desktop sidebar collapse and mobile off-canvas navigation.
