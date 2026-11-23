@@ -1117,3 +1117,24 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-edi
   line-height:13px;
   vertical-align:middle;
 }
+
+/* Popup action icons — match the supplied Save and Cancel reference. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-modal-action-icon{
+  display:inline-flex;
+  flex:0 0 18px;
+  width:18px;
+  height:18px;
+  align-items:center;
+  justify-content:center;
+  line-height:0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-modal-action-icon svg{
+  display:block;
+  width:18px;
+  height:18px;
+  overflow:visible;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-modal-actions button,
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance-actions button{
+  gap:9px!important;
+}
