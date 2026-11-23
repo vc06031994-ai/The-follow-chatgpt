@@ -776,8 +776,8 @@ function tfp_admin_cohort_detail_render() {
               </label>
             </form>
             <section class="tfp-admin-panel tfp-admin-overview-table-panel tfp-admin-cohort-activity-panel">
-              <div class="tfp-admin-overview-table-wrap">
-                <table class="tfp-admin-overview-table tfp-admin-cohort-activity-table">
+              <div class="tfp-dash-table-wrap">
+                <table class="tfp-dash-table tfp-admin-cohort-activity-table">
                   <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Type', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Activity', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Time', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
                   <tbody>
                     <?php if (!empty($activity_data['is_demo'])) : ?><tr><td colspan="6" class="tfp-admin-cohort-activity-preview-note"><?php esc_html_e('Preview data — sample records shown for design review only. Real activity will replace these automatically.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
