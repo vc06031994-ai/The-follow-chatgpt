@@ -769,7 +769,8 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
 }
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-cohort-activity .tfp-admin-panel-heading{
     min-height:50px;
-    padding:0 19px;
+    padding:12px 19px 0;
+    box-sizing:border-box;
 }
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-cohort-table{
     width:100%;
