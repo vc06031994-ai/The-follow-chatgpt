@@ -346,3 +346,37 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-modu
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-identity h1{font-size:25px}
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-bottom-grid{grid-template-columns:1fr}
 }
+
+
+/* Force readable View label in both real and demo facilitator rows. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view a.tfp-admin-overview-view,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-table a.tfp-admin-overview-view,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-dash-table a.tfp-admin-overview-view{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-width:54px !important;
+    min-height:28px !important;
+    padding:5px 12px !important;
+    border:1px solid #242424 !important;
+    border-radius:7px !important;
+    background-color:#fff !important;
+    color:#171717 !important;
+    -webkit-text-fill-color:#171717 !important;
+    font-size:11px !important;
+    font-weight:600 !important;
+    line-height:1.2 !important;
+    letter-spacing:normal !important;
+    text-indent:0 !important;
+    text-transform:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    text-decoration:none !important;
+    white-space:nowrap !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view a.tfp-admin-overview-view:hover{
+    background-color:#00666e !important;
+    border-color:#00666e !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+}
