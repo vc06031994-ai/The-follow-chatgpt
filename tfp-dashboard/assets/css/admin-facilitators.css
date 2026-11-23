@@ -664,3 +664,47 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-emp
         min-height:0;
     }
 }
+
+
+/* Payout Log refinements to match the supplied reference screenshot. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-list{
+    max-height:475px;
+    padding-right:6px;
+    scrollbar-width:thin;
+    scrollbar-color:#650909 #e1e5e5;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-list::-webkit-scrollbar{
+    width:7px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-list::-webkit-scrollbar-track{
+    border-radius:8px;
+    background:#e1e5e5;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-list::-webkit-scrollbar-thumb{
+    border-radius:8px;
+    background:#650909;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row{
+    min-height:80px;
+    padding:14px 18px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row>div{
+    gap:7px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row strong{
+    font-size:14px;
+    line-height:1.3;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row small{
+    font-size:10px;
+    line-height:1.4;
+}
+@media(max-width:760px){
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-list{
+        max-height:420px;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row{
+        min-height:76px;
+        padding:12px 13px;
+    }
+}
