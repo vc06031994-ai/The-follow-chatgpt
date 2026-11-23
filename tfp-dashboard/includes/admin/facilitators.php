@@ -279,6 +279,7 @@ function tfp_admin_facilitators_get_data() {
         'total' => count($records),
         'tab' => $tab,
         'filtered' => $filtered,
+        'is_demo_data' => $is_demo_data,
     ];
 }
 
@@ -374,14 +375,14 @@ function tfp_admin_facilitators_render() {
               <?php if ($data['tab'] === 'onboarding') : ?>
                 <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Pending Facilitators', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Facilitators who still need to complete their onboarding profile.', 'tfp-dashboard'); ?></p></div></header>
               <?php endif; ?>
-              <?php if (!empty($is_demo_data)) : ?>
+              <?php if (!empty($data['is_demo_data'])) : ?>
                 <p class="tfp-admin-facilitators-empty" role="note"><?php esc_html_e('Demo preview: these sample rows are for layout preview only and are not real facilitator accounts.', 'tfp-dashboard'); ?></p>
               <?php endif; ?>
               <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
                 <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Assigned Cohorts', 'tfp-dashboard'); ?></th><?php if ($data['tab'] === 'onboarding') : ?><th><?php esc_html_e('Onboarding', 'tfp-dashboard'); ?></th><?php endif; ?><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
                 <tbody>
                   <?php if ($data['filtered']) : foreach ($data['filtered'] as $record) : ?>
-                    <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(number_format_i18n($record['cohorts'])); ?></td><?php if ($data['tab'] === 'onboarding') : ?><td><div class="tfp-admin-facilitators-progress"><span style="width:<?php echo esc_attr($record['completion']); ?>%"></span></div><small><?php echo esc_html($record['completion']); ?>%</small></td><?php endif; ?><td><?php echo esc_html($record['last_login_label']); ?></td><td><?php if (!empty($is_demo_data)) : ?><span><?php esc_html_e('Demo', 'tfp-dashboard'); ?></span><?php else : ?><a class="tfp-admin-overview-view" href="<?php echo esc_url($record['edit_url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?></td></tr>
+                    <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(number_format_i18n($record['cohorts'])); ?></td><?php if ($data['tab'] === 'onboarding') : ?><td><div class="tfp-admin-facilitators-progress"><span style="width:<?php echo esc_attr($record['completion']); ?>%"></span></div><small><?php echo esc_html($record['completion']); ?>%</small></td><?php endif; ?><td><?php echo esc_html($record['last_login_label']); ?></td><td><?php if (!empty($data['is_demo_data'])) : ?><span><?php esc_html_e('Demo', 'tfp-dashboard'); ?></span><?php else : ?><a class="tfp-admin-overview-view" href="<?php echo esc_url($record['edit_url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?></td></tr>
                   <?php endforeach; else : ?><tr><td colspan="<?php echo $data['tab'] === 'onboarding' ? '6' : '5'; ?>" class="tfp-admin-overview-empty"><?php esc_html_e('No facilitator records found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
                 </tbody>
               </table></div>
