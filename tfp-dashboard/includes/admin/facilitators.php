@@ -220,6 +220,36 @@ function tfp_admin_facilitators_get_data() {
         $onboarding_rows[] = $record;
     }
 
+    // Use clearly labeled sample cards only when there are no real onboarding records.
+    $onboarding_demo = false;
+    if (!$onboarding_rows) {
+        $onboarding_demo = true;
+        $demo_avatar = get_avatar_url(0, ['size' => 96, 'default' => 'mystery']);
+        $onboarding_rows = [
+            [
+                'name' => 'Shannon Stiggins', 'category' => 'Discipleship',
+                'registered_label' => '· Invited May 18', 'avatar' => $demo_avatar,
+                'steps' => ['account_created' => true, 'profile_complete' => true, 'training_complete' => false, 'cohort_assigned' => false],
+                'completed_steps' => 2, 'progress' => 50,
+                'onboarding_status' => 'progress', 'onboarding_status_label' => __('In Progress', 'tfp-dashboard'),
+            ],
+            [
+                'name' => 'Shannon Stiggins', 'category' => 'Leadership',
+                'registered_label' => '· Invited May 20', 'avatar' => $demo_avatar,
+                'steps' => ['account_created' => true, 'profile_complete' => false, 'training_complete' => false, 'cohort_assigned' => false],
+                'completed_steps' => 1, 'progress' => 25,
+                'onboarding_status' => 'progress', 'onboarding_status_label' => __('In Progress', 'tfp-dashboard'),
+            ],
+            [
+                'name' => 'Sandra James', 'category' => 'Kingdom Expansion',
+                'registered_label' => '· Invited May 22', 'avatar' => $demo_avatar,
+                'steps' => ['account_created' => true, 'profile_complete' => false, 'training_complete' => false, 'cohort_assigned' => false],
+                'completed_steps' => 1, 'progress' => 25,
+                'onboarding_status' => 'review', 'onboarding_status_label' => __('Needs Review', 'tfp-dashboard'),
+            ],
+        ];
+    }
+
     $filtered = $records;
     if ($tab === 'active') {
         $filtered = $active_rows;
@@ -243,6 +273,7 @@ function tfp_admin_facilitators_get_data() {
         'active_rows' => $active_rows,
         'pending_rows' => $pending_rows,
         'onboarding_rows' => $onboarding_rows,
+        'onboarding_demo' => $onboarding_demo,
     ];
 }
 
@@ -366,6 +397,7 @@ function tfp_admin_facilitators_render() {
             <?php $in_progress_count = count($data['onboarding_rows']); ?>
             <section class="tfp-admin-panel tfp-admin-facilitator-onboarding-panel">
               <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Onboarding', 'tfp-dashboard'); ?></h2></div><small><?php echo esc_html(sprintf(__('%d in progress', 'tfp-dashboard'), $in_progress_count)); ?></small></header>
+              <?php if (!empty($data['onboarding_demo'])) : ?><p class="tfp-admin-facilitators-empty" role="note"><?php esc_html_e('Demo preview: sample onboarding cards only; not real facilitator accounts.', 'tfp-dashboard'); ?></p><?php endif; ?>
               <div class="tfp-admin-onboarding-list">
                 <?php if ($data['onboarding_rows']) : foreach ($data['onboarding_rows'] as $record) : ?>
                   <article class="tfp-admin-onboarding-card">
