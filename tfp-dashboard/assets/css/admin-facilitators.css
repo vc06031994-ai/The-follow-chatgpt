@@ -662,3 +662,9 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-emp
         min-height:160px;
     }
 }
+
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-demo-note{
+    margin:0 0 10px;
+    color:#8b6b22;
+    font-size:11px;
+}
