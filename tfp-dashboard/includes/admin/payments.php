@@ -49,6 +49,18 @@ function tfp_admin_payments_get_data() {
     $filtered = [];
     $gross = 0.0; $refunds = 0.0; $net = 0.0;
     $products = []; $methods = []; $quarters = [];
+
+    // Pre-fill the current year's four quarters so empty quarters still appear on the chart.
+    $chart_year = (int) current_time('Y');
+    for ($quarter_number = 1; $quarter_number <= 4; $quarter_number++) {
+        $quarter_key = $chart_year . ' Q' . $quarter_number;
+        $quarters[$quarter_key] = [
+            'label' => 'Q' . $quarter_number,
+            'gross' => 0,
+            'net' => 0,
+            'products' => [],
+        ];
+    }
     foreach ($orders as $order) {
         if (!$order instanceof WC_Order) { continue; }
         $date = $order->get_date_created();
