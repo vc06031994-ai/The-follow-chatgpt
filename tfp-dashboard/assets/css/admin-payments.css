@@ -522,3 +522,21 @@ body.tfp-admin-payments-view .tfp-payments-methods>div{
     body.tfp-admin-payments-view .tfp-payments-breakdown-panel{height:auto;min-height:276px}
     body.tfp-admin-payments-view .tfp-payments-chart{height:176px}
 }
+
+
+/* Payments filter dropdown background */
+body.tfp-admin-payments-view .tfp-payments-filters select{
+    background-color:#dfe3e3;
+    border-color:#c9cece;
+    color:#171717;
+}
+body.tfp-admin-payments-view .tfp-payments-filters select:focus{
+    background-color:#dfe3e3;
+    border-color:#00666e;
+    outline:2px solid rgba(0,102,110,.12);
+    outline-offset:1px;
+}
+body.tfp-admin-payments-view .tfp-payments-filters select option{
+    background:#fff;
+    color:#171717;
+}
