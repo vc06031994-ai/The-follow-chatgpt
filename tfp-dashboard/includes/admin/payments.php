@@ -31,11 +31,16 @@ add_action('template_redirect', function () {
 
 function tfp_admin_payments_get_orders($args = []) {
     if (!function_exists('wc_get_orders')) { return []; }
+    // Include every registered WooCommerce order status in the transaction list.
+    $available_statuses = function_exists('wc_get_order_statuses')
+        ? array_keys(wc_get_order_statuses())
+        : ['wc-pending', 'wc-processing', 'wc-on-hold', 'wc-completed', 'wc-refunded', 'wc-failed', 'wc-cancelled'];
+
     $defaults = [
         'limit' => 500,
         'orderby' => 'date',
         'order' => 'DESC',
-        'status' => ['processing', 'completed', 'refunded', 'partially-refunded'],
+        'status' => $available_statuses,
         'return' => 'objects',
     ];
     return wc_get_orders(wp_parse_args($args, $defaults));
