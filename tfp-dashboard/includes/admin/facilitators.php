@@ -29,49 +29,6 @@ add_action('template_redirect', function () {
 }, 1);
 
 
-/**
- * Save the facilitator compensation settings from the Admin Payment tab.
- * Actual money transfers and payout-provider actions remain handled by their
- * dedicated integrations; this handler only persists the approved pay terms.
- */
-function tfp_admin_save_facilitator_pay_structure() {
-    if (!current_user_can('manage_options')) {
-        wp_die(esc_html__('You do not have permission to update facilitator payment settings.', 'tfp-dashboard'), '', ['response' => 403]);
-    }
-
-    $facilitator_id = isset($_POST['facilitator_id']) ? absint($_POST['facilitator_id']) : 0;
-    check_admin_referer('tfp_save_facilitator_pay_structure_' . $facilitator_id);
-
-    $facilitator = $facilitator_id ? get_user_by('id', $facilitator_id) : false;
-    if (!$facilitator || !array_intersect(['facilitator', 'group_leader'], (array) $facilitator->roles)) {
-        wp_die(esc_html__('Facilitator account not found.', 'tfp-dashboard'), '', ['response' => 404]);
-    }
-
-    $allowed_types = ['per_student', 'flat_rate'];
-    $compensation_type = isset($_POST['compensation_type']) ? sanitize_key(wp_unslash($_POST['compensation_type'])) : 'per_student';
-    if (!in_array($compensation_type, $allowed_types, true)) {
-        $compensation_type = 'per_student';
-    }
-
-    $pay_rate = isset($_POST['pay_rate']) ? wp_unslash($_POST['pay_rate']) : '';
-    $completion_bonus = isset($_POST['completion_bonus']) ? wp_unslash($_POST['completion_bonus']) : '';
-    $pay_rate = is_numeric($pay_rate) ? max(0, round((float) $pay_rate, 2)) : 0;
-    $completion_bonus = ($completion_bonus !== '' && is_numeric($completion_bonus)) ? max(0, round((float) $completion_bonus, 2)) : '';
-
-    update_user_meta($facilitator_id, 'tfp_compensation_type', $compensation_type);
-    update_user_meta($facilitator_id, 'tfp_pay_rate', $pay_rate);
-    update_user_meta($facilitator_id, 'tfp_completion_bonus', $completion_bonus);
-
-    $redirect = add_query_arg([
-        'facilitator_id' => $facilitator_id,
-        'profile_tab' => 'payment',
-        'payment_saved' => '1',
-    ], tfp_admin_facilitators_url());
-    wp_safe_redirect($redirect);
-    exit;
-}
-add_action('admin_post_tfp_save_facilitator_pay_structure', 'tfp_admin_save_facilitator_pay_structure');
-
 /** Fetch facilitator records from existing WordPress accounts. */
 function tfp_admin_facilitators_get_data() {
     $users = get_users([
@@ -458,50 +415,10 @@ function tfp_admin_facilitators_render() {
                 <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Admin Notes', 'tfp-dashboard'); ?></h2><label><?php esc_html_e('Internal Notes', 'tfp-dashboard'); ?></label><div class="tfp-admin-detail-notes"><?php echo $detail_notes !== '' ? esc_html($detail_notes) : esc_html__('No internal notes have been added.', 'tfp-dashboard'); ?></div><label><?php esc_html_e('Onboarding Admin', 'tfp-dashboard'); ?></label><p class="tfp-admin-detail-field"><?php $detail_admin = $detail_demo ? 'Admin — Sarah T.' : get_user_meta($detail_id, 'tfp_onboarding_admin', true); echo esc_html($detail_admin ?: '—'); ?></p></section>
               </div>
             <?php elseif ($detail_tab === 'payment') : ?>
-              <?php
-                $payment_comp_type = sanitize_key((string) get_user_meta($detail_id, 'tfp_compensation_type', true));
-                if (!in_array($payment_comp_type, ['per_student', 'flat_rate'], true)) { $payment_comp_type = 'per_student'; }
-                $payment_rate = get_user_meta($detail_id, 'tfp_pay_rate', true);
-                $payment_bonus = get_user_meta($detail_id, 'tfp_completion_bonus', true);
-                $payment_total = get_user_meta($detail_id, 'tfp_total_paid_to_date', true);
-                $payment_last_amount = get_user_meta($detail_id, 'tfp_last_payment_amount', true);
-                $payment_last_date = get_user_meta($detail_id, 'tfp_last_payment_date', true);
-                $payment_provider_status = get_user_meta($detail_id, 'tfp_payout_provider_status', true);
-                $payment_saved = isset($_GET['payment_saved']) && sanitize_key(wp_unslash($_GET['payment_saved'])) === '1';
-              ?>
-              <?php if ($payment_saved) : ?><div class="tfp-admin-payment-notice" role="status"><?php esc_html_e('Payment structure saved successfully.', 'tfp-dashboard'); ?></div><?php endif; ?>
-              <section class="tfp-admin-payment-summary">
-                <div><small><?php esc_html_e('Total Paid to Date', 'tfp-dashboard'); ?></small><strong><?php echo ($payment_total !== '' && is_numeric($payment_total)) ? esc_html('$' . number_format_i18n((float) $payment_total, 2)) : '—'; ?></strong></div>
-                <div class="tfp-admin-payment-last"><small><?php esc_html_e('Last Payment', 'tfp-dashboard'); ?></small><strong><?php echo ($payment_last_amount !== '' && is_numeric($payment_last_amount)) ? esc_html('$' . number_format_i18n((float) $payment_last_amount, 2)) : esc_html__('No payment recorded', 'tfp-dashboard'); ?><?php if ($payment_last_date) : ?> — <?php echo esc_html(wp_date('M j, Y', strtotime($payment_last_date))); ?><?php endif; ?></strong><small><?php echo esc_html($payment_provider_status ? sanitize_text_field($payment_provider_status) : __('Payout provider not connected', 'tfp-dashboard')); ?></small></div>
+              <section class="tfp-admin-panel tfp-admin-detail-card">
+                <h2><?php esc_html_e('Payment Information', 'tfp-dashboard'); ?></h2>
+                <p class="tfp-admin-detail-muted"><?php esc_html_e('Payment information is not available yet.', 'tfp-dashboard'); ?></p>
               </section>
-              <div class="tfp-admin-payment-actions">
-                <button type="button" disabled title="<?php esc_attr_e('A payout provider integration is required.', 'tfp-dashboard'); ?>"><strong><?php esc_html_e('Send Payment', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Issue a manual payment', 'tfp-dashboard'); ?></span></button>
-                <button type="button" disabled title="<?php esc_attr_e('A payout provider integration is required.', 'tfp-dashboard'); ?>"><strong><?php esc_html_e('Request Banking Update', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Send payout account update request', 'tfp-dashboard'); ?></span></button>
-                <button type="button" disabled title="<?php esc_attr_e('Document delivery is not connected here yet.', 'tfp-dashboard'); ?>"><strong><?php esc_html_e('Send Paperwork', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Resend W-9, contract, or document', 'tfp-dashboard'); ?></span></button>
-                <button type="button" disabled title="<?php esc_attr_e('Compensation settings can be edited below.', 'tfp-dashboard'); ?>"><strong><?php esc_html_e('Adjust Pay Rate', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Edit flat rate or bonus below', 'tfp-dashboard'); ?></span></button>
-              </div>
-              <div class="tfp-admin-payment-grid">
-                <section class="tfp-admin-panel tfp-admin-payment-editor">
-                  <h2><?php esc_html_e('Pay Structure Editor', 'tfp-dashboard'); ?></h2>
-                  <?php if ($detail_demo) : ?><p class="tfp-admin-payment-demo-note"><?php esc_html_e('Demo preview — payment settings are read-only.', 'tfp-dashboard'); ?></p><?php endif; ?>
-                  <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                    <input type="hidden" name="action" value="tfp_save_facilitator_pay_structure">
-                    <input type="hidden" name="facilitator_id" value="<?php echo esc_attr($detail_id); ?>">
-                    <?php wp_nonce_field('tfp_save_facilitator_pay_structure_' . $detail_id); ?>
-                    <label for="tfp-payment-type"><?php esc_html_e('Compensation Type', 'tfp-dashboard'); ?></label>
-                    <select id="tfp-payment-type" name="compensation_type" <?php disabled($detail_demo); ?>>
-                      <option value="per_student" <?php selected($payment_comp_type, 'per_student'); ?>><?php esc_html_e('Per Student (Flat Rate)', 'tfp-dashboard'); ?></option>
-                      <option value="flat_rate" <?php selected($payment_comp_type, 'flat_rate'); ?>><?php esc_html_e('Flat Rate', 'tfp-dashboard'); ?></option>
-                    </select>
-                    <label for="tfp-payment-rate"><?php esc_html_e('Pay Rate', 'tfp-dashboard'); ?></label>
-                    <div class="tfp-admin-payment-input"><span>$</span><input id="tfp-payment-rate" type="number" name="pay_rate" min="0" step="0.01" value="<?php echo esc_attr($payment_rate !== '' ? $payment_rate : ''); ?>" placeholder="0.00" <?php disabled($detail_demo); ?>></div>
-                    <label for="tfp-payment-bonus"><?php esc_html_e('Completion Bonus (Optional)', 'tfp-dashboard'); ?></label>
-                    <div class="tfp-admin-payment-input"><span>$</span><input id="tfp-payment-bonus" type="number" name="completion_bonus" min="0" step="0.01" value="<?php echo esc_attr($payment_bonus !== '' ? $payment_bonus : ''); ?>" placeholder="0.00" <?php disabled($detail_demo); ?>></div>
-                    <button type="submit" class="tfp-admin-payment-save" <?php disabled($detail_demo); ?>><?php esc_html_e('Save Pay Structure', 'tfp-dashboard'); ?></button>
-                  </form>
-                </section>
-                <section class="tfp-admin-panel tfp-admin-payment-payouts"><h2><?php esc_html_e('Payout Log', 'tfp-dashboard'); ?></h2><div class="tfp-admin-payment-empty"><?php esc_html_e('No payout records are available for this facilitator yet.', 'tfp-dashboard'); ?></div></section>
-              </div>
             <?php else : ?>
               <section class="tfp-admin-panel tfp-admin-detail-card">
                 <h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2>
