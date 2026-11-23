@@ -1109,13 +1109,25 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance
   }
 }
 
-/* Match the Figma pencil icon in the Cohort Governance ruleset card. */
-body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-edit-ruleset .dashicons{
-  width:13px;
-  height:13px;
-  font-size:13px;
-  line-height:13px;
-  vertical-align:middle;
+/* Match the larger outlined pencil icon shown in the supplied reference. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-ruleset-heading .tfp-admin-cohort-edit-ruleset{
+  gap:12px!important;
+  font-size:16px!important;
+  line-height:1.3!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-cohort-edit-icon{
+  display:inline-flex;
+  flex:0 0 22px;
+  width:22px;
+  height:22px;
+  align-items:center;
+  justify-content:center;
+  line-height:0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-cohort-edit-icon svg{
+  display:block;
+  width:22px;
+  height:22px;
 }
 
 /* Popup action icons — match the supplied Save and Cancel reference. */
