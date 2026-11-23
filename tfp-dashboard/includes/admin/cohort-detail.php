@@ -721,7 +721,7 @@ function tfp_admin_cohort_detail_render() {
                         <td><span class="tfp-admin-cohort-activity-status is-<?php echo esc_attr($activity_status); ?>"><?php echo esc_html($activity_status === 'blocked' ? __('Blocked', 'tfp-dashboard') : ($activity_status === 'attention' ? __('Attention', 'tfp-dashboard') : __('On Track', 'tfp-dashboard'))); ?></span></td>
                         <td><?php echo esc_html($activity_description); ?></td>
                         <td><time datetime="<?php echo esc_attr(gmdate('c', strtotime($activity_row->created_at . ' UTC'))); ?>"><?php echo esc_html(wp_date('M j, g:i A T', $activity_timestamp)); ?></time></td>
-                        <td><a class="tfp-admin-cohort-activity-view" href="<?php echo esc_url(add_query_arg(['user_id' => $activity_row->user_id], tfp_admin_users_page_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                        <td><a class="tfp-admin-cohort-activity-view" href="<?php echo esc_url(add_query_arg(['user_id' => $activity_row->user_id], function_exists('tfp_admin_users_page_url') ? tfp_admin_users_page_url() : admin_url('user-edit.php'))); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                       </tr>
                     <?php endforeach; else : ?>
                       <tr><td colspan="6" class="tfp-admin-cohort-activity-empty"><?php esc_html_e('No recorded activity is available for this cohort yet.', 'tfp-dashboard'); ?></td></tr>
