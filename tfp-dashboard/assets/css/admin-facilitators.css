@@ -855,3 +855,89 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
         overflow-x:auto;
     }
 }
+
+
+/* Functional payment action cards and their inline forms. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action{
+    min-width:0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view details.tfp-admin-payment-action{
+    cursor:pointer;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action summary{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:6px;
+    min-height:44px;
+    list-style:none;
+    outline:none;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action summary::-webkit-details-marker{
+    display:none;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action[open]{
+    background:#e1f4f3;
+    border-color:#008b91;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form{
+    display:grid;
+    gap:10px;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid #b8d9d8;
+    cursor:default;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form label{
+    display:grid;
+    gap:5px;
+    color:#171717;
+    font-size:12px;
+    font-weight:600;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form input,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form select,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form textarea{
+    box-sizing:border-box;
+    width:100%;
+    min-height:36px;
+    padding:8px 10px;
+    border:1px solid #c7cece;
+    border-radius:7px;
+    background:#fff;
+    color:#222;
+    font:400 12px/1.4 var(--tfp-dash-font);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form textarea{
+    min-height:72px;
+    resize:vertical;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form button{
+    justify-self:start;
+    min-height:34px;
+    padding:7px 14px;
+    border:0;
+    border-radius:7px;
+    background:#00666e;
+    color:#fff;
+    font:600 12px/1.2 var(--tfp-dash-font);
+    cursor:pointer;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action form button:hover{
+    background:#00505a;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action-note{
+    margin:0;
+    color:#7a4b00;
+    font-size:11px;
+    line-height:1.4;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action-success{
+    margin:0 2px 14px;
+    padding:10px 14px;
+    border:1px solid #9acbc7;
+    border-radius:8px;
+    background:#e1f4f3;
+    color:#155b58;
+    font-size:12px;
+}
