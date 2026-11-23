@@ -49,6 +49,7 @@ function tfp_admin_facilitators_get_data() {
 
     // Resolve cohort assignments once, instead of querying cohorts separately for every facilitator.
     $cohort_assignments = [];
+    $facilitator_cohort_ids = [];
     $cohort_ids = get_posts([
         'post_type' => 'tfp_cohort',
         'post_status' => ['publish', 'private'],
@@ -77,8 +78,10 @@ function tfp_admin_facilitators_get_data() {
         if ($facilitator_id) {
             if (!isset($cohort_assignments[$facilitator_id])) {
                 $cohort_assignments[$facilitator_id] = 0;
+                $facilitator_cohort_ids[$facilitator_id] = [];
             }
             $cohort_assignments[$facilitator_id]++;
+            $facilitator_cohort_ids[$facilitator_id][] = (int) $cohort_id;
         }
     }
 
@@ -146,6 +149,24 @@ function tfp_admin_facilitators_get_data() {
             }
         }
 
+        // Count unique enrolled students across this facilitator's cohorts.
+        // Cohort choices are validated against paid status when the billing helper exists.
+        $student_ids = [];
+        foreach (($facilitator_cohort_ids[$person->ID] ?? []) as $assigned_cohort_id) {
+            $cohort_student_ids = get_users([
+                'meta_key' => 'tfp_cohort_choice',
+                'meta_value' => $assigned_cohort_id,
+                'fields' => 'ID',
+                'number' => -1,
+            ]);
+            foreach ($cohort_student_ids as $cohort_student_id) {
+                $cohort_student_id = absint($cohort_student_id);
+                if ($cohort_student_id && (!function_exists('tfp_billing_user_has_paid') || tfp_billing_user_has_paid($cohort_student_id))) {
+                    $student_ids[$cohort_student_id] = true;
+                }
+            }
+        }
+
         $records[] = [
             'id' => $person->ID,
             'name' => $person->display_name ?: $person->user_login,
@@ -155,6 +176,7 @@ function tfp_admin_facilitators_get_data() {
             'training_complete' => $training_complete,
             'category' => $category ?: __('Unassigned', 'tfp-dashboard'),
             'cohorts' => (int) ($cohort_assignments[$person->ID] ?? 0),
+            'students' => count($student_ids),
             'completion' => max(0, min(100, $completion)),
             'last_login' => $last_login_ts,
             'last_login_label' => $last_login_ts ? wp_date('M j, g:i A', $last_login_ts) : __('Never', 'tfp-dashboard'),
