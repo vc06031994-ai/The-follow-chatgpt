@@ -242,6 +242,79 @@ add_action('admin_post_tfp_admin_save_cohort_governance', function () {
     exit;
 });
 
+/**
+ * Return genuine activity events for students enrolled in this cohort.
+ * Uses the existing audit table; no sample/demo activity is generated.
+ */
+function tfp_admin_cohort_activity_query($cohort_id, $student_ids) {
+    global $wpdb;
+    $student_ids = array_values(array_unique(array_filter(array_map('absint', (array) $student_ids))));
+    $per_page = 10;
+    $page = max(1, absint($_GET['activity_page'] ?? 1));
+    $type = sanitize_key(wp_unslash($_GET['activity_type'] ?? ''));
+    $user_id = absint($_GET['activity_user'] ?? 0);
+    $search = sanitize_text_field(wp_unslash($_GET['activity_search'] ?? ''));
+    $type_map = [
+        'progress' => ['course', 'homework'],
+        'attendance' => ['attendance', 'flag'],
+        'assessment' => ['quiz', 'test'],
+        'engagement' => ['login', 'logout', 'profile'],
+        'access' => ['registration', 'role', 'payment', 'document', 'account', 'cohort'],
+    ];
+    $empty = ['rows' => [], 'total' => 0, 'page' => 1, 'pages' => 1, 'per_page' => $per_page];
+    if (!$student_ids || !function_exists('tfp_user_activity_table')) { return $empty; }
+
+    $table = tfp_user_activity_table();
+    $exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+    if ($exists !== $table) { return $empty; }
+
+    $where = ['a.user_id IN (' . implode(',', array_fill(0, count($student_ids), '%d')) . ')'];
+    $args = $student_ids;
+    if ($user_id && in_array($user_id, $student_ids, true)) {
+        $where[] = 'a.user_id = %d';
+        $args[] = $user_id;
+    }
+    if (isset($type_map[$type])) {
+        $where[] = 'a.event_type IN (' . implode(',', array_fill(0, count($type_map[$type]), '%s')) . ')';
+        $args = array_merge($args, $type_map[$type]);
+    }
+    $cohort_title = get_the_title($cohort_id);
+    $searches_cohort = ($search !== '' && $cohort_title && stripos($cohort_title, $search) !== false);
+    if ($search !== '' && !$searches_cohort) {
+        $like = '%' . $wpdb->esc_like($search) . '%';
+        $where[] = '(u.display_name LIKE %s OR a.event_label LIKE %s OR a.context LIKE %s)';
+        array_push($args, $like, $like, $like);
+    }
+
+    $join = " FROM {$table} a INNER JOIN {$wpdb->users} u ON u.ID = a.user_id ";
+    $condition = ' WHERE ' . implode(' AND ', $where);
+    $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $condition, $args));
+    $pages = max(1, (int) ceil($total / $per_page));
+    $page = min($page, $pages);
+    $query = 'SELECT a.id, a.user_id, a.event_type, a.event_label, a.context, a.created_at, u.display_name' . $join . $condition . ' ORDER BY a.created_at DESC, a.id DESC LIMIT %d OFFSET %d';
+    $rows = $wpdb->get_results($wpdb->prepare($query, array_merge($args, [$per_page, ($page - 1) * $per_page])));
+    return ['rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => $pages, 'per_page' => $per_page];
+}
+
+function tfp_admin_cohort_activity_type_label($event_type) {
+    $map = [
+        'course' => 'Progress', 'homework' => 'Progress',
+        'attendance' => 'Attendance', 'flag' => 'Attendance',
+        'quiz' => 'Assessment', 'test' => 'Assessment',
+        'login' => 'Engagement', 'logout' => 'Engagement', 'profile' => 'Engagement',
+        'registration' => 'Access', 'role' => 'Access', 'payment' => 'Access',
+        'document' => 'Access', 'account' => 'Access', 'cohort' => 'Access',
+    ];
+    return $map[$event_type] ?? 'Activity';
+}
+
+function tfp_admin_cohort_activity_status($row) {
+    $text = strtolower((string) $row->event_label . ' ' . (string) $row->context);
+    if (strpos($text, 'blocked') !== false || strpos($text, 'hard block') !== false) { return 'blocked'; }
+    if (in_array($row->event_type, ['flag', 'attendance'], true) || strpos($text, 'failed') !== false || strpos($text, 'missed') !== false || strpos($text, 'inactive') !== false || strpos($text, 'flag') !== false) { return 'attention'; }
+    return 'on-track';
+}
+
 function tfp_admin_cohort_detail_render() {
     if (!is_user_logged_in()) { auth_redirect(); }
     if (!current_user_can('manage_options')) {
@@ -269,6 +342,10 @@ function tfp_admin_cohort_detail_render() {
     $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'overview';
     $allowed_tabs = ['overview', 'roster', 'schedule', 'settings', 'activity'];
     if (!in_array($tab, $allowed_tabs, true)) { $tab = 'overview'; }
+    $activity_data = ($tab === 'activity') ? tfp_admin_cohort_activity_query($id, $data['students']) : null;
+    $activity_type = sanitize_key(wp_unslash($_GET['activity_type'] ?? ''));
+    $activity_user = absint($_GET['activity_user'] ?? 0);
+    $activity_search = sanitize_text_field(wp_unslash($_GET['activity_search'] ?? ''));
     $edit_url = get_edit_post_link($id, 'raw');
     $facilitator_url = function_exists('tfp_dashboard_get_url')
         ? add_query_arg('tfp_cohort_id', $id, tfp_dashboard_get_url('tfp-dashboard-facilitator-cohorts'))
@@ -343,7 +420,7 @@ function tfp_admin_cohort_detail_render() {
         <button type="button" class="tfp-dash-pageheader__mobile-toggle tfp-student-mobile-toggle tfp-admin-cohort-mobile-toggle" data-tfp-sidebar-toggle data-tfp-admin-toggle aria-controls="tfp-admin-sidebar" aria-expanded="false" aria-label="<?php esc_attr_e('Open admin menu', 'tfp-dashboard'); ?>">
           <?php echo tfp_dashboard_icon('toggle'); ?>
         </button>
-        <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><a href="<?php echo esc_url(tfp_admin_cohorts_url()); ?>"><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></a><b>/</b><strong><?php echo esc_html(get_the_title($id)); ?></strong><?php if (in_array($tab, ['roster', 'schedule'], true)) : ?><b>/</b><strong><?php echo esc_html($tab === 'roster' ? __('Roster', 'tfp-dashboard') : __('Schedule', 'tfp-dashboard')); ?></strong><?php endif; ?></div>
+        <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><a href="<?php echo esc_url(tfp_admin_cohorts_url()); ?>"><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></a><b>/</b><strong><?php echo esc_html(get_the_title($id)); ?></strong><?php if (in_array($tab, ['roster', 'schedule'], true)) : ?><b>/</b><strong><?php echo esc_html($tab === 'roster' ? __('Roster', 'tfp-dashboard') : __('Schedule', 'tfp-dashboard')); ?></strong><?php endif; ?><?php if ($tab === 'activity') : ?><b>/</b><strong><?php esc_html_e('Activity', 'tfp-dashboard'); ?></strong><form class="tfp-admin-cohort-top-search" method="get" action="<?php echo esc_url(tfp_admin_cohort_detail_url($id)); ?>"><input type="hidden" name="tab" value="activity"><input type="search" name="activity_search" value="<?php echo esc_attr($activity_search); ?>" placeholder="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>" aria-label="<?php esc_attr_e('Search cohort activity', 'tfp-dashboard'); ?>"><button type="submit" aria-label="<?php esc_attr_e('Search', 'tfp-dashboard'); ?>"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg></button></form><?php endif; ?></div>
         <header class="tfp-admin-page-header tfp-admin-cohort-detail-header">
           <div class="tfp-admin-cohort-heading"><h1><?php echo esc_html(get_the_title($id)); ?></h1><p><?php echo esc_html($data['course'] ? $data['course']->post_title : __('Course not assigned', 'tfp-dashboard')); ?> · <?php echo esc_html(sprintf(__('Facilitator: %s', 'tfp-dashboard'), $data['facilitator'] ? $data['facilitator']->display_name : '—')); ?> · <?php echo esc_html($data['schedule'] ?: __('Schedule not set', 'tfp-dashboard')); ?></p>
             <div class="tfp-admin-cohort-header-actions"><span class="tfp-admin-cohort-live-status"><?php echo esc_html($data['status']); ?></span><a class="tfp-admin-cohort-secondary" href="<?php echo esc_url(add_query_arg('post', $id, admin_url('post.php')) . '&action=edit'); ?>"><?php esc_html_e('Reassign Facilitator', 'tfp-dashboard'); ?></a><a class="tfp-admin-cohort-secondary" href="<?php echo esc_url($edit_url); ?>"><?php esc_html_e('Edit Settings', 'tfp-dashboard'); ?></a><?php if ($facilitator_url) : ?><a class="tfp-admin-cohort-primary" href="<?php echo esc_url($facilitator_url); ?>"><?php esc_html_e('Open Facilitator View', 'tfp-dashboard'); ?> <span aria-hidden="true">↗</span></a><?php endif; ?></div>
@@ -606,6 +683,60 @@ function tfp_admin_cohort_detail_render() {
               document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('is-open'))close();});
             })();
             </script>
+          <?php elseif ($tab === 'activity') : ?>
+            <form class="tfp-admin-cohort-activity-filters" method="get" action="<?php echo esc_url(tfp_admin_cohort_detail_url($id)); ?>">
+              <input type="hidden" name="tab" value="activity">
+              <label class="screen-reader-text" for="tfp-cohort-activity-type"><?php esc_html_e('Activity type', 'tfp-dashboard'); ?></label>
+              <select id="tfp-cohort-activity-type" name="activity_type" onchange="this.form.submit()">
+                <option value=""><?php esc_html_e('All Types', 'tfp-dashboard'); ?></option>
+                <?php foreach (['progress' => 'Progress', 'attendance' => 'Attendance', 'assessment' => 'Assessment', 'engagement' => 'Engagement', 'access' => 'Access'] as $type_key => $type_label) : ?>
+                  <option value="<?php echo esc_attr($type_key); ?>" <?php selected($activity_type, $type_key); ?>><?php echo esc_html($type_label); ?></option>
+                <?php endforeach; ?>
+              </select>
+              <label class="screen-reader-text" for="tfp-cohort-activity-user"><?php esc_html_e('Cohort user', 'tfp-dashboard'); ?></label>
+              <select id="tfp-cohort-activity-user" name="activity_user" onchange="this.form.submit()">
+                <option value=""><?php esc_html_e('All Users', 'tfp-dashboard'); ?></option>
+                <?php foreach ($data['students'] as $student_id) : $activity_student = get_userdata($student_id); if (!$activity_student) { continue; } ?>
+                  <option value="<?php echo esc_attr($student_id); ?>" <?php selected($activity_user, $student_id); ?>><?php echo esc_html($activity_student->display_name); ?></option>
+                <?php endforeach; ?>
+              </select>
+              <label class="tfp-admin-cohort-activity-search" for="tfp-cohort-activity-search">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg>
+                <input id="tfp-cohort-activity-search" type="search" name="activity_search" value="<?php echo esc_attr($activity_search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>">
+              </label>
+            </form>
+            <section class="tfp-admin-cohort-activity-panel">
+              <div class="tfp-admin-cohort-activity-table-scroll">
+                <table class="tfp-admin-cohort-activity-table">
+                  <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Type', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Activity', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Time', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                  <tbody>
+                    <?php if (!empty($activity_data['rows'])) : foreach ($activity_data['rows'] as $activity_row) :
+                      $activity_status = tfp_admin_cohort_activity_status($activity_row);
+                      $activity_description = trim((string) $activity_row->event_label . ((string) $activity_row->context !== '' ? ' — ' . (string) $activity_row->context : ''));
+                      $activity_timestamp = strtotime(get_date_from_gmt($activity_row->created_at));
+                    ?>
+                      <tr>
+                        <td><strong><?php echo esc_html($activity_row->display_name); ?></strong></td>
+                        <td><?php echo esc_html(tfp_admin_cohort_activity_type_label($activity_row->event_type)); ?></td>
+                        <td><span class="tfp-admin-cohort-activity-status is-<?php echo esc_attr($activity_status); ?>"><?php echo esc_html($activity_status === 'blocked' ? __('Blocked', 'tfp-dashboard') : ($activity_status === 'attention' ? __('Attention', 'tfp-dashboard') : __('On Track', 'tfp-dashboard'))); ?></span></td>
+                        <td><?php echo esc_html($activity_description); ?></td>
+                        <td><time datetime="<?php echo esc_attr(gmdate('c', strtotime($activity_row->created_at . ' UTC'))); ?>"><?php echo esc_html(wp_date('M j, g:i A T', $activity_timestamp)); ?></time></td>
+                        <td><a class="tfp-admin-cohort-activity-view" href="<?php echo esc_url(add_query_arg(['user_id' => $activity_row->user_id], tfp_admin_users_page_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
+                      </tr>
+                    <?php endforeach; else : ?>
+                      <tr><td colspan="6" class="tfp-admin-cohort-activity-empty"><?php esc_html_e('No recorded activity is available for this cohort yet.', 'tfp-dashboard'); ?></td></tr>
+                    <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
+              <footer class="tfp-admin-cohort-activity-pagination">
+                <span><?php echo esc_html(sprintf(__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), $activity_data['total'] ? (($activity_data['page'] - 1) * $activity_data['per_page']) + 1 : 0, min($activity_data['page'] * $activity_data['per_page'], $activity_data['total']), $activity_data['total'])); ?></span>
+                <nav aria-label="<?php esc_attr_e('Cohort activity pages', 'tfp-dashboard'); ?>">
+                  <?php if ($activity_data['page'] > 1) : ?><a href="<?php echo esc_url(add_query_arg('activity_page', $activity_data['page'] - 1, remove_query_arg('activity_page'))); ?>" class="is-previous">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></a><?php else : ?><span class="is-disabled">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></span><?php endif; ?>
+                  <?php if ($activity_data['page'] < $activity_data['pages']) : ?><a href="<?php echo esc_url(add_query_arg('activity_page', $activity_data['page'] + 1, remove_query_arg('activity_page'))); ?>" class="is-next"><span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span> ›</a><?php else : ?><span class="is-disabled"><span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span> ›</span><?php endif; ?>
+                </nav>
+              </footer>
+            </section>
           <?php else : ?>
             <section class="tfp-admin-cohort-data-panel"><h2><?php esc_html_e('Recent Activity', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Cohort created', 'tfp-dashboard'); ?> · <?php echo esc_html(get_the_date(get_option('date_format') . ' ' . get_option('time_format'), $id)); ?></p><p><?php esc_html_e('Last updated', 'tfp-dashboard'); ?> · <?php echo esc_html(get_the_modified_date(get_option('date_format') . ' ' . get_option('time_format'), $id)); ?></p></section>
           <?php endif; ?>
