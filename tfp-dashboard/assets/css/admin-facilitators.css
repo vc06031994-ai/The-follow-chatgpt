@@ -432,3 +432,18 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-card
         gap:var(--tfp-space-4);
     }
 }
+
+
+/* Center the Action heading and controls in the facilitator paperwork table. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table th:last-child,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:last-child{
+    text-align:center;
+    vertical-align:middle;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:last-child > a,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:last-child > button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto;
+}
