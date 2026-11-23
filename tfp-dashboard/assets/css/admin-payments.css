@@ -434,3 +434,91 @@ body.tfp-admin-payments-view input[type="date"]::-webkit-calendar-picker-indicat
 body.tfp-admin-payments-view input[type="date"]::-webkit-inner-spin-button{
     display:none;
 }
+
+
+/* Pixel-match refinements for the Revenue and Product Breakdown panels. */
+body.tfp-admin-payments-view .tfp-payments-chart-grid{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:var(--tfp-layout-card-gap,var(--tfp-space-4,16px));
+    align-items:stretch;
+}
+body.tfp-admin-payments-view .tfp-payments-revenue-panel,
+body.tfp-admin-payments-view .tfp-payments-breakdown-panel{
+    box-sizing:border-box;
+    height:276px;
+    min-height:276px;
+    padding:var(--tfp-space-3,12px);
+}
+body.tfp-admin-payments-view .tfp-payments-chart{
+    height:176px;
+    margin-top:var(--tfp-space-3,12px);
+}
+body.tfp-admin-payments-view .tfp-payments-y-labels{
+    padding-bottom:22px;
+    font-size:9px;
+}
+body.tfp-admin-payments-view .tfp-payments-bar-group{
+    width:17%;
+    gap:5px;
+}
+body.tfp-admin-payments-view .tfp-payments-bar{
+    max-width:56px;
+}
+body.tfp-admin-payments-view .tfp-payments-legend{
+    gap:10px;
+    margin-top:var(--tfp-space-2,8px);
+    font-size:9px;
+}
+body.tfp-admin-payments-view .tfp-payments-legend i{
+    width:45px;
+    height:12px;
+}
+body.tfp-admin-payments-view .tfp-payments-product-breakdown{
+    grid-template-columns:112px minmax(0,1fr);
+    gap:var(--tfp-space-3,12px);
+    margin:var(--tfp-space-3,12px) 0 var(--tfp-space-3,12px);
+}
+body.tfp-admin-payments-view .tfp-payments-donut{
+    width:88px;
+    height:88px;
+    justify-self:center;
+    background-color:#e5e5e5;
+}
+body.tfp-admin-payments-view .tfp-payments-donut span{
+    width:62px;
+    height:62px;
+}
+body.tfp-admin-payments-view .tfp-payments-product-list>div{
+    min-height:32px;
+    padding:var(--tfp-space-2,8px) 0;
+    align-items:center;
+}
+body.tfp-admin-payments-view .tfp-payments-product-list strong{
+    font-size:10px;
+    line-height:1.35;
+}
+body.tfp-admin-payments-view .tfp-payments-product-list b{
+    font-size:10px;
+}
+body.tfp-admin-payments-view .tfp-payments-methods h3{
+    margin:var(--tfp-space-2,8px) 0 4px;
+    font-size:14px;
+}
+body.tfp-admin-payments-view .tfp-payments-methods>p{
+    margin:0 0 3px;
+    font-size:9px;
+}
+body.tfp-admin-payments-view .tfp-payments-methods>div{
+    min-height:32px;
+    padding:var(--tfp-space-2,8px) 0;
+    font-size:10px;
+}
+@media(max-width:1100px){
+    body.tfp-admin-payments-view .tfp-payments-chart-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+@media(max-width:767px){
+    body.tfp-admin-payments-view .tfp-payments-chart-grid{grid-template-columns:minmax(0,1fr)}
+    body.tfp-admin-payments-view .tfp-payments-revenue-panel,
+    body.tfp-admin-payments-view .tfp-payments-breakdown-panel{height:auto;min-height:276px}
+    body.tfp-admin-payments-view .tfp-payments-chart{height:176px}
+}
