@@ -451,7 +451,9 @@ function tfp_admin_facilitators_render() {
                   <tbody>
                     <?php if ($data['active_rows']) : foreach ($data['active_rows'] as $record) : ?>
                       <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(isset($record['students']) ? number_format_i18n($record['students']) : 'N/A'); ?></td><td><?php echo esc_html(number_format_i18n($record['cohorts'])); ?></td><td><?php echo esc_html($record['homework_rate'] ?? 'N/A'); ?></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><span class="tfp-admin-facilitator-status is-active"><?php echo esc_html(ucfirst($record['status'])); ?></span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('facilitator_id', absint($record['id']), tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
-                    <?php endforeach; else : ?><tr><td colspan="8" class="tfp-admin-overview-empty"><?php esc_html_e('No active facilitators found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                    <?php endforeach; endif; ?>
+                    <tr class="tfp-admin-facilitator-demo-row"><td><strong>Shannon Stiggins</strong><small>shannon.demo@example.com · Demo</small></td><td>Discipleship</td><td>50</td><td>2</td><td>75%</td><td>Mon, 7:00 PM PST</td><td><span class="tfp-admin-facilitator-status is-active">Active</span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('demo', 1, tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php if (!$data['active_rows']) : ?><tr><td colspan="8" class="tfp-admin-overview-empty"><?php esc_html_e('No real active facilitators found. The demo row above is for design preview only.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
                   </tbody>
                 </table></div>
               </section>
