@@ -50,9 +50,20 @@ function tfp_admin_facilitators_get_data() {
         $last_login = (string) get_user_meta($person->ID, '_tfp_last_login', true);
         $last_login_ts = $last_login ? strtotime($last_login) : 0;
         $category = trim((string) get_user_meta($person->ID, 'tfp_system', true));
-        $completion = function_exists('tfp_get_profile_completion')
-            ? (int) tfp_get_profile_completion($person)
-            : 0;
+        if (function_exists('tfp_get_profile_completion')) {
+            $completion = (int) tfp_get_profile_completion($person);
+        } else {
+            // Fallback to the established profile fields if the authentication helper is unavailable.
+            $required = [
+                trim((string) get_user_meta($person->ID, 'first_name', true)),
+                trim((string) get_user_meta($person->ID, 'last_name', true)),
+                trim((string) $person->user_email),
+                trim((string) get_user_meta($person->ID, 'billing_phone', true)),
+                absint(get_user_meta($person->ID, 'tfp_program_choice', true)),
+            ];
+            $completed = count(array_filter($required, static function ($value) { return !empty($value); }));
+            $completion = (int) round(($completed / count($required)) * 100);
+        }
         $flags = get_user_meta($person->ID, 'tfp_flags', true);
         if ($flags === '' || $flags === false) { $flags = get_user_meta($person->ID, '_tfp_flags', true); }
         $has_flags = is_array($flags) ? !empty($flags) : (absint($flags) > 0 || (is_string($flags) && trim($flags) !== ''));
@@ -77,7 +88,7 @@ function tfp_admin_facilitators_get_data() {
             $flag_alerts[] = [
                 'title' => __('Facilitator Flag', 'tfp-dashboard'),
                 'name' => $person->display_name,
-                'detail' => is_array($flags) ? implode(', ', array_map('sanitize_text_field', $flags)) : (is_string($flags) ? $flags : __('A facilitator account has an active flag.', 'tfp-dashboard')),
+                'detail' => is_array($flags) ? implode(', ', array_filter(array_map(static function ($flag) { return is_scalar($flag) ? sanitize_text_field((string) $flag) : ''; }, $flags))) : (is_string($flags) ? $flags : __('A facilitator account has an active flag.', 'tfp-dashboard')),
                 'time' => $last_login_ts,
             ];
         }
