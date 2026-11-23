@@ -1197,3 +1197,16 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-act
  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-activity-pagination{align-items:flex-start;flex-direction:column;padding:14px}
  body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-activity-pagination nav{width:100%;justify-content:space-between}
 }
+/* Clearly identify temporary, in-memory activity preview records. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-activity-preview-note{
+  height:34px!important;
+  padding:7px 14px!important;
+  background:#f2f8f8!important;
+  color:#47666a!important;
+  font-size:11px!important;
+  text-align:left!important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-activity-view.is-preview{
+  opacity:.72;
+  cursor:default;
+}
