@@ -308,6 +308,13 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-identity h1{margin:0 0 8px;font-size:34px;line-height:1.1;font-weight:700}
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-contact{display:flex;flex-wrap:wrap;gap:18px;color:#282828;font-family:Georgia,serif;font-size:14px}
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-back{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;border-radius:8px;background:#00666e;color:#fff;text-decoration:none;white-space:nowrap}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-back img{
+    display:block;
+    width:14px;
+    height:14px;
+    object-fit:contain;
+    flex:0 0 14px;
+}
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-tabs{display:flex;align-items:center;gap:0;min-height:42px;margin:0 0 18px;border-bottom:1px solid #c4c8ca;overflow-x:auto}
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-tabs a{display:flex;align-items:center;min-height:42px;padding:0 18px;border-bottom:2px solid transparent;color:#b8b8b8;font-size:14px;font-weight:650;text-decoration:none;white-space:nowrap}
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-tabs a.is-active{border-color:#00666e;color:#171717}
