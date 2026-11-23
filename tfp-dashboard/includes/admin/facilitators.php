@@ -135,10 +135,11 @@ function tfp_admin_facilitators_get_data() {
         $training_complete = false;
         if (function_exists('learndash_user_get_enrolled_courses') && function_exists('learndash_is_course_complete')) {
             $enrolled_courses = learndash_user_get_enrolled_courses($person->ID);
-            if (is_array($enrolled_courses)) {
+            if (is_array($enrolled_courses) && !empty($enrolled_courses)) {
+                $training_complete = true;
                 foreach ($enrolled_courses as $enrolled_course_id) {
-                    if (learndash_is_course_complete($person->ID, absint($enrolled_course_id))) {
-                        $training_complete = true;
+                    if (!learndash_is_course_complete($person->ID, absint($enrolled_course_id))) {
+                        $training_complete = false;
                         break;
                     }
                 }
@@ -276,19 +277,50 @@ function tfp_admin_facilitators_render() {
     if ($detail_demo) { $detail_categories = ['Discipleship', 'Leadership']; }
     if (!$detail_categories && $detail_category !== '') { $detail_categories = [$detail_category]; }
     $detail_notes = $detail_demo ? 'Strong communicator. Recommended by Pastor James. Cleared for Discipleship + Leadership tracks.' : (string) get_user_meta($detail_id, 'tfp_admin_notes', true);
-    $detail_cohorts = $detail_id ? get_posts(['post_type' => 'tfp_cohort', 'post_status' => ['publish', 'private'], 'posts_per_page' => -1, 'meta_query' => [['key' => '_facilitator_user_id', 'value' => $detail_id, 'compare' => '=']], 'no_found_rows' => true]) : [];
+    $detail_cohorts = [];
+    if ($detail_id) {
+        $assigned_cohort_ids = get_posts([
+            'post_type' => 'tfp_cohort',
+            'post_status' => ['publish', 'private'],
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+            'no_found_rows' => true,
+        ]);
+        foreach ($assigned_cohort_ids as $assigned_cohort_id) {
+            $assigned_facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id')
+                ? absint(tfp_cohort_get_facilitator_user_id($assigned_cohort_id))
+                : absint(get_post_meta($assigned_cohort_id, '_facilitator_user_id', true));
+            if ($assigned_facilitator_id === $detail_id) {
+                $assigned_cohort = get_post($assigned_cohort_id);
+                if ($assigned_cohort) { $detail_cohorts[] = $assigned_cohort; }
+            }
+        }
+    }
     $detail_profile_complete = $detail_demo ? 50 : (function_exists('tfp_get_profile_completion') ? (int) tfp_get_profile_completion($detail_person) : 0);
     $detail_training_complete = false;
     if (function_exists('learndash_user_get_enrolled_courses') && function_exists('learndash_is_course_complete')) {
         $detail_courses = learndash_user_get_enrolled_courses($detail_id);
-        if (is_array($detail_courses) && $detail_courses) {
+        if (is_array($detail_courses) && !empty($detail_courses)) {
             $detail_training_complete = true;
             foreach ($detail_courses as $detail_course_id) {
-                if (!learndash_is_course_complete($detail_id, absint($detail_course_id))) { $detail_training_complete = false; break; }
+                if (!learndash_is_course_complete($detail_id, absint($detail_course_id))) {
+                    $detail_training_complete = false;
+                    break;
+                }
             }
         }
     }
-    $detail_steps = $detail_demo ? [true, true, false, false] : [true, $detail_profile_complete >= 100, $detail_training_complete, !empty($detail_cohorts)];
+    $detail_paperwork_complete = $detail_demo
+        ? true
+        : (
+            !empty(get_user_meta($detail_id, 'tfp_signed_contract', true))
+            && !empty(get_user_meta($detail_id, 'tfp_w9_form', true))
+            && !empty(get_user_meta($detail_id, 'tfp_background_check', true))
+            && $detail_profile_complete >= 100
+        );
+    $detail_steps = $detail_demo
+        ? [true, true, false, false]
+        : [true, $detail_paperwork_complete, $detail_training_complete, !empty($detail_cohorts)];
     $detail_completed = count(array_filter($detail_steps));
     $user = wp_get_current_user();
     $nav = function_exists('tfp_admin_dashboard_nav_items') ? tfp_admin_dashboard_nav_items() : [];
