@@ -20,6 +20,14 @@ wp_enqueue_style('tfp-dashboard-components', $dash_url . 'assets/css/components.
 wp_enqueue_style('tfp-admin-dashboard', $dash_url . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], file_exists($admin_css) ? (string) filemtime($admin_css) : $dash_ver);
 wp_enqueue_style('tfp-admin-facilitators', $dash_url . 'assets/css/admin-facilitators.css', ['tfp-admin-dashboard'], file_exists($facilitators_css) ? (string) filemtime($facilitators_css) : $dash_ver);
 wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], file_exists($admin_js) ? (string) filemtime($admin_js) : $dash_ver, true);
+
+// Reuse WooCommerce SelectWoo so Admin filters and payment dropdowns share
+// the same accessible dropdown interaction and visual treatment.
+if (defined('WC_PLUGIN_FILE')) {
+    wp_enqueue_style('tfp-admin-selectwoo', plugins_url('assets/css/select2.css', WC_PLUGIN_FILE), [], defined('WC_VERSION') ? WC_VERSION : null);
+    wp_enqueue_script('tfp-admin-selectwoo', plugins_url('assets/js/selectWoo/selectWoo.full.min.js', WC_PLUGIN_FILE), ['jquery'], defined('WC_VERSION') ? WC_VERSION : null, true);
+    wp_add_inline_script('tfp-admin-selectwoo', "jQuery(function($){var $paymentSelect=$('#tfp-pay-type');if($paymentSelect.length&&$.fn.selectWoo&&!$paymentSelect.hasClass('select2-hidden-accessible')){$paymentSelect.selectWoo({minimumResultsForSearch:Infinity,width:'100%'});}});");
+}
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
