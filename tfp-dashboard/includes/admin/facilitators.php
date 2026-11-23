@@ -415,7 +415,7 @@ function tfp_admin_facilitators_render() {
               </div>
             <?php elseif ($detail_tab === 'payment') : ?>
               <?php
-                // Read payment details from this facilitator's saved WordPress user meta.
+                // Load saved payment metadata; demo values are isolated to the preview.
                 $pay_type = get_user_meta($detail_id, 'tfp_compensation_type', true);
                 $pay_rate = get_user_meta($detail_id, 'tfp_pay_rate', true);
                 $pay_bonus = get_user_meta($detail_id, 'tfp_completion_bonus', true);
@@ -425,31 +425,60 @@ function tfp_admin_facilitators_render() {
                 $pay_provider = get_user_meta($detail_id, 'tfp_payout_provider_status', true);
                 $payout_rows = get_user_meta($detail_id, 'tfp_payout_log', true);
                 if (!is_array($payout_rows)) { $payout_rows = []; }
-
-                // Sample values are isolated to the demo preview only.
                 if ($detail_demo) {
                     $pay_type = 'per_student';
-                    $pay_rate = '500';
-                    $pay_bonus = '50';
-                    $pay_total = '2050';
-                    $pay_last_amount = '500';
+                    $pay_rate = 500;
+                    $pay_bonus = 50;
+                    $pay_total = 2050;
+                    $pay_last_amount = 500;
                     $pay_last_date = '2026-05-15';
                     $pay_provider = 'Stripe Connect · Verified';
                     $payout_rows = [
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-05-15'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-04-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-03-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-02-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-01-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2025-12-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-05-15'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-04-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-03-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-02-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-01-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2025-12-18'],
                     ];
                 }
                 $pay_type_label = $pay_type === 'flat_rate' ? __('Flat Rate', 'tfp-dashboard') : __('Per Student (Flat Rate)', 'tfp-dashboard');
               ?>
               <section class="tfp-admin-payment-summary">
-                <div class="tfp-admin-payment-total">
-                  <small><?php esc_html_e('Total Paid to Date', 'tfp-dashboard'); ?></small>
-                  <strong><?php echo ($pay_total !== '' && is_numeric($pay_total)) ? esc_html('
+                <div><small><?php esc_html_e('Total Paid to Date', 'tfp-dashboard'); ?></small><strong><?php echo is_numeric($pay_total) ? esc_html(chr(36) . number_format_i18n((float) $pay_total, 2)) : '—'; ?></strong></div>
+                <div class="tfp-admin-payment-last"><small><?php esc_html_e('Last Payment', 'tfp-dashboard'); ?></small><strong><?php echo is_numeric($pay_last_amount) ? esc_html(chr(36) . number_format_i18n((float) $pay_last_amount, 2)) : esc_html__('No payment recorded', 'tfp-dashboard'); ?><?php if ($pay_last_date && strtotime($pay_last_date)) : ?> — <?php echo esc_html(wp_date('M j, Y', strtotime($pay_last_date))); ?><?php endif; ?></strong><small><?php echo $pay_provider ? esc_html($pay_provider) : esc_html__('Payout provider not connected', 'tfp-dashboard'); ?></small></div>
+              </section>
+              <div class="tfp-admin-payment-actions">
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Send Payment', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Issue a manual payment', 'tfp-dashboard'); ?></span></div>
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Request Banking Update', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Send Stripe Connect invite', 'tfp-dashboard'); ?></span></div>
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Send Paperwork', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Resend W-9, contract, or doc', 'tfp-dashboard'); ?></span></div>
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Adjust Pay Rate', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Edit flat rate or bonus', 'tfp-dashboard'); ?></span></div>
+              </div>
+              <div class="tfp-admin-payment-grid">
+                <section class="tfp-admin-panel tfp-admin-payment-editor">
+                  <h2><?php esc_html_e('Pay Structure Editor', 'tfp-dashboard'); ?></h2>
+                  <label for="tfp-pay-type"><?php esc_html_e('Compensation Type', 'tfp-dashboard'); ?></label>
+                  <select id="tfp-pay-type" disabled><option><?php echo esc_html($pay_type_label); ?></option></select>
+                  <label for="tfp-pay-rate"><?php esc_html_e('Assigned Roles (select all that apply)', 'tfp-dashboard'); ?></label>
+                  <input id="tfp-pay-rate" type="text" value="<?php echo is_numeric($pay_rate) ? esc_attr(chr(36) . ' ' . number_format_i18n((float) $pay_rate, 2)) : ''; ?>" placeholder="—" readonly>
+                  <label for="tfp-pay-bonus"><?php esc_html_e('Completion Bonus (Optional)', 'tfp-dashboard'); ?></label>
+                  <input id="tfp-pay-bonus" type="text" value="<?php echo is_numeric($pay_bonus) ? esc_attr(chr(36) . ' ' . number_format_i18n((float) $pay_bonus, 2)) : ''; ?>" placeholder="—" readonly>
+                  <?php if (!$detail_demo && !is_numeric($pay_rate) && !is_numeric($pay_bonus)) : ?><p class="tfp-admin-payment-hint"><?php esc_html_e('No pay structure has been saved for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </section>
+                <section class="tfp-admin-panel tfp-admin-payment-payouts">
+                  <h2><?php esc_html_e('Payout Log', 'tfp-dashboard'); ?></h2>
+                  <?php if (!empty($payout_rows)) : ?>
+                    <div class="tfp-admin-payment-payout-list">
+                      <?php foreach ($payout_rows as $payout) : if (!is_array($payout)) { continue; } ?>
+                        <article class="tfp-admin-payment-payout-row">
+                          <div><strong><?php echo !empty($payout['cohort']) ? esc_html(sanitize_text_field($payout['cohort'])) : esc_html__('Payout', 'tfp-dashboard'); ?></strong><small><?php echo !empty($payout['date']) && strtotime($payout['date']) ? esc_html(wp_date('M j, Y g:i A', strtotime($payout['date']))) : '—'; ?></small></div>
+                          <strong><?php echo isset($payout['amount']) && is_numeric($payout['amount']) ? esc_html(chr(36) . number_format_i18n((float) $payout['amount'], 2)) : '—'; ?></strong>
+                        </article>
+                      <?php endforeach; ?>
+                    </div>
+                  <?php else : ?><div class="tfp-admin-payment-empty"><?php esc_html_e('No payout records are available for this facilitator yet.', 'tfp-dashboard'); ?></div><?php endif; ?>
+                </section>
+              </div>
             <?php else : ?>
               <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2><?php if ($detail_cohorts) : ?><ul class="tfp-admin-detail-module-list"><?php foreach ($detail_cohorts as $cohort) : ?><li><?php echo esc_html(get_the_title($cohort)); ?></li><?php endforeach; ?></ul><?php else : ?><p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?></section>
             <?php endif; ?>
