@@ -144,6 +144,50 @@ function tfp_admin_facilitators_get_data() {
     $alerts = array_merge($inactive_alerts, $flag_alerts);
     usort($alerts, static function ($a, $b) { return ($b['time'] ?? 0) <=> ($a['time'] ?? 0); });
 
+    // Demo records are display-only: they are never inserted into WordPress users, cohorts or activity tables.
+    // Show them when explicitly requested (?demo=1), or as a preview when the site has no facilitator accounts.
+    $demo_mode = (isset($_GET['demo']) && sanitize_text_field(wp_unslash($_GET['demo'])) === '1') || empty($users);
+    if ($demo_mode) {
+        $demo_now = current_time('timestamp');
+        $records = [
+            ['id' => 0, 'name' => 'David Osei', 'email' => 'david.osei@example.com', 'category' => 'Cultural Intelligence', 'cohorts' => 2, 'completion' => 100, 'last_login' => $demo_now - DAY_IN_SECONDS, 'last_login_label' => __('Yesterday, 4:20 PM', 'tfp-dashboard'), 'status' => 'active', 'edit_url' => '#'],
+            ['id' => 0, 'name' => 'Marcus Chen', 'email' => 'marcus.chen@example.com', 'category' => 'Discipleship', 'cohorts' => 3, 'completion' => 80, 'last_login' => $demo_now - (2 * DAY_IN_SECONDS), 'last_login_label' => __('2 days ago', 'tfp-dashboard'), 'status' => 'active', 'edit_url' => '#'],
+            ['id' => 0, 'name' => 'Priya Nair', 'email' => 'priya.nair@example.com', 'category' => 'Leadership', 'cohorts' => 1, 'completion' => 60, 'last_login' => $demo_now - (4 * DAY_IN_SECONDS), 'last_login_label' => __('4 days ago', 'tfp-dashboard'), 'status' => 'active', 'edit_url' => '#'],
+            ['id' => 0, 'name' => 'Sara Pooha', 'email' => 'sara.pooha@example.com', 'category' => 'Kingdom Business', 'cohorts' => 2, 'completion' => 100, 'last_login' => $demo_now - (9 * DAY_IN_SECONDS), 'last_login_label' => __('9 days ago', 'tfp-dashboard'), 'status' => 'active', 'edit_url' => '#'],
+            ['id' => 0, 'name' => 'Tanisha Brooks', 'email' => 'tanisha.brooks@example.com', 'category' => 'Kingdom Expansion', 'cohorts' => 1, 'completion' => 40, 'last_login' => $demo_now - (12 * DAY_IN_SECONDS), 'last_login_label' => __('12 days ago', 'tfp-dashboard'), 'status' => 'active', 'edit_url' => '#'],
+            ['id' => 0, 'name' => 'James Walker', 'email' => 'james.walker@example.com', 'category' => 'Discipleship', 'cohorts' => 1, 'completion' => 100, 'last_login' => $demo_now - (3 * HOUR_IN_SECONDS), 'last_login_label' => __('Today, 9:15 AM', 'tfp-dashboard'), 'status' => 'active', 'edit_url' => '#'],
+        ];
+        $categories = [
+            'Discipleship' => 2,
+            'Leadership' => 1,
+            'Kingdom Business' => 1,
+            'Kingdom Expansion' => 1,
+            'Cultural Intelligence' => 1,
+        ];
+        $active_week = 4;
+        $inactive_week = 2;
+        $pending_onboarding = 2;
+        $inactive_alerts = [
+            ['title' => __('Inactive Facilitator', 'tfp-dashboard'), 'name' => 'David Osei', 'detail' => __('No login for 9 days · Cultural Intelligence', 'tfp-dashboard'), 'time' => $demo_now - (9 * DAY_IN_SECONDS)],
+        ];
+        $flag_alerts = [
+            ['title' => __('Missed Post Deadline', 'tfp-dashboard'), 'name' => 'Marcus Chen', 'detail' => __('Missed Week 5 post window · DISC-FALL-PM', 'tfp-dashboard'), 'time' => $demo_now - DAY_IN_SECONDS],
+            ['title' => __('Invitation Expiring', 'tfp-dashboard'), 'name' => '2 invitations', 'detail' => __('Expire within 48 hours · no response yet', 'tfp-dashboard'), 'time' => $demo_now],
+            ['title' => __('Onboarding Complete', 'tfp-dashboard'), 'name' => 'Priya Nair', 'detail' => __('Completed all onboarding steps · ready to lead', 'tfp-dashboard'), 'time' => $demo_now - (2 * HOUR_IN_SECONDS)],
+            ['title' => __('Onboarding Complete', 'tfp-dashboard'), 'name' => 'Sara Pooha', 'detail' => __('Completed all onboarding steps · ready to lead', 'tfp-dashboard'), 'time' => $demo_now - (3 * HOUR_IN_SECONDS)],
+        ];
+        $recent_activity = [
+            (object) ['display_name' => 'Marcus Chen', 'event_label' => __('Reviewed 12 homework submissions', 'tfp-dashboard'), 'context' => '12WK-FOUND-AM', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - (2 * HOUR_IN_SECONDS))],
+            (object) ['display_name' => 'Marcus Chen', 'event_label' => __('Reviewed 12 homework submissions', 'tfp-dashboard'), 'context' => '12WK-FOUND-AM', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - (5 * HOUR_IN_SECONDS))],
+            (object) ['display_name' => 'Assessment set added to Week 6', 'event_label' => __('Posted Week 14 teaching', 'tfp-dashboard'), 'context' => 'LEAD-SPRING-AM', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - DAY_IN_SECONDS)],
+            (object) ['display_name' => 'Priya Nair', 'event_label' => __('Completed onboarding and was assigned', 'tfp-dashboard'), 'context' => 'BIZ-COHORT-01', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - (2 * DAY_IN_SECONDS))],
+            (object) ['display_name' => 'Tanisha Brooks', 'event_label' => __('Flagged 2 disciples for follow-up in', 'tfp-dashboard'), 'context' => 'KE-COHORT-02', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - (3 * DAY_IN_SECONDS))],
+            (object) ['display_name' => 'Marcus Chen', 'event_label' => __('Reviewed 12 homework submissions', 'tfp-dashboard'), 'context' => '12WK-FOUND-AM', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - (4 * DAY_IN_SECONDS))],
+            (object) ['display_name' => 'Marcus Chen', 'event_label' => __('Reviewed 12 homework submissions', 'tfp-dashboard'), 'context' => '12WK-FOUND-AM', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - (5 * DAY_IN_SECONDS))],
+            (object) ['display_name' => 'Marcus Chen', 'event_label' => __('Reviewed 12 homework submissions', 'tfp-dashboard'), 'context' => '12WK-FOUND-AM', 'created_at' => gmdate('Y-m-d H:i:s', $demo_now - (6 * DAY_IN_SECONDS))],
+        ];
+    }
+
     $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'overview';
     if (!in_array($tab, ['overview', 'active', 'onboarding', 'invitations'], true)) { $tab = 'overview'; }
 
@@ -163,7 +207,8 @@ function tfp_admin_facilitators_get_data() {
         'alerts' => array_slice($alerts, 0, 6),
         'recent_activity' => $recent_activity,
         'total' => count($records),
-        'invitation_count' => 0,
+        'invitation_count' => $demo_mode ? 1 : 0,
+        'is_demo' => $demo_mode,
         'tab' => $tab,
         'filtered' => $filtered,
     ];
