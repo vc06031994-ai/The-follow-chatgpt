@@ -124,18 +124,27 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
                 </article>
                 <article class="tfp-payments-panel tfp-payments-breakdown-panel">
                     <h2><?php esc_html_e('Product Breakdown', 'tfp-dashboard'); ?></h2>
-                    <?php $breakdown_products = array_slice($data['products'], 0, 2); $product_sum = array_sum(array_column($breakdown_products, 'total')); $palette = ['#00666e', '#bd9817', '#6c8e91', '#8b6d24', '#9daead']; $offset = 0; ?>
+                    <?php
+                    $breakdown_products = array_slice($data['products'], 0, 2);
+                    $product_sum = array_sum(array_column($breakdown_products, 'total'));
+                    $palette = ['#00666e', '#bd9817'];
+                    $donut_segments = [];
+                    $offset = 0;
+                    foreach ($breakdown_products as $index => $product_row) {
+                        $share = $product_sum > 0 ? ((float) $product_row['total'] / $product_sum) * 100 : 0;
+                        $donut_segments[] = $palette[$index] . ' ' . $offset . '% ' . ($offset + $share) . '%';
+                        $offset += $share;
+                    }
+                    $donut_background = $donut_segments ? 'conic-gradient(' . implode(', ', $donut_segments) . ')' : '#e5e5e5';
+                    ?>
                     <div class="tfp-payments-product-breakdown">
-                        <div class="tfp-payments-donut" style="background:<?php
-                            $donut_segments = [];
-                            foreach ($breakdown_products as $index => $product_row) {
-                                $share = $product_sum > 0 ? ($product_row['total'] / $product_sum) * 100 : 0;
-                                $donut_segments[] = $palette[$index % count($palette)] . ' ' . $offset . '% ' . ($offset + $share) . '%';
-                                $offset += $share;
-                            }
-                            echo $donut_segments ? 'conic-gradient(' . esc_attr(implode(', ', $donut_segments)) . ')' : '#e5e5e5';
-                        ?>"><span></span></div>
-                        <div class="tfp-payments-product-list"><?php foreach ($breakdown_products as $index => $product_row) : $share = $product_sum > 0 ? round(($product_row['total'] / $product_sum) * 100) : 0; ?><div><strong style="color:<?php echo esc_attr($palette[$index % count($palette)]); ?>"><?php echo esc_html($product_row['name']); ?> (<?php echo wp_kses_post(wc_price($product_row['total'])); ?>)</strong><b><?php echo esc_html($share); ?>%</b></div><?php endforeach; ?><?php if (!$breakdown_products) : ?><p class="tfp-payments-empty"><?php esc_html_e('No product sales found.', 'tfp-dashboard'); ?></p><?php endif; ?></div>
+                        <div class="tfp-payments-donut" style="background:<?php echo esc_attr($donut_background); ?>;"><span></span></div>
+                        <div class="tfp-payments-product-list">
+                            <?php foreach ($breakdown_products as $index => $product_row) : $share = $product_sum > 0 ? round(((float) $product_row['total'] / $product_sum) * 100) : 0; ?>
+                                <div><strong style="color:<?php echo esc_attr($palette[$index]); ?>"><?php echo esc_html($product_row['name']); ?> (<?php echo wp_kses_post(wc_price($product_row['total'])); ?>)</strong><b><?php echo esc_html($share); ?>%</b></div>
+                            <?php endforeach; ?>
+                            <?php if (!$breakdown_products) : ?><p class="tfp-payments-empty"><?php esc_html_e('No product sales found.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                        </div>
                     </div>
                     <div class="tfp-payments-methods"><h3><?php esc_html_e('Top Payment Methods', 'tfp-dashboard'); ?></h3><p><?php esc_html_e('Payment gateway totals', 'tfp-dashboard'); ?></p><?php foreach (array_slice($data['methods'], 0, 2, true) as $method => $amount) : ?><div><span><?php echo esc_html($method); ?></span><strong><?php echo wp_kses_post(wc_price($amount)); ?></strong></div><?php endforeach; ?><?php if (!$data['methods']) : ?><p class="tfp-payments-empty"><?php esc_html_e('No payment methods found.', 'tfp-dashboard'); ?></p><?php endif; ?></div>
                 </article>
