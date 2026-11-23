@@ -332,14 +332,15 @@ function tfp_admin_facilitators_render() {
             }
         }
     }
-    $detail_paperwork_complete = $detail_demo
-        ? true
-        : (
-            !empty(get_user_meta($detail_id, 'tfp_signed_contract', true))
-            && !empty(get_user_meta($detail_id, 'tfp_w9_form', true))
-            && !empty(get_user_meta($detail_id, 'tfp_background_check', true))
-            && $detail_profile_complete >= 100
-        );
+    $detail_paperwork_completed_count = $detail_demo
+        ? 1
+        : count(array_filter([
+            !empty(get_user_meta($detail_id, 'tfp_signed_contract', true)),
+            !empty(get_user_meta($detail_id, 'tfp_w9_form', true)),
+            !empty(get_user_meta($detail_id, 'tfp_background_check', true)),
+            $detail_profile_complete >= 100,
+        ]));
+    $detail_paperwork_complete = $detail_paperwork_completed_count === 4;
     $detail_steps = $detail_demo
         ? [true, true, false, false]
         : [true, $detail_paperwork_complete, $detail_training_complete, !empty($detail_cohorts)];
@@ -399,7 +400,7 @@ function tfp_admin_facilitators_render() {
                 <div class="tfp-admin-onboarding-progress"><span style="width:<?php echo esc_attr(($detail_completed / 4) * 100); ?>%"></span></div><p class="tfp-admin-onboarding-footnote"><?php echo esc_html(sprintf(__('%1$d of 4 steps complete', 'tfp-dashboard'), $detail_completed)); ?></p>
               </section>
               <section class="tfp-admin-panel tfp-admin-detail-card"><header><h2><?php esc_html_e('Step 1 — Account Creation', 'tfp-dashboard'); ?></h2><span class="tfp-admin-invitation-status is-active"><?php esc_html_e('Completed', 'tfp-dashboard'); ?></span></header><p><?php echo esc_html(sprintf(__('Account created by Admin • %s • Login credentials sent via email', 'tfp-dashboard'), wp_date('M j, Y', strtotime($detail_person->user_registered)))); ?></p></section>
-              <section class="tfp-admin-panel tfp-admin-detail-card"><header><div><h2><?php esc_html_e('Step 2 — Profile & Paperwork', 'tfp-dashboard'); ?></h2><p><?php echo esc_html(sprintf(__('%d of 4 Complete', 'tfp-dashboard'), (int) $detail_steps[0] + (int) $detail_steps[1])); ?></p></div><span class="tfp-admin-invitation-status <?php echo $detail_steps[1] ? 'is-active' : 'is-pending'; ?>"><?php echo $detail_steps[1] ? esc_html__('Completed', 'tfp-dashboard') : esc_html__('In Progress', 'tfp-dashboard'); ?></span></header>
+              <section class="tfp-admin-panel tfp-admin-detail-card"><header><div><h2><?php esc_html_e('Step 2 — Profile & Paperwork', 'tfp-dashboard'); ?></h2><p><?php echo esc_html(sprintf(__('%d of 4 Complete', 'tfp-dashboard'), $detail_paperwork_completed_count)); ?></p></div><span class="tfp-admin-invitation-status <?php echo $detail_steps[1] ? 'is-active' : 'is-pending'; ?>"><?php echo $detail_steps[1] ? esc_html__('Completed', 'tfp-dashboard') : esc_html__('In Progress', 'tfp-dashboard'); ?></span></header>
                 <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-detail-table"><thead><tr><th><?php esc_html_e('Compliance / Paperwork', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead><tbody>
                   <?php $detail_docs = [['Signed Contract','tfp_signed_contract'],['W-9 Form','tfp_w9_form'],['Background Check','tfp_background_check'],['Profile Info','profile']]; foreach ($detail_docs as $doc_index => $doc) : $doc_value = $detail_demo ? ($doc_index === 0 ? 'demo-complete' : '') : ($doc[1] === 'profile' ? $detail_profile_complete >= 100 : get_user_meta($detail_id, $doc[1], true)); $doc_done = !empty($doc_value); ?>
                     <tr><td><?php echo esc_html($doc[0]); ?></td><td><span class="tfp-admin-invitation-status <?php echo $doc_done ? 'is-active' : 'is-pending'; ?>"><?php echo $doc_done ? esc_html__('Completed', 'tfp-dashboard') : esc_html__('Not Started', 'tfp-dashboard'); ?></span></td><td><?php if ($doc_done && is_string($doc_value) && filter_var($doc_value, FILTER_VALIDATE_URL)) : ?><a class="tfp-admin-invitation-view" href="<?php echo esc_url($doc_value); ?>" target="_blank" rel="noopener"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php elseif ($detail_demo && $doc_done) : ?><button class="tfp-admin-invitation-view" type="button" disabled aria-label="<?php esc_attr_e('Demo document preview only', 'tfp-dashboard'); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></button><?php else : ?><span class="tfp-admin-detail-muted">—</span><?php endif; ?></td></tr>
