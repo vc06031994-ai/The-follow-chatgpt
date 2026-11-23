@@ -431,15 +431,15 @@ function tfp_admin_facilitators_render() {
                     $pay_bonus = 50;
                     $pay_total = 2050;
                     $pay_last_amount = 500;
-                    $pay_last_date = '2026-05-15';
+                    $pay_last_date = '2025-05-15';
                     $pay_provider = 'Stripe Connect · Verified';
                     $payout_rows = [
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-05-15'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-04-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-03-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-02-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2026-01-18'],
-                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2025-12-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2025-05-15', 'time' => '6:00 PM PST'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2025-04-18', 'time' => '6:00 PM PST'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2025-03-18', 'time' => '6:00 PM PST'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2025-02-18', 'time' => '6:00 PM PST'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2025-01-18', 'time' => '6:00 PM PST'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => 500, 'date' => '2024-12-18', 'time' => '6:00 PM PST'],
                     ];
                 }
                 $pay_type_label = $pay_type === 'flat_rate' ? __('Flat Rate', 'tfp-dashboard') : __('Per Student (Flat Rate)', 'tfp-dashboard');
@@ -471,7 +471,7 @@ function tfp_admin_facilitators_render() {
                     <div class="tfp-admin-payment-payout-list">
                       <?php foreach ($payout_rows as $payout) : if (!is_array($payout)) { continue; } ?>
                         <article class="tfp-admin-payment-payout-row">
-                          <div><strong><?php echo !empty($payout['cohort']) ? esc_html(sanitize_text_field($payout['cohort'])) : esc_html__('Payout', 'tfp-dashboard'); ?></strong><small><?php echo !empty($payout['date']) && strtotime($payout['date']) ? esc_html(wp_date('M j, Y g:i A', strtotime($payout['date']))) : '—'; ?></small></div>
+                          <div><strong><?php echo !empty($payout['cohort']) ? esc_html(sanitize_text_field($payout['cohort'])) : esc_html__('Payout', 'tfp-dashboard'); ?></strong><small><?php echo !empty($payout['date']) && strtotime($payout['date']) ? esc_html(wp_date('M j, Y', strtotime($payout['date'])) . (!empty($payout['time']) ? ' ' . sanitize_text_field($payout['time']) : '')) : '—'; ?></small></div>
                           <strong><?php echo isset($payout['amount']) && is_numeric($payout['amount']) ? esc_html(chr(36) . number_format_i18n((float) $payout['amount'], 2)) : '—'; ?></strong>
                         </article>
                       <?php endforeach; ?>
