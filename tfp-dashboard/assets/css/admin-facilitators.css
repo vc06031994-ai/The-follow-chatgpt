@@ -822,7 +822,11 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
     box-sizing:border-box;
 }
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-cohort-view:disabled{
-    opacity:.55;
+    opacity:1;
+    border-color:#222;
+    background:#fff;
+    color:#171717;
+    -webkit-text-fill-color:#171717;
     cursor:not-allowed;
 }
 @media(max-width:760px){
