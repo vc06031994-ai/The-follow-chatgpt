@@ -775,9 +775,9 @@ function tfp_admin_cohort_detail_render() {
                 <input id="tfp-cohort-activity-search" type="search" name="activity_search" value="<?php echo esc_attr($activity_search); ?>" placeholder="<?php esc_attr_e('Search Name or Cohort', 'tfp-dashboard'); ?>">
               </label>
             </form>
-            <section class="tfp-admin-cohort-activity-panel">
-              <div class="tfp-admin-cohort-activity-table-scroll">
-                <table class="tfp-admin-cohort-activity-table">
+            <section class="tfp-admin-panel tfp-admin-overview-table-panel tfp-admin-cohort-activity-panel">
+              <div class="tfp-admin-overview-table-wrap">
+                <table class="tfp-admin-overview-table tfp-admin-cohort-activity-table">
                   <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Type', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Activity', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Time', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
                   <tbody>
                     <?php if (!empty($activity_data['is_demo'])) : ?><tr><td colspan="6" class="tfp-admin-cohort-activity-preview-note"><?php esc_html_e('Preview data — sample records shown for design review only. Real activity will replace these automatically.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
@@ -789,22 +789,22 @@ function tfp_admin_cohort_detail_render() {
                       <tr>
                         <td><strong><?php echo esc_html($activity_row->display_name); ?></strong></td>
                         <td><?php echo esc_html(tfp_admin_cohort_activity_type_label($activity_row->event_type)); ?></td>
-                        <td><span class="tfp-admin-cohort-activity-status is-<?php echo esc_attr($activity_status); ?>"><?php echo esc_html($activity_status === 'blocked' ? __('Blocked', 'tfp-dashboard') : ($activity_status === 'attention' ? __('Attention', 'tfp-dashboard') : __('On Track', 'tfp-dashboard'))); ?></span></td>
+                        <td><span class="tfp-admin-overview-status tfp-admin-cohort-activity-status is-<?php echo esc_attr($activity_status); ?>"><?php echo esc_html($activity_status === 'blocked' ? __('Blocked', 'tfp-dashboard') : ($activity_status === 'attention' ? __('Attention', 'tfp-dashboard') : __('On Track', 'tfp-dashboard'))); ?></span></td>
                         <td><?php echo esc_html($activity_description); ?></td>
                         <td><time datetime="<?php echo esc_attr(gmdate('c', strtotime($activity_row->created_at . ' UTC'))); ?>"><?php echo esc_html(wp_date('M j, g:i A T', $activity_timestamp)); ?></time></td>
-                        <td><?php if (!empty($activity_row->is_demo)) : ?><span class="tfp-admin-cohort-activity-view is-preview" aria-disabled="true"><?php esc_html_e('View', 'tfp-dashboard'); ?></span><?php else : ?><a class="tfp-admin-cohort-activity-view" href="<?php echo esc_url(add_query_arg(['user_id' => $activity_row->user_id], function_exists('tfp_admin_users_page_url') ? tfp_admin_users_page_url() : admin_url('user-edit.php'))); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?></td>
+                        <td><?php if (!empty($activity_row->is_demo)) : ?><span class="tfp-admin-overview-view is-preview" aria-disabled="true"><?php esc_html_e('View', 'tfp-dashboard'); ?></span><?php else : ?><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg(['user_id' => $activity_row->user_id], function_exists('tfp_admin_users_page_url') ? tfp_admin_users_page_url() : admin_url('user-edit.php'))); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?></td>
                       </tr>
                     <?php endforeach; else : ?>
-                      <tr><td colspan="6" class="tfp-admin-cohort-activity-empty"><?php esc_html_e('No recorded activity is available for this cohort yet.', 'tfp-dashboard'); ?></td></tr>
+                      <tr><td colspan="6" class="tfp-admin-overview-empty"><?php esc_html_e('No recorded activity is available for this cohort yet.', 'tfp-dashboard'); ?></td></tr>
                     <?php endif; ?>
                   </tbody>
                 </table>
               </div>
-              <footer class="tfp-admin-cohort-activity-pagination">
+              <footer class="tfp-admin-overview-pagination tfp-admin-cohort-activity-pagination">
                 <span><?php echo esc_html(sprintf(__('%1$d - %2$d of %3$d items', 'tfp-dashboard'), $activity_data['total'] ? (($activity_data['page'] - 1) * $activity_data['per_page']) + 1 : 0, min($activity_data['page'] * $activity_data['per_page'], $activity_data['total']), $activity_data['total'])); ?></span>
                 <nav aria-label="<?php esc_attr_e('Cohort activity pages', 'tfp-dashboard'); ?>">
-                  <?php if ($activity_data['page'] > 1) : ?><a href="<?php echo esc_url(add_query_arg('activity_page', $activity_data['page'] - 1, remove_query_arg('activity_page'))); ?>" class="is-previous">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></a><?php else : ?><span class="is-disabled">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></span><?php endif; ?>
-                  <?php if ($activity_data['page'] < $activity_data['pages']) : ?><a href="<?php echo esc_url(add_query_arg('activity_page', $activity_data['page'] + 1, remove_query_arg('activity_page'))); ?>" class="is-next"><span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span> ›</a><?php else : ?><span class="is-disabled"><span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span> ›</span><?php endif; ?>
+                  <?php if ($activity_data['page'] > 1) : ?><a href="<?php echo esc_url(add_query_arg('activity_page', $activity_data['page'] - 1, remove_query_arg('activity_page'))); ?>" class="tfp-admin-overview-prev">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></a><?php else : ?><span class="tfp-admin-overview-prev is-disabled">‹ <span><?php esc_html_e('Previous', 'tfp-dashboard'); ?></span></span><?php endif; ?>
+                  <?php if ($activity_data['page'] < $activity_data['pages']) : ?><a href="<?php echo esc_url(add_query_arg('activity_page', $activity_data['page'] + 1, remove_query_arg('activity_page'))); ?>" class="tfp-admin-overview-next"><span><?php esc_html_e('Next', 'tfp-dashboard'); ?></span> ›</a><?php else : ?><span class="tfp-admin-overview-next is-disabled"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</span><?php endif; ?>
                 </nav>
               </footer>
             </section>
