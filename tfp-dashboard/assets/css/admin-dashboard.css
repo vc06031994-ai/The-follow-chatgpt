@@ -3461,3 +3461,45 @@ body.tfp-admin-dashboard-view .tfp-dash-table td {
         opacity: 1 !important;
     }
 }
+
+
+/* Shared mobile menu trigger for every Admin page and subpage. */
+@media (max-width: 991px) {
+    body.tfp-admin-dashboard-view .tfp-admin-main > .tfp-admin-mobilebar {
+        display: flex !important;
+        min-height: 48px;
+        align-items: center;
+        gap: 12px;
+        padding: 0 16px;
+        box-sizing: border-box;
+    }
+
+    body.tfp-admin-dashboard-view .tfp-admin-mobilebar .tfp-admin-mobilebar-toggle {
+        display: inline-flex !important;
+        flex: 0 0 24px;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 3px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        color: #570506 !important;
+        line-height: 1;
+        cursor: pointer;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    body.tfp-admin-dashboard-view .tfp-admin-mobilebar .tfp-admin-mobilebar-toggle svg {
+        display: block !important;
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px;
+        min-height: 18px;
+    }
+}
