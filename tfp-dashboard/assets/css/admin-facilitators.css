@@ -65,6 +65,6 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-tabs a{flex:0 0 auto;padding:0 14px;font-size:12px}
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-stats{gap:10px}
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-stats .tfp-admin-stat-card{padding:10px}
- body.tfp-admin-dashboard-view.tfp-admin-dashboard-view .tfp-admin-facilitators-recent-row{align-items:flex-start;flex-direction:column;gap:4px}
+ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-recent-row{align-items:flex-start;flex-direction:column;gap:4px}
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-recent-row span{white-space:normal}
 }
