@@ -763,20 +763,21 @@ function tfp_admin_facilitators_render() {
               <div class="tfp-admin-payment-grid">
                 <section class="tfp-admin-panel tfp-admin-payment-editor">
                   <h2><?php esc_html_e('Pay Structure Editor', 'tfp-dashboard'); ?></h2>
+                  <?php if ($detail_demo) : ?><p class="tfp-admin-payment-demo-note"><?php esc_html_e('Demo preview — payment settings are read-only.', 'tfp-dashboard'); ?></p><?php endif; ?>
                   <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <input type="hidden" name="action" value="tfp_save_facilitator_pay_structure">
                     <input type="hidden" name="facilitator_id" value="<?php echo esc_attr($detail_id); ?>">
                     <?php wp_nonce_field('tfp_save_facilitator_pay_structure_' . $detail_id); ?>
                     <label for="tfp-payment-type"><?php esc_html_e('Compensation Type', 'tfp-dashboard'); ?></label>
-                    <select id="tfp-payment-type" name="compensation_type">
+                    <select id="tfp-payment-type" name="compensation_type" <?php disabled($detail_demo); ?>>
                       <option value="per_student" <?php selected($payment_comp_type, 'per_student'); ?>><?php esc_html_e('Per Student (Flat Rate)', 'tfp-dashboard'); ?></option>
                       <option value="flat_rate" <?php selected($payment_comp_type, 'flat_rate'); ?>><?php esc_html_e('Flat Rate', 'tfp-dashboard'); ?></option>
                     </select>
                     <label for="tfp-payment-rate"><?php esc_html_e('Pay Rate', 'tfp-dashboard'); ?></label>
-                    <div class="tfp-admin-payment-input"><span>$</span><input id="tfp-payment-rate" type="number" name="pay_rate" min="0" step="0.01" value="<?php echo esc_attr($payment_rate !== '' ? $payment_rate : ''); ?>" placeholder="0.00"></div>
+                    <div class="tfp-admin-payment-input"><span>$</span><input id="tfp-payment-rate" type="number" name="pay_rate" min="0" step="0.01" value="<?php echo esc_attr($payment_rate !== '' ? $payment_rate : ''); ?>" placeholder="0.00" <?php disabled($detail_demo); ?>></div>
                     <label for="tfp-payment-bonus"><?php esc_html_e('Completion Bonus (Optional)', 'tfp-dashboard'); ?></label>
-                    <div class="tfp-admin-payment-input"><span>$</span><input id="tfp-payment-bonus" type="number" name="completion_bonus" min="0" step="0.01" value="<?php echo esc_attr($payment_bonus !== '' ? $payment_bonus : ''); ?>" placeholder="0.00"></div>
-                    <button type="submit" class="tfp-admin-payment-save"><?php esc_html_e('Save Pay Structure', 'tfp-dashboard'); ?></button>
+                    <div class="tfp-admin-payment-input"><span>$</span><input id="tfp-payment-bonus" type="number" name="completion_bonus" min="0" step="0.01" value="<?php echo esc_attr($payment_bonus !== '' ? $payment_bonus : ''); ?>" placeholder="0.00" <?php disabled($detail_demo); ?>></div>
+                    <button type="submit" class="tfp-admin-payment-save" <?php disabled($detail_demo); ?>><?php esc_html_e('Save Pay Structure', 'tfp-dashboard'); ?></button>
                   </form>
                 </section>
                 <section class="tfp-admin-panel tfp-admin-payment-payouts">
