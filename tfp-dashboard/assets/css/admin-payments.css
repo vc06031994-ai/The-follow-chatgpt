@@ -321,3 +321,43 @@ body.tfp-admin-payments-view .tfp-payments-empty { padding: 20px !important; col
     body.tfp-admin-payments-view .tfp-payments-transactions-heading { align-items: flex-start; flex-direction: column; }
     body.tfp-admin-payments-view .tfp-payments-transactions-heading > div { flex-wrap: wrap; }
 }
+
+
+/* Reference-specific refinements: compact filters, product-stacked bars and table tools. */
+body.tfp-admin-payments-view .tfp-payments-filters select[name="product"] { width: 200px; min-width: 160px; }
+body.tfp-admin-payments-view .tfp-payments-filters select[name="period"] { width: 170px; min-width: 140px; }
+body.tfp-admin-payments-view .tfp-payments-bar { background: transparent; overflow: hidden; }
+body.tfp-admin-payments-view .tfp-payments-bar > span { flex: 0 0 auto; min-height: 0; }
+body.tfp-admin-payments-view .tfp-payments-transactions-heading > div form {
+    display: flex;
+    align-items: center;
+    gap: var(--tfp-space-2, 8px);
+    margin: 0;
+}
+body.tfp-admin-payments-view .tfp-payments-transactions-heading input[type="date"] {
+    width: 145px;
+    height: 36px;
+    margin: 0;
+    padding: 0 8px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    background: #fff;
+    font: 12px var(--tfp-dash-font, "Eudoxus Sans"), sans-serif;
+}
+body.tfp-admin-payments-view .tfp-payments-date-apply {
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    background: #fff;
+    color: #222;
+    font: 12px var(--tfp-dash-font, "Eudoxus Sans"), sans-serif;
+    cursor: pointer;
+}
+body.tfp-admin-payments-view .tfp-payments-transactions-heading > div > a { min-height: 36px; }
+@media (max-width: 767px) {
+    body.tfp-admin-payments-view .tfp-payments-filters select[name="product"],
+    body.tfp-admin-payments-view .tfp-payments-filters select[name="period"] { width: calc(50% - 4px); flex: 1 1 calc(50% - 4px); }
+    body.tfp-admin-payments-view .tfp-payments-transactions-heading > div { width: 100%; }
+    body.tfp-admin-payments-view .tfp-payments-transactions-heading > div form { flex: 1 1 auto; }
+}
