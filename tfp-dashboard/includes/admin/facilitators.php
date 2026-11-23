@@ -9,6 +9,86 @@ function tfp_admin_facilitators_url() {
     return home_url('/admin-facilitators/');
 }
 
+/**
+ * Persist facilitator compensation and manually recorded payout entries.
+ * Recording a payout here is an audit entry only; it does not transfer funds.
+ */
+function tfp_admin_save_facilitator_payment() {
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('You are not allowed to manage facilitator payments.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+
+    $facilitator_id = isset($_POST['facilitator_id']) ? absint($_POST['facilitator_id']) : 0;
+    $facilitator = $facilitator_id ? get_userdata($facilitator_id) : false;
+    if (!$facilitator || !array_intersect(['facilitator', 'group_leader'], (array) $facilitator->roles)) {
+        wp_die(esc_html__('Invalid facilitator account.', 'tfp-dashboard'), '', ['response' => 404]);
+    }
+
+    check_admin_referer('tfp_facilitator_payment_' . $facilitator_id);
+    $mode = isset($_POST['payment_mode']) ? sanitize_key(wp_unslash($_POST['payment_mode'])) : '';
+
+    if ($mode === 'save_compensation') {
+        $type = isset($_POST['compensation_type']) ? sanitize_key(wp_unslash($_POST['compensation_type'])) : 'per_student';
+        $rate = isset($_POST['pay_rate']) ? wp_unslash($_POST['pay_rate']) : '';
+        $bonus = isset($_POST['completion_bonus']) ? wp_unslash($_POST['completion_bonus']) : '';
+
+        if (!in_array($type, ['per_student', 'flat_rate'], true) ||
+            !is_numeric($rate) || (float) $rate < 0 ||
+            ($bonus !== '' && (!is_numeric($bonus) || (float) $bonus < 0))) {
+            wp_die(esc_html__('Please enter valid compensation values.', 'tfp-dashboard'), '', ['response' => 400]);
+        }
+
+        update_user_meta($facilitator_id, 'tfp_compensation_type', $type);
+        update_user_meta($facilitator_id, 'tfp_pay_rate', number_format((float) $rate, 2, '.', ''));
+        update_user_meta($facilitator_id, 'tfp_completion_bonus', $bonus === '' ? '' : number_format((float) $bonus, 2, '.', ''));
+        $notice = 'compensation_saved';
+    } elseif ($mode === 'record_payout') {
+        $amount = isset($_POST['payout_amount']) ? wp_unslash($_POST['payout_amount']) : '';
+        $cohort = isset($_POST['payout_cohort']) ? sanitize_text_field(wp_unslash($_POST['payout_cohort'])) : '';
+        $date = isset($_POST['payout_date']) ? sanitize_text_field(wp_unslash($_POST['payout_date'])) : '';
+
+        $date_object = DateTime::createFromFormat('Y-m-d', $date);
+        if (!is_numeric($amount) || (float) $amount <= 0 || $cohort === '' ||
+            !$date_object || $date_object->format('Y-m-d') !== $date) {
+            wp_die(esc_html__('Please enter a valid payout amount, cohort and date.', 'tfp-dashboard'), '', ['response' => 400]);
+        }
+
+        $rows = get_user_meta($facilitator_id, 'tfp_payout_log', true);
+        if (!is_array($rows)) { $rows = []; }
+        $rows[] = [
+            'cohort' => $cohort,
+            'amount' => number_format((float) $amount, 2, '.', ''),
+            'date' => $date,
+            'time' => current_time('g:i A T'),
+            'recorded_by' => get_current_user_id(),
+            'recorded_at' => current_time('mysql'),
+        ];
+        usort($rows, static function ($a, $b) {
+            return strtotime((string) ($b['date'] ?? '')) <=> strtotime((string) ($a['date'] ?? ''));
+        });
+        update_user_meta($facilitator_id, 'tfp_payout_log', $rows);
+        update_user_meta($facilitator_id, 'tfp_total_paid_to_date', number_format(array_sum(array_map(static function ($row) {
+            return isset($row['amount']) && is_numeric($row['amount']) ? (float) $row['amount'] : 0;
+        }, $rows)), 2, '.', ''));
+        $latest = $rows[0];
+        update_user_meta($facilitator_id, 'tfp_last_payment_amount', $latest['amount']);
+        update_user_meta($facilitator_id, 'tfp_last_payment_date', $latest['date']);
+        $notice = 'payout_recorded';
+    } else {
+        wp_die(esc_html__('Invalid payment action.', 'tfp-dashboard'), '', ['response' => 400]);
+    }
+
+    $url = add_query_arg([
+        'facilitator_id' => $facilitator_id,
+        'profile_tab' => 'payment',
+        'payment_notice' => $notice,
+    ], tfp_admin_facilitators_url());
+    wp_safe_redirect($url);
+    exit;
+}
+add_action('admin_post_tfp_save_facilitator_payment', 'tfp_admin_save_facilitator_payment');
+
+
 add_filter('pre_handle_404', function ($preempt, $query) {
     $path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
     if (basename($path) === 'admin-facilitators') {
