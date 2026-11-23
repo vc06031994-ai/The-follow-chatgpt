@@ -519,8 +519,8 @@ function tfp_admin_cohort_detail_render() {
                       <small><?php esc_html_e('On', 'tfp-dashboard'); ?></small>
                     </label>
                     <div class="tfp-admin-cohort-modal-actions">
-                      <button type="submit" class="tfp-admin-cohort-modal-create"><span aria-hidden="true">▣</span><?php esc_html_e('Create', 'tfp-dashboard'); ?></button>
-                      <button type="button" class="tfp-admin-cohort-modal-cancel" data-tfp-close-skip-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
+                      <button type="submit" class="tfp-admin-cohort-modal-create"><span class="tfp-modal-action-icon" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.25 2.75h11.1l2.9 2.9v11.6H2.75V3.25c0-.28.22-.5.5-.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6 2.9v4.4h7.5V2.9M6 17.1v-6.2h8v6.2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11.8 3.8h.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><?php esc_html_e('Create', 'tfp-dashboard'); ?></button>
+                      <button type="button" class="tfp-admin-cohort-modal-cancel" data-tfp-close-skip-modal><span class="tfp-modal-action-icon" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8.1" stroke="currentColor" stroke-width="1.7"/><path d="M4.3 4.3 15.7 15.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button>
                     </div>
                   </form>
                 </section>
@@ -590,7 +590,7 @@ function tfp_admin_cohort_detail_render() {
                     <label class="tfp-admin-governance-radio"><input type="radio" name="block_clear" value="admin" <?php checked($governance['block_clear'], 'admin'); ?>><?php esc_html_e('Require Admin Approval to clear blocks', 'tfp-dashboard'); ?></label>
                     <label class="tfp-admin-governance-radio"><input type="radio" name="block_clear" value="facilitator" <?php checked($governance['block_clear'], 'facilitator'); ?>><?php esc_html_e('Facilitators can manually clear blocks', 'tfp-dashboard'); ?></label>
                   </section>
-                  <div class="tfp-admin-governance-actions"><button type="submit" class="tfp-admin-cohort-modal-create"><span aria-hidden="true">▣</span><?php esc_html_e('Save', 'tfp-dashboard'); ?></button><button type="button" class="tfp-admin-cohort-modal-cancel" data-tfp-close-governance-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button></div>
+                  <div class="tfp-admin-governance-actions"><button type="submit" class="tfp-admin-cohort-modal-create"><span class="tfp-modal-action-icon" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.25 2.75h11.1l2.9 2.9v11.6H2.75V3.25c0-.28.22-.5.5-.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6 2.9v4.4h7.5V2.9M6 17.1v-6.2h8v6.2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11.8 3.8h.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><?php esc_html_e('Save', 'tfp-dashboard'); ?></button><button type="button" class="tfp-admin-cohort-modal-cancel" data-tfp-close-governance-modal><span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?></button></div>
                 </form>
               </section>
             </div>
