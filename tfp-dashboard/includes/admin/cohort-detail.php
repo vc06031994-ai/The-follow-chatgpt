@@ -322,13 +322,15 @@ function tfp_admin_cohort_activity_query($cohort_id, $student_ids) {
                 array_push($args, $like, $like, $like);
             }
             $join = " FROM {$table} a INNER JOIN {$wpdb->users} u ON u.ID = a.user_id ";
-            $condition = ' WHERE ' . implode(' AND ', $where);
-            $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $condition, $args));
-            if ($total > 0) {
+            $cohort_condition = ' WHERE a.user_id IN (' . implode(',', array_fill(0, count($student_ids), '%d')) . ')';
+            $cohort_total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $cohort_condition, $student_ids));
+            if ($cohort_total > 0) {
+                $condition = ' WHERE ' . implode(' AND ', $where);
+                $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $condition, $args));
                 $pages = max(1, (int) ceil($total / $per_page));
                 $page = min($page, $pages);
                 $query = 'SELECT a.id, a.user_id, a.event_type, a.event_label, a.context, a.created_at, u.display_name' . $join . $condition . ' ORDER BY a.created_at DESC, a.id DESC LIMIT %d OFFSET %d';
-                $real_rows = $wpdb->get_results($wpdb->prepare($query, array_merge($args, [$per_page, ($page - 1) * $per_page])));
+                $real_rows = $total ? $wpdb->get_results($wpdb->prepare($query, array_merge($args, [$per_page, ($page - 1) * $per_page]))) : [];
                 return ['rows' => $real_rows, 'total' => $total, 'page' => $page, 'pages' => $pages, 'per_page' => $per_page, 'is_demo' => false];
             }
         }
