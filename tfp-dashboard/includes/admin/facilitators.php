@@ -42,9 +42,45 @@ function tfp_admin_facilitators_get_data() {
     $active_week = 0;
     $inactive_week = 0;
     $pending_onboarding = 0;
+    $invitation_count = 0; // Invitation records are not yet stored by this project.
     $inactive_alerts = [];
     $flag_alerts = [];
     $now = current_time('timestamp');
+
+    // Resolve cohort assignments once, instead of querying cohorts separately for every facilitator.
+    $cohort_assignments = [];
+    $cohort_ids = get_posts([
+        'post_type' => 'tfp_cohort',
+        'post_status' => ['publish', 'private'],
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+        'no_found_rows' => true,
+    ]);
+    foreach ($cohort_ids as $cohort_id) {
+        $facilitator_id = function_exists('tfp_cohort_get_facilitator_user_id')
+            ? absint(tfp_cohort_get_facilitator_user_id($cohort_id))
+            : absint(get_post_meta($cohort_id, '_facilitator_user_id', true));
+
+        // Preserve legacy cohort assignments when the shared resolver is unavailable.
+        if (!$facilitator_id && !function_exists('tfp_cohort_get_facilitator_user_id')) {
+            $legacy_name = trim((string) get_post_meta($cohort_id, '_facilitator', true));
+            if ($legacy_name !== '') {
+                foreach ($users as $candidate) {
+                    if (strcasecmp($legacy_name, (string) $candidate->display_name) === 0) {
+                        $facilitator_id = (int) $candidate->ID;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ($facilitator_id) {
+            if (!isset($cohort_assignments[$facilitator_id])) {
+                $cohort_assignments[$facilitator_id] = 0;
+            }
+            $cohort_assignments[$facilitator_id]++;
+        }
+    }
 
     foreach ($users as $person) {
         $deactivated = (bool) get_user_meta($person->ID, '_tfp_deactivated', true);
@@ -95,24 +131,12 @@ function tfp_admin_facilitators_get_data() {
             ];
         }
 
-        $cohorts = get_posts([
-            'post_type' => 'tfp_cohort',
-            'post_status' => ['publish', 'private'],
-            'posts_per_page' => -1,
-            'fields' => 'ids',
-            'meta_query' => [[
-                'relation' => 'OR',
-                ['key' => '_facilitator_user_id', 'value' => $person->ID, 'compare' => '=', 'type' => 'NUMERIC'],
-                ['key' => '_facilitator', 'value' => $person->display_name, 'compare' => '='],
-            ]],
-        ]);
-
         $records[] = [
             'id' => $person->ID,
             'name' => $person->display_name ?: $person->user_login,
             'email' => $person->user_email,
             'category' => $category ?: __('Unassigned', 'tfp-dashboard'),
-            'cohorts' => count($cohorts),
+            'cohorts' => (int) ($cohort_assignments[$person->ID] ?? 0),
             'completion' => max(0, min(100, $completion)),
             'last_login' => $last_login_ts,
             'last_login_label' => $last_login_ts ? wp_date('M j, g:i A', $last_login_ts) : __('Never', 'tfp-dashboard'),
@@ -160,6 +184,7 @@ function tfp_admin_facilitators_get_data() {
         'active_week' => $active_week,
         'inactive_week' => $inactive_week,
         'pending_onboarding' => $pending_onboarding,
+        'invitation_count' => $invitation_count,
         'alerts' => array_slice($alerts, 0, 6),
         'recent_activity' => $recent_activity,
         'total' => count($records),
