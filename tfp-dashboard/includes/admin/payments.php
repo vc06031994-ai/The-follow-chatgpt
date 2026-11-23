@@ -70,19 +70,25 @@ function tfp_admin_payments_get_data() {
         $net += $order_net;
         $method = $order->get_payment_method_title() ?: __('Other', 'tfp-dashboard');
         $methods[$method] = ($methods[$method] ?? 0) + $order_net;
-        foreach ($order->get_items() as $line) {
-            $pid = (int) $line->get_product_id();
-            $key = $pid ?: sanitize_title($line->get_name());
-            if (!isset($products[$key])) { $products[$key] = ['id' => $pid, 'name' => $line->get_name(), 'total' => 0]; }
-            $products[$key]['total'] += (float) $line->get_total();
-        }
+        $qkey = '';
         if ($date) {
             $quarter = 'Q' . ceil((int) $date->date('n') / 3);
             $year = $date->date('Y');
             $qkey = $year . ' ' . $quarter;
-            if (!isset($quarters[$qkey])) { $quarters[$qkey] = ['label' => $quarter, 'gross' => 0, 'net' => 0]; }
+            if (!isset($quarters[$qkey])) { $quarters[$qkey] = ['label' => $quarter, 'gross' => 0, 'net' => 0, 'products' => []]; }
             $quarters[$qkey]['gross'] += $order_gross;
             $quarters[$qkey]['net'] += $order_net;
+        }
+        foreach ($order->get_items() as $line) {
+            $pid = (int) $line->get_product_id();
+            $key = $pid ?: sanitize_title($line->get_name());
+            if (!isset($products[$key])) { $products[$key] = ['id' => $pid, 'name' => $line->get_name(), 'total' => 0]; }
+            $line_total = (float) $line->get_total();
+            $products[$key]['total'] += $line_total;
+            if ($qkey !== '') {
+                if (!isset($quarters[$qkey]['products'][$key])) { $quarters[$qkey]['products'][$key] = 0; }
+                $quarters[$qkey]['products'][$key] += $line_total;
+            }
         }
         $filtered[] = $order;
     }
@@ -92,6 +98,7 @@ function tfp_admin_payments_get_data() {
     return [
         'orders' => $filtered, 'gross' => $gross, 'refunds' => $refunds, 'net' => $net,
         'products' => array_slice(array_values($products), 0, 5),
+        'chart_products' => array_slice(array_values($products), 0, 2),
         'methods' => $methods, 'quarters' => array_slice(array_values($quarters), 0, 4),
         'from' => $from, 'to' => $to, 'product_filter' => $product_filter,
     ];
