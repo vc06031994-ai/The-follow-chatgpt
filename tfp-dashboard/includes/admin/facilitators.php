@@ -220,7 +220,51 @@ function tfp_admin_facilitators_get_data() {
             ];
         }
     } elseif ($tab === 'onboarding') {
+        // Pending facilitators are active accounts with incomplete onboarding profiles.
         $filtered = array_values(array_filter($records, static function ($row) { return $row['status'] === 'active' && $row['completion'] < 100; }));
+
+        // Add clearly labeled sample rows for layout preview when no pending accounts exist.
+        if (!$filtered) {
+            $is_demo_data = true;
+            $filtered = [
+                [
+                    'id' => 0,
+                    'name' => 'Emily Wilson',
+                    'email' => 'emily.wilson@example.com',
+                    'category' => 'Leadership',
+                    'cohorts' => 0,
+                    'completion' => 65,
+                    'last_login' => 0,
+                    'last_login_label' => 'Today, 10:15 AM',
+                    'status' => 'active',
+                    'edit_url' => '',
+                ],
+                [
+                    'id' => 0,
+                    'name' => 'Michael Brown',
+                    'email' => 'michael.brown@example.com',
+                    'category' => 'Communication',
+                    'cohorts' => 1,
+                    'completion' => 40,
+                    'last_login' => 0,
+                    'last_login_label' => 'Yesterday, 2:45 PM',
+                    'status' => 'active',
+                    'edit_url' => '',
+                ],
+                [
+                    'id' => 0,
+                    'name' => 'Olivia Davis',
+                    'email' => 'olivia.davis@example.com',
+                    'category' => 'Wellbeing',
+                    'cohorts' => 0,
+                    'completion' => 80,
+                    'last_login' => 0,
+                    'last_login_label' => 'Nov 21, 9:20 AM',
+                    'status' => 'active',
+                    'edit_url' => '',
+                ],
+            ];
+        }
     }
 
     return [
@@ -327,7 +371,10 @@ function tfp_admin_facilitators_render() {
 
           <?php else : ?>
             <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
-              <?php if ($data['tab'] === 'active' && !empty($is_demo_data)) : ?>
+              <?php if ($data['tab'] === 'onboarding') : ?>
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Pending Facilitators', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Facilitators who still need to complete their onboarding profile.', 'tfp-dashboard'); ?></p></div></header>
+              <?php endif; ?>
+              <?php if (!empty($is_demo_data)) : ?>
                 <p class="tfp-admin-facilitators-empty" role="note"><?php esc_html_e('Demo preview: these sample rows are for layout preview only and are not real facilitator accounts.', 'tfp-dashboard'); ?></p>
               <?php endif; ?>
               <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
