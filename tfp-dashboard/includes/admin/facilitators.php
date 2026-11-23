@@ -414,7 +414,510 @@ function tfp_admin_facilitators_render() {
                 <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Admin Notes', 'tfp-dashboard'); ?></h2><label><?php esc_html_e('Internal Notes', 'tfp-dashboard'); ?></label><div class="tfp-admin-detail-notes"><?php echo $detail_notes !== '' ? esc_html($detail_notes) : esc_html__('No internal notes have been added.', 'tfp-dashboard'); ?></div><label><?php esc_html_e('Onboarding Admin', 'tfp-dashboard'); ?></label><p class="tfp-admin-detail-field"><?php $detail_admin = $detail_demo ? 'Admin — Sarah T.' : get_user_meta($detail_id, 'tfp_onboarding_admin', true); echo esc_html($detail_admin ?: '—'); ?></p></section>
               </div>
             <?php elseif ($detail_tab === 'payment') : ?>
-              <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Payment Information', 'tfp-dashboard'); ?></h2><p class="tfp-admin-detail-muted"><?php esc_html_e('No facilitator payment information is available for this account.', 'tfp-dashboard'); ?></p></section>
+              <?php
+                // Read payment details from this facilitator's saved WordPress user meta.
+                $pay_type = get_user_meta($detail_id, 'tfp_compensation_type', true);
+                $pay_rate = get_user_meta($detail_id, 'tfp_pay_rate', true);
+                $pay_bonus = get_user_meta($detail_id, 'tfp_completion_bonus', true);
+                $pay_total = get_user_meta($detail_id, 'tfp_total_paid_to_date', true);
+                $pay_last_amount = get_user_meta($detail_id, 'tfp_last_payment_amount', true);
+                $pay_last_date = get_user_meta($detail_id, 'tfp_last_payment_date', true);
+                $pay_provider = get_user_meta($detail_id, 'tfp_payout_provider_status', true);
+                $payout_rows = get_user_meta($detail_id, 'tfp_payout_log', true);
+                if (!is_array($payout_rows)) { $payout_rows = []; }
+
+                // Sample values are isolated to the demo preview only.
+                if ($detail_demo) {
+                    $pay_type = 'per_student';
+                    $pay_rate = '500';
+                    $pay_bonus = '50';
+                    $pay_total = '2050';
+                    $pay_last_amount = '500';
+                    $pay_last_date = '2026-05-15';
+                    $pay_provider = 'Stripe Connect · Verified';
+                    $payout_rows = [
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-05-15'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-04-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-03-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-02-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2026-01-18'],
+                        ['cohort' => 'COH-SUMMER-26', 'amount' => '500', 'date' => '2025-12-18'],
+                    ];
+                }
+                $pay_type_label = $pay_type === 'flat_rate' ? __('Flat Rate', 'tfp-dashboard') : __('Per Student (Flat Rate)', 'tfp-dashboard');
+              ?>
+              <section class="tfp-admin-payment-summary">
+                <div class="tfp-admin-payment-total">
+                  <small><?php esc_html_e('Total Paid to Date', 'tfp-dashboard'); ?></small>
+                  <strong><?php echo ($pay_total !== '' && is_numeric($pay_total)) ? esc_html('
+            <?php else : ?>
+              <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2><?php if ($detail_cohorts) : ?><ul class="tfp-admin-detail-module-list"><?php foreach ($detail_cohorts as $cohort) : ?><li><?php echo esc_html(get_the_title($cohort)); ?></li><?php endforeach; ?></ul><?php else : ?><p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?></section>
+            <?php endif; ?>
+          <?php elseif ($data['tab'] === 'overview') : ?>
+            <section class="tfp-admin-facilitators-stats" aria-label="<?php esc_attr_e('Facilitator statistics', 'tfp-dashboard'); ?>">
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Total Facilitators', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['total'])); ?></strong></div><p><?php esc_html_e('Across all Categories', 'tfp-dashboard'); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Active This Week', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['active_week'])); ?></strong></div><p><?php echo esc_html(sprintf(__('%d inactive 7+ days', 'tfp-dashboard'), $data['inactive_week'])); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Pending Onboarding', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['pending_onboarding'])); ?></strong></div><p><?php esc_html_e('Steps incomplete', 'tfp-dashboard'); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Open Invitations', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['invitation_count'])); ?></strong></div><p><?php esc_html_e('Invitation tracking not connected', 'tfp-dashboard'); ?></p></article>
+            </section>
+
+            <div class="tfp-admin-facilitators-overview-grid">
+              <section class="tfp-admin-panel tfp-admin-facilitators-category-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Category Coverage', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Number of Facilitators inside of each Category', 'tfp-dashboard'); ?></p></div></header>
+                <div class="tfp-admin-facilitators-category-list">
+                  <?php if ($data['categories']) : $max_category = max($data['categories']); foreach ($data['categories'] as $category => $count) : ?>
+                    <div class="tfp-admin-facilitators-category"><div><span><?php echo esc_html($category); ?></span><strong><?php echo esc_html(sprintf(_n('%s facilitator', '%s facilitators', $count, 'tfp-dashboard'), number_format_i18n($count))); ?></strong></div><div class="tfp-admin-facilitators-bar"><span style="width:<?php echo esc_attr((100 * $count) / max(1, $max_category)); ?>%"></span></div></div>
+                  <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator categories have been assigned yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </div>
+              </section>
+
+              <section class="tfp-admin-panel tfp-admin-facilitators-alert-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Flags & Alerts', 'tfp-dashboard'); ?></h2></div></header>
+                <div class="tfp-admin-facilitators-alert-list">
+                  <?php if ($data['alerts']) : foreach ($data['alerts'] as $index => $alert) : ?>
+                    <article class="tfp-admin-facilitators-alert<?php echo $index === 0 ? ' is-highlighted' : ''; ?>"><strong><?php echo esc_html($alert['title']); ?></strong><span><?php echo esc_html($alert['name'] . ' · ' . $alert['detail']); ?></span></article>
+                  <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator flags or alerts are currently recorded.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </div>
+              </section>
+            </div>
+
+            <section class="tfp-admin-panel tfp-admin-facilitators-recent-panel">
+              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Recent Course Activity', 'tfp-dashboard'); ?></h2></div></header>
+              <div class="tfp-admin-facilitators-recent-list">
+                <?php if ($data['recent_activity']) : foreach ($data['recent_activity'] as $event) : ?>
+                  <article class="tfp-admin-facilitators-recent-row"><div><strong><?php echo esc_html($event->display_name); ?></strong><span><?php echo esc_html(trim((string) $event->event_label . ((string) $event->context !== '' ? ' · ' . (string) $event->context : ''))); ?></span></div><time><?php echo esc_html(wp_date('M j, g:i A T', strtotime($event->created_at . ' UTC'))); ?></time></article>
+                <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No course activity is recorded for facilitators yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              </div>
+            </section>
+
+          <?php elseif ($data['tab'] === 'invitations') : ?>
+            <div class="tfp-admin-facilitators-directory-stack">
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Invitations', 'tfp-dashboard'); ?></h2></div></header>
+                <p class="tfp-admin-invitation-demo-note"><?php esc_html_e('Demo preview: sample rows for design review only. These are not real invitations.', 'tfp-dashboard'); ?></p>
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr>
+                    <th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Email', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Sent', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Expires', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                  </tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Rachel Moore</strong></td><td>rachel.moore@example.com</td><td>Discipleship</td><td>May 18</td><td>Jun 1</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Kevin Lim</strong></td><td>kevin.lim@example.com</td><td>Leadership</td><td>May 20</td><td>Jun 3</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Sandra James</strong></td><td>s.james@example.com</td><td>Kingdom Expansion</td><td>May 22</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Andre Williams</strong></td><td>a.williams@example.com</td><td>Discipleship</td><td>May 23</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                  </tbody>
+                </table></div>
+              </section>
+            </div>
+
+          <?php elseif ($data['tab'] === 'active') : ?>
+            <div class="tfp-admin-facilitators-directory-stack">
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Active Facilitators', 'tfp-dashboard'); ?></h2></div></header>
+                
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Hmwk Rate', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                  <tbody>
+                    <?php if ($data['active_rows']) : foreach ($data['active_rows'] as $record) : ?>
+                      <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(isset($record['students']) ? number_format_i18n($record['students']) : 'N/A'); ?></td><td><?php echo esc_html(number_format_i18n($record['cohorts'])); ?></td><td><?php echo esc_html($record['homework_rate'] ?? 'N/A'); ?></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><span class="tfp-admin-facilitator-status is-active"><?php echo esc_html(ucfirst($record['status'])); ?></span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('facilitator_id', absint($record['id']), tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php endforeach; endif; ?>
+                    <tr class="tfp-admin-facilitator-demo-row"><td><strong>Shannon Stiggins</strong><small>shannon.demo@example.com · Demo</small></td><td>Discipleship</td><td>50</td><td>2</td><td>75%</td><td>Mon, 7:00 PM PST</td><td><span class="tfp-admin-facilitator-status is-active">Active</span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('demo', 1, tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php if (!$data['active_rows']) : ?><tr><td colspan="8" class="tfp-admin-overview-empty"><?php esc_html_e('No real active facilitators found. The demo row above is for design preview only.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                  </tbody>
+                </table></div>
+              </section>
+
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Pending Facilitators', 'tfp-dashboard'); ?></h2></div></header>
+                
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Past Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Past Cohorts', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                  <tbody>
+                    <?php if ($data['pending_rows']) : foreach ($data['pending_rows'] as $record) : ?>
+                      <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(isset($record['past_students']) ? number_format_i18n($record['past_students']) : 'N/A'); ?></td><td><?php echo esc_html($record['past_cohorts'] ?? 'N/A'); ?></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><span class="tfp-admin-facilitator-status is-active"><?php echo esc_html(ucfirst($record['status'])); ?></span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('facilitator_id', absint($record['id']), tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php endforeach; else : ?><tr><td colspan="7" class="tfp-admin-overview-empty"><?php esc_html_e('No pending facilitators found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                  </tbody>
+                </table></div>
+              </section>
+            </div>
+
+          <?php else : ?>
+            <?php $in_progress_count = count($data['onboarding_rows']); ?>
+            <section class="tfp-admin-panel tfp-admin-facilitator-onboarding-panel">
+              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Onboarding', 'tfp-dashboard'); ?></h2></div><small><?php echo esc_html(sprintf(__('%d in progress', 'tfp-dashboard'), $in_progress_count)); ?></small></header>
+              <div class="tfp-admin-onboarding-list">
+                <?php if ($data['onboarding_rows']) : foreach ($data['onboarding_rows'] as $record) : ?>
+                  <article class="tfp-admin-onboarding-card">
+                    <div class="tfp-admin-onboarding-person">
+                      <div class="tfp-admin-onboarding-identity"><img src="<?php echo esc_url($record['avatar']); ?>" alt=""><div><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['category'] . ' · ' . __('Account created', 'tfp-dashboard') . ($record['registered_label'] ? ' ' . $record['registered_label'] : '')); ?></small></div></div>
+                      <span class="tfp-admin-onboarding-status <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : 'is-progress'; ?>"><?php echo esc_html($record['onboarding_status_label']); ?></span>
+                    </div>
+                    <div class="tfp-admin-onboarding-steps">
+                      <?php $step_labels = ['account_created' => __('Account Created', 'tfp-dashboard'), 'profile_complete' => __('Profile Complete', 'tfp-dashboard'), 'training_complete' => __('Training Module', 'tfp-dashboard'), 'cohort_assigned' => __('Cohort Assigned', 'tfp-dashboard')]; foreach ($step_labels as $step_key => $step_label) : ?>
+                        <div class="tfp-admin-onboarding-step <?php echo !empty($record['steps'][$step_key]) ? 'is-complete' : ''; ?>"><?php echo esc_html($step_label); ?></div>
+                      <?php endforeach; ?>
+                    </div>
+                    <div class="tfp-admin-onboarding-progress"><span style="width:<?php echo esc_attr($record['progress']); ?>%"></span></div>
+                    <div class="tfp-admin-onboarding-footnote <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : ''; ?>"><?php echo esc_html(sprintf(__('%1$d of 4 steps complete', 'tfp-dashboard'), $record['completed_steps'])); ?><?php if ($record['onboarding_status'] === 'review') : ?> · <?php esc_html_e('No activity in 5 days', 'tfp-dashboard'); ?><?php endif; ?></div>
+                  </article>
+                <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator onboarding is currently in progress.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              </div>
+            </section>
+          <?php endif; ?>
+        </main>
+      </div>
+    </div>
+    <?php
+}
+ . number_format_i18n((float) $pay_total, 2)) : '—'; ?></strong>
+                </div>
+                <div class="tfp-admin-payment-last">
+                  <small><?php esc_html_e('Last Payment', 'tfp-dashboard'); ?></small>
+                  <strong><?php if ($pay_last_amount !== '' && is_numeric($pay_last_amount)) { echo esc_html('
+            <?php else : ?>
+              <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2><?php if ($detail_cohorts) : ?><ul class="tfp-admin-detail-module-list"><?php foreach ($detail_cohorts as $cohort) : ?><li><?php echo esc_html(get_the_title($cohort)); ?></li><?php endforeach; ?></ul><?php else : ?><p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?></section>
+            <?php endif; ?>
+          <?php elseif ($data['tab'] === 'overview') : ?>
+            <section class="tfp-admin-facilitators-stats" aria-label="<?php esc_attr_e('Facilitator statistics', 'tfp-dashboard'); ?>">
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Total Facilitators', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['total'])); ?></strong></div><p><?php esc_html_e('Across all Categories', 'tfp-dashboard'); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Active This Week', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['active_week'])); ?></strong></div><p><?php echo esc_html(sprintf(__('%d inactive 7+ days', 'tfp-dashboard'), $data['inactive_week'])); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Pending Onboarding', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['pending_onboarding'])); ?></strong></div><p><?php esc_html_e('Steps incomplete', 'tfp-dashboard'); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Open Invitations', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['invitation_count'])); ?></strong></div><p><?php esc_html_e('Invitation tracking not connected', 'tfp-dashboard'); ?></p></article>
+            </section>
+
+            <div class="tfp-admin-facilitators-overview-grid">
+              <section class="tfp-admin-panel tfp-admin-facilitators-category-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Category Coverage', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Number of Facilitators inside of each Category', 'tfp-dashboard'); ?></p></div></header>
+                <div class="tfp-admin-facilitators-category-list">
+                  <?php if ($data['categories']) : $max_category = max($data['categories']); foreach ($data['categories'] as $category => $count) : ?>
+                    <div class="tfp-admin-facilitators-category"><div><span><?php echo esc_html($category); ?></span><strong><?php echo esc_html(sprintf(_n('%s facilitator', '%s facilitators', $count, 'tfp-dashboard'), number_format_i18n($count))); ?></strong></div><div class="tfp-admin-facilitators-bar"><span style="width:<?php echo esc_attr((100 * $count) / max(1, $max_category)); ?>%"></span></div></div>
+                  <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator categories have been assigned yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </div>
+              </section>
+
+              <section class="tfp-admin-panel tfp-admin-facilitators-alert-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Flags & Alerts', 'tfp-dashboard'); ?></h2></div></header>
+                <div class="tfp-admin-facilitators-alert-list">
+                  <?php if ($data['alerts']) : foreach ($data['alerts'] as $index => $alert) : ?>
+                    <article class="tfp-admin-facilitators-alert<?php echo $index === 0 ? ' is-highlighted' : ''; ?>"><strong><?php echo esc_html($alert['title']); ?></strong><span><?php echo esc_html($alert['name'] . ' · ' . $alert['detail']); ?></span></article>
+                  <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator flags or alerts are currently recorded.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </div>
+              </section>
+            </div>
+
+            <section class="tfp-admin-panel tfp-admin-facilitators-recent-panel">
+              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Recent Course Activity', 'tfp-dashboard'); ?></h2></div></header>
+              <div class="tfp-admin-facilitators-recent-list">
+                <?php if ($data['recent_activity']) : foreach ($data['recent_activity'] as $event) : ?>
+                  <article class="tfp-admin-facilitators-recent-row"><div><strong><?php echo esc_html($event->display_name); ?></strong><span><?php echo esc_html(trim((string) $event->event_label . ((string) $event->context !== '' ? ' · ' . (string) $event->context : ''))); ?></span></div><time><?php echo esc_html(wp_date('M j, g:i A T', strtotime($event->created_at . ' UTC'))); ?></time></article>
+                <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No course activity is recorded for facilitators yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              </div>
+            </section>
+
+          <?php elseif ($data['tab'] === 'invitations') : ?>
+            <div class="tfp-admin-facilitators-directory-stack">
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Invitations', 'tfp-dashboard'); ?></h2></div></header>
+                <p class="tfp-admin-invitation-demo-note"><?php esc_html_e('Demo preview: sample rows for design review only. These are not real invitations.', 'tfp-dashboard'); ?></p>
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr>
+                    <th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Email', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Sent', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Expires', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                  </tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Rachel Moore</strong></td><td>rachel.moore@example.com</td><td>Discipleship</td><td>May 18</td><td>Jun 1</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Kevin Lim</strong></td><td>kevin.lim@example.com</td><td>Leadership</td><td>May 20</td><td>Jun 3</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Sandra James</strong></td><td>s.james@example.com</td><td>Kingdom Expansion</td><td>May 22</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Andre Williams</strong></td><td>a.williams@example.com</td><td>Discipleship</td><td>May 23</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                  </tbody>
+                </table></div>
+              </section>
+            </div>
+
+          <?php elseif ($data['tab'] === 'active') : ?>
+            <div class="tfp-admin-facilitators-directory-stack">
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Active Facilitators', 'tfp-dashboard'); ?></h2></div></header>
+                
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Hmwk Rate', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                  <tbody>
+                    <?php if ($data['active_rows']) : foreach ($data['active_rows'] as $record) : ?>
+                      <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(isset($record['students']) ? number_format_i18n($record['students']) : 'N/A'); ?></td><td><?php echo esc_html(number_format_i18n($record['cohorts'])); ?></td><td><?php echo esc_html($record['homework_rate'] ?? 'N/A'); ?></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><span class="tfp-admin-facilitator-status is-active"><?php echo esc_html(ucfirst($record['status'])); ?></span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('facilitator_id', absint($record['id']), tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php endforeach; endif; ?>
+                    <tr class="tfp-admin-facilitator-demo-row"><td><strong>Shannon Stiggins</strong><small>shannon.demo@example.com · Demo</small></td><td>Discipleship</td><td>50</td><td>2</td><td>75%</td><td>Mon, 7:00 PM PST</td><td><span class="tfp-admin-facilitator-status is-active">Active</span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('demo', 1, tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php if (!$data['active_rows']) : ?><tr><td colspan="8" class="tfp-admin-overview-empty"><?php esc_html_e('No real active facilitators found. The demo row above is for design preview only.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                  </tbody>
+                </table></div>
+              </section>
+
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Pending Facilitators', 'tfp-dashboard'); ?></h2></div></header>
+                
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Past Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Past Cohorts', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                  <tbody>
+                    <?php if ($data['pending_rows']) : foreach ($data['pending_rows'] as $record) : ?>
+                      <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(isset($record['past_students']) ? number_format_i18n($record['past_students']) : 'N/A'); ?></td><td><?php echo esc_html($record['past_cohorts'] ?? 'N/A'); ?></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><span class="tfp-admin-facilitator-status is-active"><?php echo esc_html(ucfirst($record['status'])); ?></span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('facilitator_id', absint($record['id']), tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php endforeach; else : ?><tr><td colspan="7" class="tfp-admin-overview-empty"><?php esc_html_e('No pending facilitators found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                  </tbody>
+                </table></div>
+              </section>
+            </div>
+
+          <?php else : ?>
+            <?php $in_progress_count = count($data['onboarding_rows']); ?>
+            <section class="tfp-admin-panel tfp-admin-facilitator-onboarding-panel">
+              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Onboarding', 'tfp-dashboard'); ?></h2></div><small><?php echo esc_html(sprintf(__('%d in progress', 'tfp-dashboard'), $in_progress_count)); ?></small></header>
+              <div class="tfp-admin-onboarding-list">
+                <?php if ($data['onboarding_rows']) : foreach ($data['onboarding_rows'] as $record) : ?>
+                  <article class="tfp-admin-onboarding-card">
+                    <div class="tfp-admin-onboarding-person">
+                      <div class="tfp-admin-onboarding-identity"><img src="<?php echo esc_url($record['avatar']); ?>" alt=""><div><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['category'] . ' · ' . __('Account created', 'tfp-dashboard') . ($record['registered_label'] ? ' ' . $record['registered_label'] : '')); ?></small></div></div>
+                      <span class="tfp-admin-onboarding-status <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : 'is-progress'; ?>"><?php echo esc_html($record['onboarding_status_label']); ?></span>
+                    </div>
+                    <div class="tfp-admin-onboarding-steps">
+                      <?php $step_labels = ['account_created' => __('Account Created', 'tfp-dashboard'), 'profile_complete' => __('Profile Complete', 'tfp-dashboard'), 'training_complete' => __('Training Module', 'tfp-dashboard'), 'cohort_assigned' => __('Cohort Assigned', 'tfp-dashboard')]; foreach ($step_labels as $step_key => $step_label) : ?>
+                        <div class="tfp-admin-onboarding-step <?php echo !empty($record['steps'][$step_key]) ? 'is-complete' : ''; ?>"><?php echo esc_html($step_label); ?></div>
+                      <?php endforeach; ?>
+                    </div>
+                    <div class="tfp-admin-onboarding-progress"><span style="width:<?php echo esc_attr($record['progress']); ?>%"></span></div>
+                    <div class="tfp-admin-onboarding-footnote <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : ''; ?>"><?php echo esc_html(sprintf(__('%1$d of 4 steps complete', 'tfp-dashboard'), $record['completed_steps'])); ?><?php if ($record['onboarding_status'] === 'review') : ?> · <?php esc_html_e('No activity in 5 days', 'tfp-dashboard'); ?><?php endif; ?></div>
+                  </article>
+                <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator onboarding is currently in progress.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              </div>
+            </section>
+          <?php endif; ?>
+        </main>
+      </div>
+    </div>
+    <?php
+}
+ . number_format_i18n((float) $pay_last_amount, 2)); } else { esc_html_e('No payment recorded', 'tfp-dashboard'); } ?><?php if ($pay_last_date && strtotime($pay_last_date)) : ?> — <?php echo esc_html(wp_date('M j, Y', strtotime($pay_last_date))); ?><?php endif; ?></strong>
+                  <small><?php echo $pay_provider ? esc_html($pay_provider) : esc_html__('Payout provider not connected', 'tfp-dashboard'); ?></small>
+                </div>
+              </section>
+              <div class="tfp-admin-payment-actions">
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Send Payment', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Issue a manual payment', 'tfp-dashboard'); ?></span></div>
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Request Banking Update', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Send Stripe Connect invite', 'tfp-dashboard'); ?></span></div>
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Send Paperwork', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Resend W-9, contract, or doc', 'tfp-dashboard'); ?></span></div>
+                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Adjust Pay Rate', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Edit flat rate or bonus', 'tfp-dashboard'); ?></span></div>
+              </div>
+              <div class="tfp-admin-payment-grid">
+                <section class="tfp-admin-panel tfp-admin-payment-editor">
+                  <h2><?php esc_html_e('Pay Structure Editor', 'tfp-dashboard'); ?></h2>
+                  <label for="tfp-pay-type"><?php esc_html_e('Compensation Type', 'tfp-dashboard'); ?></label>
+                  <select id="tfp-pay-type" disabled><option><?php echo esc_html($pay_type_label); ?></option></select>
+                  <label for="tfp-pay-rate"><?php esc_html_e('Assigned Roles (select all that apply)', 'tfp-dashboard'); ?></label>
+                  <input id="tfp-pay-rate" type="text" value="<?php echo ($pay_rate !== '' && is_numeric($pay_rate)) ? esc_attr('$ ' . number_format_i18n((float) $pay_rate, 2)) : ''; ?>" placeholder="—" readonly>
+                  <label for="tfp-pay-bonus"><?php esc_html_e('Completion Bonus (Optional)', 'tfp-dashboard'); ?></label>
+                  <input id="tfp-pay-bonus" type="text" value="<?php echo ($pay_bonus !== '' && is_numeric($pay_bonus)) ? esc_attr('$ ' . number_format_i18n((float) $pay_bonus, 2)) : ''; ?>" placeholder="—" readonly>
+                  <?php if (!$detail_demo && $pay_rate === '' && $pay_bonus === '') : ?><p class="tfp-admin-payment-hint"><?php esc_html_e('No pay structure has been saved for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </section>
+                <section class="tfp-admin-panel tfp-admin-payment-payouts">
+                  <h2><?php esc_html_e('Payout Log', 'tfp-dashboard'); ?></h2>
+                  <?php if ($payout_rows) : ?>
+                    <div class="tfp-admin-payment-payout-list">
+                      <?php foreach ($payout_rows as $payout) :
+                        if (!is_array($payout)) { continue; }
+                        $payout_cohort = isset($payout['cohort']) ? sanitize_text_field($payout['cohort']) : '';
+                        $payout_amount = isset($payout['amount']) && is_numeric($payout['amount']) ? (float) $payout['amount'] : null;
+                        $payout_date = isset($payout['date']) ? sanitize_text_field($payout['date']) : '';
+                      ?>
+                        <article class="tfp-admin-payment-payout-row">
+                          <div><strong><?php echo $payout_cohort !== '' ? esc_html($payout_cohort) : esc_html__('Payout', 'tfp-dashboard'); ?></strong><small><?php echo $payout_date && strtotime($payout_date) ? esc_html(wp_date('M j, Y g:i A', strtotime($payout_date))) : '—'; ?></small></div>
+                          <strong><?php echo $payout_amount !== null ? esc_html('
+            <?php else : ?>
+              <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2><?php if ($detail_cohorts) : ?><ul class="tfp-admin-detail-module-list"><?php foreach ($detail_cohorts as $cohort) : ?><li><?php echo esc_html(get_the_title($cohort)); ?></li><?php endforeach; ?></ul><?php else : ?><p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?></section>
+            <?php endif; ?>
+          <?php elseif ($data['tab'] === 'overview') : ?>
+            <section class="tfp-admin-facilitators-stats" aria-label="<?php esc_attr_e('Facilitator statistics', 'tfp-dashboard'); ?>">
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Total Facilitators', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['total'])); ?></strong></div><p><?php esc_html_e('Across all Categories', 'tfp-dashboard'); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Active This Week', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['active_week'])); ?></strong></div><p><?php echo esc_html(sprintf(__('%d inactive 7+ days', 'tfp-dashboard'), $data['inactive_week'])); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Pending Onboarding', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['pending_onboarding'])); ?></strong></div><p><?php esc_html_e('Steps incomplete', 'tfp-dashboard'); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Open Invitations', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['invitation_count'])); ?></strong></div><p><?php esc_html_e('Invitation tracking not connected', 'tfp-dashboard'); ?></p></article>
+            </section>
+
+            <div class="tfp-admin-facilitators-overview-grid">
+              <section class="tfp-admin-panel tfp-admin-facilitators-category-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Category Coverage', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Number of Facilitators inside of each Category', 'tfp-dashboard'); ?></p></div></header>
+                <div class="tfp-admin-facilitators-category-list">
+                  <?php if ($data['categories']) : $max_category = max($data['categories']); foreach ($data['categories'] as $category => $count) : ?>
+                    <div class="tfp-admin-facilitators-category"><div><span><?php echo esc_html($category); ?></span><strong><?php echo esc_html(sprintf(_n('%s facilitator', '%s facilitators', $count, 'tfp-dashboard'), number_format_i18n($count))); ?></strong></div><div class="tfp-admin-facilitators-bar"><span style="width:<?php echo esc_attr((100 * $count) / max(1, $max_category)); ?>%"></span></div></div>
+                  <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator categories have been assigned yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </div>
+              </section>
+
+              <section class="tfp-admin-panel tfp-admin-facilitators-alert-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Flags & Alerts', 'tfp-dashboard'); ?></h2></div></header>
+                <div class="tfp-admin-facilitators-alert-list">
+                  <?php if ($data['alerts']) : foreach ($data['alerts'] as $index => $alert) : ?>
+                    <article class="tfp-admin-facilitators-alert<?php echo $index === 0 ? ' is-highlighted' : ''; ?>"><strong><?php echo esc_html($alert['title']); ?></strong><span><?php echo esc_html($alert['name'] . ' · ' . $alert['detail']); ?></span></article>
+                  <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator flags or alerts are currently recorded.', 'tfp-dashboard'); ?></p><?php endif; ?>
+                </div>
+              </section>
+            </div>
+
+            <section class="tfp-admin-panel tfp-admin-facilitators-recent-panel">
+              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Recent Course Activity', 'tfp-dashboard'); ?></h2></div></header>
+              <div class="tfp-admin-facilitators-recent-list">
+                <?php if ($data['recent_activity']) : foreach ($data['recent_activity'] as $event) : ?>
+                  <article class="tfp-admin-facilitators-recent-row"><div><strong><?php echo esc_html($event->display_name); ?></strong><span><?php echo esc_html(trim((string) $event->event_label . ((string) $event->context !== '' ? ' · ' . (string) $event->context : ''))); ?></span></div><time><?php echo esc_html(wp_date('M j, g:i A T', strtotime($event->created_at . ' UTC'))); ?></time></article>
+                <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No course activity is recorded for facilitators yet.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              </div>
+            </section>
+
+          <?php elseif ($data['tab'] === 'invitations') : ?>
+            <div class="tfp-admin-facilitators-directory-stack">
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Invitations', 'tfp-dashboard'); ?></h2></div></header>
+                <p class="tfp-admin-invitation-demo-note"><?php esc_html_e('Demo preview: sample rows for design review only. These are not real invitations.', 'tfp-dashboard'); ?></p>
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr>
+                    <th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Email', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Sent', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Expires', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                  </tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Rachel Moore</strong></td><td>rachel.moore@example.com</td><td>Discipleship</td><td>May 18</td><td>Jun 1</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Kevin Lim</strong></td><td>kevin.lim@example.com</td><td>Leadership</td><td>May 20</td><td>Jun 3</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Sandra James</strong></td><td>s.james@example.com</td><td>Kingdom Expansion</td><td>May 22</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Andre Williams</strong></td><td>a.williams@example.com</td><td>Discipleship</td><td>May 23</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                  </tbody>
+                </table></div>
+              </section>
+            </div>
+
+          <?php elseif ($data['tab'] === 'active') : ?>
+            <div class="tfp-admin-facilitators-directory-stack">
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Active Facilitators', 'tfp-dashboard'); ?></h2></div></header>
+                
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Hmwk Rate', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                  <tbody>
+                    <?php if ($data['active_rows']) : foreach ($data['active_rows'] as $record) : ?>
+                      <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(isset($record['students']) ? number_format_i18n($record['students']) : 'N/A'); ?></td><td><?php echo esc_html(number_format_i18n($record['cohorts'])); ?></td><td><?php echo esc_html($record['homework_rate'] ?? 'N/A'); ?></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><span class="tfp-admin-facilitator-status is-active"><?php echo esc_html(ucfirst($record['status'])); ?></span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('facilitator_id', absint($record['id']), tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php endforeach; endif; ?>
+                    <tr class="tfp-admin-facilitator-demo-row"><td><strong>Shannon Stiggins</strong><small>shannon.demo@example.com · Demo</small></td><td>Discipleship</td><td>50</td><td>2</td><td>75%</td><td>Mon, 7:00 PM PST</td><td><span class="tfp-admin-facilitator-status is-active">Active</span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('demo', 1, tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php if (!$data['active_rows']) : ?><tr><td colspan="8" class="tfp-admin-overview-empty"><?php esc_html_e('No real active facilitators found. The demo row above is for design preview only.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                  </tbody>
+                </table></div>
+              </section>
+
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Pending Facilitators', 'tfp-dashboard'); ?></h2></div></header>
+                
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Past Students', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Past Cohorts', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
+                  <tbody>
+                    <?php if ($data['pending_rows']) : foreach ($data['pending_rows'] as $record) : ?>
+                      <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(isset($record['past_students']) ? number_format_i18n($record['past_students']) : 'N/A'); ?></td><td><?php echo esc_html($record['past_cohorts'] ?? 'N/A'); ?></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><span class="tfp-admin-facilitator-status is-active"><?php echo esc_html(ucfirst($record['status'])); ?></span></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg('facilitator_id', absint($record['id']), tfp_admin_facilitators_url())); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
+                    <?php endforeach; else : ?><tr><td colspan="7" class="tfp-admin-overview-empty"><?php esc_html_e('No pending facilitators found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+                  </tbody>
+                </table></div>
+              </section>
+            </div>
+
+          <?php else : ?>
+            <?php $in_progress_count = count($data['onboarding_rows']); ?>
+            <section class="tfp-admin-panel tfp-admin-facilitator-onboarding-panel">
+              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Onboarding', 'tfp-dashboard'); ?></h2></div><small><?php echo esc_html(sprintf(__('%d in progress', 'tfp-dashboard'), $in_progress_count)); ?></small></header>
+              <div class="tfp-admin-onboarding-list">
+                <?php if ($data['onboarding_rows']) : foreach ($data['onboarding_rows'] as $record) : ?>
+                  <article class="tfp-admin-onboarding-card">
+                    <div class="tfp-admin-onboarding-person">
+                      <div class="tfp-admin-onboarding-identity"><img src="<?php echo esc_url($record['avatar']); ?>" alt=""><div><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['category'] . ' · ' . __('Account created', 'tfp-dashboard') . ($record['registered_label'] ? ' ' . $record['registered_label'] : '')); ?></small></div></div>
+                      <span class="tfp-admin-onboarding-status <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : 'is-progress'; ?>"><?php echo esc_html($record['onboarding_status_label']); ?></span>
+                    </div>
+                    <div class="tfp-admin-onboarding-steps">
+                      <?php $step_labels = ['account_created' => __('Account Created', 'tfp-dashboard'), 'profile_complete' => __('Profile Complete', 'tfp-dashboard'), 'training_complete' => __('Training Module', 'tfp-dashboard'), 'cohort_assigned' => __('Cohort Assigned', 'tfp-dashboard')]; foreach ($step_labels as $step_key => $step_label) : ?>
+                        <div class="tfp-admin-onboarding-step <?php echo !empty($record['steps'][$step_key]) ? 'is-complete' : ''; ?>"><?php echo esc_html($step_label); ?></div>
+                      <?php endforeach; ?>
+                    </div>
+                    <div class="tfp-admin-onboarding-progress"><span style="width:<?php echo esc_attr($record['progress']); ?>%"></span></div>
+                    <div class="tfp-admin-onboarding-footnote <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : ''; ?>"><?php echo esc_html(sprintf(__('%1$d of 4 steps complete', 'tfp-dashboard'), $record['completed_steps'])); ?><?php if ($record['onboarding_status'] === 'review') : ?> · <?php esc_html_e('No activity in 5 days', 'tfp-dashboard'); ?><?php endif; ?></div>
+                  </article>
+                <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator onboarding is currently in progress.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              </div>
+            </section>
+          <?php endif; ?>
+        </main>
+      </div>
+    </div>
+    <?php
+}
+ . number_format_i18n($payout_amount, 2)) : '—'; ?></strong>
+                        </article>
+                      <?php endforeach; ?>
+                    </div>
+                  <?php else : ?>
+                    <div class="tfp-admin-payment-empty"><?php esc_html_e('No payout records are available for this facilitator yet.', 'tfp-dashboard'); ?></div>
+                  <?php endif; ?>
+                </section>
+              </div>
             <?php else : ?>
               <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2><?php if ($detail_cohorts) : ?><ul class="tfp-admin-detail-module-list"><?php foreach ($detail_cohorts as $cohort) : ?><li><?php echo esc_html(get_the_title($cohort)); ?></li><?php endforeach; ?></ul><?php else : ?><p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?></section>
             <?php endif; ?>
