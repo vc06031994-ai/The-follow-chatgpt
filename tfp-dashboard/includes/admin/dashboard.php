@@ -108,7 +108,7 @@ function tfp_admin_dashboard_nav_items() {
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => home_url('/admin-curriculum-categories/')],
         ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_cohorts_url') ? tfp_admin_cohorts_url() : home_url('/admin-cohorts/')],
         ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_facilitators_url') ? tfp_admin_facilitators_url() : home_url('/admin-facilitators/')],
-        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=shop_order')],
+        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_payments_url') ? tfp_admin_payments_url() : home_url('/admin-payments/')],
         ['slug' => 'documents', 'label' => __('Documents', 'tfp-dashboard'), 'url' => admin_url('upload.php')],
         ['slug' => 'communication', 'label' => __('Communication', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_ticket')],
         ['slug' => 'verification', 'label' => __('Verification', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_financial_aid')],
