@@ -540,7 +540,7 @@ function tfp_admin_cohort_detail_render() {
             <section class="tfp-admin-cohort-data-panel tfp-admin-cohort-governance-panel">
               <h2><?php esc_html_e('Cohort Governance', 'tfp-dashboard'); ?></h2>
               <div class="tfp-admin-cohort-ruleset">
-                <div class="tfp-admin-cohort-ruleset-heading"><div><strong><?php esc_html_e('Current Ruleset', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Standard 58-Week Journey', 'tfp-dashboard'); ?></small></div><button type="button" class="tfp-admin-cohort-edit-ruleset" data-tfp-open-governance-modal><span aria-hidden="true">✎</span> <?php esc_html_e('Edit', 'tfp-dashboard'); ?></button></div>
+                <div class="tfp-admin-cohort-ruleset-heading"><div><strong><?php esc_html_e('Current Ruleset', 'tfp-dashboard'); ?></strong><small><?php esc_html_e('Standard 58-Week Journey', 'tfp-dashboard'); ?></small></div><button type="button" class="tfp-admin-cohort-edit-ruleset" data-tfp-open-governance-modal><span class="dashicons dashicons-edit" aria-hidden="true"></span> <?php esc_html_e('Edit', 'tfp-dashboard'); ?></button></div>
                 <dl>
                   <div><dt><?php esc_html_e('Course Mode', 'tfp-dashboard'); ?></dt><dd><?php esc_html_e('Facilitation-Based (Full 58-Week)', 'tfp-dashboard'); ?></dd></div>
                   <div><dt><?php esc_html_e('Unlock Rule', 'tfp-dashboard'); ?></dt><dd><?php echo esc_html(['meeting_day' => 'Auto-Unlock on Meeting Day', '24_hours' => '24 Hours Before Meeting', 'manual' => 'Manual Release by Facilitator'][$governance['unlock_trigger']]); ?></dd></div>
