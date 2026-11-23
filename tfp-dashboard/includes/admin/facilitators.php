@@ -166,7 +166,7 @@ function tfp_admin_facilitators_get_data() {
         ];
         $active_week = 4;
         $inactive_week = 2;
-        $pending_onboarding = 2;
+        $pending_onboarding = 3;
         $inactive_alerts = [
             ['title' => __('Inactive Facilitator', 'tfp-dashboard'), 'name' => 'David Osei', 'detail' => __('No login for 9 days · Cultural Intelligence', 'tfp-dashboard'), 'time' => $demo_now - (9 * DAY_IN_SECONDS)],
         ];
