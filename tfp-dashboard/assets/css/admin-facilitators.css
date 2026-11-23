@@ -82,3 +82,35 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-directory-stack .tfp-dash-table td strong{font-size:10px}
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-directory-stack .tfp-dash-table td small{font-size:9px}
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-status{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:3px 9px;border:1px solid #008b9a;border-radius:20px;background:#e9f7f8;color:#006a73;font-size:9px;font-weight:600;line-height:1.2}
+
+
+/* Compact outlined View action matching the Facilitators table reference. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-directory-stack .tfp-dash-table td a.tfp-admin-overview-view{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:48px;
+    min-height:22px;
+    padding:2px 10px;
+    border:1px solid #242424;
+    border-radius:7px;
+    background:#fff;
+    color:#171717;
+    font-family:var(--tfp-dash-font);
+    font-size:10px;
+    font-weight:500;
+    line-height:1;
+    text-align:center;
+    text-decoration:none;
+    white-space:nowrap;
+    transition:background-color .18s ease,color .18s ease,border-color .18s ease;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-directory-stack .tfp-dash-table td a.tfp-admin-overview-view:hover{
+    border-color:#00666e;
+    background:#00666e;
+    color:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-directory-stack .tfp-dash-table td a.tfp-admin-overview-view:focus-visible{
+    outline:2px solid #00666e;
+    outline-offset:2px;
+}
