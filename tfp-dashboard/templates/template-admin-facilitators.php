@@ -26,7 +26,18 @@ wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.
 if (defined('WC_PLUGIN_FILE')) {
     wp_enqueue_style('tfp-admin-selectwoo', plugins_url('assets/css/select2.css', WC_PLUGIN_FILE), [], defined('WC_VERSION') ? WC_VERSION : null);
     wp_enqueue_script('tfp-admin-selectwoo', plugins_url('assets/js/selectWoo/selectWoo.full.min.js', WC_PLUGIN_FILE), ['jquery'], defined('WC_VERSION') ? WC_VERSION : null, true);
-    wp_add_inline_script('tfp-admin-selectwoo', "jQuery(function($){var $paymentSelect=$('#tfp-pay-type');if($paymentSelect.length&&$.fn.selectWoo&&!$paymentSelect.hasClass('select2-hidden-accessible')){$paymentSelect.selectWoo({minimumResultsForSearch:Infinity,width:'100%'});}});");
+    $tfp_selectwoo_init = <<<'JS'
+jQuery(function ($) {
+    var $paymentSelect = $('#tfp-pay-type');
+    if ($paymentSelect.length && $.fn.selectWoo && !$paymentSelect.hasClass('select2-hidden-accessible')) {
+        $paymentSelect.selectWoo({
+            minimumResultsForSearch: Infinity,
+            width: '100%'
+        });
+    }
+});
+JS;
+    wp_add_inline_script('tfp-admin-selectwoo', $tfp_selectwoo_init);
 }
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
