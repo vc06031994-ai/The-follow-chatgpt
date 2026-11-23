@@ -578,7 +578,62 @@ function tfp_admin_facilitators_render() {
                 </section>
               </div>
             <?php else : ?>
-              <section class="tfp-admin-panel tfp-admin-detail-card"><h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2><?php if ($detail_cohorts) : ?><ul class="tfp-admin-detail-module-list"><?php foreach ($detail_cohorts as $cohort) : ?><li><?php echo esc_html(get_the_title($cohort)); ?></li><?php endforeach; ?></ul><?php else : ?><p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?></section>
+              <?php
+                $activity_cohorts = [];
+                if ($detail_demo) {
+                    $activity_cohorts = [
+                        ['id' => 0, 'name' => '58W: Spring 2026 – Tue A', 'course' => '58 Week', 'students' => '20/20', 'date' => '2026-04-18', 'meeting' => 'Mon, 7:00 PM PST', 'status' => 'Active'],
+                        ['id' => 0, 'name' => '58W: Spring 2026 – Tue B', 'course' => '58 Week', 'students' => '20/20', 'date' => '2026-04-18', 'meeting' => 'Mon, 7:00 PM PST', 'status' => 'Active'],
+                        ['id' => 0, 'name' => 'FND: Fall 2026 – Tue A', 'course' => 'FND', 'students' => '20/20', 'date' => '2026-04-18', 'meeting' => 'Mon, 7:00 PM PST', 'status' => 'Active'],
+                        ['id' => 0, 'name' => 'FND: Spring 2026 – Tue A', 'course' => 'FND', 'students' => '20/20', 'date' => '2026-04-18', 'meeting' => 'Mon, 7:00 PM PST', 'status' => 'Active'],
+                    ];
+                } else {
+                    foreach ($detail_cohorts as $cohort) {
+                        $cohort_id = (int) $cohort->ID;
+                        $student_count = function_exists('tfp_cohort_seats_taken')
+                            ? (int) tfp_cohort_seats_taken($cohort_id)
+                            : count(get_users(['meta_key' => 'tfp_cohort_choice', 'meta_value' => $cohort_id, 'fields' => 'ID', 'number' => -1]));
+                        $activity_cohorts[] = [
+                            'id' => $cohort_id,
+                            'name' => get_the_title($cohort_id),
+                            'course' => get_the_title(absint(get_post_meta($cohort_id, '_related_course', true))),
+                            'students' => number_format_i18n($student_count) . '/' . number_format_i18n(function_exists('tfp_cohort_seats_total') ? (int) tfp_cohort_seats_total($cohort_id) : absint(get_post_meta($cohort_id, '_seats_total', true))),
+                            'date' => (string) get_post_meta($cohort_id, '_start_date', true),
+                            'meeting' => (string) get_post_meta($cohort_id, '_schedule_text', true),
+                            'status' => $cohort->post_status === 'publish' ? 'Active' : 'Draft',
+                        ];
+                    }
+                }
+              ?>
+              <section class="tfp-admin-panel tfp-admin-facilitator-cohort-activity">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Active Cohorts', 'tfp-dashboard'); ?></h2></div></header>
+                <div class="tfp-dash-table-wrap">
+                  <table class="tfp-dash-table tfp-admin-facilitator-cohort-table">
+                    <thead><tr>
+                      <th><?php esc_html_e('Cohort Name', 'tfp-dashboard'); ?></th>
+                      <th><?php esc_html_e('Disciples', 'tfp-dashboard'); ?></th>
+                      <th><?php esc_html_e('Start Date', 'tfp-dashboard'); ?></th>
+                      <th><?php esc_html_e('Meeting', 'tfp-dashboard'); ?></th>
+                      <th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th>
+                      <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                    </tr></thead>
+                    <tbody>
+                      <?php if ($activity_cohorts) : foreach ($activity_cohorts as $activity_cohort) : ?>
+                        <tr>
+                          <td><strong><?php echo esc_html($activity_cohort['name']); ?></strong><small><?php echo esc_html($activity_cohort['course']); ?></small></td>
+                          <td><?php echo esc_html($activity_cohort['students']); ?></td>
+                          <td><?php echo !empty($activity_cohort['date']) && strtotime($activity_cohort['date']) ? esc_html(wp_date('M j', strtotime($activity_cohort['date']))) : '—'; ?></td>
+                          <td><?php echo esc_html($activity_cohort['meeting'] ?: '—'); ?></td>
+                          <td><span class="tfp-admin-facilitator-status <?php echo $activity_cohort['status'] === 'Active' ? 'is-active' : 'is-pending'; ?>"><?php echo esc_html($activity_cohort['status']); ?></span></td>
+                          <td><?php if (!empty($activity_cohort['id']) && function_exists('tfp_admin_cohort_detail_url')) : ?><a class="tfp-admin-facilitator-cohort-view" href="<?php echo esc_url(tfp_admin_cohort_detail_url($activity_cohort['id'])); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php else : ?><button class="tfp-admin-facilitator-cohort-view" type="button" disabled><?php esc_html_e('View', 'tfp-dashboard'); ?></button><?php endif; ?></td>
+                        </tr>
+                      <?php endforeach; else : ?>
+                        <tr><td colspan="6" class="tfp-admin-overview-empty"><?php esc_html_e('No cohorts are assigned to this facilitator yet.', 'tfp-dashboard'); ?></td></tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
             <?php endif; ?>
           <?php elseif ($data['tab'] === 'overview') : ?>
             <section class="tfp-admin-facilitators-stats" aria-label="<?php esc_attr_e('Facilitator statistics', 'tfp-dashboard'); ?>">
