@@ -518,13 +518,8 @@ function tfp_admin_facilitators_render() {
                 $pay_last_amount = !empty($payout_rows[0]['amount']) ? $payout_rows[0]['amount'] : '';
                 $pay_last_date = !empty($payout_rows[0]['date']) ? $payout_rows[0]['date'] : '';
                 $payment_notice = isset($_GET['payment_notice']) ? sanitize_key(wp_unslash($_GET['payment_notice'])) : '';
-                $available_cohorts = get_posts([
-                    'post_type' => 'tfp_cohort',
-                    'post_status' => ['publish', 'private'],
-                    'posts_per_page' => -1,
-                    'orderby' => 'title',
-                    'order' => 'ASC',
-                ]);
+                // Restrict payout records to cohorts actually assigned to this facilitator.
+                $available_cohorts = $detail_cohorts;
                 if ($detail_demo) {
                     $pay_type = 'per_student';
                     $pay_rate = 500;
@@ -550,13 +545,13 @@ function tfp_admin_facilitators_render() {
                 <div class="tfp-admin-payment-last"><small><?php esc_html_e('Last Payment', 'tfp-dashboard'); ?></small><strong><?php echo is_numeric($pay_last_amount) ? esc_html(chr(36) . number_format_i18n((float) $pay_last_amount, 2)) : esc_html__('No payment recorded', 'tfp-dashboard'); ?><?php if ($pay_last_date && strtotime($pay_last_date)) : ?> — <?php echo esc_html(wp_date('M j, Y', strtotime($pay_last_date))); ?><?php endif; ?></strong><small><?php echo $pay_provider ? esc_html($pay_provider) : esc_html__('Payout provider not connected', 'tfp-dashboard'); ?></small></div>
               </section>
               <div class="tfp-admin-payment-actions">
-                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Send Payment', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Issue a manual payment', 'tfp-dashboard'); ?></span></div>
-                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Request Banking Update', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Send Stripe Connect invite', 'tfp-dashboard'); ?></span></div>
-                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Send Paperwork', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Resend W-9, contract, or doc', 'tfp-dashboard'); ?></span></div>
-                <div class="tfp-admin-payment-action"><strong><?php esc_html_e('Adjust Pay Rate', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Edit flat rate or bonus', 'tfp-dashboard'); ?></span></div>
+                <a class="tfp-admin-payment-action" href="#tfp-record-payout"><strong><?php esc_html_e('Send Payment', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Record a payment entry (no transfer)', 'tfp-dashboard'); ?></span></a>
+                <div class="tfp-admin-payment-action is-unavailable" aria-disabled="true"><strong><?php esc_html_e('Request Banking Update', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Requires Stripe Connect setup', 'tfp-dashboard'); ?></span></div>
+                <div class="tfp-admin-payment-action is-unavailable" aria-disabled="true"><strong><?php esc_html_e('Send Paperwork', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Document delivery is not connected', 'tfp-dashboard'); ?></span></div>
+                <a class="tfp-admin-payment-action" href="#tfp-pay-type"><strong><?php esc_html_e('Adjust Pay Rate', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Edit flat rate or bonus', 'tfp-dashboard'); ?></span></a>
               </div>
               <div class="tfp-admin-payment-grid">
-                <section class="tfp-admin-panel tfp-admin-payment-editor">
+                <section class="tfp-admin-panel tfp-admin-payment-editor" id="tfp-payment-editor">
                   <h2><?php esc_html_e('Pay Structure Editor', 'tfp-dashboard'); ?></h2>
                   <?php if ($detail_demo) : ?><p class="tfp-admin-payment-hint"><?php esc_html_e('Demo preview — editing is disabled.', 'tfp-dashboard'); ?></p><?php else : ?>
                   <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
@@ -577,7 +572,7 @@ function tfp_admin_facilitators_render() {
                   </form>
                   <?php endif; ?>
                 </section>
-                <section class="tfp-admin-panel tfp-admin-payment-payouts">
+                <section class="tfp-admin-panel tfp-admin-payment-payouts" id="tfp-record-payout">
                   <h2><?php esc_html_e('Payout Log', 'tfp-dashboard'); ?></h2>
                   <?php if (!empty($payout_rows)) : ?>
                     <div class="tfp-admin-payment-payout-list">
