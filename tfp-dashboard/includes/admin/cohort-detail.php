@@ -244,45 +244,11 @@ add_action('admin_post_tfp_admin_save_cohort_governance', function () {
 
 /**
  * Return genuine activity events for students enrolled in this cohort.
- * Uses the existing audit table; no sample/demo activity is generated.
- */
-function tfp_admin_cohort_activity_demo_rows() {
-    // Local-only preview rows: never inserted into the database.
-    $samples = [
-        ['Sarah Jenkins', 'progress', 'Auto-Block triggered: 2+ Weeks Behind', 'Blocked', 0],
-        ['Marcus Reed', 'attendance', 'Admin Flag: Pastoral Concern', 'Attention', 1],
-        ['John Doe', 'quiz', 'Failed Module 1 Final Quiz', 'Attention', 2],
-        ['David Miller', 'quiz', 'Week 23 – Purpose unlocked', 'On Track', 3],
-        ['Rachel Smith', 'login', 'No activity in 7 days', 'Attention', 4],
-        ['Chris Evans', 'course', '1 Week behind schedule', 'Attention', 5],
-        ['Jason Bourne', 'test', 'Required Reflection not submitted', 'Blocked', 6],
-        ['Mary Jane', 'course', 'Week 24 content auto-unlocked', 'On Track', 7],
-        ['Farris Bingo', 'attendance', '3 Total missed sessions', 'Blocked', 8],
-        ['June Tango', 'profile', 'Discussion requirements unmet', 'Attention', 9],
-    ];
-    $rows = [];
-    foreach ($samples as $index => $sample) {
-        $created = gmdate('Y-m-d H:i:s', time() - ($index * DAY_IN_SECONDS));
-        $rows[] = (object) [
-            'id' => 0,
-            'user_id' => 900001 + $index,
-            'event_type' => $sample[1],
-            'event_label' => $sample[2],
-            'context' => '',
-            'created_at' => $created,
-            'display_name' => $sample[0],
-            'demo_status' => strtolower(str_replace(' ', '-', $sample[3])),
-            'is_demo' => true,
-        ];
-    }
-    return $rows;
-}
-
-/**
- * Return real cohort activity, or local-only preview rows when no real events exist.
+ * Never generate or display sample/demo activity.
  */
 function tfp_admin_cohort_activity_query($cohort_id, $student_ids) {
     global $wpdb;
+
     $student_ids = array_values(array_unique(array_filter(array_map('absint', (array) $student_ids))));
     $per_page = 10;
     $page = max(1, absint($_GET['activity_page'] ?? 1));
@@ -296,71 +262,65 @@ function tfp_admin_cohort_activity_query($cohort_id, $student_ids) {
         'engagement' => ['login', 'logout', 'profile'],
         'access' => ['registration', 'role', 'payment', 'document', 'account', 'cohort'],
     ];
-    $empty = ['rows' => [], 'total' => 0, 'page' => 1, 'pages' => 1, 'per_page' => $per_page, 'is_demo' => false];
+    $empty = ['rows' => [], 'total' => 0, 'page' => 1, 'pages' => 1, 'per_page' => $per_page];
 
-    // Check the real activity log first. Preview data is only used when it has no records.
-    $real_rows = [];
-    if ($student_ids && function_exists('tfp_user_activity_table')) {
-        $table = tfp_user_activity_table();
-        $exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
-        if ($exists === $table) {
-            $where = ['a.user_id IN (' . implode(',', array_fill(0, count($student_ids), '%d')) . ')'];
-            $args = $student_ids;
-            if ($user_id && in_array($user_id, $student_ids, true)) {
-                $where[] = 'a.user_id = %d';
-                $args[] = $user_id;
-            }
-            if (isset($type_map[$type])) {
-                $where[] = 'a.event_type IN (' . implode(',', array_fill(0, count($type_map[$type]), '%s')) . ')';
-                $args = array_merge($args, $type_map[$type]);
-            }
-            $cohort_title = get_the_title($cohort_id);
-            $searches_cohort = ($search !== '' && $cohort_title && stripos($cohort_title, $search) !== false);
-            if ($search !== '' && !$searches_cohort) {
-                $like = '%' . $wpdb->esc_like($search) . '%';
-                $where[] = '(u.display_name LIKE %s OR a.event_label LIKE %s OR a.context LIKE %s)';
-                array_push($args, $like, $like, $like);
-            }
-            $join = " FROM {$table} a INNER JOIN {$wpdb->users} u ON u.ID = a.user_id ";
-            $cohort_condition = ' WHERE a.user_id IN (' . implode(',', array_fill(0, count($student_ids), '%d')) . ')';
-            $cohort_total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $cohort_condition, $student_ids));
-            if ($cohort_total > 0) {
-                $condition = ' WHERE ' . implode(' AND ', $where);
-                $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $condition, $args));
-                $pages = max(1, (int) ceil($total / $per_page));
-                $page = min($page, $pages);
-                $query = 'SELECT a.id, a.user_id, a.event_type, a.event_label, a.context, a.created_at, u.display_name' . $join . $condition . ' ORDER BY a.created_at DESC, a.id DESC LIMIT %d OFFSET %d';
-                $real_rows = $total ? $wpdb->get_results($wpdb->prepare($query, array_merge($args, [$per_page, ($page - 1) * $per_page]))) : [];
-                return ['rows' => $real_rows, 'total' => $total, 'page' => $page, 'pages' => $pages, 'per_page' => $per_page, 'is_demo' => false];
-            }
-        }
+    // Without enrolled users or the activity log table, show the genuine empty state.
+    if (!$student_ids || !function_exists('tfp_user_activity_table')) {
+        return $empty;
     }
 
-    // Demo rows are in-memory only and are never saved to WordPress or the activity table.
-    $demo_rows = tfp_admin_cohort_activity_demo_rows();
+    $table = tfp_user_activity_table();
+    $exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+    if ($exists !== $table) {
+        return $empty;
+    }
+
+    $where = ['a.user_id IN (' . implode(',', array_fill(0, count($student_ids), '%d')) . ')'];
+    $args = $student_ids;
+
+    if ($user_id && in_array($user_id, $student_ids, true)) {
+        $where[] = 'a.user_id = %d';
+        $args[] = $user_id;
+    }
+
     if (isset($type_map[$type])) {
-        $demo_rows = array_values(array_filter($demo_rows, static function ($row) use ($type_map, $type) {
-            return in_array($row->event_type, $type_map[$type], true);
-        }));
+        $where[] = 'a.event_type IN (' . implode(',', array_fill(0, count($type_map[$type]), '%s')) . ')';
+        $args = array_merge($args, $type_map[$type]);
     }
-    if ($user_id) {
-        $demo_rows = array_values(array_filter($demo_rows, static function ($row) use ($user_id) {
-            return (int) $row->user_id === $user_id;
-        }));
+
+    $cohort_title = get_the_title($cohort_id);
+    $searches_cohort = ($search !== '' && $cohort_title && stripos($cohort_title, $search) !== false);
+    if ($search !== '' && !$searches_cohort) {
+        $like = '%' . $wpdb->esc_like($search) . '%';
+        $where[] = '(u.display_name LIKE %s OR a.event_label LIKE %s OR a.context LIKE %s)';
+        array_push($args, $like, $like, $like);
     }
-    if ($search !== '') {
-        $needle = function_exists('mb_strtolower') ? mb_strtolower($search) : strtolower($search);
-        $demo_rows = array_values(array_filter($demo_rows, static function ($row) use ($needle, $cohort_id) {
-            $haystack = $row->display_name . ' ' . $row->event_label . ' ' . get_the_title($cohort_id);
-            $haystack = function_exists('mb_strtolower') ? mb_strtolower($haystack) : strtolower($haystack);
-            return strpos($haystack, $needle) !== false;
-        }));
+
+    $join = " FROM {$table} a INNER JOIN {$wpdb->users} u ON u.ID = a.user_id ";
+    $cohort_condition = ' WHERE a.user_id IN (' . implode(',', array_fill(0, count($student_ids), '%d')) . ')';
+    $cohort_total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $cohort_condition, $student_ids));
+    if ($cohort_total < 1) {
+        return $empty;
     }
-    $total = count($demo_rows);
+
+    $condition = ' WHERE ' . implode(' AND ', $where);
+    $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*)' . $join . $condition, $args));
     $pages = max(1, (int) ceil($total / $per_page));
     $page = min($page, $pages);
-    $demo_rows = array_slice($demo_rows, ($page - 1) * $per_page, $per_page);
-    return ['rows' => $demo_rows, 'total' => $total, 'page' => $page, 'pages' => $pages, 'per_page' => $per_page, 'is_demo' => true];
+    $query = 'SELECT a.id, a.user_id, a.event_type, a.event_label, a.context, a.created_at, u.display_name'
+        . $join . $condition
+        . ' ORDER BY a.created_at DESC, a.id DESC LIMIT %d OFFSET %d';
+    $rows = $total
+        ? $wpdb->get_results($wpdb->prepare($query, array_merge($args, [$per_page, ($page - 1) * $per_page])))
+        : [];
+
+    return [
+        'rows' => $rows,
+        'total' => $total,
+        'page' => $page,
+        'pages' => $pages,
+        'per_page' => $per_page,
+    ];
 }
 
 function tfp_admin_cohort_activity_type_label($event_type) {
@@ -766,9 +726,7 @@ function tfp_admin_cohort_detail_render() {
                 <?php foreach ($data['students'] as $student_id) : $activity_student = get_userdata($student_id); if (!$activity_student) { continue; } ?>
                   <option value="<?php echo esc_attr($student_id); ?>" <?php selected($activity_user, $student_id); ?>><?php echo esc_html($activity_student->display_name); ?></option>
                 <?php endforeach; ?>
-                <?php if (!empty($activity_data['is_demo'])) : foreach (tfp_admin_cohort_activity_demo_rows() as $demo_user) : ?>
-                  <option value="<?php echo esc_attr($demo_user->user_id); ?>" <?php selected($activity_user, $demo_user->user_id); ?>><?php echo esc_html($demo_user->display_name); ?></option>
-                <?php endforeach; endif; ?>
+
               </select>
               <label class="tfp-admin-cohort-activity-search" for="tfp-cohort-activity-search">
                 <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg>
@@ -780,9 +738,9 @@ function tfp_admin_cohort_detail_render() {
                 <table class="tfp-dash-table tfp-admin-cohort-activity-table">
                   <thead><tr><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Type', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Activity', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Time', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
                   <tbody>
-                    <?php if (!empty($activity_data['is_demo'])) : ?><tr><td colspan="6" class="tfp-admin-cohort-activity-preview-note"><?php esc_html_e('Preview data — sample records shown for design review only. Real activity will replace these automatically.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
+
                     <?php if (!empty($activity_data['rows'])) : foreach ($activity_data['rows'] as $activity_row) :
-                      $activity_status = !empty($activity_row->is_demo) ? $activity_row->demo_status : tfp_admin_cohort_activity_status($activity_row);
+                      $activity_status = tfp_admin_cohort_activity_status($activity_row);
                       $activity_description = trim((string) $activity_row->event_label . ((string) $activity_row->context !== '' ? ' — ' . (string) $activity_row->context : ''));
                       $activity_timestamp = strtotime(get_date_from_gmt($activity_row->created_at));
                     ?>
@@ -792,7 +750,7 @@ function tfp_admin_cohort_detail_render() {
                         <td><span class="tfp-admin-overview-status tfp-admin-cohort-activity-status is-<?php echo esc_attr($activity_status); ?>"><?php echo esc_html($activity_status === 'blocked' ? __('Blocked', 'tfp-dashboard') : ($activity_status === 'attention' ? __('Attention', 'tfp-dashboard') : __('On Track', 'tfp-dashboard'))); ?></span></td>
                         <td><?php echo esc_html($activity_description); ?></td>
                         <td><time datetime="<?php echo esc_attr(gmdate('c', strtotime($activity_row->created_at . ' UTC'))); ?>"><?php echo esc_html(wp_date('M j, g:i A T', $activity_timestamp)); ?></time></td>
-                        <td><?php if (!empty($activity_row->is_demo)) : ?><span class="tfp-admin-overview-view is-preview" aria-disabled="true"><?php esc_html_e('View', 'tfp-dashboard'); ?></span><?php else : ?><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg(['user_id' => $activity_row->user_id], function_exists('tfp_admin_users_page_url') ? tfp_admin_users_page_url() : admin_url('user-edit.php'))); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a><?php endif; ?></td>
+                        <td><a class="tfp-admin-overview-view" href="<?php echo esc_url(add_query_arg(['user_id' => $activity_row->user_id], function_exists('tfp_admin_users_page_url') ? tfp_admin_users_page_url() : admin_url('user-edit.php'))); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td>
                       </tr>
                     <?php endforeach; else : ?>
                       <tr><td colspan="6" class="tfp-admin-overview-empty"><?php esc_html_e('No recorded activity is available for this cohort yet.', 'tfp-dashboard'); ?></td></tr>
