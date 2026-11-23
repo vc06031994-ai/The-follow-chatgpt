@@ -413,3 +413,24 @@ body.tfp-admin-payments-view .tfp-payments-methods>div{
         height:60px;
     }
 }
+
+
+/* Use the supplied calendar icon while retaining the native date picker. */
+body.tfp-admin-payments-view input[type="date"]{
+    appearance:none;
+    -webkit-appearance:none;
+    background-image:url("https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Vector-2.png") !important;
+    background-repeat:no-repeat !important;
+    background-position:right 9px center !important;
+    background-size:18px 18px !important;
+    padding-right:34px !important;
+}
+body.tfp-admin-payments-view input[type="date"]::-webkit-calendar-picker-indicator{
+    opacity:0;
+    width:24px;
+    height:24px;
+    cursor:pointer;
+}
+body.tfp-admin-payments-view input[type="date"]::-webkit-inner-spin-button{
+    display:none;
+}
