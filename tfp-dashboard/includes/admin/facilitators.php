@@ -254,6 +254,9 @@ function tfp_admin_facilitators_render() {
           <nav class="tfp-admin-facilitators-tabs" aria-label="<?php esc_attr_e('Facilitator sections', 'tfp-dashboard'); ?>">
             <?php foreach ($tabs as $key => $label) : ?><a class="<?php echo $data['tab'] === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('tab', $key, tfp_admin_facilitators_url())); ?>"><?php echo esc_html($label); ?></a><?php endforeach; ?>
           </nav>
+          <?php if (!empty($data['is_demo'])) : ?>
+            <div class="tfp-admin-facilitators-demo-notice"><strong><?php esc_html_e('Demo data preview', 'tfp-dashboard'); ?></strong><span><?php esc_html_e('Sample facilitator records are shown for design preview only. No demo records have been saved to your website.', 'tfp-dashboard'); ?></span></div>
+          <?php endif; ?>
 
           <?php if ($data['tab'] === 'overview') : ?>
             <section class="tfp-admin-facilitators-stats" aria-label="<?php esc_attr_e('Facilitator statistics', 'tfp-dashboard'); ?>">
@@ -293,7 +296,18 @@ function tfp_admin_facilitators_render() {
             </section>
 
           <?php elseif ($data['tab'] === 'invitations') : ?>
-            <section class="tfp-admin-panel tfp-admin-facilitators-empty-panel"><h2><?php esc_html_e('Invitations', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('There are no invitation records available. Invitation tracking is not currently connected to facilitator accounts.', 'tfp-dashboard'); ?></p></section>
+            <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+              <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                <thead><tr><th><?php esc_html_e('Invitee', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Invited By', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Expires', 'tfp-dashboard'); ?></th></tr></thead>
+                <tbody>
+                  <?php if (!empty($data['is_demo'])) : ?>
+                    <tr><td><strong>Alex Morgan</strong><small>alex.morgan@example.com</small></td><td>Discipleship</td><td>Shannon Stiggins</td><td><span class="tfp-admin-facilitators-invite-status">Pending</span></td><td><?php echo esc_html(wp_date('M j, Y', current_time('timestamp') + (2 * DAY_IN_SECONDS))); ?></td></tr>
+                  <?php else : ?>
+                    <tr><td colspan="5" class="tfp-admin-overview-empty"><?php esc_html_e('No invitation records are available. Invitation tracking is not connected yet.', 'tfp-dashboard'); ?></td></tr>
+                  <?php endif; ?>
+                </tbody>
+              </table></div>
+            </section>
 
           <?php else : ?>
             <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
