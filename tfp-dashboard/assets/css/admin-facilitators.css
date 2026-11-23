@@ -68,3 +68,12 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-recent-row{align-items:flex-start;flex-direction:column;gap:4px}
  body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-recent-row span{white-space:normal}
 }
+
+
+/* Clearly identify display-only facilitator preview records. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-demo-notice{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:10px 14px;border:1px solid #d8c99a;border-radius:8px;background:#fff9e9;color:#65552b;font-size:11px;line-height:1.5}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-demo-notice strong{flex:0 0 auto;font-size:12px}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-invite-status{display:inline-flex;align-items:center;padding:4px 9px;border-radius:20px;background:#fff2d8;color:#89651a;font-size:10px;font-weight:700}
+@media(max-width:700px){
+ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitators-demo-notice{align-items:flex-start;flex-direction:column;gap:3px}
+}
