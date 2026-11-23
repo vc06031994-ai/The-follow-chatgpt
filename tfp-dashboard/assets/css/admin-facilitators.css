@@ -380,3 +380,55 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view a.tfp-admin-overview-v
     color:#fff !important;
     -webkit-text-fill-color:#fff !important;
 }
+
+
+/* Facilitator detail screen — follow the shared Admin spacing tokens. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-header{
+    box-sizing:border-box;
+    gap:var(--tfp-space-4);
+    padding:var(--tfp-space-4) var(--tfp-admin-page-gutter);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-content.tfp-admin-facilitators-content{
+    padding:var(--tfp-admin-section-gap) var(--tfp-admin-page-gutter) var(--tfp-space-10);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-tabs{
+    gap:var(--tfp-space-2);
+    min-height:42px;
+    margin:0 0 var(--tfp-space-4);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-onboarding,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-card{
+    margin-bottom:var(--tfp-space-4);
+    padding:var(--tfp-admin-card-padding);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-onboarding .tfp-admin-panel-heading{
+    gap:var(--tfp-space-3);
+    padding:0 0 var(--tfp-space-3);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-card>header{
+    gap:var(--tfp-space-3);
+    margin-bottom:var(--tfp-space-3);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-bottom-grid{
+    gap:var(--tfp-admin-section-gap);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-chips{
+    gap:var(--tfp-space-2);
+    padding:var(--tfp-space-2);
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-card label{
+    margin:var(--tfp-space-4) 0 var(--tfp-space-2);
+}
+@media(max-width:700px){
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-detail-header{
+        gap:var(--tfp-space-3);
+        padding:var(--tfp-space-3) var(--tfp-admin-page-gutter);
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-onboarding,
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-card{
+        padding:var(--tfp-admin-card-padding);
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-bottom-grid{
+        gap:var(--tfp-space-4);
+    }
+}
