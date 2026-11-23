@@ -330,6 +330,7 @@ function tfp_admin_facilitators_render() {
             <div class="tfp-admin-facilitators-directory-stack">
               <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
                 <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Invitations', 'tfp-dashboard'); ?></h2></div></header>
+                <p class="tfp-admin-invitation-demo-note"><?php esc_html_e('Demo preview: sample rows for design review only. These are not real invitations.', 'tfp-dashboard'); ?></p>
                 <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
                   <thead><tr>
                     <th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th>
@@ -341,7 +342,26 @@ function tfp_admin_facilitators_render() {
                     <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
                   </tr></thead>
                   <tbody>
-                    <tr><td colspan="7" class="tfp-admin-overview-empty"><?php esc_html_e('No facilitator invitations have been sent yet.', 'tfp-dashboard'); ?></td></tr>
+                    <tr>
+                      <td><strong>Rachel Moore</strong></td><td>rachel.moore@example.com</td><td>Discipleship</td><td>May 18</td><td>Jun 1</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Kevin Lim</strong></td><td>kevin.lim@example.com</td><td>Leadership</td><td>May 20</td><td>Jun 3</td>
+                      <td><span class="tfp-admin-invitation-status is-active">Active</span></td>
+                      <td><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Sandra James</strong></td><td>s.james@example.com</td><td>Kingdom Expansion</td><td>May 22</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Andre Williams</strong></td><td>a.williams@example.com</td><td>Discipleship</td><td>May 23</td><td>May 30</td>
+                      <td><span class="tfp-admin-invitation-status is-pending">Pending</span></td>
+                      <td><button class="tfp-admin-invitation-resend" type="button" disabled>Resend</button><button class="tfp-admin-invitation-view" type="button" disabled aria-label="Demo View action">View</button></td>
+                    </tr>
                   </tbody>
                 </table></div>
               </section>
