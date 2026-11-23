@@ -114,3 +114,131 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator
     outline:2px solid #00666e;
     outline-offset:2px;
 }
+
+
+/* Facilitator Onboarding page — four-step progress cards. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-onboarding-panel{
+    padding:0;
+    overflow:hidden;
+    border:1px solid #d9dcdd;
+    border-radius:10px;
+    background:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-onboarding-panel>.tfp-admin-panel-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:16px 18px 12px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-onboarding-panel>.tfp-admin-panel-heading h2{
+    margin:0;
+    font-size:18px;
+    font-weight:700;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-facilitator-onboarding-panel>.tfp-admin-panel-heading>small{
+    color:#8c9295;
+    font-size:10px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-list{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    padding:8px 18px 18px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-card{
+    padding:14px 16px;
+    border:1px solid #cfd2d3;
+    border-radius:11px;
+    background:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-person,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity{
+    display:flex;
+    align-items:center;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-person{
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:12px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity{gap:10px;min-width:0}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity img{
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
+    border-radius:50%;
+    object-fit:cover;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity>div{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    min-width:0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity strong{font-size:14px;font-weight:700}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity small{color:#656b6e;font-size:10px}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:22px;
+    padding:2px 10px;
+    border:1px solid;
+    border-radius:20px;
+    font-size:9px;
+    white-space:nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-status.is-progress{border-color:#d39a16;background:#fff1d1;color:#5b4300}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-status.is-review{border-color:#ff6868;background:#fff1f1;color:#c62828}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-steps{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-step{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:54px;
+    padding:8px 10px;
+    border:1px solid #c9ccce;
+    border-radius:12px;
+    background:#fafafa;
+    color:#171717;
+    font-size:13px;
+    text-align:center;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-step.is-complete{
+    border-color:#5b9694;
+    background:#e2f3f1;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-progress{
+    height:6px;
+    margin-top:10px;
+    overflow:hidden;
+    border-radius:10px;
+    background:#dfe3e7;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-progress span{
+    display:block;
+    height:100%;
+    border-radius:10px;
+    background:#c39a13;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-footnote{
+    margin-top:9px;
+    color:#8c9295;
+    font-size:9px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-footnote.is-review{color:#c62828}
+@media(max-width:760px){
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-step{min-height:48px;font-size:12px}
+}
+@media(max-width:480px){
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-card{padding:12px}
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity img{width:36px;height:36px;flex-basis:36px}
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity strong{font-size:12px}
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-onboarding-identity small{font-size:9px}
+}
