@@ -327,14 +327,25 @@ function tfp_admin_facilitators_render() {
             </section>
 
           <?php elseif ($data['tab'] === 'invitations') : ?>
-            <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
-              <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
-                <thead><tr><th><?php esc_html_e('Invitee', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Invited By', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Expires', 'tfp-dashboard'); ?></th></tr></thead>
-                <tbody>
-                  <tr><td colspan="5" class="tfp-admin-overview-empty"><?php esc_html_e('No invitation records are available. Invitation tracking is not connected yet.', 'tfp-dashboard'); ?></td></tr>
-                </tbody>
-              </table></div>
-            </section>
+            <div class="tfp-admin-facilitators-directory-stack">
+              <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
+                <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Invitations', 'tfp-dashboard'); ?></h2></div></header>
+                <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
+                  <thead><tr>
+                    <th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Email', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Sent', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Expires', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th>
+                    <th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th>
+                  </tr></thead>
+                  <tbody>
+                    <tr><td colspan="7" class="tfp-admin-overview-empty"><?php esc_html_e('No facilitator invitations have been sent yet.', 'tfp-dashboard'); ?></td></tr>
+                  </tbody>
+                </table></div>
+              </section>
+            </div>
 
           <?php elseif ($data['tab'] === 'active') : ?>
             <div class="tfp-admin-facilitators-directory-stack">
