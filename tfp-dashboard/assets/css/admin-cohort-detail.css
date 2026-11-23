@@ -1108,3 +1108,12 @@ body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-governance
     margin:0!important;
   }
 }
+
+/* Match the Figma pencil icon in the Cohort Governance ruleset card. */
+body.tfp-admin-dashboard-view.tfp-admin-cohort-detail-view .tfp-admin-cohort-edit-ruleset .dashicons{
+  width:13px;
+  height:13px;
+  font-size:13px;
+  line-height:13px;
+  vertical-align:middle;
+}
