@@ -539,7 +539,6 @@ function tfp_admin_facilitators_render() {
                 }
                 $pay_type_label = $pay_type === 'flat_rate' ? __('Flat Rate', 'tfp-dashboard') : __('Per Student (Flat Rate)', 'tfp-dashboard');
               ?>
-              <?php if ($payment_notice === 'compensation_saved' || $payment_notice === 'payout_recorded') : ?><div class="tfp-admin-payment-notice" role="status"><?php echo $payment_notice === 'compensation_saved' ? esc_html__('Compensation settings saved.', 'tfp-dashboard') : esc_html__('Payout record added successfully. This is an administrative record only; no funds were transferred.', 'tfp-dashboard'); ?></div><?php endif; ?>
               <section class="tfp-admin-payment-summary">
                 <div><small><?php esc_html_e('Total Paid to Date', 'tfp-dashboard'); ?></small><strong><?php echo is_numeric($pay_total) ? esc_html(chr(36) . number_format_i18n((float) $pay_total, 2)) : '—'; ?></strong></div>
                 <div class="tfp-admin-payment-last"><small><?php esc_html_e('Last Payment', 'tfp-dashboard'); ?></small><strong><?php echo is_numeric($pay_last_amount) ? esc_html(chr(36) . number_format_i18n((float) $pay_last_amount, 2)) : esc_html__('No payment recorded', 'tfp-dashboard'); ?><?php if ($pay_last_date && strtotime($pay_last_date)) : ?> — <?php echo esc_html(wp_date('M j, Y', strtotime($pay_last_date))); ?><?php endif; ?></strong><small><?php echo $pay_provider ? esc_html($pay_provider) : esc_html__('Payout provider not connected', 'tfp-dashboard'); ?></small></div>
