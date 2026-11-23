@@ -502,7 +502,17 @@ function tfp_admin_facilitators_render() {
                 </section>
                 <section class="tfp-admin-panel tfp-admin-payment-payouts"><h2><?php esc_html_e('Payout Log', 'tfp-dashboard'); ?></h2><div class="tfp-admin-payment-empty"><?php esc_html_e('No payout records are available for this facilitator yet.', 'tfp-dashboard'); ?></div></section>
               </div>
-            <?php else : ?><p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p><?php endif; ?></section>
+            <?php else : ?>
+              <section class="tfp-admin-panel tfp-admin-detail-card">
+                <h2><?php esc_html_e('Cohort Activity', 'tfp-dashboard'); ?></h2>
+                <?php if ($detail_cohorts) : ?>
+                  <ul class="tfp-admin-detail-module-list">
+                    <?php foreach ($detail_cohorts as $cohort) : ?><li><?php echo esc_html(get_the_title($cohort)); ?></li><?php endforeach; ?>
+                  </ul>
+                <?php else : ?>
+                  <p class="tfp-admin-detail-muted"><?php esc_html_e('No cohort activity is recorded for this facilitator.', 'tfp-dashboard'); ?></p>
+                <?php endif; ?>
+              </section>
             <?php endif; ?>
           <?php elseif ($data['tab'] === 'overview') : ?>
             <section class="tfp-admin-facilitators-stats" aria-label="<?php esc_attr_e('Facilitator statistics', 'tfp-dashboard'); ?>">
