@@ -40,6 +40,7 @@ function tfp_admin_facilitators_get_data() {
     $records = [];
     $categories = [];
     $active_week = 0;
+    $inactive_week = 0;
     $pending_onboarding = 0;
     $inactive_alerts = [];
     $flag_alerts = [];
@@ -75,6 +76,7 @@ function tfp_admin_facilitators_get_data() {
         if (!$deactivated && $last_login_ts && $last_login_ts >= ($now - WEEK_IN_SECONDS)) { $active_week++; }
         if (!$deactivated && $completion < 100) { $pending_onboarding++; }
         if (!$deactivated && (!$last_login_ts || $last_login_ts < ($now - (7 * DAY_IN_SECONDS)))) {
+            $inactive_week++;
             $inactive_alerts[] = [
                 'title' => __('Inactive Facilitator', 'tfp-dashboard'),
                 'name' => $person->display_name,
@@ -156,6 +158,7 @@ function tfp_admin_facilitators_get_data() {
         'records' => $records,
         'categories' => $categories,
         'active_week' => $active_week,
+        'inactive_week' => $inactive_week,
         'pending_onboarding' => $pending_onboarding,
         'alerts' => array_slice($alerts, 0, 6),
         'recent_activity' => $recent_activity,
@@ -210,7 +213,7 @@ function tfp_admin_facilitators_render() {
           <?php if ($data['tab'] === 'overview') : ?>
             <section class="tfp-admin-facilitators-stats" aria-label="<?php esc_attr_e('Facilitator statistics', 'tfp-dashboard'); ?>">
               <article class="tfp-admin-stat-card"><small><?php esc_html_e('Total Facilitators', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['total'])); ?></strong></div><p><?php esc_html_e('Across all Categories', 'tfp-dashboard'); ?></p></article>
-              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Active This Week', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['active_week'])); ?></strong></div><p><?php echo esc_html(sprintf(__('%d inactive 7+ days', 'tfp-dashboard'), max(0, $data['total'] - $data['active_week']))); ?></p></article>
+              <article class="tfp-admin-stat-card"><small><?php esc_html_e('Active This Week', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['active_week'])); ?></strong></div><p><?php echo esc_html(sprintf(__('%d inactive 7+ days', 'tfp-dashboard'), $data['inactive_week'])); ?></p></article>
               <article class="tfp-admin-stat-card"><small><?php esc_html_e('Pending Onboarding', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['pending_onboarding'])); ?></strong></div><p><?php esc_html_e('Steps incomplete', 'tfp-dashboard'); ?></p></article>
               <article class="tfp-admin-stat-card"><small><?php esc_html_e('Open Invitations', 'tfp-dashboard'); ?></small><div class="tfp-admin-stat-value"><strong><?php echo esc_html(number_format_i18n($data['invitation_count'])); ?></strong></div><p><?php esc_html_e('Invitation tracking not connected', 'tfp-dashboard'); ?></p></article>
             </section>
