@@ -79,6 +79,13 @@ function tfp_admin_payments_get_data() {
             }
             if (!$contains) { continue; }
         }
+        // Keep every matching order visible in the ledger, but count only paid orders in revenue metrics.
+        $filtered[] = $order;
+        $revenue_statuses = ['processing', 'completed', 'refunded', 'partially-refunded'];
+        if (!in_array($order->get_status(), $revenue_statuses, true)) {
+            continue;
+        }
+
         $order_gross = (float) $order->get_subtotal();
         $order_refund = (float) $order->get_total_refunded();
         $order_net = max(0, (float) $order->get_total());
@@ -107,7 +114,6 @@ function tfp_admin_payments_get_data() {
                 $quarters[$qkey]['products'][$key] += $line_total;
             }
         }
-        $filtered[] = $order;
     }
     uasort($products, static function ($a, $b) { return $b['total'] <=> $a['total']; });
     arsort($methods);
