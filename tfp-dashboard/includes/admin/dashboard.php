@@ -107,7 +107,7 @@ function tfp_admin_dashboard_nav_items() {
         ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_courses_page_url') ? tfp_admin_courses_page_url() : home_url('/admin-courses/')],
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => home_url('/admin-curriculum-categories/')],
         ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_cohorts_url') ? tfp_admin_cohorts_url() : home_url('/admin-cohorts/')],
-        ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => admin_url('users.php?role=facilitator')],
+        ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_facilitators_url') ? tfp_admin_facilitators_url() : home_url('/admin-facilitators/')],
         ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=shop_order')],
         ['slug' => 'documents', 'label' => __('Documents', 'tfp-dashboard'), 'url' => admin_url('upload.php')],
         ['slug' => 'communication', 'label' => __('Communication', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_ticket')],
