@@ -83,15 +83,44 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
             <section class="tfp-payments-chart-grid">
                 <article class="tfp-payments-panel tfp-payments-revenue-panel">
                     <div class="tfp-payments-panel-heading"><h2><?php esc_html_e('Revenue', 'tfp-dashboard'); ?></h2><small><?php esc_html_e('Quarterly gross and net revenue', 'tfp-dashboard'); ?></small></div>
+                    <?php
+                    $chart_palette = ['#00666e', '#bd9817'];
+                    $chart_max = 1;
+                    foreach ($data['quarters'] as $q) {
+                        $sum = 0;
+                        foreach ($data['chart_products'] as $product_row) { $sum += (float) ($q['products'][$product_row['id'] ?: sanitize_title($product_row['name'])] ?? 0); }
+                        $chart_max = max($chart_max, $sum);
+                    }
+                    ?>
                     <div class="tfp-payments-chart">
-                        <div class="tfp-payments-y-labels"><span><?php echo esc_html(wp_strip_all_tags(wc_price($max_bar))); ?></span><span><?php echo esc_html(wp_strip_all_tags(wc_price($max_bar * .75))); ?></span><span><?php echo esc_html(wp_strip_all_tags(wc_price($max_bar * .5))); ?></span><span><?php echo esc_html(wp_strip_all_tags(wc_price($max_bar * .25))); ?></span><span><?php echo esc_html(wp_strip_all_tags(wc_price(0))); ?></span></div>
+                        <div class="tfp-payments-y-labels">
+                            <?php for ($tick = 4; $tick >= 0; $tick--) : ?><span><?php echo esc_html(wp_strip_all_tags(wc_price($chart_max * $tick / 4))); ?></span><?php endfor; ?>
+                        </div>
                         <div class="tfp-payments-bars">
-                            <?php if ($data['quarters']) : foreach (array_reverse($data['quarters']) as $quarter) : $gross_height = max(2, ($quarter['gross'] / $max_bar) * 100); $net_height = max(2, ($quarter['net'] / $max_bar) * 100); $refund_height = max(0, $gross_height - $net_height); ?>
-                                <div class="tfp-payments-bar-group" title="<?php echo esc_attr($quarter['label'] . ': ' . wp_strip_all_tags(wc_price($quarter['gross']))); ?>"><div class="tfp-payments-bar" style="height:<?php echo esc_attr($gross_height); ?>%"><span class="tfp-payments-bar-net" style="height:<?php echo esc_attr(min(100, ($net_height / $gross_height) * 100)); ?>%"></span></div><small><?php echo esc_html($quarter['label']); ?></small></div>
+                            <?php if ($data['quarters']) : foreach (array_reverse($data['quarters']) as $quarter) : ?>
+                                <?php
+                                $segments = [];
+                                $quarter_total = 0;
+                                foreach ($data['chart_products'] as $product_row) {
+                                    $product_key = $product_row['id'] ?: sanitize_title($product_row['name']);
+                                    $segment_value = (float) ($quarter['products'][$product_key] ?? 0);
+                                    $segments[] = $segment_value;
+                                    $quarter_total += $segment_value;
+                                }
+                                $bar_height = max(0, ($quarter_total / $chart_max) * 100);
+                                ?>
+                                <div class="tfp-payments-bar-group" title="<?php echo esc_attr($quarter['label'] . ': ' . wp_strip_all_tags(wc_price($quarter_total))); ?>">
+                                    <div class="tfp-payments-bar" style="height:<?php echo esc_attr($bar_height); ?>%;background:transparent;flex-direction:column-reverse">
+                                        <?php foreach ($segments as $segment_index => $segment_value) : ?>
+                                            <span style="display:block;width:100%;height:<?php echo esc_attr($quarter_total > 0 ? ($segment_value / $quarter_total) * 100 : 0); ?>%;background:<?php echo esc_attr($chart_palette[$segment_index]); ?>"></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <small><?php echo esc_html($quarter['label']); ?></small>
+                                </div>
                             <?php endforeach; else : ?><p class="tfp-payments-empty"><?php esc_html_e('No revenue data available for this period.', 'tfp-dashboard'); ?></p><?php endif; ?>
                         </div>
                     </div>
-                    <div class="tfp-payments-legend"><span><i></i><?php esc_html_e('Net Revenue', 'tfp-dashboard'); ?></span><span><i></i><?php esc_html_e('Refunded / Adjusted', 'tfp-dashboard'); ?></span></div>
+                    <div class="tfp-payments-legend"><?php foreach ($data['chart_products'] as $index => $product_row) : ?><span><i style="background:<?php echo esc_attr($chart_palette[$index]); ?>"></i><?php echo esc_html($product_row['name']); ?></span><?php endforeach; ?></div>
                 </article>
                 <article class="tfp-payments-panel tfp-payments-breakdown-panel">
                     <h2><?php esc_html_e('Product Breakdown', 'tfp-dashboard'); ?></h2>
@@ -104,9 +133,9 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
                 </article>
             </section>
             <section class="tfp-payments-panel tfp-payments-transactions">
-                <div class="tfp-payments-transactions-heading"><h2><?php esc_html_e('Recent Transactions', 'tfp-dashboard'); ?></h2><a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'transactions'])); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div>
+                <div class="tfp-payments-transactions-heading"><h2><?php esc_html_e('Recent Transactions', 'tfp-dashboard'); ?></h2><div><form method="get" action="<?php echo esc_url(tfp_admin_payments_url()); ?>"><input type="date" name="to" value="<?php echo esc_attr($data['to']); ?>" aria-label="<?php esc_attr_e('Transaction date', 'tfp-dashboard'); ?>"><button type="submit" class="tfp-payments-date-apply"><?php esc_html_e('Apply', 'tfp-dashboard'); ?></button></form><a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'transactions'])); ?>"><?php esc_html_e('View All', 'tfp-dashboard'); ?></a></div></div>
                 <div class="tfp-dash-table-wrap"><table class="tfp-dash-table"><thead><tr><th><?php esc_html_e('Transaction ID', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Date', 'tfp-dashboard'); ?></th><th><?php esc_html_e('User', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Item / Product', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Status', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Net Amount', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead><tbody>
-                <?php foreach (array_slice($data['orders'], 0, 5) as $order) : $customer = $order->get_formatted_billing_full_name() ?: __('Guest', 'tfp-dashboard'); $items = array_map(static function ($item) { return $item->get_name(); }, $order->get_items()); $status = $order->get_status(); ?>
+                <?php foreach (array_slice($data['orders'], 0, 3) as $order) : $customer = $order->get_formatted_billing_full_name() ?: __('Guest', 'tfp-dashboard'); $items = array_map(static function ($item) { return $item->get_name(); }, $order->get_items()); $status = $order->get_status(); ?>
                     <tr><td><?php echo esc_html($order->get_transaction_id() ?: 'RF-' . $order->get_order_number()); ?></td><td><?php echo esc_html($order->get_date_created() ? $order->get_date_created()->date('Y-m-d') : '—'); ?></td><td><?php echo esc_html($customer); ?></td><td><?php echo esc_html(implode(', ', $items)); ?></td><td><span class="tfp-payments-status is-<?php echo esc_attr($status); ?>"><?php echo esc_html(wc_get_order_status_name($status)); ?></span></td><td><?php echo wp_kses_post(wc_price((float) $order->get_total())); ?></td><td><a class="tfp-payments-details" href="<?php echo esc_url($order->get_edit_order_url()); ?>"><?php esc_html_e('Details', 'tfp-dashboard'); ?></a></td></tr>
                 <?php endforeach; if (!$data['orders']) : ?><tr><td colspan="7" class="tfp-payments-empty"><?php esc_html_e('No transactions found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
                 </tbody></table></div>
