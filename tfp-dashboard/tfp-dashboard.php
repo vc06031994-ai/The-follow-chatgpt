@@ -106,6 +106,7 @@ require_once TFP_DASH_PATH . 'includes/admin/course-detail.php';
 require_once TFP_DASH_PATH . 'includes/admin/course-editor.php';
 require_once TFP_DASH_PATH . 'includes/admin/activity.php';
 require_once TFP_DASH_PATH . 'includes/admin/facilitators.php';
+require_once TFP_DASH_PATH . 'includes/admin/payments.php';
 require_once TFP_DASH_PATH . 'includes/page-program.php';
 require_once TFP_DASH_PATH . 'includes/program/course-detail.php';
 require_once TFP_DASH_PATH . 'includes/page-grades.php';
