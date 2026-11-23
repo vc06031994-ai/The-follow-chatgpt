@@ -131,10 +131,27 @@ function tfp_admin_facilitators_get_data() {
             ];
         }
 
+        // Check LearnDash course completion when the installed LearnDash APIs are available.
+        $training_complete = false;
+        if (function_exists('learndash_user_get_enrolled_courses') && function_exists('learndash_is_course_complete')) {
+            $enrolled_courses = learndash_user_get_enrolled_courses($person->ID);
+            if (is_array($enrolled_courses)) {
+                foreach ($enrolled_courses as $enrolled_course_id) {
+                    if (learndash_is_course_complete($person->ID, absint($enrolled_course_id))) {
+                        $training_complete = true;
+                        break;
+                    }
+                }
+            }
+        }
+
         $records[] = [
             'id' => $person->ID,
             'name' => $person->display_name ?: $person->user_login,
             'email' => $person->user_email,
+            'avatar' => get_avatar_url($person->ID, ['size' => 96]),
+            'registered_label' => $person->user_registered ? wp_date('M j', strtotime($person->user_registered)) : '',
+            'training_complete' => $training_complete,
             'category' => $category ?: __('Unassigned', 'tfp-dashboard'),
             'cohorts' => (int) ($cohort_assignments[$person->ID] ?? 0),
             'completion' => max(0, min(100, $completion)),
@@ -182,9 +199,26 @@ function tfp_admin_facilitators_get_data() {
     $active_demo = false;
     $pending_demo = false;
 
-    // Directory tables display real facilitator accounts only.
-    $active_demo = false;
-    $pending_demo = false;
+    // Build onboarding cards from real WordPress facilitator records.
+    $onboarding_rows = [];
+    foreach ($records as $record) {
+        if ($record['status'] !== 'active') { continue; }
+        $steps = [
+            'account_created' => true,
+            'profile_complete' => $record['completion'] >= 100,
+            'training_complete' => !empty($record['training_complete']),
+            'cohort_assigned' => $record['cohorts'] > 0,
+        ];
+        $completed_steps = count(array_filter($steps));
+        if ($completed_steps >= 4) { continue; }
+        $needs_review = !$record['last_login'] || $record['last_login'] < ($now - (5 * DAY_IN_SECONDS));
+        $record['steps'] = $steps;
+        $record['completed_steps'] = $completed_steps;
+        $record['progress'] = (int) round(($completed_steps / 4) * 100);
+        $record['onboarding_status'] = $needs_review ? 'review' : 'progress';
+        $record['onboarding_status_label'] = $needs_review ? __('Needs Review', 'tfp-dashboard') : __('In Progress', 'tfp-dashboard');
+        $onboarding_rows[] = $record;
+    }
 
     $filtered = $records;
     if ($tab === 'active') {
@@ -208,8 +242,7 @@ function tfp_admin_facilitators_get_data() {
         'is_demo_data' => $is_demo_data ?? false,
         'active_rows' => $active_rows,
         'pending_rows' => $pending_rows,
-        'active_demo' => $active_demo,
-        'pending_demo' => $pending_demo,
+        'onboarding_rows' => $onboarding_rows,
     ];
 }
 
@@ -330,17 +363,26 @@ function tfp_admin_facilitators_render() {
             </div>
 
           <?php else : ?>
-            <section class="tfp-admin-panel tfp-admin-facilitators-directory-panel">
-              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Pending Facilitators', 'tfp-dashboard'); ?></h2><p><?php esc_html_e('Facilitators who still need to complete their onboarding profile.', 'tfp-dashboard'); ?></p></div></header>
-              
-              <div class="tfp-dash-table-wrap"><table class="tfp-dash-table tfp-admin-facilitators-table">
-                <thead><tr><th><?php esc_html_e('Facilitator', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Category', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Assigned Cohorts', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Onboarding', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Last Active', 'tfp-dashboard'); ?></th><th><?php esc_html_e('Action', 'tfp-dashboard'); ?></th></tr></thead>
-                <tbody>
-                  <?php if ($data['filtered']) : foreach ($data['filtered'] as $record) : ?>
-                    <tr><td><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['email']); ?></small></td><td><?php echo esc_html($record['category']); ?></td><td><?php echo esc_html(number_format_i18n($record['cohorts'])); ?></td><td><div class="tfp-admin-facilitators-progress"><span style="width:<?php echo esc_attr($record['completion']); ?>%"></span></div><small><?php echo esc_html($record['completion']); ?>%</small></td><td><?php echo esc_html($record['last_login_label']); ?></td><td><a class="tfp-admin-overview-view" href="<?php echo esc_url($record['edit_url']); ?>"><?php esc_html_e('View', 'tfp-dashboard'); ?></a></td></tr>
-                  <?php endforeach; else : ?><tr><td colspan="6" class="tfp-admin-overview-empty"><?php esc_html_e('No pending facilitator records found.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
-                </tbody>
-              </table></div>
+            <?php $in_progress_count = count($data['onboarding_rows']); ?>
+            <section class="tfp-admin-panel tfp-admin-facilitator-onboarding-panel">
+              <header class="tfp-admin-panel-heading"><div><h2><?php esc_html_e('Facilitator Onboarding', 'tfp-dashboard'); ?></h2></div><small><?php echo esc_html(sprintf(__('%d in progress', 'tfp-dashboard'), $in_progress_count)); ?></small></header>
+              <div class="tfp-admin-onboarding-list">
+                <?php if ($data['onboarding_rows']) : foreach ($data['onboarding_rows'] as $record) : ?>
+                  <article class="tfp-admin-onboarding-card">
+                    <div class="tfp-admin-onboarding-person">
+                      <div class="tfp-admin-onboarding-identity"><img src="<?php echo esc_url($record['avatar']); ?>" alt=""><div><strong><?php echo esc_html($record['name']); ?></strong><small><?php echo esc_html($record['category'] . ' · ' . __('Account created', 'tfp-dashboard') . ($record['registered_label'] ? ' ' . $record['registered_label'] : '')); ?></small></div></div>
+                      <span class="tfp-admin-onboarding-status <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : 'is-progress'; ?>"><?php echo esc_html($record['onboarding_status_label']); ?></span>
+                    </div>
+                    <div class="tfp-admin-onboarding-steps">
+                      <?php $step_labels = ['account_created' => __('Account Created', 'tfp-dashboard'), 'profile_complete' => __('Profile Complete', 'tfp-dashboard'), 'training_complete' => __('Training Module', 'tfp-dashboard'), 'cohort_assigned' => __('Cohort Assigned', 'tfp-dashboard')]; foreach ($step_labels as $step_key => $step_label) : ?>
+                        <div class="tfp-admin-onboarding-step <?php echo !empty($record['steps'][$step_key]) ? 'is-complete' : ''; ?>"><?php echo esc_html($step_label); ?></div>
+                      <?php endforeach; ?>
+                    </div>
+                    <div class="tfp-admin-onboarding-progress"><span style="width:<?php echo esc_attr($record['progress']); ?>%"></span></div>
+                    <div class="tfp-admin-onboarding-footnote <?php echo $record['onboarding_status'] === 'review' ? 'is-review' : ''; ?>"><?php echo esc_html(sprintf(__('%1$d of 4 steps complete', 'tfp-dashboard'), $record['completed_steps'])); ?><?php if ($record['onboarding_status'] === 'review') : ?> · <?php esc_html_e('No activity in 5 days', 'tfp-dashboard'); ?><?php endif; ?></div>
+                  </article>
+                <?php endforeach; else : ?><p class="tfp-admin-facilitators-empty"><?php esc_html_e('No facilitator onboarding is currently in progress.', 'tfp-dashboard'); ?></p><?php endif; ?>
+              </div>
             </section>
           <?php endif; ?>
         </main>
