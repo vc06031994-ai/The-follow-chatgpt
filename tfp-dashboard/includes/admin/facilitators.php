@@ -553,7 +553,10 @@ function tfp_admin_facilitators_render() {
                 <section class="tfp-admin-panel tfp-admin-payment-editor">
                   <h2><?php esc_html_e('Pay Structure Editor', 'tfp-dashboard'); ?></h2>
                   <label for="tfp-pay-type"><?php esc_html_e('Compensation Type', 'tfp-dashboard'); ?></label>
-                  <select id="tfp-pay-type" disabled><option><?php echo esc_html($pay_type_label); ?></option></select>
+                  <select id="tfp-pay-type" name="compensation_type">
+                    <option value="per_student" <?php selected($pay_type ?: 'per_student', 'per_student'); ?>><?php esc_html_e('Per Student (Flat Rate)', 'tfp-dashboard'); ?></option>
+                    <option value="flat_rate" <?php selected($pay_type, 'flat_rate'); ?>><?php esc_html_e('Flat Rate', 'tfp-dashboard'); ?></option>
+                  </select>
                   <label for="tfp-pay-rate"><?php esc_html_e('Assigned Roles (select all that apply)', 'tfp-dashboard'); ?></label>
                   <input id="tfp-pay-rate" type="text" value="<?php echo is_numeric($pay_rate) ? esc_attr(chr(36) . ' ' . number_format_i18n((float) $pay_rate, 2)) : ''; ?>" placeholder="—" readonly>
                   <label for="tfp-pay-bonus"><?php esc_html_e('Completion Bonus (Optional)', 'tfp-dashboard'); ?></label>
