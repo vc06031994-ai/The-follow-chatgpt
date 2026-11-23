@@ -447,3 +447,26 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-tabl
     justify-content:center;
     margin:0 auto;
 }
+
+
+/* Match Figma paperwork table column proportions and shared Action center line. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table{
+    width:100%;
+    table-layout:fixed;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table th:nth-child(1),
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:nth-child(1){
+    width:50%;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table th:nth-child(2),
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:nth-child(2){
+    width:25%;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table th:nth-child(3),
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:nth-child(3){
+    width:25%;
+    text-align:center !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:nth-child(3) .tfp-admin-invitation-view{
+    margin-inline:auto;
+}
