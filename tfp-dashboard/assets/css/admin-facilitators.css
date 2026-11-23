@@ -470,3 +470,197 @@ body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-tabl
 body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-detail-table td:nth-child(3) .tfp-admin-invitation-view{
     margin-inline:auto;
 }
+
+
+/* Payment Information tab — match the supplied Figma reference. */
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-summary{
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    width:100%;
+    min-height:82px;
+    margin:0 0 18px;
+    padding:14px 18px;
+    border:1px solid #008b95;
+    border-radius:11px;
+    background:#e2f3f2;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-summary>div{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-summary small{
+    color:#202729;
+    font-size:10px;
+    line-height:1.35;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-summary strong{
+    color:#101719;
+    font-size:23px;
+    font-weight:700;
+    line-height:1.2;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-last{
+    align-items:flex-end;
+    text-align:right;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-last strong{
+    font-size:15px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-actions{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin:0 2px 18px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action{
+    box-sizing:border-box;
+    display:flex;
+    min-height:70px;
+    flex-direction:column;
+    justify-content:center;
+    gap:6px;
+    padding:12px 15px;
+    border:1px solid #d0d0d0;
+    border-radius:11px;
+    background:#fafafa;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action strong{
+    color:#171717;
+    font-size:15px;
+    font-weight:700;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-action span{
+    color:#444;
+    font-size:11px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    align-items:stretch;
+    margin:0 2px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payouts{
+    box-sizing:border-box;
+    min-width:0;
+    min-height:390px;
+    margin:0;
+    padding:16px;
+    border:1px solid #dedede;
+    border-radius:11px;
+    background:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor h2,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payouts h2{
+    margin:0 0 14px;
+    color:#171717;
+    font-size:16px;
+    font-weight:700;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor label{
+    display:block;
+    margin:12px 0 7px;
+    color:#171717;
+    font-size:12px;
+    font-weight:700;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor select,
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor input{
+    box-sizing:border-box;
+    display:block;
+    width:100%;
+    min-height:46px;
+    padding:0 13px;
+    border:1px solid #777;
+    border-radius:10px;
+    background:#fff;
+    color:#444;
+    font-size:13px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor select:disabled{
+    opacity:1;
+    -webkit-text-fill-color:#444;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor input[readonly]{
+    opacity:1;
+    -webkit-text-fill-color:#444;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-hint{
+    margin:12px 0 0;
+    color:#777;
+    font-size:11px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-list{
+    max-height:380px;
+    overflow-y:auto;
+    padding-right:7px;
+    border:1px solid #d8dddd;
+    border-radius:9px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row{
+    display:flex;
+    min-height:64px;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 14px;
+    border-bottom:1px solid #e5e8e9;
+    background:#fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row:first-child{
+    background:#e1e5e5;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row:last-child{
+    border-bottom:0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row>div{
+    display:flex;
+    min-width:0;
+    flex-direction:column;
+    gap:5px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row strong{
+    color:#171717;
+    font-size:12px;
+    font-weight:700;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payout-row small{
+    color:#555;
+    font-size:9px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-empty{
+    display:flex;
+    min-height:250px;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    border:1px solid #e0e3e4;
+    border-radius:9px;
+    color:#747b7e;
+    font-size:13px;
+    text-align:center;
+}
+@media(max-width:760px){
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-summary{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:12px;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-last{
+        align-items:flex-start;
+        text-align:left;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-actions,
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-grid{
+        grid-template-columns:1fr;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-editor,
+    body.tfp-admin-dashboard-view.tfp-admin-facilitators-view .tfp-admin-payment-payouts{
+        min-height:0;
+    }
+}
