@@ -31,6 +31,14 @@ add_action('template_redirect', function () {
     if (is_readable($template)) { include $template; exit; }
 }, 2);
 
+// Set the browser tab title to the actual cohort name instead of the fallback WordPress page title.
+add_filter('pre_get_document_title', function ($document_title) {
+    $cohort_id = tfp_admin_cohort_detail_request_id();
+    if (!$cohort_id) { return $document_title; }
+    $cohort_title = get_the_title($cohort_id);
+    return $cohort_title ? sprintf('%s – %s', $cohort_title, get_bloginfo('name')) : $document_title;
+}, 20);
+
 function tfp_admin_cohort_detail_data($cohort_id) {
     $cohort = get_post(absint($cohort_id));
     if (!$cohort || $cohort->post_type !== 'tfp_cohort') { return null; }
