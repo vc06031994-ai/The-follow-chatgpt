@@ -83,6 +83,12 @@ function tfp_admin_cohorts_render() {
         <div class="tfp-admin-sidebar-bottom"><div class="tfp-admin-profile"><img src="<?php echo esc_url(get_avatar_url($user->ID, ['size' => 96])); ?>" alt=""><span><strong><?php echo esc_html($user->display_name); ?></strong><small><?php esc_html_e('Administrator', 'tfp-dashboard'); ?></small></span></div><a class="tfp-admin-logout" href="<?php echo esc_url(wp_logout_url(home_url('/'))); ?>"><span class="tfp-admin-logout-icon" aria-hidden="true">×</span><span class="tfp-admin-logout-label"><?php esc_html_e('Logout', 'tfp-dashboard'); ?></span></a></div>
       </aside>
       <div class="tfp-admin-main">
+        <div class="tfp-admin-mobilebar">
+          <button type="button" class="tfp-admin-mobilebar-toggle" data-tfp-admin-toggle aria-controls="tfp-admin-sidebar" aria-expanded="false" aria-label="<?php esc_attr_e('Open admin menu', 'tfp-dashboard'); ?>">
+            <?php echo function_exists('tfp_dashboard_icon') ? tfp_dashboard_icon('toggle') : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 17V1M6 17H13.8C15.5 17 17 15.5 17 13.8V4.2C17 2.5 15.5 1 13.8 1H6M6 17H4.2C2.5 17 1 15.5 1 13.8V4.2C1 2.5 2.5 1 4.2 1H6" stroke="#570506" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; ?>
+          </button>
+          <span><?php esc_html_e('Admin Console', 'tfp-dashboard'); ?></span>
+        </div>
         <div class="tfp-admin-breadcrumb"><a href="<?php echo esc_url(function_exists('tfp_admin_dashboard_page_url') ? tfp_admin_dashboard_page_url() : home_url('/admin-dashboard/')); ?>"><?php esc_html_e('Admin', 'tfp-dashboard'); ?></a><b>/</b><strong><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></strong></div>
         <header class="tfp-admin-page-header tfp-admin-cohorts-header"><div><h1><?php esc_html_e('Cohorts', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Manage active cohort groups, facilitators, and progress.', 'tfp-dashboard'); ?></p></div><button class="tfp-admin-add-user-btn tfp-admin-cohorts-add" type="button" data-tfp-open-cohort-modal><span aria-hidden="true">＋</span><?php esc_html_e('Add Cohort', 'tfp-dashboard'); ?></button></header>
         <main class="tfp-admin-content tfp-admin-cohorts-content">
