@@ -13,6 +13,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (mobileBar) {
+            // Keep the Admin Console label visible beside the shared mobile menu icon.
+            var mobileLabel = mobileBar.querySelector('.tfp-admin-mobilebar-label');
+            if (!mobileLabel) {
+                mobileLabel = document.createElement('span');
+                mobileLabel.className = 'tfp-admin-mobilebar-label';
+                mobileLabel.textContent = 'Admin Console';
+                mobileBar.appendChild(mobileLabel);
+            }
+
             var mobileToggle = mobileBar.querySelector('[data-tfp-admin-toggle]');
             if (!mobileToggle) {
                 mobileToggle = document.createElement('button');
