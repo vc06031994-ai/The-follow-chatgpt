@@ -476,3 +476,26 @@ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type=
   background:none!important;
   filter:none!important;
 }
+
+
+/* Keep the supplied calendar icon visible on Revenue Overview, Transaction Ledger and Payouts. */
+body.tfp-admin-payments-view .tfp-payments-content input[type="date"],
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type="date"]{
+ background-image:none!important;
+ padding-right:8px!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content input[type="date"]::-webkit-calendar-picker-indicator,
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type="date"]::-webkit-calendar-picker-indicator{
+ display:block!important;
+ visibility:visible!important;
+ opacity:1!important;
+ width:18px!important;
+ min-width:18px!important;
+ height:18px!important;
+ margin:0 2px 0 6px!important;
+ padding:0!important;
+ cursor:pointer!important;
+ color:transparent!important;
+ background:url("https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Vector-2.png") center/contain no-repeat!important;
+ filter:none!important;
+}
