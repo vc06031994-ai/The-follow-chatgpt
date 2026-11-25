@@ -26,6 +26,11 @@ function tfp_admin_refunds_render() {
     ]) : [];
     $refund_rows = [];
     $refund_total = 0.0;
+
+    $eligible_orders = function_exists('wc_get_orders') ? wc_get_orders([
+        'limit' => 100, 'orderby' => 'date', 'order' => 'DESC',
+        'status' => ['processing', 'completed'], 'payment_method' => 'tfp_stripe', 'return' => 'objects',
+    ]) : [];
     $search = sanitize_text_field(wp_unslash($_GET['refund_search'] ?? ''));
     $date_from = sanitize_text_field(wp_unslash($_GET['date_from'] ?? ''));
     $date_to = sanitize_text_field(wp_unslash($_GET['date_to'] ?? ''));
@@ -164,6 +169,129 @@ function tfp_admin_refunds_render() {
  * Embedded Refund History section for the unified Payments dashboard.
  * Reads actual WooCommerce refund objects; it does not create or issue refunds.
  */
+
+/**
+ * Process a real WooCommerce refund through the custom Stripe gateway.
+ * This endpoint is deliberately restricted to Stripe TEST mode.
+ */
+function tfp_admin_refunds_handle_test_stripe_refund() {
+    if (strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST' || empty($_POST['tfp_test_refund_submit'])) { return; }
+    if (!current_user_can('manage_options')) { wp_die(esc_html__('Permission denied.', 'tfp-dashboard'), '', ['response' => 403]); }
+    check_admin_referer('tfp_test_stripe_refund', 'tfp_test_refund_nonce');
+
+    $redirect = tfp_admin_payments_url(['section' => 'refunds']);
+    $fail = static function($message) use ($redirect) {
+        wp_safe_redirect(add_query_arg('refund_error', rawurlencode($message), $redirect));
+        exit;
+    };
+
+    if (!function_exists('tfp_stripe_api') || !function_exists('tfp_stripe_is_test_mode') || !tfp_stripe_is_test_mode()) {
+        $fail(__('Stripe Test Mode is not enabled. No refund was sent.', 'tfp-dashboard'));
+    }
+    $secret = function_exists('tfp_stripe_get_secret_key') ? tfp_stripe_get_secret_key() : '';
+    $publishable = function_exists('tfp_stripe_get_publishable_key') ? tfp_stripe_get_publishable_key() : '';
+    if (strpos($secret, 'sk_test_') !== 0 || strpos($publishable, 'pk_test_') !== 0) {
+        $fail(__('Test API keys are required. Live keys are not accepted for this refund workflow.', 'tfp-dashboard'));
+    }
+
+    $order_id = absint($_POST['tfp_refund_order_id'] ?? 0);
+    $amount_raw = isset($_POST['tfp_refund_amount']) ? wc_format_decimal(wp_unslash($_POST['tfp_refund_amount'])) : '';
+    $reason = sanitize_text_field(wp_unslash($_POST['tfp_refund_reason'] ?? ''));
+    $request_id = sanitize_key(wp_unslash($_POST['tfp_refund_request_id'] ?? ''));
+    if (!$order_id || !$request_id || !preg_match('/^[a-f0-9]{32}$/', $request_id)) {
+        $fail(__('Invalid refund request. Please refresh and try again.', 'tfp-dashboard'));
+    }
+    $order = wc_get_order($order_id);
+    if (!$order || $order->get_type() !== 'shop_order' || $order->get_payment_method() !== 'tfp_stripe') {
+        $fail(__('Select a valid order paid through the TFP Stripe gateway.', 'tfp-dashboard'));
+    }
+    if (!in_array($order->get_status(), ['processing', 'completed'], true)) {
+        $fail(__('Only paid processing or completed orders can be refunded here.', 'tfp-dashboard'));
+    }
+    $intent_id = (string) $order->get_meta('_tfp_stripe_intent_id');
+    if ($intent_id === '') { $intent_id = (string) $order->get_transaction_id(); }
+    if (strpos($intent_id, 'pi_') !== 0) {
+        $fail(__('This order does not have a valid Stripe PaymentIntent.', 'tfp-dashboard'));
+    }
+
+    $amount = (float) $amount_raw;
+    $remaining = max(0, (float) $order->get_total() - (float) $order->get_total_refunded());
+    if ($amount <= 0 || $amount > $remaining + 0.00001) {
+        $fail(sprintf(__('Refund amount must be greater than zero and no more than %s.', 'tfp-dashboard'), wp_strip_all_tags(wc_price($remaining, ['currency' => $order->get_currency()]))));
+    }
+    $minor = tfp_stripe_to_minor_units($amount, $order->get_currency());
+    if ($minor < 1) { $fail(__('Refund amount is too small for this currency.', 'tfp-dashboard')); }
+
+    $intent = tfp_stripe_api('GET', 'payment_intents/' . rawurlencode($intent_id));
+    if (is_wp_error($intent) || empty($intent['id']) || ($intent['status'] ?? '') !== 'succeeded' || !empty($intent['livemode'])) {
+        $fail(is_wp_error($intent) ? $intent->get_error_message() : __('Stripe could not verify a successful Test Mode payment. No refund was sent.', 'tfp-dashboard'));
+    }
+    if (strtolower((string) ($intent['currency'] ?? '')) !== strtolower($order->get_currency())) {
+        $fail(__('Payment currency does not match the WooCommerce order.', 'tfp-dashboard'));
+    }
+    $intent_amount = (int) ($intent['amount_received'] ?? $intent['amount'] ?? 0);
+    if ($intent_amount < $minor) {
+        $fail(__('Refund amount exceeds the captured Stripe payment amount.', 'tfp-dashboard'));
+    }
+
+    $request_meta = '_tfp_stripe_refund_request_' . $request_id;
+    $request_state = $order->get_meta($request_meta, true);
+    if (!is_array($request_state)) { $request_state = []; }
+    $stripe_refund = null;
+    if (!empty($request_state['stripe_refund_id'])) {
+        $stripe_refund = ['id' => $request_state['stripe_refund_id'], 'status' => $request_state['stripe_status'] ?? 'succeeded'];
+    } else {
+        $stripe_reason = '';
+        if (stripos($reason, 'duplicate') !== false) { $stripe_reason = 'duplicate'; }
+        elseif (stripos($reason, 'fraud') !== false) { $stripe_reason = 'fraudulent'; }
+        elseif ($reason !== '') { $stripe_reason = 'requested_by_customer'; }
+        $params = [
+            'payment_intent' => $intent_id,
+            'amount' => $minor,
+            'metadata' => ['wc_order_id' => (string) $order_id, 'source' => 'tfp_admin_refunds'],
+        ];
+        if ($stripe_reason !== '') { $params['reason'] = $stripe_reason; }
+        $idempotency = 'tfp-refund-' . $order_id . '-' . $request_id;
+        $stripe_refund = tfp_stripe_api('POST', 'refunds', $params, $idempotency);
+        if (is_wp_error($stripe_refund) || empty($stripe_refund['id'])) {
+            $fail(is_wp_error($stripe_refund) ? $stripe_refund->get_error_message() : __('Stripe did not return a refund reference.', 'tfp-dashboard'));
+        }
+        $request_state = ['stripe_refund_id' => sanitize_text_field($stripe_refund['id']), 'stripe_status' => sanitize_text_field($stripe_refund['status'] ?? 'pending'), 'amount' => $amount, 'created_at' => time()];
+        $order->update_meta_data($request_meta, $request_state);
+        $order->save();
+    }
+
+    $existing_refund_id = absint($request_state['wc_refund_id'] ?? 0);
+    if ($existing_refund_id && wc_get_order($existing_refund_id)) {
+        wp_safe_redirect(add_query_arg('refund_success', '1', $redirect));
+        exit;
+    }
+    $wc_refund = wc_create_refund([
+        'order_id' => $order_id,
+        'amount' => $amount,
+        'reason' => $reason,
+        'refund_payment' => false,
+        'restock_items' => false,
+    ]);
+    if (is_wp_error($wc_refund) || !$wc_refund) {
+        $order->add_order_note(sprintf(__('Stripe Test Mode refund %1$s succeeded, but the WooCommerce refund record could not be created. Do not issue another Stripe refund; request reference: %2$s', 'tfp-dashboard'), $stripe_refund['id'], $request_id));
+        $order->save();
+        $fail(is_wp_error($wc_refund) ? $wc_refund->get_error_message() : __('Stripe refund succeeded, but the WooCommerce refund record needs administrator attention. Do not retry with a new request.', 'tfp-dashboard'));
+    }
+    $wc_refund->update_meta_data('_tfp_stripe_refund_id', sanitize_text_field($stripe_refund['id']));
+    $wc_refund->update_meta_data('_tfp_stripe_refund_status', sanitize_text_field($stripe_refund['status'] ?? 'pending'));
+    $wc_refund->save();
+    $request_state['wc_refund_id'] = $wc_refund->get_id();
+    $order->update_meta_data($request_meta, $request_state);
+    $order->add_order_note(sprintf(__('Stripe Test Mode refund created: %1$s (%2$s). WooCommerce refund #%3$s.', 'tfp-dashboard'), $stripe_refund['id'], $stripe_refund['status'] ?? 'pending', $wc_refund->get_id()));
+    $order->save();
+
+    wp_safe_redirect(add_query_arg('refund_success', '1', $redirect));
+    exit;
+}
+add_action('template_redirect', 'tfp_admin_refunds_handle_test_stripe_refund', 1);
+
+
 function tfp_admin_refunds_render_embedded() {
     if (!current_user_can('manage_options') && !current_user_can('administrator')) {
         echo '<p class="tfp-refund-dashboard-empty">' . esc_html__('You do not have permission to view refunds.', 'tfp-dashboard') . '</p>';
@@ -279,6 +407,42 @@ function tfpPrintRefundReceipt(button) {
     $manual_count = count(array_filter($rows, static function ($row) { return stripos($row['reason'], 'manual') !== false; }));
     ?>
     <div class="tfp-refund-dashboard">
+
+      <?php if (!empty($_GET['refund_success'])) : ?><div class="notice notice-success" role="status"><p><?php esc_html_e('Stripe Test Mode refund processed and recorded in WooCommerce.', 'tfp-dashboard'); ?></p></div><?php endif; ?>
+      <?php if (!empty($_GET['refund_error'])) : ?><div class="notice notice-error" role="alert"><p><?php echo esc_html(sanitize_text_field(wp_unslash($_GET['refund_error']))); ?></p></div><?php endif; ?>
+      <section class="tfp-refund-issue-panel">
+        <h3><?php esc_html_e('Issue Stripe Test Refund', 'tfp-dashboard'); ?></h3>
+        <p><?php esc_html_e('Test Mode only. This sends a real refund request to your Stripe TEST account and creates a matching WooCommerce refund record. It does not affect live payments.', 'tfp-dashboard'); ?></p>
+        <?php if (!function_exists('tfp_stripe_is_test_mode') || !tfp_stripe_is_test_mode() || strpos((string) tfp_stripe_get_secret_key(), 'sk_test_') !== 0 || strpos((string) tfp_stripe_get_publishable_key(), 'pk_test_') !== 0) : ?>
+          <p><strong><?php esc_html_e('Unavailable: enable Stripe Test Mode and configure pk_test_ / sk_test_ keys first.', 'tfp-dashboard'); ?></strong></p>
+        <?php else : ?>
+          <form method="post">
+            <?php wp_nonce_field('tfp_test_stripe_refund', 'tfp_test_refund_nonce'); ?>
+            <input type="hidden" name="tfp_test_refund_request_id" value="<?php echo esc_attr(str_replace('-', '', wp_generate_uuid4())); ?>">
+            <label><?php esc_html_e('Paid Stripe Test Order', 'tfp-dashboard'); ?>
+              <select name="tfp_refund_order_id" required>
+                <option value=""><?php esc_html_e('Select an order', 'tfp-dashboard'); ?></option>
+                <?php foreach ((array) $eligible_orders as $eligible_order) :
+                  if (!$eligible_order instanceof WC_Order) { continue; }
+                  $intent_ref = (string) $eligible_order->get_meta('_tfp_stripe_intent_id');
+                  if ($intent_ref === '') { $intent_ref = (string) $eligible_order->get_transaction_id(); }
+                  $left = max(0, (float) $eligible_order->get_total() - (float) $eligible_order->get_total_refunded());
+                  if (strpos($intent_ref, 'pi_') !== 0 || $left <= 0) { continue; }
+                  ?>
+                  <option value="<?php echo esc_attr($eligible_order->get_id()); ?>"><?php echo esc_html('#' . $eligible_order->get_order_number() . ' · ' . ($eligible_order->get_formatted_billing_full_name() ?: __('Guest', 'tfp-dashboard')) . ' · ' . wp_strip_all_tags(wc_price($left, ['currency' => $eligible_order->get_currency()])) . ' refundable'); ?></option>
+                <?php endforeach; ?>
+              </select>
+            </label>
+            <label><?php esc_html_e('Refund Amount', 'tfp-dashboard'); ?>
+              <input type="number" name="tfp_refund_amount" min="0.01" step="0.01" required placeholder="0.00">
+            </label>
+            <label><?php esc_html_e('Reason / Admin Note', 'tfp-dashboard'); ?>
+              <input type="text" name="tfp_refund_reason" maxlength="250" placeholder="<?php esc_attr_e('Reason for refund', 'tfp-dashboard'); ?>">
+            </label>
+            <button type="submit" name="tfp_test_refund_submit" value="1" onclick="return confirm('<?php echo esc_js(__('Send this refund to your Stripe TEST account? This action cannot be undone.', 'tfp-dashboard')); ?>');"><?php esc_html_e('Confirm Test Refund', 'tfp-dashboard'); ?></button>
+          </form>
+        <?php endif; ?>
+      </section>
       <div class="tfp-refund-demo-launch"><span>Preview refund workflows</span><a href="<?php echo esc_url(tfp_admin_payments_url(['section'=>'refunds','refund_demo'=>'1','refund_demo_view'=>'manual'])); ?>">Open demo preview</a></div>
         <form class="tfp-refund-filters" method="get" action="<?php echo esc_url(tfp_admin_payments_url()); ?>">
             <input type="hidden" name="section" value="refunds">
