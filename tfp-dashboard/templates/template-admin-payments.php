@@ -64,6 +64,7 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
         <main class="tfp-payments-content">
             <nav class="tfp-payments-tabs" aria-label="<?php esc_attr_e('Payment sections', 'tfp-dashboard'); ?>">
                 <a class="is-active" href="<?php echo esc_url(tfp_admin_payments_url()); ?>"><?php esc_html_e('Revenue Overview', 'tfp-dashboard'); ?></a>
+                <a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'transactions'])); ?>"><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></a>
                 
                 <a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'payouts'])); ?>"><?php esc_html_e('Payouts', 'tfp-dashboard'); ?></a>
                 <a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'refunds'])); ?>"><?php esc_html_e('Refund History', 'tfp-dashboard'); ?></a>
