@@ -499,3 +499,25 @@ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type=
  background:url("https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Vector-2.png") center/contain no-repeat!important;
  filter:none!important;
 }
+
+
+/* Keep the WooCommerce currency symbol identical to the KPI amount typography. */
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong .woocommerce-Price-currencySymbol,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong .woocommerce-Price-amount,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong .woocommerce-Price-amount bdi,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong .woocommerce-Price-amount bdi .woocommerce-Price-currencySymbol{
+ display:inline!important;
+ color:#00666e!important;
+ font-family:var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+ font-size:20px!important;
+ font-weight:700!important;
+ line-height:1.2!important;
+ letter-spacing:0!important;
+ vertical-align:baseline!important;
+}
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong .woocommerce-Price-currencySymbol,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong .woocommerce-Price-amount,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong .woocommerce-Price-amount bdi,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong .woocommerce-Price-amount bdi .woocommerce-Price-currencySymbol{
+ color:#e21b2d!important;
+}
