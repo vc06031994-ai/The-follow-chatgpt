@@ -124,3 +124,62 @@ body.tfp-admin-payments-view .tfp-refund-dashboard .tfp-refund-date input::-webk
  body.tfp-admin-payments-view .tfp-refund-quick-filters{width:100%;margin:0}
  body.tfp-admin-payments-view .tfp-refund-detail-grid{grid-template-columns:1fr 1fr}
 }
+
+
+/* Match the supplied Refund History reference: filters stay on one desktop row. */
+@media(min-width:901px){
+ body.tfp-admin-payments-view .tfp-refund-filters{
+  display:flex!important;flex-flow:row nowrap!important;align-items:center!important;
+  gap:8px!important;width:100%!important;white-space:nowrap!important;
+ }
+ body.tfp-admin-payments-view .tfp-refund-filters>select{
+  flex:0 0 132px!important;width:132px!important;min-width:132px!important;
+ }
+ body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-date{
+  flex:0 0 178px!important;width:178px!important;min-width:178px!important;
+ }
+ body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-date input{
+  display:block!important;width:100%!important;height:44px!important;
+  padding:0 12px!important;font-size:14px!important;
+ }
+ body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-apply{
+  flex:0 0 76px!important;width:76px!important;height:44px!important;min-height:44px!important;
+  padding:0 12px!important;font-size:14px!important;
+ }
+ body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-selected{
+  flex:0 0 auto!important;margin-left:auto!important;font-size:14px!important;color:#999!important;
+ }
+ body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-bulk-issue{
+  flex:0 0 190px!important;width:190px!important;height:44px!important;min-height:44px!important;
+  padding:0 12px!important;background:#fff!important;border:1px solid #d1d1d1!important;
+  color:#222!important;font-size:14px!important;
+ }
+}
+body.tfp-admin-payments-view .tfp-refund-stats{gap:24px!important;margin-bottom:18px!important}
+body.tfp-admin-payments-view .tfp-refund-stats article{
+ min-height:106px!important;padding:12px 18px!important;gap:5px!important;
+ background:#dfe3e3!important;border:1px solid #d1d5d5!important;border-radius:12px!important;
+ box-shadow:0 2px 3px #0003!important;
+}
+body.tfp-admin-payments-view .tfp-refund-stats article span{
+ color:#222!important;font-family:var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+ font-size:10px!important;font-weight:500!important;line-height:1.35!important;
+}
+body.tfp-admin-payments-view .tfp-refund-stats article strong{
+ color:#006b73!important;font-family:var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+ font-size:22px!important;font-weight:700!important;line-height:1.2!important;
+}
+body.tfp-admin-payments-view .tfp-refund-stats article small{
+ color:#111!important;font-family:Georgia,"Times New Roman",serif!important;
+ font-size:12px!important;font-weight:400!important;line-height:1.3!important;
+}
+body.tfp-admin-payments-view .tfp-refund-stats article.is-month strong{color:#c49a00!important}
+body.tfp-admin-payments-view .tfp-refund-stats article.is-pending strong{color:#d7192d!important}
+@media(max-width:900px){
+ body.tfp-admin-payments-view .tfp-refund-filters{display:flex!important;flex-wrap:wrap!important}
+ body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-selected{margin-left:auto!important}
+}
+@media(max-width:600px){
+ body.tfp-admin-payments-view .tfp-refund-filters{display:grid!important;grid-template-columns:1fr 1fr!important}
+ body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-selected{margin:0!important}
+}
