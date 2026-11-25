@@ -705,3 +705,15 @@ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>input[ty
  cursor:pointer!important;
  filter: invert(25%) sepia(87%) saturate(1120%) hue-rotate(151deg) brightness(88%) contrast(102%)!important;
 }
+
+
+/* Use the supplied Vector-2 calendar icon beside date fields. */
+body.tfp-admin-payments-view .tfp-payments-content input[type="date"]::-webkit-calendar-picker-indicator,
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type="date"]::-webkit-calendar-picker-indicator{
+ display:block!important;visibility:visible!important;opacity:1!important;
+ width:17px!important;height:17px!important;min-width:17px!important;
+ margin:0 1px 0 6px!important;padding:0!important;cursor:pointer!important;
+ background-image:url("https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Vector-2.png")!important;
+ background-position:center!important;background-repeat:no-repeat!important;background-size:contain!important;
+ filter:none!important;
+}
