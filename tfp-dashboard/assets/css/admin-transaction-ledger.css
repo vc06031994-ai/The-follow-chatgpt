@@ -304,3 +304,22 @@ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger
  body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-search {grid-column:1/-1!important;margin-left:0!important}
  body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats {grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
+
+
+/* Match Revenue Overview date controls and KPI typography exactly. */
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters > input[type="date"] {
+    box-sizing:border-box!important;flex:0 0 145px!important;width:145px!important;height:36px!important;min-height:36px!important;
+    padding:0 8px!important;border:1px solid #d0d0d0!important;border-radius:7px!important;background:#fff!important;color:#222!important;
+    font:12px var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;box-shadow:none!important;color-scheme:light;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters > input[type="date"]::-webkit-calendar-picker-indicator {
+    display:block!important;width:18px!important;height:18px!important;margin:0 0 0 5px!important;padding:0!important;opacity:1!important;cursor:pointer!important;
+    filter:invert(27%) sepia(90%) saturate(1070%) hue-rotate(145deg) brightness(87%) contrast(102%)!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article span {
+    color:#222!important;font-size:10px!important;line-height:1.25!important;font-weight:400!important;letter-spacing:0!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article strong {
+    color:#00666e!important;font-size:20px!important;line-height:1.2!important;font-weight:700!important;letter-spacing:0!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong {color:#e21b2d!important}
