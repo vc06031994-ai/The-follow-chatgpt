@@ -75,7 +75,7 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
         <header class="tfp-payments-page-heading"><h1><?php echo esc_html($is_transactions ? __('Transaction Ledger', 'tfp-dashboard') : ($is_payouts ? __('Payouts', 'tfp-dashboard') : __('Payments — Revenue Overview', 'tfp-dashboard'))); ?></h1><p><?php echo esc_html($is_transactions ? __('All payments, refunds, statuses, and reconciliation controls', 'tfp-dashboard') : ($is_payouts ? __('Track transfers from Stripe to your bank accounts.', 'tfp-dashboard') : __('Revenue metrics, product breakdown, and recent transactions', 'tfp-dashboard'))); ?></p></header>
         <main class="tfp-payments-content">
             <nav class="tfp-payments-tabs" aria-label="<?php esc_attr_e('Payment sections', 'tfp-dashboard'); ?>">
-                <a class="<?php echo !$is_transactions ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url()); ?>"><?php esc_html_e('Revenue Overview', 'tfp-dashboard'); ?></a>
+                <a class="<?php echo (!$is_transactions && !$is_payouts) ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url()); ?>"><?php esc_html_e('Revenue Overview', 'tfp-dashboard'); ?></a>
                 <a class="<?php echo $is_transactions ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'transactions'])); ?>"><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></a>
                 
                 <a class="<?php echo $is_payouts ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'payouts'])); ?>"><?php esc_html_e('Payouts', 'tfp-dashboard'); ?></a>
@@ -85,15 +85,15 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
                 <?php tfp_admin_transaction_ledger_render(true); ?>
             <?php elseif ($is_payouts) : ?>
                 <?php $selected_payout = $payout_data['selected']; $payout_currency = $selected_payout['currency'] ?? get_woocommerce_currency(); $format_payout = static function ($minor, $currency) { return function_exists('wc_price') ? wc_price(tfp_admin_payments_stripe_decimal($minor), ['currency' => strtoupper($currency)]) : esc_html(number_format_i18n(tfp_admin_payments_stripe_decimal($minor), 2)); }; ?>
-                <div class="tfp-payouts-back-row"><a href="<?php echo esc_url(tfp_admin_payments_url()); ?>">↶ <?php esc_html_e('Back To All Sections', 'tfp-dashboard'); ?></a><a href="<?php echo esc_url(tfp_admin_payments_url()); ?>">↶ <?php esc_html_e('Back To All Sections', 'tfp-dashboard'); ?></a></div>
+                <div class="tfp-payouts-back-row"><a href="<?php echo esc_url(tfp_admin_payments_url()); ?>">↶ <?php esc_html_e('Back To All Sections', 'tfp-dashboard'); ?></a></div>
                 <?php if ($payout_data['error'] !== '') : ?><div class="tfp-payouts-notice is-error"><?php echo esc_html($payout_data['error']); ?></div><?php endif; ?>
                 <form class="tfp-payouts-filters" method="get" action="<?php echo esc_url(tfp_admin_payments_url()); ?>">
                     <input type="hidden" name="section" value="payouts">
                     <select name="payout_status" aria-label="<?php esc_attr_e('Filter by payout status', 'tfp-dashboard'); ?>"><option value=""><?php esc_html_e('All Statuses', 'tfp-dashboard'); ?></option><?php foreach (['pending'=>'Pending','in_transit'=>'In Transit','paid'=>'Paid','failed'=>'Failed','canceled'=>'Canceled'] as $key=>$label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($payout_data['filters']['status'], $key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select>
                     <select name="payout_reconciliation" aria-label="<?php esc_attr_e('Reconciliation status', 'tfp-dashboard'); ?>"><option value=""><?php esc_html_e('All Reconciliations', 'tfp-dashboard'); ?></option><option value="reconciled"><?php esc_html_e('Reconciled', 'tfp-dashboard'); ?></option><option value="pending"><?php esc_html_e('Pending', 'tfp-dashboard'); ?></option></select>
                     <select name="payout_processor" aria-label="<?php esc_attr_e('Payment processor', 'tfp-dashboard'); ?>"><option value="stripe">Stripe</option></select>
-                    <label><input type="date" name="payout_from" value="<?php echo esc_attr($payout_data['filters']['from']); ?>" aria-label="<?php esc_attr_e('Start date', 'tfp-dashboard'); ?>"></label>
-                    <label><input type="date" name="payout_to" value="<?php echo esc_attr($payout_data['filters']['to']); ?>" aria-label="<?php esc_attr_e('End date', 'tfp-dashboard'); ?>"></label>
+                    <input type="date" name="payout_from" value="<?php echo esc_attr($payout_data['filters']['from']); ?>" aria-label="<?php esc_attr_e('Start date', 'tfp-dashboard'); ?>">
+                    <input type="date" name="payout_to" value="<?php echo esc_attr($payout_data['filters']['to']); ?>" aria-label="<?php esc_attr_e('End date', 'tfp-dashboard'); ?>">
                     <input class="tfp-payouts-search" type="search" name="payout_search" value="<?php echo esc_attr($payout_data['filters']['search']); ?>" placeholder="<?php esc_attr_e('Search Payouts', 'tfp-dashboard'); ?>">
                     <button type="submit"><?php esc_html_e('Apply', 'tfp-dashboard'); ?></button>
                 </form>
