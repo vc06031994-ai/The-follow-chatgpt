@@ -153,7 +153,7 @@ function tfp_stripe_to_minor_units($amount, $currency)
  *
  * @return array|WP_Error Decoded response body, or WP_Error on failure.
  */
-function tfp_stripe_api($method, $path, $params = array(), $idempotency_key = '')
+function tfp_stripe_api($method, $path, $params = array())
 {
     $secret = tfp_stripe_get_secret_key();
     if ($secret === '') {
@@ -172,11 +172,8 @@ function tfp_stripe_api($method, $path, $params = array(), $idempotency_key = ''
             'Authorization'  => 'Bearer ' . $secret,
             'Content-Type'   => 'application/x-www-form-urlencoded',
             'Stripe-Version' => TFP_STRIPE_API_VERSION,
-            'Idempotency-Key' => $idempotency_key !== '' ? sanitize_text_field($idempotency_key) : '',
         ),
     );
-
-    if ($args['headers']['Idempotency-Key'] === '') { unset($args['headers']['Idempotency-Key']); }
 
     if ($method === 'GET') {
         if (!empty($params)) {
