@@ -183,3 +183,16 @@ body.tfp-admin-payments-view .tfp-refund-stats article.is-pending strong{color:#
  body.tfp-admin-payments-view .tfp-refund-filters{display:grid!important;grid-template-columns:1fr 1fr!important}
  body.tfp-admin-payments-view .tfp-refund-filters>.tfp-refund-selected{margin:0!important}
 }
+
+
+/* Refund KPI amounts: match the larger, bold colored prices in the reference. */
+body.tfp-admin-payments-view .tfp-refund-stats article strong{
+ font-family:var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+ font-size:24px!important;
+ font-weight:700!important;
+ line-height:1.2!important;
+ letter-spacing:-.25px!important;
+ color:#007b83!important;
+}
+body.tfp-admin-payments-view .tfp-refund-stats article.is-month strong{color:#d0a000!important}
+body.tfp-admin-payments-view .tfp-refund-stats article.is-pending strong{color:#e21b2d!important}
