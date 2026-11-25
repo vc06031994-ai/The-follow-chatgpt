@@ -37,6 +37,18 @@ wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.
 if ($is_transactions) {
     $ledger_css_path = dirname(__DIR__) . '/assets/css/admin-transaction-ledger.css';
     wp_enqueue_style('tfp-admin-transaction-ledger', $dash_url . 'assets/css/admin-transaction-ledger.css', ['tfp-admin-payments'], file_exists($ledger_css_path) ? (string) filemtime($ledger_css_path) : $dash_ver);
+
+    wp_add_inline_style('tfp-admin-transaction-ledger', '
+      body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px!important}
+      body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article{display:flex!important;flex-direction:column!important;justify-content:center!important;gap:4px!important;min-height:62px!important;padding:12px 16px!important;background:#dfe3e3!important;border:0!important;border-radius:12px!important;box-shadow:0 2px 3px #0002!important}
+      body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article span{display:block!important;color:#222!important;font-family:var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;font-size:10px!important;font-weight:400!important;line-height:1.25!important}
+      body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article strong,body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article strong span,body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article strong .woocommerce-Price-amount{color:#00666e!important;font-family:var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;font-size:20px!important;font-weight:700!important;line-height:1.2!important}
+      body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong,body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong span,body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong .woocommerce-Price-amount{color:#e21b2d!important}
+      body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters>input[type=date]{box-sizing:border-box!important;flex:0 0 145px!important;width:145px!important;height:36px!important;min-height:36px!important;padding:0 8px!important;border:1px solid #d0d0d0!important;border-radius:7px!important;background:#fff!important;color:#222!important;font:12px var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;color-scheme:light}
+      body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters>input[type=date]::-webkit-calendar-picker-indicator{display:block!important;width:18px!important;height:18px!important;opacity:1!important;cursor:pointer!important;filter:invert(27%) sepia(90%) saturate(1070%) hue-rotate(145deg) brightness(87%) contrast(102%)!important}
+      @media(max-width:767px){body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+    ');
+
 }
 $products = function_exists('wc_get_products') ? wc_get_products(['status' => 'publish', 'limit' => -1, 'orderby' => 'name', 'order' => 'ASC']) : [];
 $currency = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '$';
