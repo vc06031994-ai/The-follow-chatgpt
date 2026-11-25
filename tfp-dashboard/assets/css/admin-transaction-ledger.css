@@ -427,3 +427,18 @@ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger
  body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-detail-grid{grid-template-columns:1fr!important}
  body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-admin-actions{width:100%!important}
 }
+
+
+/* Table typography refinement: medium-weight content and clearer Details action. */
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-table tbody td {
+    font-weight:500!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-table tbody td .tfp-ledger-id {
+    font-weight:500!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-table tbody td .tfp-ledger-button {
+    font-size:11px!important;
+    font-weight:500!important;
+    min-height:30px!important;
+    padding:0 10px!important;
+}
