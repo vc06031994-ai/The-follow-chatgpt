@@ -150,3 +150,110 @@ add_action('admin_post_tfp_admin_payments_export', function () {
     fclose($out);
     exit;
 });
+
+
+/**
+ * Read-only Stripe payout data for the Admin Payments > Payouts dashboard.
+ * All monetary values returned by Stripe are converted from minor units.
+ */
+function tfp_admin_payments_stripe_decimal($minor_amount) {
+    $decimals = function_exists('wc_get_price_decimals') ? (int) wc_get_price_decimals() : 2;
+    return ((float) $minor_amount) / pow(10, max(0, $decimals));
+}
+
+function tfp_admin_payments_get_stripe_payout_data() {
+    $result = [
+        'configured' => function_exists('tfp_stripe_is_configured') && tfp_stripe_is_configured(),
+        'error' => '',
+        'balance' => [],
+        'payouts' => [],
+        'selected' => null,
+        'transactions' => [],
+        'totals' => ['available' => 0, 'transit' => 0, 'reconciled' => 0, 'failed' => 0],
+        'filters' => [
+            'status' => sanitize_key(wp_unslash($_GET['payout_status'] ?? '')),
+            'from' => sanitize_text_field(wp_unslash($_GET['payout_from'] ?? '')),
+            'to' => sanitize_text_field(wp_unslash($_GET['payout_to'] ?? '')),
+            'search' => sanitize_text_field(wp_unslash($_GET['payout_search'] ?? '')),
+        ],
+    ];
+
+    if (!$result['configured'] || !function_exists('tfp_stripe_api')) {
+        $result['error'] = __('Stripe is not configured. Add the API keys in Settings → TFP Stripe to load live payout data.', 'tfp-dashboard');
+        return $result;
+    }
+
+    $balance = tfp_stripe_api('GET', 'balance');
+    if (is_wp_error($balance)) {
+        $result['error'] = $balance->get_error_message();
+        return $result;
+    }
+    $result['balance'] = $balance;
+    foreach (($balance['available'] ?? []) as $entry) {
+        $result['totals']['available'] += tfp_admin_payments_stripe_decimal($entry['amount'] ?? 0);
+    }
+
+    $params = ['limit' => 100, 'expand' => ['data.destination']];
+    if ($result['filters']['status'] && in_array($result['filters']['status'], ['pending', 'in_transit', 'paid', 'failed', 'canceled'], true)) {
+        $params['status'] = $result['filters']['status'];
+    }
+    if ($result['filters']['from'] !== '') {
+        $timestamp = strtotime($result['filters']['from'] . ' 00:00:00');
+        if ($timestamp) { $params['created[gte]'] = $timestamp; }
+    }
+    if ($result['filters']['to'] !== '') {
+        $timestamp = strtotime($result['filters']['to'] . ' 23:59:59');
+        if ($timestamp) { $params['created[lte]'] = $timestamp; }
+    }
+
+    $payout_response = tfp_stripe_api('GET', 'payouts', $params);
+    if (is_wp_error($payout_response)) {
+        $result['error'] = $payout_response->get_error_message();
+        return $result;
+    }
+
+    $payouts = $payout_response['data'] ?? [];
+    $search = strtolower($result['filters']['search']);
+    if ($search !== '') {
+        $payouts = array_values(array_filter($payouts, static function ($payout) use ($search) {
+            return strpos(strtolower((string) ($payout['id'] ?? '')), $search) !== false
+                || strpos(strtolower((string) ($payout['description'] ?? '')), $search) !== false;
+        }));
+    }
+    $result['payouts'] = $payouts;
+
+    $thirty_days_ago = current_time('timestamp') - (30 * DAY_IN_SECONDS);
+    foreach ($payouts as $payout) {
+        $amount = tfp_admin_payments_stripe_decimal($payout['amount'] ?? 0);
+        $status = (string) ($payout['status'] ?? '');
+        if (in_array($status, ['pending', 'in_transit'], true)) {
+            $result['totals']['transit'] += $amount;
+        } elseif ($status === 'paid' && (int) ($payout['created'] ?? 0) >= $thirty_days_ago) {
+            $result['totals']['reconciled'] += $amount;
+        } elseif (in_array($status, ['failed', 'canceled'], true)) {
+            $result['totals']['failed'] += $amount;
+        }
+    }
+
+    $selected_id = sanitize_text_field(wp_unslash($_GET['payout'] ?? ''));
+    if ($selected_id === '' && !empty($payouts[0]['id'])) {
+        $selected_id = (string) $payouts[0]['id'];
+    }
+    if ($selected_id !== '' && preg_match('/^po_[A-Za-z0-9]+$/', $selected_id)) {
+        $selected = tfp_stripe_api('GET', 'payouts/' . rawurlencode($selected_id), [
+            'expand' => ['destination', 'balance_transaction'],
+        ]);
+        if (!is_wp_error($selected)) {
+            $result['selected'] = $selected;
+            $transactions = tfp_stripe_api('GET', 'balance_transactions', [
+                'payout' => $selected_id,
+                'limit' => 100,
+            ]);
+            if (!is_wp_error($transactions)) {
+                $result['transactions'] = $transactions['data'] ?? [];
+            }
+        }
+    }
+
+    return $result;
+}
