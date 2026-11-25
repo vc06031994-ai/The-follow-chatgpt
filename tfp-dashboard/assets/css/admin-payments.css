@@ -815,3 +815,13 @@ body.tfp-admin-payments-view .tfp-match-actions button:disabled{opacity:.45;curs
  body.tfp-admin-payments-view .tfp-match-actions{flex-direction:column}
  body.tfp-admin-payments-view .tfp-match-actions>*{width:100%}
 }
+
+
+/* Admin-only sample payout preview rows; live Stripe rendering is unchanged. */
+body.tfp-admin-payments-view .tfp-bank-deposit-list{display:grid;gap:10px;padding:18px 20px;background:#dfe3e4;border-radius:12px}
+body.tfp-admin-payments-view .tfp-bank-deposit-option{display:flex;align-items:center;gap:16px;min-height:42px;cursor:pointer}
+body.tfp-admin-payments-view .tfp-bank-deposit-option input{width:22px;height:22px;accent-color:#00666e}
+body.tfp-admin-payments-view .tfp-bank-deposit-option span{display:flex;flex-direction:column;gap:4px;flex:1}
+body.tfp-admin-payments-view .tfp-bank-deposit-option strong{font-size:16px;font-weight:600;color:#171717}
+body.tfp-admin-payments-view .tfp-bank-deposit-option small{font-size:12px;color:#92999a}
+body.tfp-admin-payments-view .tfp-bank-deposit-option b{font-size:17px;font-weight:500;color:#171717}
