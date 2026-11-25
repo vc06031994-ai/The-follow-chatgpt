@@ -835,3 +835,33 @@ body.tfp-admin-payments-view .tfp-bank-deposit-option b{
  font-size:17px;line-height:1.3;font-weight:500;color:#171717;
 }
 body.tfp-admin-payments-view .tfp-bank-deposit-option b span{display:inline!important;flex:0 0 auto!important;white-space:nowrap!important}
+
+/* Refund workflow demo preview, isolated from live refund processing. */
+body.tfp-admin-payments-view .tfp-refund-demo{display:grid;gap:16px;color:#171717;font-family:var(--tfp-dash-font,'Eudoxus Sans'),sans-serif}
+body.tfp-admin-payments-view .tfp-refund-demo-banner,body.tfp-admin-payments-view .tfp-refund-demo-launch{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 16px;border:1px solid #e5c77b;border-radius:10px;background:#fff9e9}
+body.tfp-admin-payments-view .tfp-refund-demo-banner span{font-size:12px;color:#777}body.tfp-admin-payments-view .tfp-refund-demo-banner a,body.tfp-admin-payments-view .tfp-refund-demo-launch a{color:#00666e;font-weight:600}
+body.tfp-admin-payments-view .tfp-refund-demo nav{display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid #ddd;padding-bottom:10px}
+body.tfp-admin-payments-view .tfp-refund-demo nav a{padding:10px;color:#999;text-decoration:none}body.tfp-admin-payments-view .tfp-refund-demo nav a.active{color:#171717;border-bottom:2px solid #00666e;font-weight:700}
+body.tfp-admin-payments-view .tfp-refund-demo section{box-sizing:border-box;background:#fff;border:1px solid #ddd;border-radius:12px;padding:22px}
+body.tfp-admin-payments-view .tfp-refund-demo a.primary{background:#00666e;color:#fff;border-color:#00666e}
+body.tfp-admin-payments-view .tfp-refund-demo footer{display:flex;justify-content:flex-end;gap:10px;margin-top:26px}
+body.tfp-admin-payments-view .tfp-refund-demo footer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border:1px solid #ccc;border-radius:9px;text-decoration:none;color:#171717;background:#fff}
+body.tfp-admin-payments-view .refund-demo-confirm{max-width:380px;margin:20px auto;text-align:center;box-shadow:0 4px 20px #0001}
+body.tfp-admin-payments-view .refund-demo-confirm .alert{margin:auto auto 16px;width:46px;height:46px;border-radius:50%;background:#ff9d18;color:#fff;font-size:30px;line-height:46px}
+body.tfp-admin-payments-view .refund-demo-confirm h2{font-size:20px}body.tfp-admin-payments-view .refund-demo-confirm p{line-height:1.5}
+body.tfp-admin-payments-view .refund-demo-confirm .summary{margin:35px 0;padding:18px;border-radius:14px;background:#fafafa;text-align:left}
+body.tfp-admin-payments-view .refund-demo-confirm .summary div{display:flex;justify-content:space-between;gap:12px;margin:10px 0}body.tfp-admin-payments-view .refund-demo-confirm .summary span{font-size:12px;color:#999}
+body.tfp-admin-payments-view .refund-demo-manual header,body.tfp-admin-payments-view .refund-demo-detail header{display:flex;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid #ddd;margin-bottom:22px}
+body.tfp-admin-payments-view .refund-demo-manual header small,body.tfp-admin-payments-view .refund-demo-detail small{color:#999;font-size:11px}
+body.tfp-admin-payments-view .refund-demo-manual label{display:grid;gap:8px;margin:18px 0;font-weight:600}
+body.tfp-admin-payments-view .refund-demo-manual input,body.tfp-admin-payments-view .refund-demo-manual select{width:100%;box-sizing:border-box;height:47px;border:1px solid #ccc;border-radius:9px;padding:0 12px;background:#fff;font:inherit}
+body.tfp-admin-payments-view .refund-demo-manual .twocol{display:grid;grid-template-columns:1fr 1.2fr;gap:30px}
+body.tfp-admin-payments-view .refund-demo-manual .toggle{display:flex;background:#eee;border-radius:9px;padding:3px;margin-top:8px}
+body.tfp-admin-payments-view .refund-demo-manual .toggle a{flex:1;text-align:center;padding:9px;text-decoration:none;color:#171717;border-radius:7px}body.tfp-admin-payments-view .refund-demo-manual .toggle a.active{background:#fff;box-shadow:0 1px 5px #0002}
+body.tfp-admin-payments-view .refund-demo-detail header h2{margin:0 0 8px;font-size:20px}body.tfp-admin-payments-view .refund-demo-detail header i{font-size:11px;color:#00666e;border:1px solid #00666e;border-radius:20px;padding:5px 10px;font-style:normal}
+body.tfp-admin-payments-view .refund-demo-detail header>strong{text-align:right;font-size:20px}body.tfp-admin-payments-view .refund-demo-detail header>strong small{display:block}
+body.tfp-admin-payments-view .refund-demo-detail .detailgrid{display:grid;grid-template-columns:1fr 200px;gap:24px}
+body.tfp-admin-payments-view .refund-demo-detail h3{color:#999;font-size:14px;margin:10px 0 18px}body.tfp-admin-payments-view .refund-demo-detail .detailgrid b,body.tfp-admin-payments-view .refund-demo-detail .detailgrid small{display:block;margin:0 0 8px}
+body.tfp-admin-payments-view .refund-demo-detail aside{background:#dfe3e3;border-radius:12px;padding:16px}body.tfp-admin-payments-view .refund-demo-detail aside button,body.tfp-admin-payments-view .refund-demo-detail aside>a{display:flex;align-items:center;justify-content:center;width:100%;height:42px;margin:5px 0;border:1px solid #ccc;border-radius:8px;background:#fff;color:#171717;text-decoration:none}
+body.tfp-admin-payments-view .refund-demo-final{min-height:205px}body.tfp-admin-payments-view .refund-demo-final h2{margin:0 0 8px;font-size:20px}body.tfp-admin-payments-view .refund-demo-final>small{color:#999}
+@media(max-width:700px){body.tfp-admin-payments-view .tfp-refund-demo-banner,body.tfp-admin-payments-view .refund-demo-detail header{align-items:flex-start;flex-direction:column}body.tfp-admin-payments-view .refund-demo-manual .twocol,body.tfp-admin-payments-view .refund-demo-detail .detailgrid{grid-template-columns:1fr}}
