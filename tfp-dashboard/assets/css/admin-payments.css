@@ -717,3 +717,25 @@ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type=
  background-position:center!important;background-repeat:no-repeat!important;background-size:contain!important;
  filter:none!important;
 }
+
+
+/* Single custom date icon: hide the browser's native glyph and show Vector-2 once. */
+body.tfp-admin-payments-view .tfp-payments-content input[type="date"],
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type="date"]{
+  padding-right:34px!important;
+  background-color:#fff!important;
+  background-image:url("https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Vector-2.png")!important;
+  background-repeat:no-repeat!important;
+  background-position:right 9px center!important;
+  background-size:17px 17px!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content input[type="date"]::-webkit-calendar-picker-indicator,
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner input[type="date"]::-webkit-calendar-picker-indicator{
+  opacity:0!important;
+  width:28px!important;
+  height:100%!important;
+  margin:0!important;
+  cursor:pointer!important;
+  background:none!important;
+  filter:none!important;
+}
