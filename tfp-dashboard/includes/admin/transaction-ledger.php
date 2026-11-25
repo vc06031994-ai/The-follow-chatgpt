@@ -36,7 +36,7 @@ function tfp_admin_transaction_ledger_order_rows($args) {
     if (!empty($args['status'])) {
         $query['status'] = [$args['status']];
     } else {
-        $query['status'] = array_keys(wc_get_order_statuses());
+        $query['status'] = array_map(static function ($status) { return preg_replace('/^wc-/', '', $status); }, array_keys(wc_get_order_statuses()));
     }
     if (!empty($args['search'])) { $query['search'] = '*' . wc_clean($args['search']) . '*'; }
     if (!empty($args['after']) || !empty($args['before'])) {
@@ -143,7 +143,7 @@ function tfp_admin_transaction_ledger_render() {
     $totals = tfp_admin_transaction_ledger_totals();
     $refund_30 = 0.0;
     if (function_exists('wc_get_orders')) {
-        $recent = wc_get_orders(['status' => array_keys(wc_get_order_statuses()), 'limit' => 100, 'date_created' => '>' . (time() - 30 * DAY_IN_SECONDS), 'return' => 'objects']);
+        $recent = wc_get_orders(['status' => array_map(static function ($status) { return preg_replace('/^wc-/', '', $status); }, array_keys(wc_get_order_statuses())), 'limit' => 100, 'date_created' => '>' . (time() - 30 * DAY_IN_SECONDS), 'return' => 'objects']);
         foreach ((array) $recent as $recent_order) {
             if ($recent_order instanceof WC_Order) { $refund_30 += (float) $recent_order->get_total_refunded(); }
         }
