@@ -268,3 +268,53 @@ function tfp_admin_payments_get_stripe_payout_data() {
 
     return $result;
 }
+
+
+/**
+ * Download a remittance CSV using the live Stripe payout and balance transactions.
+ */
+add_action('admin_post_tfp_admin_payout_remittance', function () {
+    if (!current_user_can('manage_options') && !current_user_can('administrator')) {
+        wp_die(esc_html__('Access denied.', 'tfp-dashboard'), '', ['response' => 403]);
+    }
+    $payout_id = sanitize_text_field(wp_unslash($_GET['payout'] ?? ''));
+    if (!preg_match('/^po_[A-Za-z0-9]+$/', $payout_id)) {
+        wp_die(esc_html__('Invalid payout.', 'tfp-dashboard'), '', ['response' => 400]);
+    }
+    check_admin_referer('tfp_admin_payout_remittance_' . $payout_id);
+    if (!function_exists('tfp_stripe_api') || !function_exists('tfp_stripe_is_configured') || !tfp_stripe_is_configured()) {
+        wp_die(esc_html__('Stripe is not configured.', 'tfp-dashboard'), '', ['response' => 503]);
+    }
+    $payout = tfp_stripe_api('GET', 'payouts/' . rawurlencode($payout_id), ['expand' => ['destination']]);
+    if (is_wp_error($payout)) {
+        wp_die(esc_html($payout->get_error_message()), '', ['response' => 502]);
+    }
+    $transactions = tfp_stripe_api('GET', 'balance_transactions', ['payout' => $payout_id, 'limit' => 100]);
+    if (is_wp_error($transactions)) {
+        wp_die(esc_html($transactions->get_error_message()), '', ['response' => 502]);
+    }
+    nocache_headers();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=remittance-' . sanitize_file_name($payout_id) . '.csv');
+    $out = fopen('php://output', 'w');
+    fputcsv($out, ['Payout ID', 'Created', 'Status', 'Currency', 'Payout Amount', 'Transaction ID', 'Description', 'Type', 'Gross', 'Fee', 'Net']);
+    $created = !empty($payout['created']) ? wp_date('Y-m-d H:i:s', (int) $payout['created']) : '';
+    $currency = strtoupper((string) ($payout['currency'] ?? ''));
+    $rows = $transactions['data'] ?? [];
+    if (!$rows) {
+        fputcsv($out, [$payout_id, $created, $payout['status'] ?? '', $currency, tfp_admin_payments_stripe_decimal($payout['amount'] ?? 0), '', 'No balance transactions returned by Stripe', '', '', '', '']);
+    } else {
+        foreach ($rows as $row) {
+            fputcsv($out, [
+                $payout_id, $created, $payout['status'] ?? '', $currency,
+                tfp_admin_payments_stripe_decimal($payout['amount'] ?? 0),
+                $row['id'] ?? '', $row['description'] ?? '', $row['type'] ?? '',
+                tfp_admin_payments_stripe_decimal($row['amount'] ?? 0),
+                tfp_admin_payments_stripe_decimal($row['fee'] ?? 0),
+                tfp_admin_payments_stripe_decimal($row['net'] ?? 0),
+            ]);
+        }
+    }
+    fclose($out);
+    exit;
+});
