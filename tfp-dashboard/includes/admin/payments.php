@@ -178,6 +178,42 @@ function tfp_admin_payments_get_stripe_payout_data() {
         ],
     ];
 
+    // Explicit, administrator-only preview data. This branch never calls Stripe and is enabled
+    // only with ?section=payouts&payout_demo=1.
+    $demo_mode = isset($_GET['payout_demo']) && (string) wp_unslash($_GET['payout_demo']) === '1'
+        && current_user_can('manage_options');
+    if ($demo_mode) {
+        $demo_id = 'po_demo2001';
+        $demo_payout = [
+            'id' => $demo_id,
+            'object' => 'payout',
+            'amount' => 415800,
+            'currency' => 'usd',
+            'created' => strtotime('2026-05-05 09:00:00 UTC'),
+            'arrival_date' => strtotime('2026-05-06 09:00:00 UTC'),
+            'status' => 'paid',
+            'destination' => ['object' => 'bank_account', 'bank_name' => 'Chase', 'last4' => '4242'],
+            'reconciliation_status' => 'pending',
+            'description' => 'Demo payout for screen preview',
+        ];
+        $result['demo'] = true;
+        $result['configured'] = true;
+        $result['payouts'] = [$demo_payout];
+        $result['selected'] = (!empty($_GET['payout']) && sanitize_text_field(wp_unslash($_GET['payout'])) !== $demo_id)
+            ? null : $demo_payout;
+        $result['transactions'] = [
+            ['id' => 'TX-DEMO9001', 'description' => 'Alice · One-time payment', 'type' => 'charge', 'amount' => 215800, 'fee' => 6300, 'net' => 209500, 'currency' => 'usd'],
+            ['id' => 'TX-DEMO9002', 'description' => 'Bob · One-time payment', 'type' => 'charge', 'amount' => 200000, 'fee' => 5800, 'net' => 194200, 'currency' => 'usd'],
+        ];
+        $result['bank_deposits'] = [
+            ['id' => 'DEP-DEMO9001', 'created' => strtotime('2026-05-06 09:00:00 UTC'), 'amount' => 415800],
+            ['id' => 'DEP-DEMO7782', 'created' => strtotime('2026-04-29 09:00:00 UTC'), 'amount' => 148500],
+            ['id' => 'DEP-DEMO5000', 'created' => strtotime('2026-05-01 09:00:00 UTC'), 'amount' => 120000],
+        ];
+        $result['totals'] = ['available' => 6020518, 'transit' => 0, 'reconciled' => 0, 'failed' => 0];
+        return $result;
+    }
+
     if (!$result['configured'] || !function_exists('tfp_stripe_api')) {
         $result['error'] = __('Stripe is not configured. Add the API keys in Settings → TFP Stripe to load live payout data.', 'tfp-dashboard');
         return $result;
