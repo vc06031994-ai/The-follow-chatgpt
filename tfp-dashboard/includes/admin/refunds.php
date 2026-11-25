@@ -196,7 +196,7 @@ function tfp_admin_refunds_render_embedded() {
     foreach ((array) $orders as $order) {
         if (!$order instanceof WC_Order) { continue; }
         $created = $order->get_date_created();
-        if ($created && $created->getTimestamp() >= $year_start && !$order->get_type() === 'shop_order_refund') {
+        if ($created && $created->getTimestamp() >= $year_start && $order->get_type() === 'shop_order') {
             $gross_ytd += (float) $order->get_total();
         }
         foreach ($order->get_refunds() as $refund) {
