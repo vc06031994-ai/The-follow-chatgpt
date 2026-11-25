@@ -249,8 +249,9 @@ function tfp_admin_refunds_render_embedded() {
             </select>
             <label class="tfp-refund-date"><input type="date" name="refund_from" value="<?php echo esc_attr($date_from); ?>" aria-label="<?php esc_attr_e('Start date', 'tfp-dashboard'); ?>"></label>
             <label class="tfp-refund-date"><input type="date" name="refund_to" value="<?php echo esc_attr($date_to); ?>" aria-label="<?php esc_attr_e('End date', 'tfp-dashboard'); ?>"></label>
-            <input class="tfp-refund-search" type="search" name="refund_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search ID, email, user name', 'tfp-dashboard'); ?>">
             <button type="submit" class="tfp-refund-apply"><?php esc_html_e('Apply', 'tfp-dashboard'); ?></button>
+            <span class="tfp-refund-selected"><?php esc_html_e('Selected: 0', 'tfp-dashboard'); ?></span>
+            <button type="button" class="tfp-refund-bulk-issue" data-tfp-refund-bulk disabled><?php esc_html_e('Issue selected refunds', 'tfp-dashboard'); ?></button>
         </form>
 
         <section class="tfp-refund-stats">
@@ -276,14 +277,14 @@ function tfp_admin_refunds_render_embedded() {
                     <tbody>
                     <?php foreach ($rows as $row) : ?>
                         <tr>
-                            <td class="check-col"><input type="checkbox" class="tfp-refund-row-check" value="<?php echo esc_attr($row['id']); ?>" aria-label="<?php echo esc_attr(sprintf(__('Select refund %s', 'tfp-dashboard'), $row['id'])); ?>"></td>
+                            <td class="check-col"><input type="checkbox" class="tfp-refund-row-check" value="<?php echo esc_attr($row['id']); ?>" data-order-edit="<?php echo esc_url($row['order']->get_edit_order_url()); ?>" aria-label="<?php echo esc_attr(sprintf(__('Select refund %s', 'tfp-dashboard'), $row['id'])); ?>"></td>
                             <td><strong>#<?php echo esc_html($row['id']); ?></strong></td>
                             <td><?php echo esc_html($row['date']); ?></td>
                             <td><?php echo esc_html($row['customer']); ?><small><?php echo esc_html($row['email']); ?></small></td>
                             <td><?php echo esc_html($row['reason'] ?: '—'); ?></td>
                             <td><span class="tfp-refund-status"><?php echo esc_html($row['status']); ?></span></td>
                             <td class="tfp-refund-amount"><?php echo wp_kses_post(wc_price($row['amount'], ['currency' => $row['order']->get_currency()])); ?></td>
-                            <td><a class="tfp-refund-action" href="<?php echo esc_url(add_query_arg(['section' => 'refunds', 'refund_id' => $row['id']], tfp_admin_payments_url())); ?>"><?php esc_html_e('Details', 'tfp-dashboard'); ?></a></td>
+                            <td class="tfp-refund-actions"><a class="tfp-refund-action is-issue" href="<?php echo esc_url($row['order']->get_edit_order_url()); ?>"><?php esc_html_e('Issue', 'tfp-dashboard'); ?></a><a class="tfp-refund-action" href="<?php echo esc_url(add_query_arg(['section' => 'refunds', 'refund_id' => $row['id']], tfp_admin_payments_url())); ?>"><?php esc_html_e('Details', 'tfp-dashboard'); ?></a></td>
                         </tr>
                     <?php endforeach; ?>
                     <?php if (!$rows) : ?><tr><td colspan="8" class="tfp-refund-empty"><?php esc_html_e('No refund records found for the selected filters.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
@@ -310,6 +311,20 @@ function tfp_admin_refunds_render_embedded() {
         if(e.target.matches('[data-tfp-refund-select-all]')){
             document.querySelectorAll('.tfp-refund-row-check').forEach(function(el){el.checked=e.target.checked;});
         }
+        if(e.target.matches('.tfp-refund-row-check') || e.target.matches('[data-tfp-refund-select-all]')){
+            var all=document.querySelectorAll('.tfp-refund-row-check');
+            var selected=Array.prototype.filter.call(all,function(el){return el.checked;});
+            var count=document.querySelector('.tfp-refund-selected');
+            var bulk=document.querySelector('[data-tfp-refund-bulk]');
+            if(count){count.textContent='Selected: '+selected.length;}
+            if(bulk){bulk.disabled=!selected.length;}
+        }
+    });
+    document.addEventListener('click',function(e){
+        var bulk=e.target.closest('[data-tfp-refund-bulk]');
+        if(!bulk)return;
+        var selected=document.querySelector('.tfp-refund-row-check:checked');
+        if(selected && selected.dataset.orderEdit){window.location.href=selected.dataset.orderEdit;}
     });
     </script>
     <?php
