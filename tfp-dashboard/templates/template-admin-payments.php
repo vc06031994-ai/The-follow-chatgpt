@@ -12,6 +12,7 @@ status_header(200);
 nocache_headers();
 require_once dirname(__DIR__) . '/includes/admin/dashboard.php';
 require_once dirname(__DIR__) . '/includes/admin/payments.php';
+require_once dirname(__DIR__) . '/includes/admin/refunds.php';
 $data = tfp_admin_payments_get_data();
 $user = wp_get_current_user();
 $nav = tfp_admin_dashboard_nav_items();
@@ -28,6 +29,7 @@ $css_path = dirname(__DIR__) . '/assets/css/admin-payments.css';
 $payments_section = sanitize_key(wp_unslash($_GET['section'] ?? ''));
 $is_transactions = ($payments_section === 'transactions');
 $is_payouts = ($payments_section === 'payouts');
+$is_refunds = ($payments_section === 'refunds');
 $payout_data = $is_payouts ? tfp_admin_payments_get_stripe_payout_data() : null;
 wp_enqueue_style('dashicons');
 wp_enqueue_style('tfp-dashboard-base', $dash_url . 'assets/css/core.css', [], $dash_ver);
@@ -36,6 +38,10 @@ wp_enqueue_style('tfp-dashboard-components', $dash_url . 'assets/css/components.
 wp_enqueue_style('tfp-admin-dashboard', $dash_url . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], file_exists(dirname(__DIR__) . '/assets/css/admin-dashboard.css') ? (string) filemtime(dirname(__DIR__) . '/assets/css/admin-dashboard.css') : $dash_ver);
 wp_enqueue_style('tfp-admin-payments', $dash_url . 'assets/css/admin-payments.css', ['tfp-admin-dashboard'], file_exists($css_path) ? (string) filemtime($css_path) : $dash_ver);
 wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], $dash_ver, true);
+if ($is_refunds) {
+    $refund_css_path = dirname(__DIR__) . '/assets/css/admin-refunds.css';
+    wp_enqueue_style('tfp-admin-refunds', $dash_url . 'assets/css/admin-refunds.css', ['tfp-admin-payments'], file_exists($refund_css_path) ? (string) filemtime($refund_css_path) : $dash_ver);
+}
 if ($is_transactions) {
     $ledger_css_path = dirname(__DIR__) . '/assets/css/admin-transaction-ledger.css';
     wp_enqueue_style('tfp-admin-transaction-ledger', $dash_url . 'assets/css/admin-transaction-ledger.css', ['tfp-admin-payments'], file_exists($ledger_css_path) ? (string) filemtime($ledger_css_path) : $dash_ver);
@@ -71,18 +77,20 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
     </aside>
     <div class="tfp-admin-main">
         <div class="tfp-admin-mobilebar"><button type="button" class="tfp-admin-mobilebar-toggle" data-tfp-admin-toggle aria-controls="tfp-admin-sidebar" aria-expanded="false" aria-label="<?php esc_attr_e('Open admin menu', 'tfp-dashboard'); ?>"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2.25" y="2.25" width="13.5" height="13.5" rx="1.4" stroke="currentColor" stroke-width="1.8"/><path d="M7 2.8V15.2" stroke="currentColor" stroke-width="1.8"/></svg></button><span><?php esc_html_e('Admin Console', 'tfp-dashboard'); ?></span></div>
-        <div class="tfp-admin-breadcrumb"><span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><span><?php esc_html_e('Payments', 'tfp-dashboard'); ?></span><b>/</b><strong><?php echo esc_html($is_transactions ? __('Transaction Ledger', 'tfp-dashboard') : ($is_payouts ? __('Payouts', 'tfp-dashboard') : __('Overview', 'tfp-dashboard'))); ?></strong></div>
-        <header class="tfp-payments-page-heading"><div class="tfp-payments-heading-copy"><h1><?php echo esc_html($is_transactions ? __('Transaction Ledger', 'tfp-dashboard') : ($is_payouts ? __('Payouts', 'tfp-dashboard') : __('Payments — Revenue Overview', 'tfp-dashboard'))); ?></h1><p><?php echo esc_html($is_transactions ? __('All payments, refunds, statuses, and reconciliation controls', 'tfp-dashboard') : ($is_payouts ? __('Track transfers from Stripe to your bank accounts.', 'tfp-dashboard') : __('Revenue metrics, product breakdown, and recent transactions', 'tfp-dashboard'))); ?></p></div><?php if ($is_payouts) : ?><a class="tfp-payouts-back-top" href="<?php echo esc_url(tfp_admin_payments_url()); ?>">↶ <?php esc_html_e('Back To All Sections', 'tfp-dashboard'); ?></a><?php endif; ?></header>
+        <div class="tfp-admin-breadcrumb"><span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><span><?php esc_html_e('Payments', 'tfp-dashboard'); ?></span><b>/</b><strong><?php echo esc_html($is_transactions ? __('Transaction Ledger', 'tfp-dashboard') : ($is_payouts ? __('Payouts', 'tfp-dashboard') : ($is_refunds ? __('Refunds', 'tfp-dashboard') : __('Overview', 'tfp-dashboard')))); ?></strong></div>
+        <header class="tfp-payments-page-heading"><div class="tfp-payments-heading-copy"><h1><?php echo esc_html($is_transactions ? __('Transaction Ledger', 'tfp-dashboard') : ($is_payouts ? __('Payouts', 'tfp-dashboard') : ($is_refunds ? __('Payment Refund History', 'tfp-dashboard') : __('Payments — Revenue Overview', 'tfp-dashboard')))); ?></h1><p><?php echo esc_html($is_transactions ? __('All payments, refunds, statuses, and reconciliation controls', 'tfp-dashboard') : ($is_payouts ? __('Track transfers from Stripe to your bank accounts.', 'tfp-dashboard') : ($is_refunds ? __('NEED TEST FOR HERE', 'tfp-dashboard') : __('Revenue metrics, product breakdown, and recent transactions', 'tfp-dashboard')))); ?></p></div><?php if ($is_payouts) : ?><a class="tfp-payouts-back-top" href="<?php echo esc_url(tfp_admin_payments_url()); ?>">↶ <?php esc_html_e('Back To All Sections', 'tfp-dashboard'); ?></a><?php endif; ?></header>
         <main class="tfp-payments-content">
             <nav class="tfp-payments-tabs" aria-label="<?php esc_attr_e('Payment sections', 'tfp-dashboard'); ?>">
                 <a class="<?php echo (!$is_transactions && !$is_payouts) ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url()); ?>"><?php esc_html_e('Revenue Overview', 'tfp-dashboard'); ?></a>
                 <a class="<?php echo $is_transactions ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'transactions'])); ?>"><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></a>
                 
                 <a class="<?php echo $is_payouts ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'payouts'])); ?>"><?php esc_html_e('Payouts', 'tfp-dashboard'); ?></a>
-                <a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'refunds'])); ?>"><?php esc_html_e('Refund History', 'tfp-dashboard'); ?></a>
+                <a class="<?php echo $is_refunds ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'refunds'])); ?>"><?php esc_html_e('Refund History', 'tfp-dashboard'); ?></a>
             </nav>
             <?php if ($is_transactions) : ?>
                 <?php tfp_admin_transaction_ledger_render(true); ?>
+            <?php elseif ($is_refunds) : ?>
+                <?php tfp_admin_refunds_render_embedded(); ?>
             <?php elseif ($is_payouts) : ?>
                 <?php $selected_payout = $payout_data['selected']; $payout_currency = $selected_payout['currency'] ?? get_woocommerce_currency(); $format_payout = static function ($minor, $currency) { return function_exists('wc_price') ? wc_price(tfp_admin_payments_stripe_decimal($minor), ['currency' => strtoupper($currency)]) : esc_html(number_format_i18n(tfp_admin_payments_stripe_decimal($minor), 2)); }; ?>
                 
