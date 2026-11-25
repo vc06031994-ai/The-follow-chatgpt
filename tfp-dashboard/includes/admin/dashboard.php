@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/users.php';
+require_once __DIR__ . '/transaction-ledger.php';
 
 /** Check whether a plugin is active without relying on admin-only includes. */
 function tfp_admin_dashboard_plugin_active($plugin_file) {
