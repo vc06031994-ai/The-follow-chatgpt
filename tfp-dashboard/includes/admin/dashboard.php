@@ -301,7 +301,7 @@ function tfp_admin_dashboard_render() {
         );
     }
 
-    if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'transaction-ledger') {
+    if ((isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'transaction-ledger') || (isset($_GET['section']) && sanitize_key(wp_unslash($_GET['section'])) === 'transactions')) {
         tfp_admin_transaction_ledger_render();
         return;
     }
