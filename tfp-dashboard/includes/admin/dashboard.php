@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/users.php';
+require_once __DIR__ . '/transaction-ledger.php';
 
 /** Check whether a plugin is active without relying on admin-only includes. */
 function tfp_admin_dashboard_plugin_active($plugin_file) {
@@ -108,7 +109,7 @@ function tfp_admin_dashboard_nav_items() {
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => home_url('/admin-curriculum-categories/')],
         ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_cohorts_url') ? tfp_admin_cohorts_url() : home_url('/admin-cohorts/')],
         ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_facilitators_url') ? tfp_admin_facilitators_url() : home_url('/admin-facilitators/')],
-        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_payments_url') ? tfp_admin_payments_url() : home_url('/admin-payments/')],
+        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => add_query_arg('view', 'transaction-ledger', $dashboard_url), 'active' => (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'transaction-ledger')],
         ['slug' => 'documents', 'label' => __('Documents', 'tfp-dashboard'), 'url' => admin_url('upload.php')],
         ['slug' => 'communication', 'label' => __('Communication', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_ticket')],
         ['slug' => 'verification', 'label' => __('Verification', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_financial_aid')],
@@ -298,6 +299,11 @@ function tfp_admin_dashboard_render() {
             esc_html__('Access denied', 'tfp-dashboard'),
             ['response' => 403]
         );
+    }
+
+    if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'transaction-ledger') {
+        tfp_admin_transaction_ledger_render();
+        return;
     }
 
     $data = tfp_admin_dashboard_get_data();
