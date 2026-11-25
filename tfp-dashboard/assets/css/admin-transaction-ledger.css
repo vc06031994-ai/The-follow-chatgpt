@@ -213,3 +213,94 @@ body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledg
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+
+/* Payments page embeds this view; override the generic dashboard form defaults. */
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters {
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    flex-wrap:wrap!important;
+    gap:8px!important;
+    padding:0!important;
+    margin:0 0 20px!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters > select {
+    display:block!important;
+    flex:0 1 190px!important;
+    width:auto!important;
+    min-width:150px!important;
+    max-width:220px!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 12px!important;
+    border:1px solid #d0d0d0!important;
+    border-radius:7px!important;
+    background:#fff!important;
+    color:#222!important;
+    font:12px var(--tfp-dash-font, "Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters > input[type="date"] {
+    flex:0 0 145px!important;
+    width:145px!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 8px!important;
+    border:1px solid #d0d0d0!important;
+    border-radius:7px!important;
+    background:#fff!important;
+    font:12px var(--tfp-dash-font, "Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-search {
+    display:flex!important;
+    flex:0 0 auto!important;
+    gap:8px!important;
+    margin-left:auto!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-search input {
+    width:220px!important;
+    height:36px!important;
+    min-height:36px!important;
+    font:12px var(--tfp-dash-font, "Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-search button {
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 16px!important;
+    border:1px solid #d0d0d0!important;
+    border-radius:7px!important;
+    background:#fff!important;
+    color:#222!important;
+    font:12px var(--tfp-dash-font, "Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats {
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:16px!important;
+    padding:0!important;
+    margin:0 0 16px!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article {
+    min-height:62px!important;
+    padding:12px 16px!important;
+    border:0!important;
+    border-radius:12px!important;
+    background:#dfe3e3!important;
+    box-shadow:0 2px 3px #0002!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article span {
+    color:#222!important;
+    font:400 10px var(--tfp-dash-font, "Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article strong {
+    color:#00666e!important;
+    font:700 20px/1.2 var(--tfp-dash-font, "Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong {color:#c51f2b!important}
+@media(max-width:767px) {
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters > select,
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-filters > input[type="date"] {width:100%!important;max-width:none!important;min-width:0!important}
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-search {grid-column:1/-1!important;margin-left:0!important}
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats {grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
