@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/users.php';
 require_once __DIR__ . '/refunds.php';
+require_once __DIR__ . '/transaction-ledger.php';
 
 /** Check whether a plugin is active without relying on admin-only includes. */
 function tfp_admin_dashboard_plugin_active($plugin_file) {
@@ -303,6 +304,11 @@ function tfp_admin_dashboard_render() {
 
     if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'refunds') {
         tfp_admin_refunds_render();
+        return;
+    }
+
+    if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'transaction-ledger') {
+        tfp_admin_transaction_ledger_render();
         return;
     }
 
