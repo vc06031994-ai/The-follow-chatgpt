@@ -5,7 +5,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 function tfp_admin_transaction_ledger_enqueue_assets() {
-    if (!is_page() || !isset($_GET['view']) || sanitize_key(wp_unslash($_GET['view'])) !== 'transaction-ledger') {
+    if (!is_page() || (sanitize_key(wp_unslash($_GET['section'] ?? '')) !== 'transactions' && sanitize_key(wp_unslash($_GET['view'] ?? '')) !== 'transaction-ledger')) {
         return;
     }
     $base = defined('TFP_DASH_URL') ? TFP_DASH_URL : plugin_dir_url(dirname(dirname(__FILE__)));
