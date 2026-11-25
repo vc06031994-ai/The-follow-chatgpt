@@ -189,8 +189,11 @@ function tfp_admin_payments_get_stripe_payout_data() {
         return $result;
     }
     $result['balance'] = $balance;
+    $metric_currency = strtolower(function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : 'usd');
     foreach (($balance['available'] ?? []) as $entry) {
-        $result['totals']['available'] += tfp_admin_payments_stripe_decimal($entry['amount'] ?? 0);
+        if (strtolower((string) ($entry['currency'] ?? '')) === $metric_currency) {
+            $result['totals']['available'] += (int) ($entry['amount'] ?? 0);
+        }
     }
 
     $params = ['limit' => 100, 'expand' => ['data.destination']];
@@ -231,8 +234,9 @@ function tfp_admin_payments_get_stripe_payout_data() {
 
     $thirty_days_ago = current_time('timestamp') - (30 * DAY_IN_SECONDS);
     foreach ($payouts as $payout) {
-        $amount = tfp_admin_payments_stripe_decimal($payout['amount'] ?? 0);
+        $amount = (int) ($payout['amount'] ?? 0);
         $status = (string) ($payout['status'] ?? '');
+        if (strtolower((string) ($payout['currency'] ?? '')) !== $metric_currency) { continue; }
         if (in_array($status, ['pending', 'in_transit'], true)) {
             $result['totals']['transit'] += $amount;
         } elseif ($status === 'paid' && (int) ($payout['created'] ?? 0) >= $thirty_days_ago) {
