@@ -620,3 +620,51 @@ body.tfp-admin-payments-view .tfp-payout-timeline{padding-left:12px;border-left:
 body.tfp-admin-payments-view .tfp-payouts-muted{color:#999;font-size:10px}
 @media(max-width:900px){body.tfp-admin-payments-view .tfp-payouts-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:767px){body.tfp-admin-payments-view .tfp-payouts-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}body.tfp-admin-payments-view .tfp-payouts-filters select,body.tfp-admin-payments-view .tfp-payouts-filters input[type=date],body.tfp-admin-payments-view .tfp-payouts-filters .tfp-payouts-search{width:100%;min-width:0;margin:0}body.tfp-admin-payments-view .tfp-payouts-filters button{width:100%}body.tfp-admin-payments-view .tfp-payout-detail header{flex-direction:column}body.tfp-admin-payments-view .tfp-payout-detail header>strong{text-align:left}}
+
+
+/* Payouts tab: only the current section receives the active treatment. */
+body.tfp-admin-payments-view .tfp-payments-tabs a:not(.is-active){color:#b8b8b8!important;border-bottom-color:transparent!important;font-weight:500!important;background:transparent!important}
+body.tfp-admin-payments-view .tfp-payments-tabs a.is-active{color:#171717!important;border-bottom:2px solid #00666e!important;font-weight:700!important}
+
+/* Payout controls stay on one compact horizontal row, matching the reference. */
+body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters{
+ display:flex!important;flex-direction:row!important;align-items:center!important;flex-wrap:nowrap!important;
+ gap:8px!important;width:100%!important;margin:0 0 20px!important;padding:0!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>select{
+ display:block!important;flex:0 1 150px!important;width:150px!important;min-width:115px!important;max-width:170px!important;
+ height:36px!important;min-height:36px!important;padding:0 10px!important;
+ border:1px solid #d0d0d0!important;border-radius:7px!important;background:#fff!important;
+ color:#222!important;font:12px var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>input[type="date"]{
+ display:block!important;flex:0 0 145px!important;width:145px!important;min-width:145px!important;max-width:145px!important;
+ height:36px!important;min-height:36px!important;padding:0 8px!important;
+ border:1px solid #d0d0d0!important;border-radius:7px!important;background:#fff!important;
+ color:#222!important;font:12px var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;color-scheme:light;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>.tfp-payouts-search{
+ display:block!important;flex:0 1 190px!important;width:190px!important;min-width:125px!important;max-width:210px!important;
+ height:36px!important;min-height:36px!important;margin-left:auto!important;padding:0 12px!important;
+ border:1px solid #d0d0d0!important;border-radius:7px!important;background:#fff!important;
+ font:12px var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>button{
+ display:inline-flex!important;flex:0 0 72px!important;width:72px!important;min-width:72px!important;max-width:72px!important;
+ height:36px!important;min-height:36px!important;align-items:center!important;justify-content:center!important;
+ padding:0 12px!important;border:1px solid #d0d0d0!important;border-radius:7px!important;
+ background:#fff!important;color:#222!important;font:12px var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+}
+body.tfp-admin-payments-view .tfp-payouts-back-row{margin-bottom:16px!important}
+@media(max-width:1100px){
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters{flex-wrap:wrap!important}
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>.tfp-payouts-search{margin-left:0!important}
+}
+@media(max-width:767px){
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;flex-wrap:initial!important}
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>select,
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>input[type="date"],
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>.tfp-payouts-search,
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>button{width:100%!important;min-width:0!important;max-width:none!important;flex:auto!important;margin:0!important}
+ body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>.tfp-payouts-search{grid-column:1/-1!important}
+}
