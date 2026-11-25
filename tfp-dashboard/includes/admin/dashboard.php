@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/users.php';
+require_once __DIR__ . '/refunds.php';
 
 /** Check whether a plugin is active without relying on admin-only includes. */
 function tfp_admin_dashboard_plugin_active($plugin_file) {
@@ -108,7 +109,7 @@ function tfp_admin_dashboard_nav_items() {
         ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-lessons')],
         ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_cohort')],
         ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => admin_url('users.php?role=facilitator')],
-        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=shop_order'), 'active' => false],
+        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => add_query_arg('view', 'refunds', $dashboard_url), 'active' => (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'refunds')],
         ['slug' => 'documents', 'label' => __('Documents', 'tfp-dashboard'), 'url' => admin_url('upload.php')],
         ['slug' => 'communication', 'label' => __('Communication', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_ticket')],
         ['slug' => 'verification', 'label' => __('Verification', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_financial_aid')],
@@ -298,6 +299,11 @@ function tfp_admin_dashboard_render() {
             esc_html__('Access denied', 'tfp-dashboard'),
             ['response' => 403]
         );
+    }
+
+    if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'refunds') {
+        tfp_admin_refunds_render();
+        return;
     }
 
     $data = tfp_admin_dashboard_get_data();
