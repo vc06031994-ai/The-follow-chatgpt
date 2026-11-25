@@ -692,3 +692,16 @@ body.tfp-admin-payments-view .tfp-payments-page-heading .tfp-payouts-back-top:ho
  body.tfp-admin-payments-view .tfp-payments-page-heading{align-items:flex-start!important;flex-direction:column!important;gap:12px!important}
  body.tfp-admin-payments-view .tfp-payments-page-heading .tfp-payouts-back-top{margin:0!important}
 }
+
+
+/* Restore the native calendar picker icon on both payout date fields. */
+body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>input[type="date"]{
+ -webkit-appearance:auto!important;appearance:auto!important;
+ padding-right:10px!important;
+}
+body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>input[type="date"]::-webkit-calendar-picker-indicator{
+ display:block!important;visibility:visible!important;opacity:1!important;
+ width:17px!important;height:17px!important;margin:0 1px 0 6px!important;
+ cursor:pointer!important;
+ filter: invert(25%) sepia(87%) saturate(1120%) hue-rotate(151deg) brightness(88%) contrast(102%)!important;
+}
