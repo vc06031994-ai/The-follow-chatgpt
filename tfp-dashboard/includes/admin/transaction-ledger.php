@@ -17,10 +17,11 @@ function tfp_admin_transaction_ledger_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'tfp_admin_transaction_ledger_enqueue_assets', 20);
 
 function tfp_admin_transaction_ledger_money($amount, $currency = '') {
-    $amount = (float) $amount;
-    $currency = $currency ?: (function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : 'USD');
-    $symbol = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol($currency) : '
-
+    if (function_exists('wc_price')) {
+        return wc_price((float) $amount, $currency ? ['currency' => $currency] : []);
+    }
+    return esc_html(number_format_i18n((float) $amount, 2));
+}
 function tfp_admin_transaction_ledger_order_rows($args) {
     if (!function_exists('wc_get_orders')) { return ['orders' => [], 'total' => 0, 'pages' => 0]; }
     $query = [
