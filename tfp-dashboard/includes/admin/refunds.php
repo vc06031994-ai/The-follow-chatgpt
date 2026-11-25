@@ -27,10 +27,6 @@ function tfp_admin_refunds_render() {
     $refund_rows = [];
     $refund_total = 0.0;
 
-    $eligible_orders = function_exists('wc_get_orders') ? wc_get_orders([
-        'limit' => 100, 'orderby' => 'date', 'order' => 'DESC',
-        'status' => ['processing', 'completed'], 'payment_method' => 'tfp_stripe', 'return' => 'objects',
-    ]) : [];
     $search = sanitize_text_field(wp_unslash($_GET['refund_search'] ?? ''));
     $date_from = sanitize_text_field(wp_unslash($_GET['date_from'] ?? ''));
     $date_to = sanitize_text_field(wp_unslash($_GET['date_to'] ?? ''));
@@ -167,7 +163,7 @@ function tfp_admin_refunds_render() {
 
 /**
  * Embedded Refund History section for the unified Payments dashboard.
- * Reads actual WooCommerce refund objects; it does not create or issue refunds.
+ * Reads actual WooCommerce refund objects and supports Stripe Test Mode refunds.
  */
 
 /**
@@ -336,6 +332,10 @@ function tfpPrintRefundReceipt(button) {
         </div>
         <?php return;
     }
+    $eligible_orders = function_exists('wc_get_orders') ? wc_get_orders([
+        'limit' => 100, 'orderby' => 'date', 'order' => 'DESC',
+        'status' => ['processing', 'completed'], 'payment_method' => 'tfp_stripe', 'return' => 'objects',
+    ]) : [];
     $search = sanitize_text_field(wp_unslash($_GET['refund_search'] ?? ''));
     $date_from = sanitize_text_field(wp_unslash($_GET['refund_from'] ?? ''));
     $date_to = sanitize_text_field(wp_unslash($_GET['refund_to'] ?? ''));
