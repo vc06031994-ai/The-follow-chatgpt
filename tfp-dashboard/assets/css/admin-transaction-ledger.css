@@ -92,3 +92,124 @@ body.tfp-admin-dashboard-view .tfp-ledger-app{--ledger-accent:#00666e;--ledger-a
   display:block!important;width:100%!important;max-width:100%!important;margin:0!important;
  }
 }
+
+
+/* Embedded Transaction Ledger: use the exact Payments page typography and control/card language. */
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner,
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner * {
+    font-family: var(--tfp-dash-font, "Eudoxus Sans"), sans-serif;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner {
+    color: var(--tfp-dash-text, #151411);
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--tfp-layout-control-gap, 8px);
+    padding: 0;
+    margin: 0 0 var(--tfp-space-5, 20px);
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-filters select,
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-filters input,
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-search button {
+    box-sizing: border-box;
+    height: 36px;
+    min-height: 36px;
+    border: 1px solid #d0d0d0;
+    border-radius: 7px;
+    background: #fff;
+    color: #222;
+    font: 12px var(--tfp-dash-font, "Eudoxus Sans"), sans-serif;
+    box-shadow: none;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-filters select {
+    min-width: 105px;
+    padding: 0 10px;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-filters input[type="date"] {
+    width: 145px;
+    padding: 0 10px;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-search {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-search input {
+    width: 220px;
+    padding: 0 10px;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-search button {
+    padding: 0 16px;
+    cursor: pointer;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-stats {
+    gap: var(--tfp-payments-card-gap, 16px);
+    padding: 0;
+    margin: 0 0 var(--tfp-space-4, 16px);
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-stats article {
+    min-height: 62px;
+    padding: var(--tfp-space-3, 12px) var(--tfp-space-4, 16px);
+    border: 0;
+    border-radius: var(--tfp-dash-radius, 12px);
+    background: #dfe3e3;
+    box-shadow: 0 2px 3px #0002;
+    gap: var(--tfp-space-1, 4px);
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-stats article span {
+    color: #222;
+    font-size: 10px;
+    font-weight: 400;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-stats article strong {
+    color: var(--tfp-dash-teal, #00666e);
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong {
+    color: #c51f2b;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-table-card,
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-detail {
+    border-color: #d8d8d8;
+    border-radius: var(--tfp-dash-radius, 12px);
+    background: #fff;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-table {
+    font-family: var(--tfp-dash-font, "Eudoxus Sans"), sans-serif;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-table thead {
+    background: #dfe3e3;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-table th {
+    color: #222;
+    font-size: 11px;
+    font-weight: 700;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-table td {
+    font-size: 10px;
+}
+body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-detail {
+    margin: 14px 0 0;
+}
+@media (max-width: 767px) {
+    body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-search {
+        grid-column: 1 / -1;
+        margin-left: 0;
+    }
+    body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-search input {
+        width: 100%;
+        min-width: 0;
+        flex: 1;
+    }
+    body.tfp-admin-payments-view .tfp-payments-content > .tfp-ledger-inner .tfp-ledger-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
