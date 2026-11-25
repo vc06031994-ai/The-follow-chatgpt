@@ -46,12 +46,10 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
 <head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php wp_head(); ?></head>
 <body <?php body_class('tfp-admin-dashboard-view tfp-admin-payments-view'); ?>>
 <?php wp_body_open(); ?>
-<?php if (isset($_GET['section']) && sanitize_key(wp_unslash($_GET['section'])) === 'transactions') : ?>
-    <?php tfp_admin_transaction_ledger_render(); ?>
-    <?php wp_footer(); ?>
-</body></html>
-<?php exit; ?>
-<?php endif; ?>
+<?php
+$payments_section = sanitize_key(wp_unslash($_GET['section'] ?? ''));
+$is_transactions = ($payments_section === 'transactions');
+?>
 
 
 
@@ -67,16 +65,19 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
     </aside>
     <div class="tfp-admin-main">
         <div class="tfp-admin-mobilebar"><button type="button" class="tfp-admin-mobilebar-toggle" data-tfp-admin-toggle aria-controls="tfp-admin-sidebar" aria-expanded="false" aria-label="<?php esc_attr_e('Open admin menu', 'tfp-dashboard'); ?>"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2.25" y="2.25" width="13.5" height="13.5" rx="1.4" stroke="currentColor" stroke-width="1.8"/><path d="M7 2.8V15.2" stroke="currentColor" stroke-width="1.8"/></svg></button><span><?php esc_html_e('Admin Console', 'tfp-dashboard'); ?></span></div>
-        <div class="tfp-admin-breadcrumb"><span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><span><?php esc_html_e('Payments', 'tfp-dashboard'); ?></span><b>/</b><strong><?php esc_html_e('Overview', 'tfp-dashboard'); ?></strong></div>
-        <header class="tfp-payments-page-heading"><h1><?php esc_html_e('Payments — Revenue Overview', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('Revenue metrics, product breakdown, and recent transactions', 'tfp-dashboard'); ?></p></header>
+        <div class="tfp-admin-breadcrumb"><span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><span><?php esc_html_e('Payments', 'tfp-dashboard'); ?></span><b>/</b><strong><?php echo esc_html($is_transactions ? __('Transaction Ledger', 'tfp-dashboard') : __('Overview', 'tfp-dashboard')); ?></strong></div>
+        <header class="tfp-payments-page-heading"><h1><?php echo esc_html($is_transactions ? __('Transaction Ledger', 'tfp-dashboard') : __('Payments — Revenue Overview', 'tfp-dashboard')); ?></h1><p><?php echo esc_html($is_transactions ? __('All payments, refunds, statuses, and reconciliation controls', 'tfp-dashboard') : __('Revenue metrics, product breakdown, and recent transactions', 'tfp-dashboard')); ?></p></header>
         <main class="tfp-payments-content">
             <nav class="tfp-payments-tabs" aria-label="<?php esc_attr_e('Payment sections', 'tfp-dashboard'); ?>">
-                <a class="is-active" href="<?php echo esc_url(tfp_admin_payments_url()); ?>"><?php esc_html_e('Revenue Overview', 'tfp-dashboard'); ?></a>
-                <a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'transactions'])); ?>"><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></a>
+                <a class="<?php echo !$is_transactions ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url()); ?>"><?php esc_html_e('Revenue Overview', 'tfp-dashboard'); ?></a>
+                <a class="<?php echo $is_transactions ? 'is-active' : ''; ?>" href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'transactions'])); ?>"><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></a>
                 
                 <a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'payouts'])); ?>"><?php esc_html_e('Payouts', 'tfp-dashboard'); ?></a>
                 <a href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'refunds'])); ?>"><?php esc_html_e('Refund History', 'tfp-dashboard'); ?></a>
             </nav>
+            <?php if ($is_transactions) : ?>
+                <?php tfp_admin_transaction_ledger_render(true); ?>
+            <?php else : ?>
             <form class="tfp-payments-filters" method="get" action="<?php echo esc_url(tfp_admin_payments_url()); ?>">
                 <select name="product" aria-label="<?php esc_attr_e('Filter by product', 'tfp-dashboard'); ?>"><option value=""><?php esc_html_e('All Products', 'tfp-dashboard'); ?></option><?php foreach ($products as $product) : ?><option value="<?php echo esc_attr($product->get_id()); ?>" <?php selected($data['product_filter'], $product->get_id()); ?>><?php echo esc_html($product->get_name()); ?></option><?php endforeach; ?></select>
                 <select name="period" aria-label="<?php esc_attr_e('Select period', 'tfp-dashboard'); ?>"><option value="4q"><?php esc_html_e('Last 4 Quarters', 'tfp-dashboard'); ?></option><option value="12m"><?php esc_html_e('Last 12 Months', 'tfp-dashboard'); ?></option><option value="all"><?php esc_html_e('All Time', 'tfp-dashboard'); ?></option></select>
@@ -169,6 +170,7 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
                 </tbody></table></div>
                 <div class="tfp-payments-table-footer"><span><?php echo esc_html(sprintf(_n('%s transaction found', '%s transactions found', count($data['orders']), 'tfp-dashboard'), number_format_i18n(count($data['orders'])))); ?></span><a href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=tfp_admin_payments_export'), 'tfp_admin_payments_export')); ?>"><?php esc_html_e('Export', 'tfp-dashboard'); ?></a></div>
             </section>
+            <?php endif; ?>
         </main>
     </div>
 </div>
