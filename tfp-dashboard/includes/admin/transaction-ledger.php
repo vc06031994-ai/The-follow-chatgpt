@@ -182,9 +182,9 @@ function tfp_admin_transaction_ledger_render() {
                 <a class="tfp-admin-logout" href="<?php echo esc_url(wp_logout_url(home_url('/'))); ?>"><span aria-hidden="true">×</span><?php esc_html_e('Logout', 'tfp-dashboard'); ?></a>
             </div>
         </aside>
-        <div class="tfp-admin-content">
+        <main class="tfp-admin-main tfp-ledger-main">
             <div class="tfp-ledger-breadcrumb"><?php esc_html_e('ADMIN / Payment / Transaction Ledger', 'tfp-dashboard'); ?></div>
-            <main class="tfp-admin-main tfp-ledger-main">
+            <div class="tfp-ledger-inner">
                 <div class="tfp-admin-topbar"><span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><?php esc_html_e('Payments', 'tfp-dashboard'); ?><b>/</b><strong><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></strong></div>
                 <header class="tfp-ledger-header">
                     <div><h1><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('All payments, refunds, statuses, and reconciliation controls', 'tfp-dashboard'); ?></p></div>
@@ -263,8 +263,8 @@ function tfp_admin_transaction_ledger_render() {
                         </aside></div>
                     </section>
                 <?php else : ?><section class="tfp-ledger-detail"><p class="tfp-ledger-empty"><?php esc_html_e('Select a transaction to view its details.', 'tfp-dashboard'); ?></p></section><?php endif; ?>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
     <?php
 }
