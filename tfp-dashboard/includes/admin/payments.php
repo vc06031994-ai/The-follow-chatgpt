@@ -194,9 +194,6 @@ function tfp_admin_payments_get_stripe_payout_data() {
     }
 
     $params = ['limit' => 100, 'expand' => ['data.destination']];
-    if ($result['filters']['status'] && in_array($result['filters']['status'], ['pending', 'in_transit', 'paid', 'failed', 'canceled'], true)) {
-        $params['status'] = $result['filters']['status'];
-    }
     if ($result['filters']['from'] !== '') {
         $timestamp = strtotime($result['filters']['from'] . ' 00:00:00');
         if ($timestamp) { $params['created[gte]'] = $timestamp; }
@@ -213,6 +210,16 @@ function tfp_admin_payments_get_stripe_payout_data() {
     }
 
     $payouts = $payout_response['data'] ?? [];
+    if ($result['filters']['status'] !== '') {
+        $payouts = array_values(array_filter($payouts, static function ($payout) use ($result) { return (string) ($payout['status'] ?? '') === $result['filters']['status']; }));
+    }
+    $reconciliation_filter = sanitize_key(wp_unslash($_GET['payout_reconciliation'] ?? ''));
+    if ($reconciliation_filter !== '') {
+        $payouts = array_values(array_filter($payouts, static function ($payout) use ($reconciliation_filter) {
+            $status = (string) ($payout['reconciliation_status'] ?? 'not_applicable');
+            return $reconciliation_filter === 'reconciled' ? in_array($status, ['completed', 'reconciled'], true) : !in_array($status, ['completed', 'reconciled'], true);
+        }));
+    }
     $search = strtolower($result['filters']['search']);
     if ($search !== '') {
         $payouts = array_values(array_filter($payouts, static function ($payout) use ($search) {
