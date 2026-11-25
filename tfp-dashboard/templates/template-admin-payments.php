@@ -25,6 +25,8 @@ $avatar = get_avatar_url($user->ID, ['size' => 96]);
 $dash_url = TFP_DASH_URL;
 $dash_ver = TFP_DASH_VERSION;
 $css_path = dirname(__DIR__) . '/assets/css/admin-payments.css';
+$payments_section = sanitize_key(wp_unslash($_GET['section'] ?? ''));
+$is_transactions = ($payments_section === 'transactions');
 wp_enqueue_style('dashicons');
 wp_enqueue_style('tfp-dashboard-base', $dash_url . 'assets/css/core.css', [], $dash_ver);
 wp_enqueue_style('tfp-dashboard-core', $dash_url . 'assets/css/dashboard.css', ['tfp-dashboard-base'], $dash_ver);
@@ -32,6 +34,10 @@ wp_enqueue_style('tfp-dashboard-components', $dash_url . 'assets/css/components.
 wp_enqueue_style('tfp-admin-dashboard', $dash_url . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], file_exists(dirname(__DIR__) . '/assets/css/admin-dashboard.css') ? (string) filemtime(dirname(__DIR__) . '/assets/css/admin-dashboard.css') : $dash_ver);
 wp_enqueue_style('tfp-admin-payments', $dash_url . 'assets/css/admin-payments.css', ['tfp-admin-dashboard'], file_exists($css_path) ? (string) filemtime($css_path) : $dash_ver);
 wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], $dash_ver, true);
+if ($is_transactions) {
+    $ledger_css_path = dirname(__DIR__) . '/assets/css/admin-transaction-ledger.css';
+    wp_enqueue_style('tfp-admin-transaction-ledger', $dash_url . 'assets/css/admin-transaction-ledger.css', ['tfp-admin-payments'], file_exists($ledger_css_path) ? (string) filemtime($ledger_css_path) : $dash_ver);
+}
 $products = function_exists('wc_get_products') ? wc_get_products(['status' => 'publish', 'limit' => -1, 'orderby' => 'name', 'order' => 'ASC']) : [];
 $currency = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '$';
 $last_30 = 0.0;
@@ -46,10 +52,7 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
 <head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php wp_head(); ?></head>
 <body <?php body_class('tfp-admin-dashboard-view tfp-admin-payments-view'); ?>>
 <?php wp_body_open(); ?>
-<?php
-$payments_section = sanitize_key(wp_unslash($_GET['section'] ?? ''));
-$is_transactions = ($payments_section === 'transactions');
-?>
+<?php ?>
 
 
 
