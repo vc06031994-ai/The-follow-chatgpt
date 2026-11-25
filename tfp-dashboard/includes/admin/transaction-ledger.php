@@ -183,7 +183,7 @@ function tfp_admin_transaction_ledger_render() {
             </div>
         </aside>
         <div class="tfp-admin-content">
-            <div class="tfp-ledger-breadcrumb"><?php esc_html_e('ADMIN / Payment / Refunds', 'tfp-dashboard'); ?></div>
+            <div class="tfp-ledger-breadcrumb"><?php esc_html_e('ADMIN / Payment / Transaction Ledger', 'tfp-dashboard'); ?></div>
             <main class="tfp-admin-main tfp-ledger-main">
                 <div class="tfp-admin-topbar"><span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><?php esc_html_e('Payments', 'tfp-dashboard'); ?><b>/</b><strong><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></strong></div>
                 <header class="tfp-ledger-header">
