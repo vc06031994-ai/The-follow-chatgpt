@@ -296,7 +296,7 @@ function tfp_admin_refunds_render_embedded() {
 
         <?php if ($selected) : ?>
             <section class="tfp-refund-detail">
-                <header><div><h2><?php echo esc_html(sprintf(__('Refund details — #%s', 'tfp-dashboard'), $selected['id'])); ?></h2><small><?php echo esc_html($selected['customer'] . ' · ' . $selected['date']); ?></small></div><strong><?php echo wp_kses_post(wc_price($selected['amount'], ['currency' => $selected['order']->get_currency()])); ?></strong></header>
+                <header><div><h2><?php echo esc_html(sprintf(__('Refund details — #%s', 'tfp-dashboard'), $selected['id'])); ?></h2><small><?php echo esc_html($selected['customer'] . ' · ' . $selected['date']); ?></small></div><strong><?php echo wp_kses_post(wc_price($selected['amount'], ['currency' => $selected['order']->get_currency()])); ?></strong><a class="tfp-refund-action" href="<?php echo esc_url(tfp_admin_payments_url(['section' => 'refunds'])); ?>"><?php esc_html_e('Close', 'tfp-dashboard'); ?></a></header>
                 <div class="tfp-refund-detail-grid">
                     <p><small><?php esc_html_e('Payment', 'tfp-dashboard'); ?></small><strong>#<?php echo esc_html($selected['order']->get_order_number()); ?></strong></p>
                     <p><small><?php esc_html_e('Customer', 'tfp-dashboard'); ?></small><strong><?php echo esc_html($selected['customer']); ?></strong><span><?php echo esc_html($selected['email']); ?></span></p>
