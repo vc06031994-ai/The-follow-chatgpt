@@ -196,3 +196,30 @@ body.tfp-admin-payments-view .tfp-refund-stats article strong{
 }
 body.tfp-admin-payments-view .tfp-refund-stats article.is-month strong{color:#d0a000!important}
 body.tfp-admin-payments-view .tfp-refund-stats article.is-pending strong{color:#e21b2d!important}
+
+
+/* Exact KPI amount typography from the supplied screenshot. Apply to both
+   the embedded Payments refund dashboard and the standalone refunds view. */
+body.tfp-admin-payments-view .tfp-refund-stats article strong,
+body.tfp-admin-payments-view .tfp-refund-stats article strong *,
+body.tfp-admin-dashboard-view .tfp-refunds-stats article strong,
+body.tfp-admin-dashboard-view .tfp-refunds-stats article strong *{
+ font-family:var(--tfp-dash-font,"Eudoxus Sans"),"Segoe UI",sans-serif!important;
+ font-size:24px!important;
+ font-weight:700!important;
+ line-height:1.2!important;
+ letter-spacing:-.3px!important;
+ color:#007b83!important;
+}
+body.tfp-admin-payments-view .tfp-refund-stats article.is-month strong,
+body.tfp-admin-payments-view .tfp-refund-stats article.is-month strong *,
+body.tfp-admin-dashboard-view .tfp-refunds-stats article:nth-child(2) strong,
+body.tfp-admin-dashboard-view .tfp-refunds-stats article:nth-child(2) strong *{
+ color:#d0a000!important;
+}
+body.tfp-admin-payments-view .tfp-refund-stats article.is-pending strong,
+body.tfp-admin-payments-view .tfp-refund-stats article.is-pending strong *,
+body.tfp-admin-dashboard-view .tfp-refunds-stats article:nth-child(3) strong,
+body.tfp-admin-dashboard-view .tfp-refunds-stats article:nth-child(3) strong *{
+ color:#e21b2d!important;
+}
