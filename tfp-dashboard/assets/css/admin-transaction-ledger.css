@@ -15,7 +15,7 @@ body.tfp-admin-dashboard-view .tfp-ledger-app{--ledger-accent:#00666e;--ledger-a
 .tfp-ledger-tabs a{flex:0 0 auto;padding:13px 0 10px;color:#8a8a8a;text-decoration:none;font-size:13px;font-weight:600;border-bottom:2px solid transparent}
 .tfp-ledger-tabs a.is-active,.tfp-ledger-tabs a:hover{color:#171717;border-color:var(--ledger-accent)}
 .tfp-ledger-filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:14px 30px 8px}
-.tfp-ledger-filters select,.tfp-ledger-filters input{height:36px;max-width:100%;min-width:0;padding:0 10px;border:1px solid #dedede;border-radius:6px;background:#fff;color:#333;font:500 12px inherit}
+.tfp-ledger-filters select,.tfp-ledger-filters input{height:36px;max-width:100%;min-width:0;padding:0 10px;border:1px solid #dedede;border-radius:6px;background:#fff;color:#333;font-family:inherit;font-size:12px;font-weight:500}
 .tfp-ledger-filters select{min-width:105px}.tfp-ledger-filters input[type=date]{width:145px}
 .tfp-ledger-search{display:flex;gap:7px;margin-left:auto}.tfp-ledger-search input{width:220px}
 .tfp-ledger-search button,.tfp-ledger-pagination a{min-height:36px;padding:0 13px;border:1px solid #dedede;border-radius:6px;background:#fff;color:#333;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer}
