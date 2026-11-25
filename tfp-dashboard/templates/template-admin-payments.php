@@ -46,6 +46,14 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
 <head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php wp_head(); ?></head>
 <body <?php body_class('tfp-admin-dashboard-view tfp-admin-payments-view'); ?>>
 <?php wp_body_open(); ?>
+<?php if (isset($_GET['section']) && sanitize_key(wp_unslash($_GET['section'])) === 'transactions') : ?>
+    <?php tfp_admin_transaction_ledger_render(); ?>
+    <?php wp_footer(); ?>
+</body></html>
+<?php exit; ?>
+<?php endif; ?>
+
+
 
 
 <div class="tfp-admin-app">
