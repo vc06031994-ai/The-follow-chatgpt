@@ -31,6 +31,13 @@ wp_enqueue_style('tfp-dashboard-core', $dash_url . 'assets/css/dashboard.css', [
 wp_enqueue_style('tfp-dashboard-components', $dash_url . 'assets/css/components.css', ['tfp-dashboard-core'], $dash_ver);
 wp_enqueue_style('tfp-admin-dashboard', $dash_url . 'assets/css/admin-dashboard.css', ['tfp-dashboard-components'], file_exists(dirname(__DIR__) . '/assets/css/admin-dashboard.css') ? (string) filemtime(dirname(__DIR__) . '/assets/css/admin-dashboard.css') : $dash_ver);
 wp_enqueue_style('tfp-admin-payments', $dash_url . 'assets/css/admin-payments.css', ['tfp-admin-dashboard'], file_exists($css_path) ? (string) filemtime($css_path) : $dash_ver);
+$payments_section = isset($_GET['section']) ? sanitize_key(wp_unslash($_GET['section'])) : 'overview';
+if ($payments_section === 'transactions') {
+    $ledger_css = dirname(__DIR__) . '/assets/css/admin-transaction-ledger.css';
+    $ledger_js = dirname(__DIR__) . '/assets/js/admin-transaction-ledger.js';
+    wp_enqueue_style('tfp-admin-transaction-ledger', $dash_url . 'assets/css/admin-transaction-ledger.css', ['tfp-admin-dashboard'], file_exists($ledger_css) ? (string) filemtime($ledger_css) : $dash_ver);
+    wp_enqueue_script('tfp-admin-transaction-ledger', $dash_url . 'assets/js/admin-transaction-ledger.js', [], file_exists($ledger_js) ? (string) filemtime($ledger_js) : $dash_ver, true);
+}
 wp_enqueue_script('tfp-admin-dashboard', $dash_url . 'assets/js/admin-dashboard.js', [], $dash_ver, true);
 $products = function_exists('wc_get_products') ? wc_get_products(['status' => 'publish', 'limit' => -1, 'orderby' => 'name', 'order' => 'ASC']) : [];
 $currency = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '$';
@@ -46,6 +53,13 @@ foreach ($data['quarters'] as $q) { $max_bar = max($max_bar, $q['gross']); }
 <head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php wp_head(); ?></head>
 <body <?php body_class('tfp-admin-dashboard-view tfp-admin-payments-view'); ?>>
 <?php wp_body_open(); ?>
+<?php if ($payments_section === 'transactions') : ?>
+    <?php tfp_admin_transaction_ledger_render(); ?>
+    <?php wp_footer(); ?>
+</body></html>
+<?php exit; ?>
+<?php endif; ?>
+
 <div class="tfp-admin-app">
     <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
         <div class="tfp-admin-sidebar-top"><button class="tfp-admin-sidebar-toggle" type="button" aria-label="<?php esc_attr_e('Toggle navigation', 'tfp-dashboard'); ?>" data-tfp-admin-toggle><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="14" height="14" rx="2"/><path d="M6 2v14"/></svg></button></div>
