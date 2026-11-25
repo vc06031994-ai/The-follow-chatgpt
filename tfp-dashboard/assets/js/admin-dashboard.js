@@ -2,11 +2,53 @@
 document.addEventListener('DOMContentLoaded', function () {
     var app = document.querySelector('.tfp-admin-app');
     if (app) {
+        var main = app.querySelector('.tfp-admin-main');
+        var mobileBar = main ? main.querySelector('.tfp-admin-mobilebar') : null;
+
+        // Add the shared mobile menu bar on Admin subpages that do not render one.
+        if (main && !mobileBar) {
+            mobileBar = document.createElement('div');
+            mobileBar.className = 'tfp-admin-mobilebar';
+            main.insertBefore(mobileBar, main.firstChild);
+        }
+
+        if (mobileBar) {
+            // Keep the Admin Console label visible beside the shared mobile menu icon.
+            var mobileLabel = mobileBar.querySelector('.tfp-admin-mobilebar-label');
+            if (!mobileLabel) {
+                mobileLabel = document.createElement('span');
+                mobileLabel.className = 'tfp-admin-mobilebar-label';
+                mobileLabel.textContent = 'Admin Console';
+                mobileBar.appendChild(mobileLabel);
+            }
+
+            var mobileToggle = mobileBar.querySelector('[data-tfp-admin-toggle]');
+            if (!mobileToggle) {
+                mobileToggle = document.createElement('button');
+                mobileToggle.type = 'button';
+                mobileToggle.setAttribute('data-tfp-admin-toggle', '');
+                mobileBar.insertBefore(mobileToggle, mobileBar.firstChild);
+            }
+
+            // Normalize the icon and accessibility attributes on every Admin subpage.
+            mobileToggle.className = 'tfp-admin-mobilebar-toggle';
+            mobileToggle.setAttribute('aria-controls', 'tfp-admin-sidebar');
+            mobileToggle.setAttribute('aria-expanded', 'false');
+            mobileToggle.setAttribute('aria-label', 'Open admin menu');
+            mobileToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2.25" y="2.25" width="13.5" height="13.5" rx="1.4" stroke="currentColor" stroke-width="1.8"/><path d="M7 2.8V15.2" stroke="currentColor" stroke-width="1.8"/></svg>';
+        }
+
         // Desktop sidebar collapse and mobile off-canvas navigation.
-        document.querySelectorAll('[data-tfp-admin-toggle]').forEach(function (button) {
+        app.querySelectorAll('[data-tfp-admin-toggle]').forEach(function (button) {
+            if (button.dataset.tfpToggleBound === '1') return;
+            button.dataset.tfpToggleBound = '1';
             button.addEventListener('click', function () {
                 if (window.matchMedia('(max-width: 991px)').matches) {
-                    app.classList.toggle('is-menu-open');
+                    var isOpen = app.classList.toggle('is-menu-open');
+                    app.querySelectorAll('.tfp-admin-mobilebar-toggle').forEach(function (toggle) {
+                        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                        toggle.setAttribute('aria-label', isOpen ? 'Close admin menu' : 'Open admin menu');
+                    });
                 } else {
                     document.body.classList.toggle('tfp-admin-sidebar-is-collapsed');
                 }
@@ -17,13 +59,21 @@ document.addEventListener('DOMContentLoaded', function () {
         app.addEventListener('click', function (event) {
             if (app.classList.contains('is-menu-open') && event.target === app) {
                 app.classList.remove('is-menu-open');
+                app.querySelectorAll('.tfp-admin-mobilebar-toggle').forEach(function (toggle) {
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.setAttribute('aria-label', 'Open admin menu');
+                });
             }
         });
 
         // Close the off-canvas navigation after selecting a destination.
-        document.querySelectorAll('.tfp-admin-nav-link').forEach(function (link) {
-            link.addEventListener('click', function () {
+        app.querySelectorAll('.tfp-admin-nav-link').forEach(function (navLink) {
+            navLink.addEventListener('click', function () {
                 app.classList.remove('is-menu-open');
+                app.querySelectorAll('.tfp-admin-mobilebar-toggle').forEach(function (toggle) {
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.setAttribute('aria-label', 'Open admin menu');
+                });
             });
         });
     }
@@ -38,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
 
 /* Course Editor: submit the active reading form from the page-level Save button. */
 document.addEventListener('click', function (event) {

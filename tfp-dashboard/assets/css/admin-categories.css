@@ -1,0 +1,370 @@
+/* ==========================================================================
+   Admin Curriculum Categories — Figma reference layout
+   Scoped to Categories only; shared Courses page styles remain untouched.
+   ========================================================================== */
+body.tfp-admin-categories-view .tfp-admin-categories-content {
+    padding-top: 26px;
+}
+.tfp-admin-categories-header .tfp-admin-categories-add,
+.tfp-admin-categories-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 6px;
+    background: #006970;
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+.tfp-admin-categories-add:hover,
+.tfp-admin-category-add-course:hover { background: #00575e; }
+.tfp-admin-categories-add span,
+.tfp-admin-category-add-course span { font-size: 20px; line-height: 1; }
+
+.tfp-admin-curriculum-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0 0 24px;
+    border-bottom: 1px solid #c9c9c9;
+}
+.tfp-admin-curriculum-tabs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 18px;
+    border-bottom: 2px solid transparent;
+    color: #b9b9b9;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none !important;
+}
+.tfp-admin-curriculum-tabs a:hover { color: #171717; }
+.tfp-admin-curriculum-tabs a.is-active {
+    color: #171717;
+    border-bottom-color: #006970;
+}
+
+.tfp-admin-categories-notice {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    border: 1px solid #b9dcd7;
+    border-radius: 8px;
+    background: #f2faf8;
+    color: #145b54;
+    font-size: 13px;
+}
+.tfp-admin-categories-notice.is-error {
+    border-color: #e6b8b8;
+    background: #fff6f6;
+    color: #9e2525;
+}
+
+/* Main white container holds all category groups, like the Figma frame. */
+.tfp-admin-categories-groups {
+    padding: 14px !important;
+    border: 1px solid #dedede;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: none;
+}
+.tfp-admin-category-group + .tfp-admin-category-group {
+    margin-top: 48px;
+}
+.tfp-admin-category-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 58px;
+    padding: 4px 4px 12px;
+    border-bottom: 1px solid #dedede;
+}
+.tfp-admin-category-info { min-width: 0; }
+.tfp-admin-category-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.tfp-admin-category-title-row h2 {
+    margin: 0;
+    color: #171717;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+.tfp-admin-category-course-count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 17px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: #e0f1f1;
+    color: #00747a;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.tfp-admin-category-course-count:where(:empty) { display: none; }
+.tfp-admin-category-info > p {
+    margin: 7px 0 0;
+    color: #333;
+    font-size: 10px;
+    line-height: 1.4;
+}
+.tfp-admin-category-controls {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+}
+.tfp-admin-category-add-course {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 124px;
+    min-height: 30px;
+    padding: 5px 11px;
+    border: 0;
+    border-radius: 7px;
+    background: #006970;
+    color: #fff !important;
+    font-size: 12px;
+    line-height: 1;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+.tfp-admin-category-add-course span { font-size: 17px; }
+.tfp-admin-category-edit,
+.tfp-admin-category-course-actions > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    min-height: 30px;
+    padding: 5px 12px;
+    border: 1px solid #333;
+    border-radius: 7px;
+    background: #fff;
+    color: #222 !important;
+    font-size: 12px;
+    line-height: 1;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+.tfp-admin-category-edit:hover,
+.tfp-admin-category-course-actions > a:hover { background: #f2f4f4; }
+
+.tfp-admin-category-courses {
+    display: grid;
+    gap: 10px;
+    padding-top: 14px;
+}
+.tfp-admin-category-course-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 59px;
+    padding: 10px 20px;
+    border-radius: 11px;
+    background: #e0e3e4;
+}
+.tfp-admin-category-course-info {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+}
+.tfp-admin-category-course-info strong {
+    overflow: hidden;
+    color: #171717;
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tfp-admin-category-course-info small {
+    color: #333;
+    font-size: 9px;
+    line-height: 1.25;
+}
+.tfp-admin-category-course-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 9px;
+}
+.tfp-admin-category-course-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 23px;
+    padding: 3px 10px;
+    border: 1px solid #008b91;
+    border-radius: 20px;
+    background: #e8f7f7;
+    color: #222;
+    font-size: 9px;
+    line-height: 1;
+    white-space: nowrap;
+}
+.tfp-admin-category-course-status.is-draft {
+    border-color: #d8a82c;
+    background: #fff4d7;
+}
+.tfp-admin-category-empty-courses {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 59px;
+    margin-top: 14px;
+    border-radius: 11px;
+    background: #e0e3e4;
+    color: #999;
+    font-size: 10px;
+}
+
+.tfp-admin-categories-form-panel {
+    margin-bottom: 20px;
+    padding: 16px !important;
+}
+.tfp-admin-categories-group-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 14px;
+}
+.tfp-admin-categories-group-heading h2 {
+    margin: 0;
+    font-size: 15px;
+}
+.tfp-admin-categories-group-heading a,
+.tfp-admin-categories-form-actions a {
+    color: #555;
+    font-size: 12px;
+    text-decoration: none;
+}
+.tfp-admin-categories-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+.tfp-admin-categories-form label {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+    color: #222;
+    font-size: 12px;
+    font-weight: 600;
+}
+.tfp-admin-categories-form label.is-full { grid-column: 1 / -1; }
+.tfp-admin-categories-form input,
+.tfp-admin-categories-form textarea {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 12px;
+    border: 1px solid #d5d8da;
+    border-radius: 6px;
+    background: #fff;
+    color: #171717;
+    font: inherit;
+    font-size: 13px;
+    box-shadow: none;
+}
+.tfp-admin-categories-form textarea { min-height: 84px; resize: vertical; }
+.tfp-admin-categories-form-actions {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    gap: 14px;
+}
+.tfp-admin-categories-form-actions button {
+    min-height: 38px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 6px;
+    background: #006970;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.tfp-admin-categories-empty {
+    margin: 0;
+    padding: 28px 16px;
+    color: #888;
+    font-size: 12px;
+    text-align: center;
+}
+
+@media (max-width: 767px) {
+    body.tfp-admin-categories-view .tfp-admin-categories-content { padding-top: 18px; }
+    .tfp-admin-categories-header { align-items: flex-start; flex-direction: column; }
+    .tfp-admin-category-group + .tfp-admin-category-group { margin-top: 30px; }
+    .tfp-admin-category-heading { align-items: flex-start; flex-direction: column; }
+    .tfp-admin-category-controls { width: 100%; justify-content: flex-end; }
+    .tfp-admin-category-course-row { align-items: flex-start; padding: 12px; }
+    .tfp-admin-category-course-actions { gap: 6px; }
+    .tfp-admin-category-course-actions > a { min-width: 42px; padding-inline: 9px; }
+}
+@media (max-width: 480px) {
+    .tfp-admin-curriculum-tabs a { padding: 0 13px; font-size: 13px; }
+    .tfp-admin-categories-groups { padding: 10px !important; }
+    .tfp-admin-category-course-row { flex-direction: column; }
+    .tfp-admin-category-course-actions { width: 100%; justify-content: flex-end; }
+    .tfp-admin-categories-form { grid-template-columns: 1fr; }
+    .tfp-admin-categories-form label.is-full { grid-column: auto; }
+}
+
+
+
+/* Figma: Add New Category modal */
+.tfp-admin-categories-add { cursor:pointer; font:inherit; }
+.tfp-category-modal-backdrop { position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(34,29,29,.22); }
+.tfp-category-modal-backdrop[hidden] { display:none!important; }
+.tfp-category-modal { width:min(100%,536px); padding:16px 14px 18px; border-radius:10px; background:#fff; box-shadow:0 14px 48px rgba(0,0,0,.15); }
+.tfp-category-modal h2 { margin:0 0 24px; color:#111; font-size:14px; line-height:1.35; font-weight:700; }
+.tfp-category-modal-form { display:grid; gap:24px; }
+.tfp-category-modal-form label { display:flex; min-width:0; flex-direction:column; gap:6px; color:#111; font-size:13px; font-weight:700; }
+.tfp-category-modal-form input { width:100%; height:38px; min-height:38px; margin:0; padding:8px 10px; border:1px solid #d2d2d2; border-radius:8px; background:#fff; color:#222; font-family:inherit; font-size:13px; line-height:1.3; font-weight:400; box-shadow:none; }
+.tfp-category-modal-form input::placeholder { color:#777; opacity:1; }
+.tfp-category-modal-actions { display:flex; justify-content:flex-end; align-items:center; gap:7px; margin-top:-4px; }
+.tfp-category-modal-actions button { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:38px; padding:8px 13px; border:1px solid #cfcfcf; border-radius:8px; background:#fff; color:#171717; font-size:12px; cursor:pointer; }
+.tfp-category-modal-actions .tfp-category-save { border-color:#006970; background:#006970; color:#fff; }
+.tfp-category-modal-actions button span { font-size:17px; line-height:1; }
+@media(max-width:600px) { .tfp-category-modal-backdrop { padding:16px; } .tfp-category-modal { padding:16px 14px; } .tfp-category-modal-form { gap:18px; } }
+
+/* Screenshot refinement: Add New Category modal */
+.tfp-category-modal-backdrop { background:rgba(0,0,0,.92); padding:18px; }
+.tfp-category-modal { box-sizing:border-box; width:min(681px,calc(100vw - 36px)); padding:18px 17px 23px; border-radius:12px; box-shadow:none; }
+.tfp-category-modal h2 { margin:0 0 34px; font-size:16px; line-height:1.3; letter-spacing:-.2px; }
+.tfp-category-modal-form { gap:31px; }
+.tfp-category-modal-form label { gap:7px; font-size:16px; line-height:1.25; }
+.tfp-category-modal-form input { height:47px; min-height:47px; padding:10px 12px; border-radius:10px; font-size:16px; }
+.tfp-category-modal-actions { gap:8px; margin-top:-5px; }
+.tfp-category-modal-actions button { min-height:48px; padding:9px 13px; border-radius:10px; font-size:14px; gap:9px; }
+.tfp-category-modal-actions .tfp-category-save { min-width:94px; }
+.tfp-category-modal-actions .tfp-category-cancel { min-width:106px; }
+.tfp-category-modal-actions svg { display:block; width:22px; height:22px; flex:0 0 22px; }
+.tfp-category-modal-actions .tfp-category-cancel svg { width:20px; height:20px; flex-basis:20px; }
+@media(max-width:600px) {
+ .tfp-category-modal-backdrop { padding:14px; }
+ .tfp-category-modal { width:100%; padding:17px 15px 19px; }
+ .tfp-category-modal h2 { margin-bottom:26px; }
+ .tfp-category-modal-form { gap:23px; }
+ .tfp-category-modal-form label { font-size:14px; }
+ .tfp-category-modal-form input { height:44px; min-height:44px; font-size:14px; }
+ .tfp-category-modal-actions button { min-height:44px; font-size:13px; }
+}

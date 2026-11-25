@@ -2,126 +2,6 @@
 if (!defined('ABSPATH'))
     exit;
 
-/**
- * Demo tickets matching Figma media_1790601569672.png
- */
-function tfp_communication_get_demo_tickets()
-{
-    return [
-        'demo-1' => [
-            'id' => 'demo-1',
-            'title' => "Can't access Week 4 content",
-            'display_name' => 'Sarah Briner',
-            'category' => 'technical',
-            'category_label' => 'Technical',
-            'status' => 'open',
-            'time' => '1 hour ago',
-            'meta' => 'Technical • Opened Jun 10, 2026 • Assigned to Support',
-            'dot_class' => 'technical',
-            'preview' => 'Can you help me choose from t...',
-            'avatar_url' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
-            'messages' => [
-                [
-                    'id' => 101,
-                    'sender_name' => 'Sarah Briner',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => false,
-                    'message' => 'Hi, I need assistance choosing which spring technical module to take first.',
-                    'created_at' => '11:15 AM',
-                ],
-                [
-                    'id' => 102,
-                    'sender_name' => 'Support',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => true,
-                    'message' => 'Hi Sarah! Foundations of Discipleship is the recommended starting point.',
-                    'created_at' => '11:20 AM',
-                ],
-            ],
-        ],
-        'demo-2' => [
-            'id' => 'demo-2',
-            'title' => "Can't access Week 4 content",
-            'display_name' => 'Luis Pittman',
-            'category' => 'access',
-            'category_label' => 'Facilitator Op',
-            'status' => 'open',
-            'time' => '1 hour ago',
-            'meta' => 'Access Issue • Opened Jun 10, 2026 • Assigned to Support',
-            'dot_class' => 'access',
-            'tag_label' => 'Access Issue',
-            'preview' => 'Can you help me choose from t...',
-            'avatar_url' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-            'messages' => [
-                [
-                    'id' => 201,
-                    'sender_name' => 'Luis Pittman',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => false,
-                    'message' => 'Hi, I wonder when if there is going to be anything new for spring?',
-                    'created_at' => '12:24 AM',
-                ],
-                [
-                    'id' => 202,
-                    'sender_name' => 'Support',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => true,
-                    'message' => 'Hi Luis, can you please be more specific?',
-                    'created_at' => '12:26 AM',
-                ],
-                [
-                    'id' => 203,
-                    'sender_name' => 'Luis Pittman',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => false,
-                    'message' => 'Sure, I want to know when the new in the spring modules for the section on sin coming',
-                    'created_at' => '12:29 AM',
-                ],
-                [
-                    'id' => 204,
-                    'sender_name' => 'Support',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => true,
-                    'message' => 'Luis, the content will stay the same but some exersies will be inside the sections',
-                    'created_at' => '12:30 AM',
-                ],
-            ],
-        ],
-        'demo-3' => [
-            'id' => 'demo-3',
-            'title' => "Can't access Week 4 content",
-            'display_name' => 'Marus Baker',
-            'category' => 'access',
-            'category_label' => 'Access Issue',
-            'status' => 'open',
-            'time' => '1 hour ago',
-            'meta' => 'Access Issue • Opened Jun 10, 2026 • Assigned to Support',
-            'dot_class' => 'access',
-            'tag_label' => 'Access Issue',
-            'preview' => 'Can you help me choose from t...',
-            'avatar_url' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
-            'messages' => [
-                [
-                    'id' => 301,
-                    'sender_name' => 'Marus Baker',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => false,
-                    'message' => 'Hello team, I am unable to view the Week 4 video lectures on my account.',
-                    'created_at' => '9:40 AM',
-                ],
-                [
-                    'id' => 302,
-                    'sender_name' => 'Support',
-                    'avatar_url' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-                    'is_mine' => true,
-                    'message' => 'We have verified your cohort schedule and refreshed your access tokens. Please try reloading now.',
-                    'created_at' => '9:52 AM',
-                ],
-            ],
-        ],
-    ];
-}
-
 function tfp_dashboard_render_communication_content()
 {
     $user_id = get_current_user_id();
@@ -135,15 +15,12 @@ function tfp_dashboard_render_communication_content()
     $categories = tfp_dashboard_ticket_categories();
 
     // Default counts matching Figma screenshot if empty
-    $display_open = ($open_count > 0 || !empty($tickets)) ? $open_count : 2;
-    $display_pending = ($pending_count > 0 || !empty($tickets)) ? $pending_count : 1;
-    $display_resolved = ($resolved_count > 0 || !empty($tickets)) ? $resolved_count : 2;
+    $display_open = $open_count;
+    $display_pending = $pending_count;
+    $display_resolved = $resolved_count;
 
-    $demo_tickets = tfp_communication_get_demo_tickets();
     $has_real_tickets = !empty($tickets);
-
-    // Initial selected ticket data (defaulting to demo-2 Luis Pittman to match Figma)
-    $active_ticket_data = $demo_tickets['demo-2'];
+    $active_ticket_data = [];
 
     tfp_dashboard_render_page_header(
         __('Communication', 'tfp-dashboard'),
@@ -277,39 +154,7 @@ function tfp_dashboard_render_communication_content()
                         </button>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <!-- Figma Demo Tickets -->
-                    <?php foreach ($demo_tickets as $dId => $dItem):
-                        $isActive = ($dId === 'demo-2') ? ' is-active' : '';
-                        $search_text = strtolower($dItem['display_name'] . ' ' . $dItem['category_label'] . ' ' . $dItem['preview']);
-                        ?>
-                        <button type="button" class="tfp-dash-ticketlist__item<?php echo esc_attr($isActive); ?>"
-                            data-tfp-ticket-item data-ticket-id="<?php echo esc_attr($dId); ?>"
-                            data-category="<?php echo esc_attr($dItem['category']); ?>"
-                            data-status="<?php echo esc_attr($dItem['status']); ?>"
-                            data-search="<?php echo esc_attr($search_text); ?>">
-                            <span class="tfp-dash-ticketlist__avatar">
-                                <img src="<?php echo esc_url($dItem['avatar_url']); ?>"
-                                    alt="<?php echo esc_attr($dItem['display_name']); ?>">
-                            </span>
-
-                            <span class="tfp-dash-ticketlist__meta">
-                                <span class="tfp-dash-ticketlist__topline">
-                                    <span class="tfp-dash-ticketlist__name"><?php echo esc_html($dItem['display_name']); ?></span>
-                                    <span class="tfp-dash-ticketlist__time"><?php echo esc_html($dItem['time']); ?></span>
-                                </span>
-
-                                <span class="tfp-dash-ticketlist__category">
-                                    <i
-                                        class="tfp-dash-ticketlist__dot tfp-dash-ticketlist__dot--<?php echo esc_attr($dItem['dot_class']); ?>"></i>
-                                    <?php echo esc_html($dItem['category_label']); ?>
-                                </span>
-
-                                <span class="tfp-dash-ticketlist__preview">
-                                    <?php echo esc_html($dItem['preview']); ?>
-                                </span>
-                            </span>
-                        </button>
-                    <?php endforeach; ?>
+                    <p class="tfp-dash-ticketlist__empty"><?php esc_html_e('No conversations yet. Start a new conversation to contact support.', 'tfp-dashboard'); ?></p>
                 <?php endif; ?>
             </div>
 
@@ -324,7 +169,7 @@ function tfp_dashboard_render_communication_content()
 
         <!-- Right Column: Conversation Panel -->
         <section class="tfp-dash-chatpanel" data-tfp-chatpanel>
-            <div class="tfp-dash-chatpanel__empty" data-tfp-chat-empty style="display: none;">
+            <div class="tfp-dash-chatpanel__empty" data-tfp-chat-empty>
                 <div>
                     <p><?php esc_html_e('Select a communication to view the conversation.', 'tfp-dashboard'); ?></p>
                     <button type="button" class="tfp-dash-btn tfp-dash-btn--primary" data-tfp-new-ticket>
@@ -334,29 +179,29 @@ function tfp_dashboard_render_communication_content()
                 </div>
             </div>
 
-            <div class="tfp-dash-chatpanel__thread" data-tfp-chat-thread>
+            <div class="tfp-dash-chatpanel__thread" data-tfp-chat-thread hidden>
                 <!-- Chat Panel Header (Figma media_1790601569672.png) -->
                 <div class="tfp-dash-chatpanel__header">
                     <div class="tfp-dash-chatpanel__head-info">
                         <h2 class="tfp-dash-chatpanel__title" data-tfp-chat-title>
-                            <?php echo esc_html($active_ticket_data['title']); ?>
+                            <?php echo esc_html(($active_ticket_data['title'] ?? '')); ?>
                         </h2>
                         <div class="tfp-dash-chatpanel__meta" data-tfp-chat-subtitle>
-                            <?php echo esc_html($active_ticket_data['meta']); ?>
+                            <?php echo esc_html(($active_ticket_data['meta'] ?? '')); ?>
                         </div>
                         <div class="tfp-dash-chatpanel__tag">
                             <span
-                                class="tfp-dash-chatpanel__tag-dot tfp-dash-chatpanel__tag-dot--<?php echo esc_attr($active_ticket_data['dot_class']); ?>"
+                                class="tfp-dash-chatpanel__tag-dot tfp-dash-chatpanel__tag-dot--<?php echo esc_attr(($active_ticket_data['dot_class'] ?? '')); ?>"
                                 data-tfp-chat-dot></span>
                             <span class="tfp-dash-chatpanel__tag-text" data-tfp-chat-tag>
-                                <?php echo esc_html($active_ticket_data['tag_label'] ?? $active_ticket_data['category_label']); ?>
+                                <?php echo esc_html($active_ticket_data['tag_label'] ?? $active_ticket_data['category_label'] ?? ''); ?>
                             </span>
                         </div>
                     </div>
 
                     <div class="tfp-dash-chatpanel__actions">
                         <span class="tfp-dash-badge" data-tfp-chat-status>
-                            <?php echo esc_html(ucfirst($active_ticket_data['status'])); ?>
+                            <?php echo esc_html(ucfirst($active_ticket_data['status'] ?? '')); ?>
                         </span>
                         <button type="button" class="tfp-dash-btn-resolved" data-tfp-mark-resolved>
                             <?php esc_html_e('Mark Resolved', 'tfp-dashboard'); ?>
@@ -371,7 +216,7 @@ function tfp_dashboard_render_communication_content()
 
                 <!-- Chat Messages Body -->
                 <div class="tfp-dash-chatpanel__messages" data-tfp-chat-messages id="tfpChatMessages">
-                    <?php foreach ($active_ticket_data['messages'] as $msg):
+                    <?php foreach (($active_ticket_data['messages'] ?? []) as $msg):
                         $msgCls = $msg['is_mine'] ? 'tfp-dash-msg--mine' : 'tfp-dash-msg--theirs';
                         ?>
                         <div class="tfp-dash-msg <?php echo esc_attr($msgCls); ?>"
@@ -409,11 +254,6 @@ function tfp_dashboard_render_communication_content()
             </div>
         </section>
     </div>
-
-    <!-- Embedded Demo Tickets JSON for live switching -->
-    <script id="tfpDemoTicketsJSON" type="application/json">
-            <?php echo wp_json_encode($demo_tickets); ?>
-        </script>
 
     <!-- Modal for Starting a New Conversation -->
     <div class="tfp-dash-modal" data-tfp-new-ticket-modal hidden>

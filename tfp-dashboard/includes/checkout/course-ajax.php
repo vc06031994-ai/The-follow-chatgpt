@@ -61,9 +61,8 @@ function tfp_course_cart_cohort_id()
 /**
  * Ensure the two program-purchase agreements exist for this student/cohort.
  *
- * The agreement text is currently a temporary development draft. The final
- * NDA and Course Agreement wording must be supplied by the client before
- * production launch; see tfp_course_purchase_agreement_content().
+ * Agreement records are created empty until an administrator saves approved
+ * legal wording. Signing is rejected while content is empty or still a draft.
  */
 function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
     $user_id = absint($user_id);
@@ -71,6 +70,14 @@ function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
     if (!$user_id || !$cohort_id) {
         return [];
     }
+
+    // Do not create or display unsigned draft agreements. Only approved admin content may be signed.
+    $agreement_content = function_exists('tfp_course_purchase_agreement_content')
+        ? tfp_course_purchase_agreement_content('nda')
+        : ['body' => ''];
+    $course_content = function_exists('tfp_course_purchase_agreement_content')
+        ? tfp_course_purchase_agreement_content('course_agreement')
+        : ['body' => ''];
 
     $agreements = [
         'nda' => __('NDA', 'tfp-dashboard'),
@@ -109,18 +116,16 @@ function tfp_course_ensure_purchase_agreements($user_id, $cohort_id) {
             update_post_meta($document_id, '_tfp_purchase_cohort_id', $cohort_id);
             update_post_meta($document_id, '_tfp_purchase_agreement_key', $key);
 
-            // Store the current draft in the CPT so admins can replace it with
-            // the client's final legal content without changing the checkout code.
-            if (function_exists('tfp_course_purchase_agreement_content')) {
-                $draft = tfp_course_purchase_agreement_content($key);
-                update_post_meta($document_id, '_tfp_agreement_content', $draft['body']);
-            }
+            // Store only the approved agreement text used for this purchase.
+            $approved = $key === 'nda' ? $agreement_content : $course_content;
+            update_post_meta($document_id, '_tfp_agreement_content', sanitize_textarea_field($approved['body']));
         }
 
         $rows[] = [
             'id' => $document_id,
             'title' => $title,
             'status' => get_post_meta($document_id, '_status', true) ?: 'pending',
+            'content' => (string) get_post_meta($document_id, '_tfp_agreement_content', true),
         ];
     }
 
@@ -231,6 +236,7 @@ function tfp_course_ajax_reserve_seat()
     $cohort_id = isset($_POST['cohort_id']) ? absint($_POST['cohort_id']) : 0;
     $ack       = !empty($_POST['acknowledged']);
 
+
     $cohort = $cohort_id ? tfp_cohort_get($cohort_id) : null;
     if (!$cohort) {
         wp_send_json(['success' => false, 'message' => __('That cohort could not be found.', 'tfp-dashboard')], 400);
@@ -315,6 +321,11 @@ function tfp_course_ajax_sign_agreement()
 
     if (!get_post_meta($document_id, '_tfp_purchase_agreement_key', true)) {
         wp_send_json(['success' => false, 'message' => __('This document is not a course-purchase agreement.', 'tfp-dashboard')], 400);
+    }
+
+    $agreement_body = (string) get_post_meta($document_id, '_tfp_agreement_content', true);
+    if (trim($agreement_body) === '' || stripos($agreement_body, 'temporary development draft') !== false || stripos($agreement_body, 'placeholder content') !== false) {
+        wp_send_json(['success' => false, 'message' => __('This agreement is not available for signing until approved content is configured.', 'tfp-dashboard')], 409);
     }
 
     if (get_post_meta($document_id, '_status', true) === 'signed') {

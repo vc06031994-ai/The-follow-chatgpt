@@ -43,26 +43,18 @@ add_action('init', function () {
 });
 
 /**
- * Purchase-agreement content.
- *
- * TEMPORARY DUMMY CONTENT: these texts are placeholders for development/testing.
- * Replace them with the client's final legal NDA and Course Agreement content
- * before the production checkout is launched.
+ * Approved purchase-agreement content is configured by an administrator.
+ * Empty content intentionally prevents collecting consent to a draft or placeholder.
  */
 function tfp_course_purchase_agreement_content($key) {
-    $content = [
-        'nda' => [
-            'title' => __('NDA', 'tfp-dashboard'),
-            'body' => "NON-DISCLOSURE AGREEMENT\n\nThis Non-Disclosure Agreement is a temporary development draft for The Follow Project. The student agrees to keep confidential any non-public information, course materials, business information, participant information, and other confidential information shared through the program.\n\nConfidential information may be used only for participation in the program and may not be copied, published, shared, or disclosed to another person without prior written permission. These obligations do not apply to information that is publicly available through no breach of this agreement or that must be disclosed by law.\n\nBy signing below, the student confirms that they have reviewed and agree to the confidentiality obligations described above.\n\nIMPORTANT: This is placeholder content for development only and must be replaced by the client's final legal NDA."
-        ],
-        'course_agreement' => [
-            'title' => __('Course Agreement', 'tfp-dashboard'),
-            'body' => "COURSE AGREEMENT\n\nThis Course Agreement is a temporary development draft for The Follow Project. By enrolling in the program, the student agrees to follow the program requirements, use course materials for personal educational purposes, respect the program schedule and cohort policies, and comply with reasonable instructions from the program administrator and facilitators.\n\nCourse materials, recordings, worksheets, and other resources are provided for the enrolled student's use and may not be redistributed, resold, or publicly shared unless the program administrator provides written permission. The student is responsible for providing accurate information and following the participation, attendance, payment, and cancellation policies communicated by the program.\n\nBy signing below, the student confirms that they have reviewed and agree to the course terms described above.\n\nIMPORTANT: This is placeholder content for development only and must be replaced by the client's final Course Agreement."
-        ],
+    $titles = [
+        'nda' => __('NDA', 'tfp-dashboard'),
+        'course_agreement' => __('Course Agreement', 'tfp-dashboard'),
     ];
-    return $content[$key] ?? [
-        'title' => __('Agreement', 'tfp-dashboard'),
-        'body' => __('Agreement content is not available yet.', 'tfp-dashboard'),
+
+    return [
+        'title' => $titles[$key] ?? __('Agreement', 'tfp-dashboard'),
+        'body' => '',
     ];
 }
 
@@ -160,9 +152,6 @@ function tfp_student_document_meta_box($post) {
     $url = (string) get_post_meta($post->ID, '_document_url', true);
     $purchase_agreement_key = (string) get_post_meta($post->ID, '_tfp_purchase_agreement_key', true);
     $agreement_content = (string) get_post_meta($post->ID, '_tfp_agreement_content', true);
-    if ($purchase_agreement_key && !$agreement_content) {
-        $agreement_content = tfp_course_purchase_agreement_content($purchase_agreement_key)['body'];
-    }
     $is_purchase_agreement = !empty($purchase_agreement_key);
 
     $students = get_users([
@@ -210,7 +199,7 @@ function tfp_student_document_meta_box($post) {
     echo '</select></label></p>';
     if ($is_purchase_agreement) {
         echo '<p><label><strong>' . esc_html__('Agreement Content', 'tfp-dashboard') . '</strong><br><textarea name="tfp_doc_content" class="widefat" rows="16">' . esc_textarea($agreement_content) . '</textarea></label></p>';
-        echo '<p class="description">' . esc_html__('Replace the temporary development draft with the final NDA / Course Agreement content supplied by the client. This content is shown during checkout and included in the student download.', 'tfp-dashboard') . '</p>';
+        echo '<p class="description">' . esc_html__('Enter the approved final legal agreement text. Checkout will remain unavailable for this agreement until approved content is saved.', 'tfp-dashboard') . '</p>';
     } else {
         echo '<p><label><strong>Document URL</strong><br><input type="url" name="tfp_doc_url" value="' . esc_attr($url) . '" class="widefat" placeholder="https://..."></label></p>';
         echo '<p>' . esc_html__('Assign this document to a student. The URL may point to a PDF or secure document viewer.', 'tfp-dashboard') . '</p>';
@@ -311,12 +300,20 @@ function tfp_calendar_off_days($from, $to) {
         'post_type' => 'tfp_off_day',
         'post_status' => 'publish',
         'posts_per_page' => -1,
-        'meta_query' => [[
-            'key' => '_date',
-            'value' => [$from, $to],
-            'compare' => 'BETWEEN',
-            'type' => 'DATE',
-        ]],
+        'meta_query' => [
+            'relation' => 'AND',
+            [
+                'key' => '_date',
+                'value' => [$from, $to],
+                'compare' => 'BETWEEN',
+                'type' => 'DATE',
+            ],
+            [
+                'relation' => 'OR',
+                ['key' => '_cohort_id', 'compare' => 'NOT EXISTS'],
+                ['key' => '_cohort_id', 'value' => '0'],
+            ],
+        ],
         'orderby' => 'meta_value',
         'order' => 'ASC',
         'meta_key' => '_date',

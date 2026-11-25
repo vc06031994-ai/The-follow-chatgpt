@@ -817,3 +817,8 @@
 .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
     transform: translate(-50%, -50%) rotate(180deg) !important;
 }
+
+/* Keep the conversation thread hidden until a real ticket is selected. */
+.tfp-dash-chatpanel__thread[hidden] {
+    display: none !important;
+}

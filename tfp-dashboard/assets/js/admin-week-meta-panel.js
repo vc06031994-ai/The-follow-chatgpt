@@ -245,7 +245,6 @@
         })
     )(function (props) {
         // Debug: ensure this script executed in the block editor.
-        try { console.log('TFP Week Details panel script loaded', props && props.meta ? Object.keys(props.meta) : null); } catch (e) {}
         var meta = props.meta || {};
 
         // Working list of questions (always canonical — this is what persists).

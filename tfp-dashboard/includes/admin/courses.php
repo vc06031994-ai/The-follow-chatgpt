@@ -81,6 +81,15 @@ function tfp_admin_courses_get_data() {
     if ($selected_course) {
         $query_args['post__in'] = [$selected_course];
     }
+    // Curriculum Courses page category filter (only applied when selected).
+    $selected_category = isset($_GET['course_category']) ? absint($_GET['course_category']) : 0;
+    if ($selected_category && taxonomy_exists('ld_course_category')) {
+        $query_args['tax_query'] = [[
+            'taxonomy' => 'ld_course_category',
+            'field' => 'term_id',
+            'terms' => $selected_category,
+        ]];
+    }
     $courses = post_type_exists('sfwd-courses') ? get_posts($query_args) : [];
 
     if ($week_filter !== '') {
@@ -117,6 +126,10 @@ function tfp_admin_courses_get_data() {
         ];
         $course_rows[$course->ID] = [
             'title' => get_the_title($course->ID),
+            'category' => (function () use ($course) {
+                $terms = get_the_terms($course->ID, 'ld_course_category');
+                return (!is_wp_error($terms) && !empty($terms)) ? $terms[0]->name : __('Uncategorized', 'tfp-dashboard');
+            })(),
             'status' => $course->post_status,
             'weeks' => $weeks,
             'steps' => $steps,
@@ -252,6 +265,7 @@ function tfp_admin_courses_render() {
             </header>
 
             <main class="tfp-admin-content tfp-admin-courses-content">
+
                 <form class="tfp-admin-courses-filters" method="get" action="<?php echo esc_url(tfp_admin_courses_page_url()); ?>">
                     <label class="screen-reader-text" for="tfp-course-select"><?php esc_html_e('Select course', 'tfp-dashboard'); ?></label>
                     <select id="tfp-course-select" name="course_id">

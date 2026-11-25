@@ -121,7 +121,7 @@ $rules_sections = [
     ],
 ];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rules']) || isset($_POST['tfp_save_course_identity']))) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rules']) || isset($_POST['tfp_save_course_identity']) || isset($_POST['tfp_save_global_overrides']))) {
     check_admin_referer('tfp_save_course_rules_' . $course_id);
     if (current_user_can('edit_post', $course_id)) {
         if (isset($_POST['tfp_save_course_identity'])) {
@@ -144,6 +144,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['tfp_save_course_rule
             }
             $course_heading_title = get_the_title($course_id);
             echo '<div class="tfp-admin-course-rules-notice" role="status">' . esc_html__('Course identity saved.', 'tfp-dashboard') . '</div>';
+        } elseif (isset($_POST['tfp_save_global_overrides'])) {
+            // Store only the editable global policy settings; locked policy values remain server-controlled.
+            $submitted_roles = isset($_POST['tfp_global_permission_roles']) && is_array($_POST['tfp_global_permission_roles'])
+                ? array_map('sanitize_key', wp_unslash($_POST['tfp_global_permission_roles']))
+                : [];
+            $allowed_roles = ['administrator', 'courseowner'];
+            $permission_roles = array_values(array_intersect($allowed_roles, $submitted_roles));
+
+            if (empty($permission_roles)) {
+                echo '<div class="tfp-admin-course-rules-notice" role="alert">' . esc_html__('Select at least one permission role.', 'tfp-dashboard') . '</div>';
+            } else {
+                $global_overrides = [
+                    'cohort_overrides_enabled' => false,
+                    'permission_roles' => $permission_roles,
+                    'policy_versioning' => isset($_POST['tfp_global_policy_versioning'])
+                        ? sanitize_key(wp_unslash($_POST['tfp_global_policy_versioning']))
+                        : 'auto',
+                    'retroactive_changes' => isset($_POST['tfp_global_retroactive_changes'])
+                        ? sanitize_key(wp_unslash($_POST['tfp_global_retroactive_changes']))
+                        : 'not_allowed',
+                ];
+
+                if (!in_array($global_overrides['policy_versioning'], ['auto', 'explicit'], true)) {
+                    $global_overrides['policy_versioning'] = 'auto';
+                }
+                if (!in_array($global_overrides['retroactive_changes'], ['not_allowed', 'admin_confirmation'], true)) {
+                    $global_overrides['retroactive_changes'] = 'not_allowed';
+                }
+
+                update_post_meta($course_id, 'tfp_course_global_overrides', $global_overrides);
+                echo '<div class="tfp-admin-course-rules-notice" role="status">' . esc_html__('Global overrides and permissions saved.', 'tfp-dashboard') . '</div>';
+            }
         } else {
             $submitted = isset($_POST['tfp_course_rules']) && is_array($_POST['tfp_course_rules'])
                 ? wp_unslash($_POST['tfp_course_rules'])
@@ -233,6 +265,21 @@ $format_rule_value = static function ($value) {
 };
 ?>
 <section class="tfp-admin-course-rules-page">
+    <?php
+    $global_overrides = get_post_meta($course_id, 'tfp_course_global_overrides', true);
+    $global_overrides = is_array($global_overrides) ? $global_overrides : [];
+    $global_permission_roles = isset($global_overrides['permission_roles']) && is_array($global_overrides['permission_roles'])
+        ? $global_overrides['permission_roles']
+        : ['administrator', 'courseowner'];
+    $global_policy_versioning = $global_overrides['policy_versioning'] ?? 'auto';
+    $global_retroactive_changes = $global_overrides['retroactive_changes'] ?? 'not_allowed';
+    ?>
+    <div class="tfp-global-overrides-toolbar">
+        <button type="button" class="tfp-global-overrides-trigger" data-global-overrides-open aria-haspopup="dialog" aria-controls="tfp-global-overrides-modal">
+            <?php esc_html_e('Global Overrides & Permissions', 'tfp-dashboard'); ?>
+            <span aria-hidden="true">›</span>
+        </button>
+    </div>
     <form method="post" id="tfp-course-rules-form" class="tfp-admin-course-rules-form">
         <?php wp_nonce_field('tfp_save_course_rules_' . $course_id); ?>
 
@@ -640,11 +687,117 @@ $format_rule_value = static function ($value) {
         </div>
     </div>
 
+    <div class="tfp-global-overrides-modal" id="tfp-global-overrides-modal" role="dialog" aria-modal="true" aria-labelledby="tfp-global-overrides-title" hidden>
+        <div class="tfp-global-overrides-backdrop" data-global-overrides-close></div>
+        <div class="tfp-global-overrides-panel">
+            <form method="post" class="tfp-global-overrides-form">
+                <?php wp_nonce_field('tfp_save_course_rules_' . $course_id); ?>
+                <div class="tfp-global-overrides-content">
+                    <header class="tfp-global-overrides-heading">
+                        <h2 id="tfp-global-overrides-title"><?php esc_html_e('Edit Global Overrides & Permissions', 'tfp-dashboard'); ?></h2>
+                        <p><?php esc_html_e('Cohort overrides and who can edit course rules.', 'tfp-dashboard'); ?></p>
+                    </header>
+
+                    <section class="tfp-global-overrides-group tfp-global-overrides-cohort">
+                        <h3><?php esc_html_e('Cohort overrides', 'tfp-dashboard'); ?></h3>
+                        <p class="tfp-global-overrides-muted"><?php esc_html_e('Disabled by policy (cannot be enabled)', 'tfp-dashboard'); ?></p>
+                        <p class="tfp-global-overrides-muted"><?php esc_html_e('Cohort overrides are disallowed by policy. Core gating and certification rules can only be changed by Admins', 'tfp-dashboard'); ?></p>
+                    </section>
+
+                    <section class="tfp-global-overrides-group tfp-global-overrides-locked">
+                        <h3><?php esc_html_e('Locked items (non-overrideable)', 'tfp-dashboard'); ?></h3>
+                        <ul>
+                            <li><?php esc_html_e('Passing threshold (course-level passing %)', 'tfp-dashboard'); ?></li>
+                            <li><?php esc_html_e('Component minimum enforcement (whether component minimums are required)', 'tfp-dashboard'); ?></li>
+                            <li><?php esc_html_e('Certification gating rules (require facilitator close; require all modules completed)', 'tfp-dashboard'); ?></li>
+                            <li><?php esc_html_e('Ordination rating rules (require admin approval; require all modules completed, passing grade)', 'tfp-dashboard'); ?></li>
+                        </ul>
+                    </section>
+
+                    <section class="tfp-global-overrides-group tfp-global-overrides-permissions">
+                        <h3><?php esc_html_e('Permission roles', 'tfp-dashboard'); ?></h3>
+                        <label class="tfp-global-overrides-check">
+                            <input type="checkbox" name="tfp_global_permission_roles[]" value="administrator" <?php checked(in_array('administrator', $global_permission_roles, true)); ?>>
+                            <span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span>
+                        </label>
+                        <label class="tfp-global-overrides-check">
+                            <input type="checkbox" name="tfp_global_permission_roles[]" value="courseowner" <?php checked(in_array('courseowner', $global_permission_roles, true)); ?>>
+                            <span><?php esc_html_e('CourseOwner', 'tfp-dashboard'); ?></span>
+                        </label>
+                        <p class="tfp-global-overrides-muted"><?php esc_html_e('Only permitted roles may edit course-level rules.', 'tfp-dashboard'); ?></p>
+                    </section>
+
+                    <section class="tfp-global-overrides-group tfp-global-overrides-radio-group">
+                        <h3><?php esc_html_e('Policy versioning', 'tfp-dashboard'); ?></h3>
+                        <label><input type="radio" name="tfp_global_policy_versioning" value="auto" <?php checked($global_policy_versioning, 'auto'); ?>><span><?php esc_html_e('Auto-create new version on change (recommended) — default selected', 'tfp-dashboard'); ?></span></label>
+                        <label><input type="radio" name="tfp_global_policy_versioning" value="explicit" <?php checked($global_policy_versioning, 'explicit'); ?>><span><?php esc_html_e('Require explicit version creation', 'tfp-dashboard'); ?></span></label>
+                    </section>
+
+                    <section class="tfp-global-overrides-group tfp-global-overrides-radio-group">
+                        <h3><?php esc_html_e('Retroactive changes', 'tfp-dashboard'); ?></h3>
+                        <label><input type="radio" name="tfp_global_retroactive_changes" value="not_allowed" <?php checked($global_retroactive_changes, 'not_allowed'); ?>><span><?php esc_html_e('Not allowed — default selected', 'tfp-dashboard'); ?></span></label>
+                        <label><input type="radio" name="tfp_global_retroactive_changes" value="admin_confirmation" <?php checked($global_retroactive_changes, 'admin_confirmation'); ?>><span><?php esc_html_e('Allowed with admin confirmation', 'tfp-dashboard'); ?></span></label>
+                    </section>
+
+                    <section class="tfp-global-overrides-validation">
+                        <h3><?php esc_html_e('Validation rules', 'tfp-dashboard'); ?></h3>
+                        <ul>
+                            <li><?php esc_html_e('Backend must reject any attempt to change Locked items from any cohort context.', 'tfp-dashboard'); ?></li>
+                            <li><?php esc_html_e('At least one Permission role must be selected.', 'tfp-dashboard'); ?></li>
+                        </ul>
+                    </section>
+
+                    <div class="tfp-global-overrides-actions">
+                        <button type="submit" name="tfp_save_global_overrides" value="1" class="tfp-global-overrides-save">
+                            <img class="tfp-global-overrides-save-icon" src="https://thefollowproject.com/thefollowprojectstaging/wp-content/uploads/2026/11/Save.png" alt="" aria-hidden="true"><?php esc_html_e('Save', 'tfp-dashboard'); ?>
+                        </button>
+                        <button type="button" class="tfp-global-overrides-cancel" data-global-overrides-close>
+                            <span aria-hidden="true">⊘</span><?php esc_html_e('Cancel', 'tfp-dashboard'); ?>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </section>
 <script>
 (function () {
     var root = document.querySelector('.tfp-admin-course-rules-page');
     if (!root) return;
+    var globalOverridesModal = root.querySelector('#tfp-global-overrides-modal');
+    var globalOverridesOpen = root.querySelector('[data-global-overrides-open]');
+    if (globalOverridesModal && globalOverridesOpen) {
+        var closeGlobalOverrides = function () {
+            globalOverridesModal.hidden = true;
+            document.body.classList.remove('tfp-global-overrides-open');
+        };
+        globalOverridesOpen.addEventListener('click', function () {
+            globalOverridesModal.hidden = false;
+            document.body.classList.add('tfp-global-overrides-open');
+            var firstControl = globalOverridesModal.querySelector('input');
+            if (firstControl) firstControl.focus();
+        });
+        globalOverridesModal.querySelectorAll('[data-global-overrides-close]').forEach(function (element) {
+            element.addEventListener('click', closeGlobalOverrides);
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !globalOverridesModal.hidden) closeGlobalOverrides();
+        });
+        var globalOverridesForm = globalOverridesModal.querySelector('form');
+        if (globalOverridesForm) {
+            globalOverridesForm.addEventListener('submit', function (event) {
+                var selectedRoles = globalOverridesForm.querySelectorAll('input[name="tfp_global_permission_roles[]"]:checked');
+                if (!selectedRoles.length) {
+                    event.preventDefault();
+                    window.alert('Select at least one permission role.');
+                    var firstRole = globalOverridesForm.querySelector('input[name="tfp_global_permission_roles[]"]');
+                    if (firstRole) firstRole.focus();
+                }
+            });
+        }
+    }
+
     var identityModal = root.querySelector('#tfp-course-identity-modal');
     var identityOpen = root.querySelector('[data-course-identity-open]');
     if (identityModal && identityOpen) {
