@@ -323,3 +323,23 @@ body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger
     color:#00666e!important;font-size:20px!important;line-height:1.2!important;font-weight:700!important;letter-spacing:0!important;
 }
 body.tfp-admin-payments-view .tfp-payments-content .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong {color:#e21b2d!important}
+
+/* KPI amount only: match the Revenue Overview amount typography. */
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong span,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong .woocommerce-Price-amount,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article strong .woocommerce-Price-amount bdi {
+    display:inline!important;
+    color:#00666e!important;
+    font-family:var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+    font-size:20px!important;
+    font-weight:700!important;
+    line-height:1.2!important;
+    letter-spacing:0!important;
+}
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong span,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong .woocommerce-Price-amount,
+body.tfp-admin-payments-view .tfp-ledger-inner .tfp-ledger-stats article.is-refund strong .woocommerce-Price-amount bdi {
+    color:#e21b2d!important;
+}
