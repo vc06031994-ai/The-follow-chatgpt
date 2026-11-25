@@ -354,6 +354,7 @@
                 var input = card.querySelector('[data-agreement-signature="' + key + '"]');
                 var button = card.querySelector('[data-agreement-sign="' + key + '"]');
                 var status = card.querySelector('[data-agreement-status="' + key + '"]');
+                var content = card.querySelector('.tfp-course-agreement-content');
 
                 if (!item) {
                     if (button) { button.disabled = true; }
@@ -361,13 +362,17 @@
                 }
 
                 var signed = item.status === 'signed';
+                var hasApprovedContent = !!(item.content && item.content.trim());
+                if (content) {
+                    content.textContent = hasApprovedContent ? item.content : 'This agreement is not available yet. Please contact the program administrator.';
+                }
                 card.classList.toggle('is-signed', signed);
                 if (input) {
-                    input.disabled = signed;
+                    input.disabled = signed || !hasApprovedContent;
                     if (signed) { input.value = 'Signed'; }
                 }
                 if (button) {
-                    button.disabled = signed;
+                    button.disabled = signed || !hasApprovedContent;
                     button.textContent = signed ? 'Signed' : (key === 'nda' ? 'Sign NDA' : 'Sign Course Agreement');
                 }
                 if (status) {

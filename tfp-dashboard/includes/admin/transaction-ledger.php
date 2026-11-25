@@ -268,29 +268,3 @@ function tfp_admin_transaction_ledger_render() {
     </div>
     <?php
 }
-
-
-/**
- * Connect the Transaction Ledger tab on the separate Payments overview page
- * to the custom Admin Dashboard ledger view.
- */
-function tfp_admin_transaction_ledger_link_payments_tab() {
-    if (!is_page('admin-payments') || !function_exists('tfp_admin_dashboard_page_url')) { return; }
-    $ledger_url = add_query_arg('view', 'transaction-ledger', tfp_admin_dashboard_page_url());
-    ?>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var target = <?php echo wp_json_encode(esc_url($ledger_url)); ?>;
-        document.querySelectorAll('a').forEach(function (link) {
-            var label = (link.textContent || '').replace(/\\s+/g, ' ').trim();
-            if (label === 'Transaction Ledger') {
-                link.href = target;
-                link.removeAttribute('data-bs-toggle');
-                link.removeAttribute('aria-controls');
-            }
-        });
-    });
-    </script>
-    <?php
-}
-add_action('wp_footer', 'tfp_admin_transaction_ledger_link_payments_tab', 99);

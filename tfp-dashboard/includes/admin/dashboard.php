@@ -9,8 +9,6 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/users.php';
-require_once __DIR__ . '/refunds.php';
-require_once __DIR__ . '/transaction-ledger.php';
 
 /** Check whether a plugin is active without relying on admin-only includes. */
 function tfp_admin_dashboard_plugin_active($plugin_file) {
@@ -106,11 +104,11 @@ function tfp_admin_dashboard_nav_items() {
     return [
         ['slug' => 'dashboard', 'label' => __('Dashboard', 'tfp-dashboard'), 'url' => $dashboard_url, 'active' => true],
         ['slug' => 'users', 'label' => __('Users', 'tfp-dashboard'), 'url' => $users_url, 'active' => false],
-        ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-courses')],
-        ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=sfwd-lessons')],
-        ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_cohort')],
-        ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => admin_url('users.php?role=facilitator')],
-        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => add_query_arg('view', 'refunds', $dashboard_url), 'active' => (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'refunds')],
+        ['slug' => 'courses', 'label' => __('Courses', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_courses_page_url') ? tfp_admin_courses_page_url() : home_url('/admin-courses/')],
+        ['slug' => 'curriculum', 'label' => __('Curriculum', 'tfp-dashboard'), 'url' => home_url('/admin-curriculum-categories/')],
+        ['slug' => 'cohorts', 'label' => __('Cohorts', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_cohorts_url') ? tfp_admin_cohorts_url() : home_url('/admin-cohorts/')],
+        ['slug' => 'facilitators', 'label' => __('Facilitators', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_facilitators_url') ? tfp_admin_facilitators_url() : home_url('/admin-facilitators/')],
+        ['slug' => 'payments', 'label' => __('Payments', 'tfp-dashboard'), 'url' => function_exists('tfp_admin_payments_url') ? tfp_admin_payments_url() : home_url('/admin-payments/')],
         ['slug' => 'documents', 'label' => __('Documents', 'tfp-dashboard'), 'url' => admin_url('upload.php')],
         ['slug' => 'communication', 'label' => __('Communication', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_ticket')],
         ['slug' => 'verification', 'label' => __('Verification', 'tfp-dashboard'), 'url' => admin_url('edit.php?post_type=tfp_financial_aid')],
@@ -302,16 +300,6 @@ function tfp_admin_dashboard_render() {
         );
     }
 
-    if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'refunds') {
-        tfp_admin_refunds_render();
-        return;
-    }
-
-    if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === 'transaction-ledger') {
-        tfp_admin_transaction_ledger_render();
-        return;
-    }
-
     $data = tfp_admin_dashboard_get_data();
     $user = wp_get_current_user();
     $name = $user->display_name ?: __('Administrator', 'tfp-dashboard');
@@ -363,7 +351,9 @@ function tfp_admin_dashboard_render() {
         <!-- Main Workspace -->
         <div class="tfp-admin-main">
             <div class="tfp-admin-mobilebar">
-                <button type="button" data-tfp-admin-toggle aria-label="<?php esc_attr_e('Open menu', 'tfp-dashboard'); ?>">☰</button>
+                <button type="button" class="tfp-admin-mobilebar-toggle" data-tfp-admin-toggle aria-controls="tfp-admin-sidebar" aria-expanded="false" aria-label="<?php esc_attr_e('Open admin menu', 'tfp-dashboard'); ?>">
+                    <?php echo function_exists('tfp_dashboard_icon') ? tfp_dashboard_icon('toggle') : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 17V1M6 17H13.8031C15.48 17 17 2.52 17 4.19691V13.8031C17 15.48 15.48 17 13.8031 17H6M6 17H4.19692C2.519 17 1 15.48 1 13.8002V4.2002C1 2.52 2.52 1 4.2002 1H6" stroke="#570506" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; ?>
+                </button>
                 <span><?php esc_html_e('Admin Console', 'tfp-dashboard'); ?></span>
             </div>
 
@@ -393,7 +383,7 @@ function tfp_admin_dashboard_render() {
                         <small><?php esc_html_e('Total Students Enrolled', 'tfp-dashboard'); ?></small>
                         <div class="tfp-admin-stat-value">
                             <strong><?php echo esc_html(number_format_i18n($data['students'])); ?></strong>
-
+                            
                         </div>
                         <p><?php esc_html_e('Active students in cohorts', 'tfp-dashboard'); ?></p>
                     </article>
@@ -401,7 +391,7 @@ function tfp_admin_dashboard_render() {
                         <small><?php esc_html_e('Total Payments Collected', 'tfp-dashboard'); ?></small>
                         <div class="tfp-admin-stat-value">
                             <strong><?php echo wp_kses_post(function_exists('wc_price') ? wc_price($data['payments']) : number_format_i18n($data['payments'], 2)); ?></strong>
-
+                            
                         </div>
                         <p><?php esc_html_e('Gross collected (excl. refunds)', 'tfp-dashboard'); ?></p>
                     </article>
@@ -409,7 +399,7 @@ function tfp_admin_dashboard_render() {
                         <small><?php esc_html_e('Active Cohorts', 'tfp-dashboard'); ?></small>
                         <div class="tfp-admin-stat-value">
                             <strong><?php echo esc_html($data['all_cohorts']); ?></strong>
-
+                            
                         </div>
                         <p><?php esc_html_e('Cohorts with status Active', 'tfp-dashboard'); ?></p>
                     </article>

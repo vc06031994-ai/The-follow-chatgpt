@@ -1,0 +1,312 @@
+/* Admin Cohorts screen — scoped styles, responsive at tablet and mobile widths. */
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-header{align-items:center}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-header p{margin:8px 0 0}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-add{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;white-space:nowrap}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-add span{font-size:22px;line-height:1}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-content{padding-top:20px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filters{display:flex;align-items:center;gap:8px;margin:0 0 22px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filters select,body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search{height:35px;border:1px solid #d5d5d5;border-radius:7px;background:#fff;color:#171717;font:inherit;font-size:12px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filters select{width:138px;padding:0 11px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search{display:flex;align-items:center;gap:9px;width:202px;padding:0 10px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search input{width:100%;min-width:0;height:100%;padding:0;border:0;outline:0;background:transparent;color:#171717;font:inherit;font-size:12px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search .tfp-admin-search-png{display:inline-flex;flex:0 0 16px;width:16px;height:16px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search img{display:block;width:16px;height:16px;object-fit:contain}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filter-submit{display:none}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-panel{margin:0 0 14px;padding:0 0 30px;overflow:hidden;border:1px solid #d0d0d0;border-radius:11px;background:#fff}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-panel h2{margin:0;padding:17px 20px 16px;color:#171717;font-size:14px;font-weight:700}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table-wrap{width:100%;overflow-x:auto}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table{width:100%;min-width:760px;border-collapse:collapse}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table thead{background:#dfe2e3}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table th{height:37px;padding:8px 20px;color:#171717;text-align:left;font-size:12px;font-weight:700;white-space:nowrap}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td{padding:7px 20px;border-bottom:1px solid #e6e7e8;color:#171717;font-size:10px;vertical-align:middle}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table tbody tr:last-child td{border-bottom:0}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child{min-width:220px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child strong{display:block;font-size:10px;font-weight:600}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child small{display:block;margin-top:4px;color:#666;font-size:9px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-status{display:inline-flex;align-items:center;min-height:23px;padding:2px 11px;border:1px solid #008b94;border-radius:20px;background:#e8f7f7;color:#171717;font-size:10px;white-space:nowrap}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-status.is-draft{border-color:#c9c9c9;background:#e9e9e9}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;white-space:nowrap}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-btn{display:inline-flex;align-items:center;justify-content:center;min-width:66px;height:27px;padding:0 13px;border:1px solid #171717;border-radius:8px;background:#fff;color:#171717;font-size:12px;line-height:1;text-decoration:none}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-btn.is-primary{border-color:#006b73;background:#006b73;color:#fff}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-btn:hover{filter:brightness(.95)}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-empty{height:75px;color:#888;text-align:center;font-size:12px}
+@media(max-width:900px){body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filters{flex-wrap:wrap}body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search{flex:1 1 220px}}
+@media(max-width:700px){
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-header{align-items:flex-start;flex-direction:column}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-content{padding:16px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filters{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filters select,body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search{width:100%;min-width:0}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-search{grid-column:1/-1}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-filter-submit{display:inline-flex;grid-column:1/-1;justify-content:center;min-height:38px;border:0;border-radius:7px;background:#006b73;color:#fff}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-panel{margin-bottom:14px;padding-bottom:12px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-panel h2{padding:15px 14px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table{min-width:0}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table thead{display:none}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table,body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table tbody,body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table tr,body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td{display:block;width:100%}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table tr{padding:10px 14px;border-top:1px solid #e6e7e8}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;padding:5px 0;border:0;text-align:right;font-size:12px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:before{content:attr(data-label);color:#666;font-weight:600;text-align:left}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child{display:block;min-width:0;text-align:left}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child:before{display:none}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child strong{font-size:13px}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions{justify-content:flex-end}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-empty{display:block;text-align:center}
+}
+/* Cohorts tables now reuse the shared Student/Faculty dashboard table language. */
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table {
+    width: 100%;
+    min-width: 740px;
+    margin: 0 !important;
+    border: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    background: #fff !important;
+    text-align: left;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table th,
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td {
+    height: auto;
+    padding: 12px 14px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #E2E5E6 !important;
+    border-radius: 0 !important;
+    vertical-align: middle;
+    text-align: left;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table th {
+    background: #DFE3E4 !important;
+    color: #151411 !important;
+    font-family: "Eudoxus Sans", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td {
+    background: #fff !important;
+    color: var(--tfp-dash-text, #151411) !important;
+    font: 500 10px/1.4 var(--tfp-dash-font-alt, Georgia, serif) !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child strong {
+    display: block;
+    color: #151411;
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:first-child small {
+    display: block;
+    margin-top: 3px;
+    color: var(--tfp-dash-muted, #777);
+    font-size: 10px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-btn.is-disabled {
+    cursor: default;
+    opacity: .72;
+    pointer-events: none;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-btn.is-outline {
+    min-width: 66px;
+    min-height: 28px;
+    border: 1px solid #171717;
+    border-radius: 7px;
+    background: #fff;
+    color: #171717;
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-btn.is-primary {
+    min-width: 66px;
+    min-height: 28px;
+    border: 1px solid #00666e;
+    border-radius: 7px;
+    background: #00666e;
+    color: #fff;
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+}
+@media(max-width:700px) {
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table {
+        min-width: 0;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table th,
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td {
+        padding: 8px 0 !important;
+    }
+}
+
+
+/* Cohorts table alignment fix: keep every action inside its own grid column. */
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table {
+    width: 100% !important;
+    min-width: 1040px !important;
+    table-layout: fixed !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-name { width: 31%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-facilitator { width: 12%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-students { width: 8%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-date { width: 9%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-meeting { width: 13%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-status { width: 9%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-actions { width: 18%; }
+
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table th,
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td.tfp-admin-cohort-actions {
+    display: table-cell !important;
+    width: 18%;
+    padding-right: 14px !important;
+    text-align: right !important;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions .tfp-admin-cohort-btn {
+    display: inline-flex !important;
+    vertical-align: middle;
+    min-width: 62px;
+    width: 62px;
+    height: 27px;
+    margin: 0 0 0 6px;
+    padding: 0 8px;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td:nth-child(5) {
+    white-space: nowrap;
+}
+@media (max-width: 700px) {
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table {
+        min-width: 0 !important;
+        table-layout: auto !important;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td.tfp-admin-cohort-actions {
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        text-align: right !important;
+    }
+}
+
+
+/* Tighten the gap between the Status column and row actions. */
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-name { width: 34% !important; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-meeting { width: 12% !important; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-status { width: 10% !important; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table .tfp-col-actions { width: 15% !important; }
+
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohorts-table td.tfp-admin-cohort-actions {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    text-align: left !important;
+    white-space: nowrap;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions .tfp-admin-cohort-btn {
+    margin-left: 0 !important;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-admin-cohort-actions .tfp-admin-cohort-btn + .tfp-admin-cohort-btn {
+    margin-left: 5px !important;
+}
+
+
+/* Add Cohort modal — aligned to the supplied Figma reference. */
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view.tfp-cohort-modal-open { overflow: hidden; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal {
+    position: fixed; inset: 0; z-index: 99999; display: none;
+    align-items: center; justify-content: flex-end; padding: 18px 40px 18px 18px;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal.is-open { display: flex; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-backdrop {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+    background: rgba(0,0,0,.42); cursor: default;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-dialog {
+    position: relative; z-index: 1; width: min(620px, 100%); max-height: calc(100vh - 36px);
+    overflow-y: auto; padding: 42px 23px 50px; border-radius: 11px;
+    background: #dfe2e3; box-shadow: 0 12px 40px rgba(0,0,0,.18);
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-create-form {
+    display: flex; flex-direction: column; gap: 0; margin: 0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-heading {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; margin: 0 0 22px; padding: 0 0 14px; border-bottom: 1px solid #b9bfc0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-heading h2 {
+    margin: 0 0 7px; color: #111; font: 700 15px/1.35 "Eudoxus Sans", sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-heading p {
+    margin: 0; color: #171717; font: 400 11px/1.45 Georgia, serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-x {
+    display: none; border: 0; padding: 0; background: transparent; color: #111; font-size: 25px; line-height: 1;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field { min-width: 0; margin: 0 0 20px; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field-full { width: 100%; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field label {
+    display: block; margin: 0 0 7px; color: #111; font: 700 14px/1.3 "Eudoxus Sans", sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field input,
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field select {
+    display: block; width: 100%; height: 49px; min-height: 49px; margin: 0;
+    padding: 0 13px; border: 1px solid #777; border-radius: 0; background: #fff;
+    color: #454545; font: 400 14px/1.2 "Eudoxus Sans", sans-serif; box-shadow: none;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field input[readonly] {
+    color: #5d5d5d; cursor: default;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field input:focus,
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field select:focus {
+    outline: 2px solid rgba(0,105,113,.18); border-color: #006b73;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-form-grid {
+    display: grid; gap: 20px 24px; width: 100%;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-date-day { grid-template-columns: 1.2fr 1fr; padding-top: 20px; border-top: 1px solid #b9bfc0; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-time-grid { grid-template-columns: 1.15fr .72fr .55fr; gap: 16px 22px; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-time-grid .tfp-cohort-field { margin-bottom: 20px; }
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-footer {
+    display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+    margin-top: 0; padding-top: 20px; border-top: 1px solid #b9bfc0;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-footer button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    min-height: 41px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px;
+    font: 500 12px/1 "Eudoxus Sans", sans-serif; cursor: pointer;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-footer svg {
+    width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-footer .tfp-cohort-submit {
+    border-color: #006b73; background: #006b73; color: #fff;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-footer .tfp-cohort-cancel {
+    background: #fff; color: #171717;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-form-message {
+    flex: 1; margin: 0; color: #a32132; font: 500 12px/1.4 "Eudoxus Sans", sans-serif;
+}
+body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-submit[disabled] { opacity: .65; cursor: wait; }
+@media (max-width: 700px) {
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal { align-items: flex-start; padding: 10px; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-dialog {
+        width: 100%; max-height: calc(100vh - 20px); padding: 24px 16px 20px; border-radius: 10px;
+    }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-x { display: inline-flex; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-date-day { grid-template-columns: 1fr 1fr; gap: 12px; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-time-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-time-grid .tfp-cohort-field:first-child { grid-column: 1/-1; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field { margin-bottom: 15px; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field input,
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-field select { height: 45px; min-height: 45px; font-size: 13px; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-modal-footer { flex-wrap: wrap; }
+    body.tfp-admin-dashboard-view.tfp-admin-cohorts-view .tfp-cohort-form-message { flex: 1 0 100%; }
+}

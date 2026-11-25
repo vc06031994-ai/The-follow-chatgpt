@@ -252,7 +252,7 @@
     min-width: 0;
     height: 100vh;
     overflow-y: auto;
-    padding: 28px 36px 60px;
+    padding: var(--tfp-space-7) var(--tfp-layout-page-gutter) var(--tfp-layout-content-bottom);
 }
 
 /* When the week view needs a full-width header without the sidebar */
@@ -269,7 +269,7 @@
     position: relative;
     border-bottom: 3px solid var(--tfp-dash-maroon);
     padding-bottom: 18px;
-    margin-bottom: 24px;
+    margin-bottom: var(--tfp-layout-section-gap);
 }
 
 .tfp-dash-pageheader__mobile-toggle {
@@ -337,7 +337,7 @@
 }
 
 .tfp-dash-section {
-    margin-top: 30px;
+    margin-top: var(--tfp-layout-section-gap);
 }
 
 
@@ -356,7 +356,7 @@
 .tfp-dash-taskcards {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: var(--tfp-layout-card-gap);
 }
 
 .tfp-dash-taskcard {

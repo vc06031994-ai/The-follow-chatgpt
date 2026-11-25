@@ -1,3 +1,5 @@
+@import url('https://api.fontshare.com/v2/css?f[]=eudoxus-sans@400,500,600,700,800&display=swap');
+
 /* Global SelectWoo single-select styling */
 .select2-container--default .select2-selection--single {
     position: relative !important;
@@ -87,8 +89,29 @@
     --tfp-dash-sidebar-width: 240px;
     --tfp-dash-sidebar-collapsed: 76px;
     --tfp-dash-radius: 12px;
+
+    /* Universal spacing scale — use these tokens across Admin, Facilitator and Student views. */
+    --tfp-space-1: 4px;
+    --tfp-space-2: 8px;
+    --tfp-space-3: 12px;
+    --tfp-space-4: 16px;
+    --tfp-space-5: 20px;
+    --tfp-space-6: 24px;
+    --tfp-space-7: 28px;
+    --tfp-space-8: 32px;
+    --tfp-space-9: 40px;
+    --tfp-space-10: 48px;
+    --tfp-space-11: 64px;
+
+    /* Semantic layout rhythm for consistent page structure. */
+    --tfp-layout-page-gutter: clamp(20px, 2.5vw, 36px);
+    --tfp-layout-section-gap: var(--tfp-space-6);
+    --tfp-layout-card-gap: var(--tfp-space-4);
+    --tfp-layout-card-padding: var(--tfp-space-4);
+    --tfp-layout-control-gap: var(--tfp-space-2);
+    --tfp-layout-content-bottom: var(--tfp-space-10);
     --tfp-dash-font: 'Eudoxus Sans', sans-serif;
-    --tfp-dash-font-alt: 'Lora', sans-serif;
+    --tfp-dash-font-alt: 'Eudoxus Sans', sans-serif;
     --tfp-dash-font-mono: 'Lora-italic', sans-serif;
 }
 

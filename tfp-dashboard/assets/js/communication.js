@@ -22,16 +22,6 @@
         var newTicketForm = document.querySelector('[data-tfp-new-ticket-form]');
         var modalCloseBtns = document.querySelectorAll('[data-tfp-modal-close]');
 
-        var demoDataEl = document.getElementById('tfpDemoTicketsJSON');
-        var demoTickets = {};
-        if (demoDataEl) {
-            try {
-                demoTickets = JSON.parse(demoDataEl.textContent);
-            } catch (e) {
-                console.error('Error parsing demo tickets JSON', e);
-            }
-        }
-
         var state = {
             activeTicketId: null,
             lastMessageId: 0,
@@ -172,7 +162,7 @@
         }
 
         function poll() {
-            if (!state.activeTicketId || String(state.activeTicketId).indexOf('demo-') === 0) return;
+            if (!state.activeTicketId) return;
 
             ajax('tfp_chat_get_messages', {
                 ticket_id: state.activeTicketId,
@@ -207,7 +197,7 @@
             items.forEach(function (el) {
                 el.classList.remove('is-active');
             });
-            if (threadPanel) threadPanel.style.display = 'none';
+            if (threadPanel) { threadPanel.hidden = true; threadPanel.style.display = 'none'; }
             if (emptyPanel) emptyPanel.style.display = '';
             if (messagesEl) messagesEl.innerHTML = '';
             if (replyInput) replyInput.value = '';
@@ -229,31 +219,7 @@
             });
 
             if (emptyPanel) emptyPanel.style.display = 'none';
-            if (threadPanel) threadPanel.style.display = '';
-
-            // Handle Demo Ticket (Figma Mode)
-            if (String(ticketId).indexOf('demo-') === 0 && demoTickets[ticketId]) {
-                var dData = demoTickets[ticketId];
-
-                if (titleEl) titleEl.textContent = dData.title || (name ? name.textContent.trim() : '');
-                if (subtitleEl) subtitleEl.textContent = dData.meta || '';
-                if (tagTextEl) tagTextEl.textContent = dData.tag_label || dData.category_label || '';
-
-                if (tagDotEl) {
-                    tagDotEl.className = 'tfp-dash-chatpanel__tag-dot tfp-dash-chatpanel__tag-dot--' + (dData.category || 'access');
-                }
-
-                setStatusBadge(dData.status || 'open');
-
-                if (messagesEl) {
-                    messagesEl.innerHTML = '';
-                    (dData.messages || []).forEach(function (msg) {
-                        messagesEl.appendChild(renderMessage(msg));
-                    });
-                    scrollMessagesToBottom();
-                }
-                return;
-            }
+            if (threadPanel) { threadPanel.hidden = false; threadPanel.style.display = ''; }
 
             // Real WordPress Ticket Mode
             if (titleEl) titleEl.textContent = name ? name.textContent.trim() : '';
@@ -328,33 +294,6 @@
                 var message = replyInput.value.trim();
                 if (!message || !state.activeTicketId || replyInput.disabled) return;
 
-                // If currently on demo ticket, append message directly
-                if (String(state.activeTicketId).indexOf('demo-') === 0) {
-                    var now = new Date();
-                    var hours = now.getHours();
-                    var minutes = now.getMinutes();
-                    var ampm = hours >= 12 ? 'PM' : 'AM';
-                    hours = hours % 12;
-                    hours = hours ? hours : 12;
-                    minutes = minutes < 10 ? '0' + minutes : minutes;
-                    var timeStr = hours + ':' + minutes + ' ' + ampm;
-
-                    var newMsg = {
-                        id: Date.now(),
-                        is_mine: true,
-                        sender_name: 'Support',
-                        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-                        message: message,
-                        created_at: timeStr,
-                    };
-
-                    replyInput.value = '';
-                    messagesEl.appendChild(renderMessage(newMsg));
-                    scrollMessagesToBottom();
-                    replyInput.focus();
-                    return;
-                }
-
                 // Real WordPress AJAX reply
                 replyInput.disabled = true;
 
@@ -386,14 +325,6 @@
         if (resolveBtn) {
             resolveBtn.addEventListener('click', function () {
                 if (!state.activeTicketId || resolveBtn.disabled) return;
-
-                if (String(state.activeTicketId).indexOf('demo-') === 0) {
-                    var resolvedDemoId = state.activeTicketId;
-                    setStatusBadge('resolved');
-                    updateTicketStatusInList(resolvedDemoId, 'resolved');
-                    closeChat();
-                    return;
-                }
 
                 resolveBtn.disabled = true;
 
