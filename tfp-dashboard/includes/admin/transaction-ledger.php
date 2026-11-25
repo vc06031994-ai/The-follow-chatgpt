@@ -60,6 +60,7 @@ function tfp_admin_transaction_ledger_totals() {
     do {
         $batch = wc_get_orders([
             'status' => ['processing', 'completed'],
+            'date_created' => '>=' . (time() - 365 * DAY_IN_SECONDS),
             'limit' => 100,
             'page' => $page,
             'paginate' => true,
@@ -121,6 +122,10 @@ function tfp_admin_transaction_ledger_render() {
     if (!current_user_can('manage_options')) {
         wp_die(esc_html__('You do not have permission to access this page.', 'tfp-dashboard'), esc_html__('Access denied', 'tfp-dashboard'), ['response' => 403]);
     }
+    if (!function_exists('wc_get_orders') || !function_exists('wc_get_order')) {
+        echo '<div class="tfp-admin-app"><main class="tfp-admin-main"><h1>' . esc_html__('Transaction Ledger', 'tfp-dashboard') . '</h1><p>' . esc_html__('WooCommerce must be active to display payment transactions.', 'tfp-dashboard') . '</p></main></div>';
+        return;
+    }
     tfp_admin_transaction_ledger_handle_actions();
 
     $filters = [
@@ -146,7 +151,6 @@ function tfp_admin_transaction_ledger_render() {
     $nav = tfp_admin_dashboard_nav_items();
     $base_url = add_query_arg('view', 'transaction-ledger', tfp_admin_dashboard_page_url());
     $notice = sanitize_key(wp_unslash($_GET['ledger_notice'] ?? ''));
-    $currency = $selected && method_exists($selected, 'get_currency') ? $selected->get_currency() : get_woocommerce_currency();
     ?>
     <div class="tfp-admin-app tfp-ledger-app">
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
@@ -229,7 +233,7 @@ function tfp_admin_transaction_ledger_render() {
                             <td><?php echo esc_html($payment_method); ?></td>
                             <td><span class="tfp-ledger-status <?php echo esc_attr($is_refunded ? 'is-refunded' : 'is-complete'); ?>"><?php echo esc_html($status_label); ?></span></td>
                             <td><?php echo wp_kses_post(wc_price($order->get_total(), ['currency' => $order->get_currency()])); ?></td>
-                            <td><?php echo wp_kses_post(wc_price(0, ['currency' => $order->get_currency()])); ?></td>
+                            <td>—</td>
                             <td><?php echo wp_kses_post(wc_price($order->get_total() - $order->get_total_refunded(), ['currency' => $order->get_currency()])); ?></td>
                             <td><a class="tfp-ledger-button" href="<?php echo esc_url(add_query_arg(['view' => 'transaction-ledger', 'order' => $order->get_id()], tfp_admin_dashboard_page_url())); ?>"><?php esc_html_e('Details', 'tfp-dashboard'); ?></a><a class="tfp-ledger-button is-primary" href="<?php echo esc_url(add_query_arg(['view' => 'transaction-ledger', 'order' => $order->get_id(), 'refund' => 1], tfp_admin_dashboard_page_url())); ?>"><?php esc_html_e('Refund', 'tfp-dashboard'); ?></a></td>
                         </tr>
