@@ -668,3 +668,27 @@ body.tfp-admin-payments-view .tfp-payouts-back-row{margin-bottom:16px!important}
  body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>button{width:100%!important;min-width:0!important;max-width:none!important;flex:auto!important;margin:0!important}
  body.tfp-admin-payments-view .tfp-payments-content .tfp-payouts-filters>.tfp-payouts-search{grid-column:1/-1!important}
 }
+
+
+/* Keep the Payouts return action in the top heading row, as in the design reference. */
+body.tfp-admin-payments-view .tfp-payments-page-heading{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:24px!important;
+}
+body.tfp-admin-payments-view .tfp-payments-page-heading .tfp-payments-heading-copy{
+ flex:1 1 auto!important;min-width:0!important;
+}
+body.tfp-admin-payments-view .tfp-payments-page-heading .tfp-payouts-back-top{
+ flex:0 0 auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ min-height:40px!important;padding:0 18px!important;margin:0 0 0 auto!important;
+ border:0!important;border-radius:8px!important;background:#00666e!important;color:#fff!important;
+ text-decoration:none!important;font:600 12px var(--tfp-dash-font,"Eudoxus Sans"),sans-serif!important;
+ white-space:nowrap!important;
+}
+body.tfp-admin-payments-view .tfp-payments-page-heading .tfp-payouts-back-top:hover{
+ background:#00565d!important;color:#fff!important;
+}
+@media(max-width:767px){
+ body.tfp-admin-payments-view .tfp-payments-page-heading{align-items:flex-start!important;flex-direction:column!important;gap:12px!important}
+ body.tfp-admin-payments-view .tfp-payments-page-heading .tfp-payouts-back-top{margin:0!important}
+}
