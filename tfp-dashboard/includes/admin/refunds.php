@@ -170,6 +170,27 @@ function tfp_admin_refunds_render_embedded() {
         return;
     }
 
+    // Safe visual-only demo: sample values are never sent to WooCommerce or Stripe.
+    if (isset($_GET['refund_demo']) && (string) wp_unslash($_GET['refund_demo']) === '1' && current_user_can('manage_options')) {
+        $v = sanitize_key(wp_unslash($_GET['refund_demo_view'] ?? 'manual'));
+        $base = tfp_admin_payments_url(['section'=>'refunds','refund_demo'=>'1']);
+        $url = static function($view) use ($base) { return esc_url(add_query_arg('refund_demo_view',$view,$base)); };
+        ?>
+        <div class="tfp-refund-demo">
+          <div class="tfp-refund-demo-banner"><strong>Refund workflow demo</strong><span>Sample data only. No real refund is created or processed.</span><a href="<?php echo esc_url(tfp_admin_payments_url(['section'=>'refunds'])); ?>">Exit demo · Back to live Refund History</a></div>
+          <nav><?php foreach (['confirm'=>'Issue Refund','manual'=>'Manual Refund · Full','partial'=>'Manual Refund · Partial','detail'=>'Refund Details','final'=>'Confirm Refund'] as $key=>$label) : ?><a class="<?php echo $v===$key?'active':''; ?>" href="<?php echo $url($key); ?>"><?php echo esc_html($label); ?></a><?php endforeach; ?></nav>
+          <?php if ($v==='confirm') : ?>
+            <section class="refund-demo-confirm"><div class="alert">!</div><h2>Issue Refund?</h2><p>You are about to reverse this transaction<br>through the payment gateway.</p><div class="summary"><div><b>Customer</b><span>Daniel K.</span></div><div><b>Refund ID</b><span>RF-100305</span></div><hr><div><b>Amount to Reverse</b><strong>$199.00</strong></div></div><footer><a href="<?php echo $url('manual'); ?>">⊘ &nbsp; Cancel</a><a class="primary" href="<?php echo $url('final'); ?>">✓ &nbsp; Confirm Refund</a></footer></section>
+          <?php elseif ($v==='manual' || $v==='partial') : ?>
+            <section class="refund-demo-manual"><header><b>Manual Refund</b><small>Process new refund entry</small></header><label>Customer / Transaction<input readonly value="Daniel K. · daniel@example.com · PMT-55099"></label><div class="twocol"><label>Refund Reason<select><option>Course cancellation</option><option>Duplicate charge</option><option>Gateway error</option></select></label><div><b>Refund Type</b><div class="toggle"><a class="<?php echo $v==='manual'?'active':''; ?>" href="<?php echo $url('manual'); ?>">Full</a><a class="<?php echo $v==='partial'?'active':''; ?>" href="<?php echo $url('partial'); ?>">Partial</a></div></div></div><?php if($v==='partial'): ?><label>Partial Refund Amount ($)<input readonly value="0.00"></label><?php endif; ?><label>Internal Admin Notes<input readonly placeholder="Explain the context for this refund..."></label><footer><a href="<?php echo $url('confirm'); ?>">⊘ &nbsp; Cancel</a><a class="primary" href="<?php echo $url('final'); ?>">✓ &nbsp; Issue Refund</a></footer></section>
+          <?php elseif ($v==='detail') : ?>
+            <section class="refund-demo-detail"><header><div><h2>RF-100341 <i>Completed</i></h2><small>Original Payment: PMT-55321</small></div><strong><small>REFUND AMOUNT</small>$299.00</strong></header><div class="detailgrid"><div><h3>General Information</h3><b>Customer</b><small>Mary J. (mary.j@example.com)</small><b>Refund Reason</b><small>Course cancellation,<br>Manual Refund - (Shannon S.)</small><h3>Timeline</h3><b>Refund Completed</b><small>May 04, 14:32 PST · Funds released to bank</small><b>Approved by Admin</b><small>May 04, 11:15 PST · Approved by Sarah M.</small><b>Refund Requested</b><small>May 03, 16:40 PST · Initiated via customer portal</small></div><aside><h3>Admin Actions</h3><button>▣ &nbsp; Print Receipt</button><button>✉ &nbsp; Email Customer</button><a class="primary" href="<?php echo $url('manual'); ?>">✓ &nbsp; Done</a><h3>Processor Metadata</h3><small>TXN_TYPE: full_refund<br>GATEWAY_REF: rev_928130<br>SRC_METHOD: visa_4242<br>AVS_CHECK: passed</small></aside></div></section>
+          <?php else : ?>
+            <section class="refund-demo-final"><h2>Confirm refund for Daniel K.</h2><small>Refund ID: RF-100305 · PMT-55099</small><p>Amount<br><b>$199.00</b></p><p>Reason<br>Course cancellation</p><footer><a href="<?php echo $url('manual'); ?>">⊘ &nbsp; Cancel</a><a class="primary" href="<?php echo $url('detail'); ?>">✓ &nbsp; Issue Refund</a></footer></section>
+          <?php endif; ?>
+        </div>
+        <?php return;
+    }
     $search = sanitize_text_field(wp_unslash($_GET['refund_search'] ?? ''));
     $date_from = sanitize_text_field(wp_unslash($_GET['refund_from'] ?? ''));
     $date_to = sanitize_text_field(wp_unslash($_GET['refund_to'] ?? ''));
@@ -241,6 +262,7 @@ function tfp_admin_refunds_render_embedded() {
     $manual_count = count(array_filter($rows, static function ($row) { return stripos($row['reason'], 'manual') !== false; }));
     ?>
     <div class="tfp-refund-dashboard">
+      <div class="tfp-refund-demo-launch"><span>Preview refund workflows</span><a href="<?php echo esc_url(tfp_admin_payments_url(['section'=>'refunds','refund_demo'=>'1','refund_demo_view'=>'manual'])); ?>">Open demo preview</a></div>
         <form class="tfp-refund-filters" method="get" action="<?php echo esc_url(tfp_admin_payments_url()); ?>">
             <input type="hidden" name="section" value="refunds">
             <select name="refund_status" aria-label="<?php esc_attr_e('Refund status', 'tfp-dashboard'); ?>">
