@@ -103,7 +103,7 @@ function tfp_admin_transaction_ledger_handle_actions() {
             'restock_items' => false,
         ]);
         $notice = is_wp_error($refund) ? 'refund_error' : 'refund_success';
-        wp_safe_redirect(add_query_arg(['view' => 'transaction-ledger', 'order' => $order_id, 'ledger_notice' => $notice], tfp_admin_dashboard_page_url()));
+        wp_safe_redirect(add_query_arg(['section' => 'transactions', 'order' => $order_id, 'ledger_notice' => $notice], tfp_admin_payments_url()));
         exit;
     }
     if (sanitize_key(wp_unslash($_POST['tfp_ledger_action'])) === 'email') {
@@ -113,7 +113,7 @@ function tfp_admin_transaction_ledger_handle_actions() {
             $message = sprintf(__('Hello %1$s, your payment of %2$s for order #%3$s has been recorded.', 'tfp-dashboard'), $order->get_formatted_billing_full_name(), wp_strip_all_tags(wc_price($order->get_total(), ['currency' => $order->get_currency()])), $order->get_order_number());
             wp_mail($email, $subject, $message);
         }
-        wp_safe_redirect(add_query_arg(['view' => 'transaction-ledger', 'order' => $order_id, 'ledger_notice' => 'email_sent'], tfp_admin_dashboard_page_url()));
+        wp_safe_redirect(add_query_arg(['section' => 'transactions', 'order' => $order_id, 'ledger_notice' => 'email_sent'], tfp_admin_payments_url()));
         exit;
     }
 }
@@ -272,7 +272,9 @@ function tfp_admin_transaction_ledger_render($embedded = false) {
                     </section>
                 <?php else : ?><section class="tfp-ledger-detail"><p class="tfp-ledger-empty"><?php esc_html_e('Select a transaction to view its details.', 'tfp-dashboard'); ?></p></section><?php endif; ?>
             </div>
+            <?php if (!$embedded) : ?>
         </main>
     </div>
+            <?php endif; ?>
     <?php
 }
