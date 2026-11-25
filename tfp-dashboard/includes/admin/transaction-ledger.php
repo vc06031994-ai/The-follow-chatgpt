@@ -118,12 +118,12 @@ function tfp_admin_transaction_ledger_handle_actions() {
     }
 }
 
-function tfp_admin_transaction_ledger_render() {
+function tfp_admin_transaction_ledger_render($embedded = false) {
     if (!current_user_can('manage_options')) {
         wp_die(esc_html__('You do not have permission to access this page.', 'tfp-dashboard'), esc_html__('Access denied', 'tfp-dashboard'), ['response' => 403]);
     }
     if (!function_exists('wc_get_orders') || !function_exists('wc_get_order')) {
-        echo '<div class="tfp-admin-app"><main class="tfp-admin-main"><h1>' . esc_html__('Transaction Ledger', 'tfp-dashboard') . '</h1><p>' . esc_html__('WooCommerce must be active to display payment transactions.', 'tfp-dashboard') . '</p></main></div>';
+        echo '<div class="tfp-ledger-inner"><p>' . esc_html__('WooCommerce must be active to display payment transactions.', 'tfp-dashboard') . '</p></div>';
         return;
     }
     tfp_admin_transaction_ledger_handle_actions();
@@ -149,9 +149,10 @@ function tfp_admin_transaction_ledger_render() {
         }
     }
     $nav = tfp_admin_dashboard_nav_items();
-    $base_url = add_query_arg('view', 'transaction-ledger', tfp_admin_dashboard_page_url());
+    $base_url = tfp_admin_payments_url(['section' => 'transactions']);
     $notice = sanitize_key(wp_unslash($_GET['ledger_notice'] ?? ''));
     ?>
+    <?php if (!$embedded) : ?>
     <div class="tfp-admin-app tfp-ledger-app">
         <aside class="tfp-admin-sidebar" id="tfp-admin-sidebar">
             <div class="tfp-admin-sidebar-top">
@@ -184,17 +185,24 @@ function tfp_admin_transaction_ledger_render() {
         </aside>
         <main class="tfp-admin-main tfp-ledger-main">
             <div class="tfp-ledger-breadcrumb"><?php esc_html_e('ADMIN / Payment / Transaction Ledger', 'tfp-dashboard'); ?></div>
+    <?php endif; ?>
             <div class="tfp-ledger-inner">
+                <?php if (!$embedded) : ?>
                 <div class="tfp-admin-topbar"><span><?php esc_html_e('Admin', 'tfp-dashboard'); ?></span><b>/</b><?php esc_html_e('Payments', 'tfp-dashboard'); ?><b>/</b><strong><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></strong></div>
+
+                <?php endif; ?>                <?php if (!$embedded) : ?>
                 <header class="tfp-ledger-header">
                     <div><h1><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></h1><p><?php esc_html_e('All payments, refunds, statuses, and reconciliation controls', 'tfp-dashboard'); ?></p></div>
                 </header>
+                <?php endif; ?>
                 <?php if ($notice === 'refund_success') : ?><div class="tfp-ledger-notice is-success"><?php esc_html_e('Refund request was sent to the payment gateway.', 'tfp-dashboard'); ?></div>
                 <?php elseif ($notice === 'refund_error') : ?><div class="tfp-ledger-notice is-error"><?php esc_html_e('The refund could not be processed. Check the order and gateway response.', 'tfp-dashboard'); ?></div>
                 <?php elseif ($notice === 'email_sent') : ?><div class="tfp-ledger-notice is-success"><?php esc_html_e('Customer receipt email sent.', 'tfp-dashboard'); ?></div><?php endif; ?>
+                <?php if (!$embedded) : ?>
                 <div class="tfp-ledger-tabs" role="tablist"><a class="is-active" href="<?php echo esc_url($base_url); ?>"><?php esc_html_e('Transaction Ledger', 'tfp-dashboard'); ?></a><a href="<?php echo esc_url(admin_url('edit.php?post_type=shop_order')); ?>"><?php esc_html_e('WooCommerce Orders', 'tfp-dashboard'); ?></a><a href="<?php echo esc_url(admin_url('edit.php?post_type=shop_order')); ?>"><?php esc_html_e('Refund History', 'tfp-dashboard'); ?></a></div>
-                <form class="tfp-ledger-filters" method="get" action="<?php echo esc_url(tfp_admin_dashboard_page_url()); ?>">
-                    <input type="hidden" name="view" value="transaction-ledger">
+
+                <?php endif; ?>                <form class="tfp-ledger-filters" method="get" action="<?php echo esc_url($base_url); ?>">
+                    <input type="hidden" name="section" value="transactions">
                     <select name="status" aria-label="<?php esc_attr_e('Filter by status', 'tfp-dashboard'); ?>"><option value=""><?php esc_html_e('All Statuses', 'tfp-dashboard'); ?></option>
                         <?php foreach (wc_get_order_statuses() as $status_key => $status_label) : ?><option value="<?php echo esc_attr(str_replace('wc-', '', $status_key)); ?>" <?php selected($filters['status'], str_replace('wc-', '', $status_key)); ?>><?php echo esc_html($status_label); ?></option><?php endforeach; ?>
                     </select>
@@ -226,7 +234,7 @@ function tfp_admin_transaction_ledger_render() {
                         ?>
                         <tr class="<?php echo $selected_row ? 'is-selected' : ''; ?>">
                             <td><input type="checkbox" class="tfp-ledger-row-check" value="<?php echo esc_attr($order->get_id()); ?>" aria-label="<?php esc_attr_e('Select transaction', 'tfp-dashboard'); ?>"></td>
-                            <td><a class="tfp-ledger-id" href="<?php echo esc_url(add_query_arg(['view' => 'transaction-ledger', 'order' => $order->get_id()], tfp_admin_dashboard_page_url())); ?>">#<?php echo esc_html($order->get_order_number()); ?></a></td>
+                            <td><a class="tfp-ledger-id" href="<?php echo esc_url(add_query_arg(['section' => 'transactions', 'order' => $order->get_id()], tfp_admin_payments_url())); ?>">#<?php echo esc_html($order->get_order_number()); ?></a></td>
                             <td><?php echo esc_html($order->get_date_created() ? $order->get_date_created()->date_i18n('Y-m-d') : '—'); ?></td>
                             <td><?php echo esc_html($order->get_formatted_billing_full_name() ?: __('Guest', 'tfp-dashboard')); ?><small><?php echo esc_html($order->get_billing_email()); ?></small></td>
                             <td><?php echo esc_html(implode(', ', array_slice($product_names, 0, 2))); ?></td>
@@ -235,14 +243,14 @@ function tfp_admin_transaction_ledger_render() {
                             <td><?php echo wp_kses_post(wc_price($order->get_total(), ['currency' => $order->get_currency()])); ?></td>
                             <td>—</td>
                             <td><?php echo wp_kses_post(wc_price($order->get_total() - $order->get_total_refunded(), ['currency' => $order->get_currency()])); ?></td>
-                            <td><a class="tfp-ledger-button" href="<?php echo esc_url(add_query_arg(['view' => 'transaction-ledger', 'order' => $order->get_id()], tfp_admin_dashboard_page_url())); ?>"><?php esc_html_e('Details', 'tfp-dashboard'); ?></a><a class="tfp-ledger-button is-primary" href="<?php echo esc_url(add_query_arg(['view' => 'transaction-ledger', 'order' => $order->get_id(), 'refund' => 1], tfp_admin_dashboard_page_url())); ?>"><?php esc_html_e('Refund', 'tfp-dashboard'); ?></a></td>
+                            <td><a class="tfp-ledger-button" href="<?php echo esc_url(add_query_arg(['section' => 'transactions', 'order' => $order->get_id()], tfp_admin_payments_url())); ?>"><?php esc_html_e('Details', 'tfp-dashboard'); ?></a><a class="tfp-ledger-button is-primary" href="<?php echo esc_url(add_query_arg(['section' => 'transactions', 'order' => $order->get_id(), 'refund' => 1], tfp_admin_payments_url())); ?>"><?php esc_html_e('Refund', 'tfp-dashboard'); ?></a></td>
                         </tr>
                     <?php endforeach; ?>
                     <?php if (empty($orders)) : ?><tr><td colspan="11" class="tfp-ledger-empty"><?php esc_html_e('No transactions match these filters.', 'tfp-dashboard'); ?></td></tr><?php endif; ?>
                     </tbody></table></div>
                     <div class="tfp-ledger-pagination"><span><?php echo esc_html(sprintf(__('Page %1$d of %2$d', 'tfp-dashboard'), $filters['page'], max(1, $result['pages']))); ?></span><div>
-                        <?php if ($filters['page'] > 1) : ?><a href="<?php echo esc_url(add_query_arg(array_merge($filters, ['view' => 'transaction-ledger', 'ledger_page' => $filters['page'] - 1]), tfp_admin_dashboard_page_url())); ?>">‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
-                        <?php if ($filters['page'] < $result['pages']) : ?><a class="is-primary" href="<?php echo esc_url(add_query_arg(array_merge($filters, ['view' => 'transaction-ledger', 'ledger_page' => $filters['page'] + 1]), tfp_admin_dashboard_page_url())); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</a><?php endif; ?>
+                        <?php if ($filters['page'] > 1) : ?><a href="<?php echo esc_url(add_query_arg(array_merge($filters, ['section' => 'transactions', 'ledger_page' => $filters['page'] - 1]), tfp_admin_payments_url())); ?>">‹ <?php esc_html_e('Previous', 'tfp-dashboard'); ?></a><?php endif; ?>
+                        <?php if ($filters['page'] < $result['pages']) : ?><a class="is-primary" href="<?php echo esc_url(add_query_arg(array_merge($filters, ['section' => 'transactions', 'ledger_page' => $filters['page'] + 1]), tfp_admin_payments_url())); ?>"><?php esc_html_e('Next', 'tfp-dashboard'); ?> ›</a><?php endif; ?>
                     </div></div>
                 </section>
                 <?php if ($selected) : ?>
